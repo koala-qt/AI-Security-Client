@@ -14,6 +14,7 @@ public:
     QString getFaceLinkTree(QString &objectId,QJsonObject &treeJson);
     QString getPersonNumbers(RestServiceI::PersonsStayArgs &args,int &num);
     QString getPeronAverageTime(RestServiceI::AveragePersonTimeArgs &args);
+    QString getPersonDetailes(QString &objId);
 
 private:
     QString host_;

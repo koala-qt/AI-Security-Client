@@ -17,6 +17,7 @@ public:
         GetCameraInfo,
         GetCameraGroup,
         FaceTracking,
+        PersonDetailes,
         GenerateFaceLink,
         GetFaceLinkTreeData,
         SearchFaceLinkPoint,
@@ -104,6 +105,7 @@ public:
     virtual void login(const LoginParameter &) = 0;
     virtual void getScenePic(const QString old) = 0;
     virtual void faceTracking(FaceTrackingArgs) = 0;
+    virtual void getPersonDetails(QString &) = 0;
     virtual void getAlarmScenePic(const QString oid) = 0;
     virtual void getTop(const int id) = 0;
     virtual void getPersonStayTotalCount(PersonsStayArgs &) = 0;
@@ -138,6 +140,7 @@ signals:
     void sigSnapHistory(PagedSnapFaceHis);
     void sigAlarmHistory(PagedAlarmHis);
     void sigFaceLinkTree(QJsonObject);
+    void sigPeronsDetails(QImage,QImage,QStringList);
     void sigPersonNumbers(int);
 };
 
