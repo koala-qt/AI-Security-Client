@@ -1,0 +1,217 @@
+syntax = "proto2";
+
+package kf;
+
+message Box
+{
+    required int32 x = 1;
+    required int32 y = 2;
+    required int32 width = 3;
+    required int32 height = 4;
+}
+
+///////////////////////////////////////////////////////////////////
+//topic: person/boxes
+message PersonBoxs
+{
+    required string camera_id = 1;
+    repeated Box boxes = 2;
+}
+
+///////////////////////////////////////////////////////////////////
+//topic: topic/test
+
+message FaceInfoPT
+{
+    required string id = 1;
+    required string camera_id = 2;
+    required string camera_pos = 3;
+    required bytes img_data = 4;
+    required int64 timestamp = 5;
+}
+
+
+///////////////////////////////////////////////////////////////////
+//topic: face/statis
+message FaceStatis
+{
+    required FaceInfoPT before_face = 1;
+    required FaceInfoPT after_face = 2;
+    required int32 time_cost = 3;
+}
+
+message TrackedFace
+{
+    required FaceInfoPT face_info = 1;
+    required string tracked_id = 2;
+}
+
+///////////////////////////////////////////////////////////////////
+//topic: alarm/blacklistface
+message BlackListFaceAlarm
+{	
+    required string oid = 1;
+    required string camera_id = 2;
+    required string camera_pos = 3;
+    required bytes face_img = 4;
+    required bytes thumbnail_scene = 5;
+    required int64 timestamp = 6;
+}
+
+///////////////////////////////////////////////////////////////////
+//    topic: alarm/intruder
+//
+//     class IntruderPush 
+//     {
+//     public:
+// 	static std::shared_ptr<IntruderPush> createSharedIntruderPush();
+// 	
+// 	virtual void publish(const kf::Intruder &intrude) = 0;
+//     }
+message Intruder
+{	
+    required string oid = 1;
+    required string camera_id = 2;
+    required string camera_pos = 3;
+    repeated bytes pseron_imgs = 4;
+    required bytes thumbnail_scene = 5;
+    required int64 timestamp = 6;
+}
+
+
+///////////////////////////////////////////////////////////////////
+//    topic: alarm/abdoor
+//
+message ABDoorAlarm
+{	
+    required string oid = 1;
+    required string camera_id = 2;
+    required string camera_pos = 3;
+    required bytes pseron_img = 4;
+    required bytes thumbnail_scene = 5;
+    required int64 timestamp = 6;
+}
+
+
+///////////////////////////////////////////////////////////////////
+//    topic: alarm/stop
+message StopAlarm
+{	
+    required string camera_id = 1;
+    required string camera_pos = 2;
+    repeated bytes person_imgs = 3;
+    required bytes thumbnail_scene = 4;
+    required int64 timestamp = 5;
+}
+
+///////////////////////////////////////////////////////////////////
+//    topic: alarm/climb
+message ClimbAlarm
+{	
+    required string camera_id = 1;
+    required string camera_pos = 2;
+    repeated bytes person_imgs = 3;
+    required bytes thumbnail_scene = 4;
+    required int64 timestamp = 5;
+}
+
+///////////////////////////////////////////////////////////////////
+//    topic: alarm/linger
+message LingerAlarm
+{	
+    required string camera_id = 1;
+    required string camera_pos = 2;
+    repeated bytes person_imgs = 3;
+    required bytes thumbnail_scene = 4;
+    required int64 timestamp = 5;
+}
+
+///////////////////////////////////////////////////////////////////
+//    topic: alarm/gather
+message GatherAlarm
+{	
+    required string camera_id = 1;
+    required string camera_pos = 2;
+    required bytes person_img = 3;
+    required bytes thumbnail_scene = 4;
+    required int64 timestamp = 5;
+}
+
+
+///////////////
+
+
+
+///////////////////////////////////////////
+//mainpage
+//left
+
+///////////////////////////////////////////
+//topic:  mainpage/todaytotal
+message TodayTotalEventCount
+{
+    required int32 total_count = 1;
+    required int32 blacklist_count = 2;
+}
+
+message OneDayEventCount
+{
+    repeated int32 event_count = 1;
+}
+
+///////////////////////////////////////////
+//topic:  mainpage/spider
+message EventSpiderGiagram
+{
+    repeated OneDayEventCount someday_count = 1;
+}
+
+//bottom
+///////////////////////////////////////////
+//topic:  mainpage/todayalarmcount
+message TodayAlarmEventCount
+{
+    required int32 ab_count = 1;
+    required int32 intrude_count = 2;
+    required int32 blacklist_count = 3;
+}
+
+//right
+message PieCharData
+{
+    required string camera_pos = 1;
+    required int32  cost_time = 2;
+}
+
+///////////////////////////////////////////
+//topic:  mainpage/piechart
+message PieChart
+{
+    repeated PieCharData pie_chart_data = 1;
+}
+
+///////////////////////////////////////////
+//topic:  mainpage/todayfacecount
+message TodayFaceCount
+{
+    required int32 snap_count     	 = 1;
+    required int32 blacklist_count 	 = 2;
+    required int32 served_count	  	 = 3;
+    required int32 blacklist_alarm_count = 4;
+}
+
+///////////////////////////////////////////
+//topic:  mainpage/snapareagiagram
+message SnapAreaGiagram{
+    repeated int32 snap_count_point = 1;
+}
+
+///////////////////////////////////////////
+//topic:  facelinkpage/tree
+message Tree{
+    required int32 status = 1;
+    required string oid = 2;
+    required string msg = 3;
+}
+
+////////////////////////////////////////////////////

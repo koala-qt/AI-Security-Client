@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style>
+      *{
+        padding: 0;
+        margin: 0;
+      }
+      .haha {
+        padding: 10px;
+        width:223px;
+        height:191px;
+        background: rgba(255, 255, 255, 0.66);
+        opacity:1;
+        border-radius:4px;
+        box-sizing: border-box;
+      }
+      .alert-box{
+        width: 1490px;
+        height: 702px;
+        background:rgba(75,75,75,1);
+        box-shadow:0px 10px 10px rgba(0,0,0,0.16);
+        opacity:1;
+        border-radius:4px;
+        padding:10px 20px 20px;
+        box-sizing: border-box;
+      }
+      .alert-title{
+        color: #CECECE;
+        font-size:16px;
+        padding-bottom: 10px;
+      }
+      .content-box{
+        overflow: hidden;
+      }
+      .left-box{
+        float: left;
+        height: 100%;
+      }
+      .right-box{
+       margin-left: 20px;
+      }
+      .scroll-box{
+        overflow-y:scroll;
+        height:640px;
+        width: 290px;
+      }
+      .route-box{
+      }
+      .right-b{
+        margin-left: 10px;
+        font-size:14px;
+        color: #CECECE;
+      }
+      .right-b p {
+        padding-bottom: 5px;
+      }
+      .txt{
+        overflow: hidden;
+        padding-bottom: 5px;
+      }
+      .line{
+        margin: 0 auto;
+        width:1px;
+        height:114px;
+        margin-top:5px;
+        background: #CECECE;
+      }
+      .scrollbar{overflow-x: hidden;overflow-y: auto;overscroll-behavior: contain;}
+      .scrollbar::-webkit-scrollbar {
+        position: absolute;
+        width: 10px;
+        margin-left: -10px;
+        -webkit-appearance: none;
+      }
+      .scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .scrollbar::-webkit-scrollbar-thumb {
+        border-width: 1px 2px;
+        border-style: solid;
+        border-color: transparent;
+        background: transparent;
+        background-clip: content-box;
+      }
+      .scrollbar:hover::-webkit-scrollbar-track{
+        background:none;
+      }
+      .scrollbar:hover::-webkit-scrollbar-thumb {
+        background:rgba(216,216,216,0.1);
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+  <div class="alert-box">
+    <div class="alert-title">Tracking</div>
+    <div class="content-box">
+      <div class="left-box"><canvas width="1138" height="640" id="myCanvas" style="background-image:url('./map.png') "></canvas></div>
+      <div class="left-box right-box scroll-box scrollbar">
+        <div class="route-box" id="rote-box">
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="./qwebchannel.js"></script>
+  <script>
+    //连接qt
+     if (typeof qt != "undefined") {
+       new QWebChannel(qt.webChannelTransport, function(channel){
+         window.Bridge = channel.objects.Bridge;
+         Bridge.sigTrackingDataChanged.connect(function(arr) { //连接Qt中brideg类的信号并定义执行代码
+           getCameraData(arr)
+         });
+         Bridge.onInitsized(); //调用Qt内的函数
+       });
+    } else {
+       alert("qt对象获取失败！");
+    }
+    //画图
+    var canvas = document.getElementById("myCanvas");
+    var context = document.getElementById("myCanvas").getContext("2d");
+    var offset = 0;
+    var Img = new Image();
+    Img.src="bigCamera.png";
+    function getCameraData(arr) {
+      var box = document.getElementById('rote-box');
+      arr.forEach((item, index) => {
+        box.innerHTML += "<div class='txt'> <div class='left-box'><img src='./small%20camera.png'> <div class='line'></div> </div> <div class='left-box right-b'>"+
+              "<p>"+item.name+"</p><p>"+item.grabTime+"</p>"+
+              "<p>"+item.holdTime+"</p></div></div>"
+      });
+      function Initialization() {
+        let div = document.createElement("div");
+        div.innerHTML = "<div style='text-align: center'>"+arr[0].name+"</div><img src='"+arr[0].personImg+"' style='width:130px;height: 130px;margin:10px 0 0 35px'>";
+        div.className = `haha m0 frist`;
+        div.style.position = "fixed";
+        div.style.left = arr[0].pos.x-60 + "px";
+        div.style.top = arr[0].pos.y+80 + "px";
+        document.body.appendChild(div);
+      }
+      Initialization()
+      var draw = function() {
+        // 设置样式
+        context.clearRect(0, 0, 1000, 1000);
+        context.setLineDash([8, 4]);
+        context.lineDashOffset = offset;
+        context.lineWidth =2;
+        context.strokeStyle = "#4AB6FF";
+        context.moveTo(arr[0].pos.x,arr[0].pos.y);
+        context.drawImage(Img, arr[0].pos.x - 10, arr[0].pos.y - 10, 71, 53);
+        // 连线
+        for(var i =1;i <arr.length;i++){
+          // 绘制图片
+          context.drawImage(Img, arr[i].pos.x - 10, arr[i].pos.y - 10, 71, 53);
+          context.lineTo(arr[i].pos.x,arr[i].pos.y);
+        };
+        context.stroke();
+      };
+      var run = function() {
+        offset -= 0.5;
+        if (offset < -24) {
+          offset = 0;
+        }
+        draw();
+        // 继续绘制
+        requestAnimationFrame(run);
+      };
+      run();
+      // 鼠标在canvas
+      document.onclick = function(e) {
+        let DOMRect = canvas.getBoundingClientRect();
+        let x = e.clientX - DOMRect.left;
+        let y = e.clientY - DOMRect.top;
+        arr.forEach((item, index) => {
+          if (
+                  x <= item.pos.x + 30 &&
+                  x >= item.pos.x &&
+                  y <= item.pos.y + 20 &&
+                  y >= item.pos.y
+          ) {
+            console.log(`m${index}`)
+            if (document.getElementsByClassName(`m${index}`).length) {
+              return;
+            }
+            document.getElementsByClassName("haha").length &&
+            document
+                    .getElementsByClassName("haha")[0]
+                    .parentNode.removeChild(
+                    document.getElementsByClassName("haha")[0]
+            );
+            let div = document.createElement("div");
+            div.innerHTML = "<div style='text-align: center'>"+item.name+"</div><img src='"+item.personImg+"'>";
+            div.className = `haha m${index}`;
+            div.style.position = "fixed";
+            div.style.left = e.clientX-100 + "px";
+            div.style.top = e.clientY+30 + "px";
+            document.body.appendChild(div);
+          }
+        });
+      };
+    }
+		var data = [{
+          pos: {x: 100,y: 10},
+          name: "camera01",
+          holdTime:"10:30:10",
+          grabTime:"2019/01/22 11:33",
+          personImg:"image://https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=4001431513,4128677135&fm=27&gp=0.jpg"
+        },{
+          pos: {x: 120,y: 230},
+          name: "camera01",
+          holdTime:"10:30:10",
+          grabTime:"2019/01/22 11:33",
+          personImg:"image://https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=4001431513,4128677135&fm=27&gp=0.jpg"
+        },{
+          pos: {x: 200,y: 245},
+          name: "camera01",
+          holdTime:"10:30:10",
+          grabTime:"2019/01/22 11:33",
+          personImg:"image://https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=4001431513,4128677135&fm=27&gp=0.jpg"
+        },{
+          pos: {x: 300, y: 333},
+          name: "camera01",
+          holdTime:"10:30:10",
+          grabTime:"2019/01/22 11:33",
+          personImg:"image://https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=4001431513,4128677135&fm=27&gp=0.jpg"
+        },{
+          pos: {x: 467,y: 356},
+          name: "camera01",
+          holdTime:"10:30:10",
+          grabTime:"2019/01/22 11:33",
+          personImg:"image://https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=4001431513,4128677135&fm=27&gp=0.jpg"
+        }]
+
+    //getCameraData(data)
+    </script>
+  </body>
+</html>

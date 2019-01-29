@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<style type="text/css">
+			body{
+				overflow:hidden;
+			}
+		</style>
+		<script src="./qwebchannel.js"></script>  
+		<title>日历</title>
+	</head>
+	
+   <body style="height:100%;width:100%;margin:0;background-color:transparent;" ondragstart="window.event.returnValue=false" oncontextmenu="window.event.returnValue=false" onselectstart="event.returnValue=false">
+       <div id="container"></div>
+       <script type="text/javascript" src="echarts.js"></script>
+       <script type="text/javascript">
+			new QWebChannel(qt.webChannelTransport, function(channel){
+				window.Bridge = channel.objects.Bridge;
+				Bridge.updateData.connect(function(year,month,day,jsArray) { //连接Qt中brideg类的信号并定义执行代码
+					curYear = year
+					curMonth = month
+					curDay = day;
+					curData = jsArray
+					getVirtulData(year,month,day,jsArray)
+					//console.log(JSON.stringify(jsArray))
+					//console.log(year + " " + month + " " + day)
+				});
+				Bridge.onInitsized(); //调用Qt内的函数
+			});
+			
+			var dom = null;
+			var myChart = null;
+			var app = {};
+			var option = null;
+			var pageWidth = 0;
+			var pageHeight = 0;
+			var calendarMargs = [0,35,0,0];
+	        var t = new Date();
+			var curYear = t.getFullYear();
+			var curMonth = t.getMonth() + 1;
+			var curDay = t.getDay();
+			var curData = "";
+			function getVirtulData(year, month,day,virtualData) {
+				year = year;
+			//	t.setFullYear(curYear,curMonth,1)
+			//	t.setDate(0)
+				var date = +echarts.number.parseDate(year + '-' + month + '-01');
+				var end = +echarts.number.parseDate((+year) + '-' + month + '-' + day);
+				var dayTime = 3600 * 24 * 1000;
+				var data = [];
+				if (virtualData && virtualData.length == 0)
+				{
+					for (var time = date; time <= end; time += dayTime) {
+						data.push([
+							echarts.format.formatTime('yyyy-MM-dd', time),
+							Math.floor(Math.random() * 1000)
+						]);
+					}
+				}
+				else
+				{
+					data = virtualData;
+				}
+				
+				var graphData = [
+					[
+						1485878400000,
+						260
+					]
+				];
+
+				var links = graphData.map(function (item, idx) {
+					return {
+						source: idx,
+						target: idx + 1
+					};
+				});
+				links.pop();
+
+				option = {
+					tooltip: {
+						position: 'top'
+					},
+
+					calendar: [
+					{
+						orient: 'vertical',
+						yearLabel: {
+							show:false,
+							margin: 40
+						},
+						dayLabel: {
+							firstDay: 1,
+							color:'#CECECE',
+							fontSize:14,
+							nameMap: ['七', '一', '二', '三', '四', '五', '六']
+						},
+						monthLabel: {
+							show:false,
+							nameMap: 'cn',//'cn'
+							margin: 20
+						},
+						cellSize: getCellSize(),
+						borderColor:'#CECECE',
+						splitLine: {
+							show: true,
+							lineStyle:{
+								 color: ['#CECECE'],
+								 width: 1,
+								type: 'solid'
+							}
+						},
+						itemStyle:{
+							borderColor:'#CECECE',
+							color:'transparent'
+						},
+						top: calendarMargs[1],
+						left: calendarMargs[0],
+						right: calendarMargs[2],
+						bottom: calendarMargs[3],
+						range: '' + year + '-' + month
+					}],
+					series: [{
+						type: 'effectScatter',
+						color:'#8C96A4',
+						coordinateSystem: 'calendar',
+						calendarIndex: 0,
+						symbolSize: function (val) {
+							return val[1] / 40;
+						},
+						label: {
+						normal: {
+							show: true,
+							formatter: function (params) {
+								var d = echarts.number.parseDate(params.value[0]);
+								return d.getDate();
+							},
+							textStyle: {
+								color: '#CECECE'
+							}
+						}
+					},
+						data: data
+					}]
+				};
+				
+				if (myChart && option && typeof option === "object") {
+					myChart.setOption(option, true);
+				}
+			}
+	
+	function getCellSize(){
+		var tempW = pageWidth - calendarMargs[0] - calendarMargs[2]
+		var tempH = pageHeight - calendarMargs[1] - calendarMargs[3]
+		t.setFullYear(curYear,curMonth,1)
+		t.setDate(0)
+		var calendarRows = Math.ceil(t.getDate() / 7)
+		if(tempW > tempH){
+			return Math.floor(tempH/calendarRows)
+		}else{
+			return Math.floor(tempW/7)
+		}
+	}
+	//window.onload=function(){
+		//adjustHeight();
+		//setTimeout(()=>{
+		//},5000)
+	//}
+	window.onresize=function(){
+		adjustHeight();
+		if(myChart == null){
+			myChart = echarts.init(dom);
+		}
+		getVirtulData(curYear,curMonth,curDay,curData);
+	}
+	function adjustHeight(){
+		dom = document.getElementById("container");
+		pageHeight = document.documentElement.clientHeight || document.body.clientHeight;
+		pageWidth = document.body.clientWidth || document.documentElement.clientWidth;
+		dom.style.width = pageWidth + "px";
+		dom.style.height = pageHeight + "px";
+	}
+       </script>
+   </body>
+</html>

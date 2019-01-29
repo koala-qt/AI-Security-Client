@@ -1,0 +1,17 @@
+#ifndef CLOUDHTTPDAO_H
+#define CLOUDHTTPDAO_H
+#include "core/httpexector.h"
+#include "service/restservicei.h"
+namespace DLL{
+class CloudHttpDao : public HttpExector
+{
+public:
+    CloudHttpDao();
+    QString getGroup(QString groupNo,QVector<RestServiceI::CameraGoup> &resGroups);
+    QString getDevice(QString groupNo,QVector<CameraInfo> &devices);
+
+private:
+};
+}
+
+#endif // CLOUDHTTPDAO_H

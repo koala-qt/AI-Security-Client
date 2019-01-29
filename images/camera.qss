@@ -1,0 +1,36 @@
+QComboBoxListView
+{
+    color: #CECECE;
+    background-color: #525964;
+}
+QComboBox
+{
+    color: white;border:1px solid #CECECE;
+    border-radius: 6px;
+    font-size: 16px;
+    background-color: transparent;
+    width:200px;
+}
+QComboBox QAbstractItemView
+{
+    font-size:16px;
+}
+QComboBox QAbstractItemView::item
+{
+    background-color: #525964;
+    color:#CECECE;
+}
+QComboBox QAbstractItemView::item:selected
+{
+    background-color: rgba(82,89,100,70);
+    color:white;
+}
+QComboBox::drop-down
+{
+    subcontrol-position: center right;
+    border-image: url(images/dropdown2.png);
+    width:11px;
+    height:8px;
+    subcontrol-origin: padding;
+    margin-right:5px;
+};
