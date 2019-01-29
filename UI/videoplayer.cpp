@@ -153,6 +153,9 @@ VideoPlayer::VideoPlayer(QWidget *parent):
         menu_->move(mapToGlobal(p));
         menu_->show();
     });
+    connect(qApp,&QApplication::lastWindowClosed,this,[this]{
+        workerM_ = nullptr;
+    });
 }
 
 void VideoPlayer::setWorkerManager(BLL::WorkerManager *wm)
@@ -209,6 +212,9 @@ void VideoPlayer::slotSetRects(QVector<QRect> rs)
 
 void VideoPlayer::slotOnStarted(int w, int h)
 {
+    if(!workerM_){
+        return;
+    }
     oldRtsp_.clear();
     reconnectCount_ = 0;
     m_canvas->slotSetPainterCoordinate(w,h);
