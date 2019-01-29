@@ -33,7 +33,10 @@ public:
         GetAlarmHistory,
         GetSnapHistory,
         GetPersonStayNumber,
-        GetPersonAverageTime
+        GetPersonAverageTime,
+
+        SemanticSearch,
+        SearchUseImage
     };
     struct LoginParameter
     {
@@ -91,6 +94,24 @@ public:
         QDateTime startT;
         QDateTime endT;
     };
+    struct SemanticSearchArgs
+    {
+        int dataBaseIndex;
+        QStringList attributeList;
+        QString cameraId;
+        QDateTime startT;
+        QDateTime endT;
+    };
+    struct SearchUseImageArgs
+    {
+        int dataBaseIndex;
+        QImage image;
+        QString cameraId;
+        int recordsCount;
+        float smilarty;
+        QDateTime startT;
+        QDateTime endT;
+    };
     RestServiceI(QObject *parent = nullptr):QObject(parent){
         qRegisterMetaType<QVector<CameraInfo>>("QVector<CameraInfo>");
         qRegisterMetaType<PagedSnapFaceHis>("PagedSnapFaceHis");
@@ -124,7 +145,10 @@ public:
     virtual void getWaringArea(const QString) = 0;
     virtual void searchAlarmHistory(const int page,const int pageCount, const QString &cameraId,const QString &alarmType,const QDateTime &start,const QDateTime &end) = 0;
     virtual void searchSnap(const QString &dataBasename,const QImage &img,const QString &oid,const QString &cameraId,const int topK,double similarty,QDateTime &start,QDateTime &end) = 0;
-	
+
+    virtual void semanticSearch(SearchUseImageArgs &) = 0;
+    virtual void searchByImage(SearchUseImageArgs &) = 0;
+
 signals:
     void sigTracking(QVector<SearchFace>);
     void sigFaceSearch(QVector<SearchFace>);

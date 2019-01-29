@@ -145,53 +145,59 @@ TargetSearch::TargetSearch(WidgetManagerI *wm, WidgetI *parent):
     QVector<itemData> devicesVec;
     itemData items;
     items.name = tr("Face search");
-    items.childrens << itemData{tr("Query in the face database"),QVector<itemData>()} << itemData{tr("Query in the capture database"),QVector<itemData>()};
+    items.childrens << itemData{tr("Query in the capture database"),QVector<itemData>()};
     devicesVec << items;
     items.childrens.clear();
     items.name = tr("Combinatorial search");
-    devicesVec << items;
-    items.childrens.clear();
-    items.name = tr("Object search");
-    items.childrens << itemData{tr("Lost property tracking"),QVector<itemData>()};
-    devicesVec << items;
-    items.name = tr("Vehicle tracking");
-    items.childrens.clear();
-    items.childrens << itemData{tr("Large Vehicles"),QVector<itemData>()} << itemData{tr("Small Vehicles"),QVector<itemData>()};
     devicesVec << items;
     for(auto value : devicesVec){
         createTreeItem(treeW_,nullptr,value);
     }
     treeW_->expandAll();
-    if(treeW_->topLevelItemCount() && treeW_->topLevelItem(0)->childCount() >= 2){
-        treeW_->setCurrentItem(treeW_->topLevelItem(0)->child(1),true);
-    }
 
     devicesVec.clear();
-    items.name = tr("Eye");
+    items.name = tr("faceAttribute");
     items.childrens.clear();
-    items.childrens << itemData{tr("Arched_Eyebrows"),QVector<itemData>()} << itemData{tr("Bushy_Eyebrows"),QVector<itemData>()}
-                    << itemData{tr("Babs_Under_Eyes"),QVector<itemData>()} << itemData{tr("Eyeglasses"),QVector<itemData>()}
-                    << itemData{tr("Narrow_Eyes"),QVector<itemData>()};
+    items.childrens << itemData{tr("5_o_Clock_Shadow "),QVector<itemData>()} << itemData{tr("Arched_Eyebrows"),QVector<itemData>()}
+                    << itemData{tr("Attractive"),QVector<itemData>()} << itemData{tr("Bags_Under_Eyes"),QVector<itemData>()}
+                    << itemData{tr("Bald"),QVector<itemData>()} << itemData{tr("Bangs"),QVector<itemData>()}
+                    << itemData{tr("Big_Lips"),QVector<itemData>()} << itemData{tr("Big_Nose"),QVector<itemData>()}
+                    << itemData{tr("Black_Hair"),QVector<itemData>()} << itemData{tr("Blond_Hair"),QVector<itemData>()}
+                    << itemData{tr("Blurry"),QVector<itemData>()} << itemData{tr("Brown_Hair"),QVector<itemData>()}
+                    << itemData{tr("Bushy_Eyebrows"),QVector<itemData>()} << itemData{tr("Chubby"),QVector<itemData>()}
+                    << itemData{tr("Double_Chin"),QVector<itemData>()} << itemData{tr("Eyeglasses"),QVector<itemData>()}
+                    << itemData{tr("Goatee"),QVector<itemData>()} << itemData{tr("Gray_Hair"),QVector<itemData>()}
+                    << itemData{tr("Heavy_Makeup"),QVector<itemData>()} << itemData{tr("High_Cheekbones"),QVector<itemData>()}
+                    << itemData{tr("Male/Female"),QVector<itemData>()} << itemData{tr("Mouth_Slightly_Open"),QVector<itemData>()}
+                    << itemData{tr("Mustache"),QVector<itemData>()} << itemData{tr("Narrow_Eyes"),QVector<itemData>()}
+                    << itemData{tr("No_Beard"),QVector<itemData>()} << itemData{tr("Oval_Face"),QVector<itemData>()}
+                    << itemData{tr("Pale_Skin"),QVector<itemData>()} << itemData{tr("Pointy_Nose"),QVector<itemData>()}
+                    << itemData{tr("Receding_Hairline"),QVector<itemData>()} << itemData{tr("Rosy_Cheeks"),QVector<itemData>()}
+                    << itemData{tr("Sideburns"),QVector<itemData>()} << itemData{tr("Smiling"),QVector<itemData>()}
+                    << itemData{tr("Straight_Hair"),QVector<itemData>()} << itemData{tr("Wavy_Hair"),QVector<itemData>()}
+                    << itemData{tr("Wearing_Earrings"),QVector<itemData>()} << itemData{tr("Wearing_Hat"),QVector<itemData>()}
+                    << itemData{tr("Wearing_Lipstick"),QVector<itemData>()} << itemData{tr("Young"),QVector<itemData>()};
     devicesVec << items;
     items.childrens.clear();
-    items.name = tr("Hair");
-    items.childrens << itemData{tr("Yellow"),QVector<itemData>()} << itemData{tr("black"),QVector<itemData>()};
-    devicesVec << items;
-    items.childrens.clear();
-    items.name = tr("Lips");
-    items.childrens << itemData{tr("lip"),QVector<itemData>()};
-    devicesVec << items;
-    items.name = tr("Nose");
-    items.childrens.clear();
-    items.childrens << itemData{tr("Big"),QVector<itemData>()} << itemData{tr("Small"),QVector<itemData>()};
-    devicesVec << items;
-    items.name = tr("Chine");
-    items.childrens.clear();
-    items.childrens << itemData{tr("Big"),QVector<itemData>()} << itemData{tr("Small"),QVector<itemData>()};
-    devicesVec << items;
-    items.name = tr("Other");
-    items.childrens.clear();
-    items.childrens << itemData{tr("Big"),QVector<itemData>()} << itemData{tr("Small"),QVector<itemData>()};
+    items.name = tr("personAttribute");
+    items.childrens << itemData{tr("personalLess30 "),QVector<itemData>()} << itemData{tr("personalLess45"),QVector<itemData>()}
+                    << itemData{tr("personalLess60"),QVector<itemData>()} << itemData{tr("personalLarger60"),QVector<itemData>()}
+                    << itemData{tr("carryingBackpack"),QVector<itemData>()} << itemData{tr("carryingOther"),QVector<itemData>()}
+                    << itemData{tr("lowerBodyCasual"),QVector<itemData>()} << itemData{tr("upperBodyCasual"),QVector<itemData>()}
+                    << itemData{tr("lowerBodyFormal"),QVector<itemData>()} << itemData{tr("upperBodyFormal"),QVector<itemData>()}
+                    << itemData{tr("accessoryHat"),QVector<itemData>()} << itemData{tr("upperBodyJacket"),QVector<itemData>()}
+                    << itemData{tr("lowerBodyJeans"),QVector<itemData>()} << itemData{tr("footwearLeatherShoes"),QVector<itemData>()}
+                    << itemData{tr("upperBodyLogo"),QVector<itemData>()} << itemData{tr("hairLong"),QVector<itemData>()}
+                    << itemData{tr("personalMale"),QVector<itemData>()} << itemData{tr("carryingMessengerBag"),QVector<itemData>()}
+                    << itemData{tr("accessoryMuffler"),QVector<itemData>()} << itemData{tr("accessoryNothing"),QVector<itemData>()}
+                    << itemData{tr("carryingNothing"),QVector<itemData>()} << itemData{tr("upperBodyPlaid"),QVector<itemData>()}
+                    << itemData{tr("carryingPlasticBags"),QVector<itemData>()} << itemData{tr("footwearSandals"),QVector<itemData>()}
+                    << itemData{tr("footwearShoes"),QVector<itemData>()} << itemData{tr("lowerBodyShorts"),QVector<itemData>()}
+                    << itemData{tr("upperBodyShortSleeve"),QVector<itemData>()} << itemData{tr("lowerBodyShortSkirt"),QVector<itemData>()}
+                    << itemData{tr("footwearSneakers"),QVector<itemData>()} << itemData{tr("upperBodyThinStripes"),QVector<itemData>()}
+                    << itemData{tr("accessorySunglasses"),QVector<itemData>()} << itemData{tr("lowerBodyTrousers"),QVector<itemData>()}
+                    << itemData{tr("upperBodyTshirt"),QVector<itemData>()} << itemData{tr("upperBodyOther"),QVector<itemData>()}
+                    << itemData{tr("upperBodyVNeck"),QVector<itemData>()};
     devicesVec << items;
     for(auto value : devicesVec){
         createTreeItem(attributTreeW_,nullptr,value);
@@ -394,9 +400,13 @@ TargetSearch::TargetSearch(WidgetManagerI *wm, WidgetI *parent):
     connect(semanticSearchBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSemanticSearchBtnClicked()));
     connect(imageBtn_,SIGNAL(clicked(bool)),this,SLOT(slotImageFaceImgBtnClicked()));
     connect(pageIndicator_,SIGNAL(sigPageClicked(int)),this,SLOT(slotNextPage(int)));
+    connect(treeW_,SIGNAL(itemClicked(QTreeWidgetItem*,int)),this,SLOT(slotDataBaseTreeItemClicked(QTreeWidgetItem*,int)));
     conditionListW_->setCurrentRow(0);
     imageSmilarSpin_->setValue(40);
     imageCountCombox_->setCurrentIndex(0);
+    if(treeW_->topLevelItemCount()){
+        treeW_->itemClicked(treeW_->topLevelItem(0),0);
+    }
 
     getCameraInfo();
 }
@@ -877,24 +887,46 @@ void TargetSearch::updateDataList(int totalRecords, int totalPages, QVector<std:
     }
 }
 
+void TargetSearch::slotDataBaseTreeItemClicked(QTreeWidgetItem *item, int column)
+{
+    int attributToplevelCount = 0;
+    if(column != 0)return;
+    switch (treeW_->indexOfTopLevelItem(item)) {
+    case 0:
+        attributToplevelCount = attributTreeW_->topLevelItemCount();
+        if(attributToplevelCount >= 1){
+            attributTreeW_->expandItem(attributTreeW_->topLevelItem(0));
+            for(int i = 1; i < attributToplevelCount; i++){
+                attributTreeW_->topLevelItem(i)->setHidden(true);
+            }
+        }
+        break;
+    case 1:
+        attributToplevelCount = attributTreeW_->topLevelItemCount();
+        for(int i = 0; i < attributToplevelCount; i++){
+            attributTreeW_->topLevelItem(i)->setHidden(false);
+            attributTreeW_->expandItem(attributTreeW_->topLevelItem(i));
+        }
+        break;
+    default:
+        break;
+    }
+}
+
 void TargetSearch::slotConditionListIndexChanged(int index)
 {
-//    switch (index) {
-//    case 0:
-//        attributTreeW_->hide();
-//        dataVSplitL_->hide();
-//        break;
-//    case 1:
-//        attributTreeW_->show();
-//        dataVSplitL_->show();
-//        break;
-//    case 2:
-//        attributTreeW_->hide();
-//        dataVSplitL_->hide();
-//        break;
-//    default:
-//        break;
-//    }
+    switch (index) {
+    case 0:
+        attributTreeW_->show();
+        dataVSplitL_->show();
+        break;
+    case 1:
+        attributTreeW_->hide();
+        dataVSplitL_->hide();
+        break;
+    default:
+        break;
+    }
     stackedW_->setCurrentIndex(index);
 }
 

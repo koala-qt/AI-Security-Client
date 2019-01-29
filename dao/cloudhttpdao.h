@@ -16,6 +16,9 @@ public:
     QString getPeronAverageTime(RestServiceI::AveragePersonTimeArgs &args);
     QString getPersonDetailes(QString &objId);
 
+    QString semanticSearch(RestServiceI::SemanticSearchArgs &);
+    QString searchByImage(RestServiceI::SearchUseImageArgs &);
+
 private:
     QString host_;
 };

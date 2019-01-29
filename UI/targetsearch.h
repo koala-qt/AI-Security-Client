@@ -73,6 +73,7 @@ private:
     void updateDataList(int totalRecords, int totalPages, QVector<std::tuple<QImage,QString,QString,QString,QDateTime>> &data);
 
 private slots:
+    void slotDataBaseTreeItemClicked(QTreeWidgetItem *, int);
     void slotConditionListIndexChanged(int);
     void slotImageFaceImgBtnClicked();
     void slotImageSearchBtnClicked();
