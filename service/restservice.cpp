@@ -43,6 +43,11 @@ void BLL::RestService::faceTracking(RestServiceI::FaceTrackingArgs args)
     pushBackTask(FaceTracking,QVariant::fromValue(args));
 }
 
+void BLL::RestService::getPersonDetails(QString &objId)
+{
+    pushBackTask(PersonDetailes,QVariant::fromValue(objId));
+}
+
 void BLL::RestService::getAlarmScenePic(const QString oid)
 {
     pushBackTask(GetAlarmScene,QVariant::fromValue(oid));
@@ -178,6 +183,12 @@ void BLL::RestService::run()
         QString qerrorStr = httpDao.getFaceLinkTree(args.second.toString(),jsObj);
         if(qerrorStr.isEmpty()){
             emit sigFaceLinkTree(jsObj);
+        }
+    }else if(argType == PersonDetailes){
+        DLL::CloudHttpDao httDao;
+        QString qerrorStr = httDao.getPersonDetailes(args.second.toString());
+        if(qerrorStr.isEmpty()){
+
         }
     }else if(argType == FaceTracking){
         FaceTrackingArgs faceArgs = args.second.value<FaceTrackingArgs>();

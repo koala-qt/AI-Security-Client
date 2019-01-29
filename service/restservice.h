@@ -41,6 +41,7 @@ public:
     void login(const LoginParameter &args) override;
     void getScenePic(const QString old) override;
     void faceTracking(FaceTrackingArgs) override;
+    void getPersonDetails(QString &) override;
     void getAlarmScenePic(const QString oid) override;
     void getFaceLinkTree(QString &) override;
     void getPersonStayTotalCount(PersonsStayArgs &) override;

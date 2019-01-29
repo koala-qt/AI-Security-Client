@@ -227,3 +227,25 @@ QString DLL::CloudHttpDao::getPeronAverageTime(RestServiceI::AveragePersonTimeAr
     }
     return QString();
 }
+
+QString DLL::CloudHttpDao::getPersonDetailes(QString &objId)
+{
+    QString urlStr = host_ + QObject::tr("graph/node/find/hierarchical?objId=%1");
+    int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),5);
+    if(resCode != CURLE_OK){
+        return curl_easy_strerror(CURLcode(resCode));
+    }
+
+    QJsonParseError jsError;
+    QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
+    if(jsError.error != QJsonParseError::NoError){
+        return jsError.errorString();
+    }
+
+    QJsonObject jsObj = jsDoc.object();
+    int status = jsObj.value("status").toInt();
+    if(status != 200){
+        return jsObj.value("message").toString();
+    }
+    return QString();
+}

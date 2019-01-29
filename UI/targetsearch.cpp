@@ -225,12 +225,31 @@ TargetSearch::TargetSearch(WidgetManagerI *wm, WidgetI *parent):
     dataListW_->setViewMode(QListWidget::IconMode);
     pageIndicator_->setPageInfo(0,0);
     dataMenu_->addAction(tr("Details"),[this]{
-        Portrait *detailsW = new Portrait(widgetManger(),this);
-        detailsW->setAttribute(Qt::WA_DeleteOnClose);
-        detailsW->setWindowFlags(Qt::Window | Qt::Dialog);
-        detailsW->setWindowModality(Qt::ApplicationModal);
-        detailsW->setUserStyle(widgetManger()->currentStyle());
-        detailsW->show();
+        BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
+        RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+        WaitingLabel *label = new WaitingLabel(this);
+        connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
+            label->close();
+            delete label;
+            QMessageBox::information(this,tr("Details"),str);
+            dataMenu_->setEnabled(true);
+        });
+        connect(serviceI,&RestServiceI::sigPeronsDetails,this,[this,label](QImage face,QImage body,QStringList attribute){
+            label->close();
+            delete label;
+            Portrait *detailsW = new Portrait(widgetManger(),this);
+            detailsW->setAttribute(Qt::WA_DeleteOnClose);
+            detailsW->setWindowFlags(Qt::Window | Qt::Dialog);
+            detailsW->setWindowModality(Qt::ApplicationModal);
+            detailsW->setUserStyle(widgetManger()->currentStyle());
+            detailsW->slotSetData(face,body,attribute);
+            detailsW->show();
+            dataMenu_->setEnabled(true);
+        });
+        serviceI->getPersonDetails(dataListW_->currentItem()->data(Qt::UserRole + 2).toString());
+        startWorker(worker);
+        label->show(500);
+        dataMenu_->setEnabled(false);
     });
     dataMenu_->addAction(tr("Scene analysis"),[this]{
         BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
