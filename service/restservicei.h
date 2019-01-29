@@ -173,4 +173,6 @@ Q_DECLARE_METATYPE(RestServiceI::FaceLinkArgs)
 Q_DECLARE_METATYPE(RestServiceI::FaceTrackingArgs)
 Q_DECLARE_METATYPE(RestServiceI::AveragePersonTimeArgs)
 Q_DECLARE_METATYPE(RestServiceI::PersonsStayArgs)
+Q_DECLARE_METATYPE(RestServiceI::SemanticSearchArgs)
+Q_DECLARE_METATYPE(RestServiceI::SearchUseImageArgs)
 #endif // RESTSERVICEI_H

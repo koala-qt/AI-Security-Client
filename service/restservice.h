@@ -61,8 +61,8 @@ public:
     void searchAlarmHistory(const int page,const int pageCount, const QString &cameraId,const QString &alarmType,const QDateTime &start,const QDateTime &end) override;
     void searchSnap(const QString &dataBasename,const QImage &img,const QString &oid,const QString &cameraId,const int topK,double similarty,QDateTime &start,QDateTime &end) override;
 
-    virtual void semanticSearch(SearchUseImageArgs &) = 0;
-    virtual void searchByImage(SearchUseImageArgs &) = 0;
+    void semanticSearch(SearchUseImageArgs &);
+    void searchByImage(SearchUseImageArgs &);
 
 protected:
     void run() override;

@@ -249,3 +249,13 @@ QString DLL::CloudHttpDao::getPersonDetailes(QString &objId)
     }
     return QString();
 }
+
+QString DLL::CloudHttpDao::semanticSearch(RestServiceI::SemanticSearchArgs &args)
+{
+    return QString();
+}
+
+QString DLL::CloudHttpDao::searchByImage(RestServiceI::SearchUseImageArgs &args)
+{
+    return QString();
+}

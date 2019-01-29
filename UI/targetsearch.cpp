@@ -1001,13 +1001,6 @@ void TargetSearch::slotImageSearchBtnClicked()
 
 void TargetSearch::slotSemanticSearchBtnClicked()
 {
-//    TrackingWebView *view = new TrackingWebView(this);
-//    view->setAttribute(Qt::WA_DeleteOnClose);
-//    view->setWindowFlags(Qt::Window | Qt::Dialog);
-//    view->setWindowModality(Qt::ApplicationModal);
-//    view->resize(1495,705);
-//    view->show();
-
     if(!treeW_->currentItem()->type()){
         QMessageBox::information(this,imageConditionBackW_->objectName(),tr("please select database"));
         return;

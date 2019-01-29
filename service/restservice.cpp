@@ -128,6 +128,16 @@ void BLL::RestService::searchAlarmHistory(const int page, const int pageCount, c
     pushBackTask(GetAlarmHistory,QVariant::fromValue(alarmHistoryArg{page,pageCount,cameraId,alarmType,start,end}));
 }
 
+void BLL::RestService::semanticSearch(RestServiceI::SearchUseImageArgs &args)
+{
+    pushBackTask(SemanticSearch,QVariant::fromValue(args));
+}
+
+void BLL::RestService::searchByImage(RestServiceI::SearchUseImageArgs &args)
+{
+    pushBackTask(SearchUseImage,QVariant::fromValue(args));
+}
+
 void BLL::RestService::searchSnap(const QString &dataBaseName, const QImage &img, const QString &oid, const QString &cameraId, const int topK, double similarty, QDateTime &start, QDateTime &end)
 {
     pushBackTask(GetSnapHistory,QVariant::fromValue(searchSnapArgs{dataBaseName,img,oid,cameraId,topK,similarty,start,end}));
@@ -391,5 +401,9 @@ void BLL::RestService::run()
         if(qerrorStr.isEmpty()){
 //            emit sigCameraGroup(resGroup);
         }
+    }else if(argType == SemanticSearch){
+
+    }else if(argType == SearchUseImage){
+
     }
 }
