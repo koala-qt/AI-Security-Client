@@ -37,20 +37,9 @@ Portrait::Portrait(WidgetManagerI *wm, WidgetI *parent):
     splitVL_->setFixedWidth(1);
     faceL_->setFixedSize(78,78);
     personL_->setFixedSize(73,273);
+    faceL_->setScaledContents(true);
+    personL_->setScaledContents(true);
     attributeBack->setMinimumWidth(200);
-
-    flowLay_->addWidget(new QLabel(tr("femal")));
-    flowLay_->addWidget(new QLabel(tr("large")));
-    flowLay_->addWidget(new QLabel(tr("black")));
-    flowLay_->addWidget(new QLabel(tr("glasses")));
-    for(int i = 0; i < flowLay_->count(); i++){
-        qobject_cast<QLabel*>(flowLay_->itemAt(i)->widget())->setStyleSheet("QLabel{"
-                                                     "background:rgba(255,255,255,0.1);"
-                                                     "color: white;"
-                                                     "border: 1px solid rgba(255,255,255,1);"
-                                                     "border-radius: 10px;"
-                                                     "}");
-    }
 }
 
 void Portrait::setUserStyle(WidgetManagerI::SkinStyle s)
@@ -75,5 +64,24 @@ void Portrait::setUserStyle(WidgetManagerI::SkinStyle s)
         pal.setColor(QPalette::Foreground,Qt::white);
         faceTextL->setPalette(pal);
         bodyTextL->setPalette(pal);
+    }
+}
+
+void Portrait::slotSetData(QImage face, QImage body, QStringList attributeList)
+{
+    faceL_->setPixmap(QPixmap::fromImage(face));
+    personL_->setPixmap(QPixmap::fromImage(body));
+    while (QLayoutItem *item = flowLay_->takeAt(0)) {
+        delete item;
+    }
+    for(auto attrStr : attributeList){
+        QLabel *attL = new QLabel(attrStr);
+        attL->setStyleSheet("QLabel{"
+                            "background:rgba(255,255,255,0.1);"
+                            "color: white;"
+                            "border: 1px solid rgba(255,255,255,1);"
+                            "border-radius: 10px;"
+                            "}");
+        flowLay_->addWidget(attL);
     }
 }

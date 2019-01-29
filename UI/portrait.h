@@ -11,6 +11,9 @@ public:
     Portrait(WidgetManagerI *wm, WidgetI *parent = nullptr);
     void setUserStyle(WidgetManagerI::SkinStyle s) override;
 
+public slots:
+    void slotSetData(QImage face,QImage body,QStringList attributeList);
+
 private:
     CornerWidget *faceCornerW_{nullptr};
     QLabel *faceL_{nullptr},*personL_{nullptr},*splitVL_{nullptr},*personBack_{nullptr},
