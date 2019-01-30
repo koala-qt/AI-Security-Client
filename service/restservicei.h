@@ -5,6 +5,7 @@
 #include <QImage>
 #include <QDateTime>
 #include <QJsonObject>
+#include <QVariantMap>
 #include "dao/face_types.h"
 QT_FORWARD_DECLARE_CLASS(QTreeWidgetItem)
 class RestServiceI : public QObject
@@ -21,6 +22,7 @@ public:
         GenerateFaceLink,
         GetFaceLinkTreeData,
         SearchFaceLinkPoint,
+        MultipleSearch,
         GetCameraDevice,
         CaptureSearch,
         GetScenePic,
@@ -74,11 +76,33 @@ public:
         QString intimacy;
         QVector<FaceLinkPointData> childrenPoint;
     };
+    struct TrackingReturnData
+    {
+        QString cameraId;
+        QString objId;
+        QVariantList faceIds;
+        QVariantList faceAttr;
+        QVariantList bodyIds;
+        QVariantList bodyAttribute;
+        QDateTime timeIn;
+        QDateTime timeOut;
+        QImage faceImg;
+        QImage bodyImg;
+    };
     struct FaceTrackingArgs
     {
         QString oid;
         QImage faceImg;
         float thresh;
+        QDateTime startT;
+        QDateTime endT;
+    };
+    struct MultipleSearchArgs
+    {
+        QVector<QImage> images;
+        QString cameraId;
+        float similarity;
+        int count;
         QDateTime startT;
         QDateTime endT;
     };
@@ -96,21 +120,40 @@ public:
     };
     struct SemanticSearchArgs
     {
-        int dataBaseIndex;
-        QStringList attributeList;
+        int mode;
+        int pageNo;
+        int pageSize;
+        QStringList faceAttributList;
+        QStringList bodyAttributeList;
         QString cameraId;
         QDateTime startT;
         QDateTime endT;
     };
     struct SearchUseImageArgs
     {
-        int dataBaseIndex;
-        QImage image;
-        QString cameraId;
+        int mode;
         int recordsCount;
         float smilarty;
+        QImage image;
+        QString cameraId;
+        QString faceId;
         QDateTime startT;
         QDateTime endT;
+    };
+    struct DataRectureItem
+    {
+        QString id;
+        QString cameraId;
+        QString sceneId;
+        QString personId;
+        QDateTime time;
+        QImage img;
+    };
+    struct SemanticReturnData
+    {
+        int toatal;
+        int totalPage;
+        QVector<DataRectureItem> records;
     };
     RestServiceI(QObject *parent = nullptr):QObject(parent){
         qRegisterMetaType<QVector<CameraInfo>>("QVector<CameraInfo>");
@@ -122,11 +165,16 @@ public:
         qRegisterMetaType<QVector<SearchFace>>("QVector<SearchFace>");
         qRegisterMetaType<QVector<RestServiceI::CameraGoup>>("QVector<RestServiceI::CameraGoup>");
         qRegisterMetaType<RestServiceI::FaceLinkPointData>("RestServiceI::FaceLinkPointData");
+        qRegisterMetaType<RestServiceI::DataRectureItem>("RestServiceI::DataRectureItem");
+        qRegisterMetaType<RestServiceI::SemanticReturnData>("RestServiceI::SemanticReturnData");
+        qRegisterMetaType<QVector<RestServiceI::DataRectureItem>>("QVector<RestServiceI::DataRectureItem>");
+        qRegisterMetaType<QVector<TrackingReturnData>>("QVector<TrackingReturnData>");
     }
     virtual void login(const LoginParameter &) = 0;
     virtual void getScenePic(const QString old) = 0;
     virtual void faceTracking(FaceTrackingArgs) = 0;
     virtual void getPersonDetails(QString &) = 0;
+    virtual void multipleSearch(MultipleSearchArgs &) = 0;
     virtual void getAlarmScenePic(const QString oid) = 0;
     virtual void getTop(const int id) = 0;
     virtual void getPersonStayTotalCount(PersonsStayArgs &) = 0;
@@ -146,10 +194,11 @@ public:
     virtual void searchAlarmHistory(const int page,const int pageCount, const QString &cameraId,const QString &alarmType,const QDateTime &start,const QDateTime &end) = 0;
     virtual void searchSnap(const QString &dataBasename,const QImage &img,const QString &oid,const QString &cameraId,const int topK,double similarty,QDateTime &start,QDateTime &end) = 0;
 
-    virtual void semanticSearch(SearchUseImageArgs &) = 0;
+    virtual void semanticSearch(SemanticSearchArgs &) = 0;
     virtual void searchByImage(SearchUseImageArgs &) = 0;
 
 signals:
+    void sigFaceLinkFinished(QString);
     void sigTracking(QVector<SearchFace>);
     void sigFaceSearch(QVector<SearchFace>);
     void sigResultState(bool);
@@ -164,8 +213,12 @@ signals:
     void sigSnapHistory(PagedSnapFaceHis);
     void sigAlarmHistory(PagedAlarmHis);
     void sigFaceLinkTree(QJsonObject);
-    void sigPeronsDetails(QImage,QImage,QStringList);
+    void sigPeronsDetails(QImage,QImage,QStringList,QStringList);
     void sigPersonNumbers(int);
+    void sigSemanticSearch(RestServiceI::SemanticReturnData);
+    void sigCameraMap(QVariantMap);
+    void sigSearchByImage(QVector<RestServiceI::DataRectureItem>);
+    void sigTrackingNew(QVector<TrackingReturnData>);
 };
 
 Q_DECLARE_METATYPE(RestServiceI::LoginParameter)
@@ -175,4 +228,5 @@ Q_DECLARE_METATYPE(RestServiceI::AveragePersonTimeArgs)
 Q_DECLARE_METATYPE(RestServiceI::PersonsStayArgs)
 Q_DECLARE_METATYPE(RestServiceI::SemanticSearchArgs)
 Q_DECLARE_METATYPE(RestServiceI::SearchUseImageArgs)
+Q_DECLARE_METATYPE(RestServiceI::MultipleSearchArgs)
 #endif // RESTSERVICEI_H

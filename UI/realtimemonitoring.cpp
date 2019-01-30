@@ -484,7 +484,11 @@ void RealtimeMonitoring::updateCamera()
 {
     BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
     RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+#if 0
     connect(serviceI,SIGNAL(sigCameraInfo(QVector<CameraInfo>)),this,SLOT(slotAddDevice(QVector<CameraInfo>)));
+#else
+    connect(serviceI,SIGNAL(sigCameraMap(QVariantMap)),this,SLOT(slotOnCameraMap(QVariantMap)));
+#endif
     serviceI->getCameraInfo();
     startWorker(worker);
 }
@@ -749,6 +753,16 @@ void RealtimeMonitoring::slotOnCameraGroup(QVector<RestServiceI::CameraGoup> gro
         QTreeWidgetItem *item = new QTreeWidgetItem(m_treeW,QStringList() << groupV.groupName,0);
         item->setData(0,Qt::UserRole,groupV.groupNo);
         item->setData(1,Qt::UserRole + 1,groupV.description);
+    }
+}
+
+void RealtimeMonitoring::slotOnCameraMap(QVariantMap datas)
+{
+    curCameraMap_ = datas;
+    cameraCombox_->clear();
+    QStringList mapKeys = curCameraMap_.keys();
+    for(auto mapKey : mapKeys){
+        cameraCombox_->addItem(curCameraMap_.value(mapKey).toString(),mapKey);
     }
 }
 

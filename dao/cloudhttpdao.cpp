@@ -11,13 +11,38 @@
 DLL::CloudHttpDao::CloudHttpDao()
 {
     std::vector<std::string> headers;
-    headers.emplace_back("Content-Type:application/json;charset=UTF-8");
+//    headers.emplace_back("Content-Type:application/json;charset=UTF-8");
     headers.emplace_back("User-Agent:Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36");
     headers.emplace_back("Expect:");
     setheader(headers);
 
     QSettings configSetting("config.ini",QSettings::IniFormat);
     host_ = configSetting.value("CloudHost/host").toString();
+    attributeThresold_ = configSetting.value("CloudHost/attributeThreshold").toFloat();
+
+}
+
+QString DLL::CloudHttpDao::getCameraInfoMap(QMap<QString, QVariant> &cameraMap)
+{
+    QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/query/channel");
+    int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),5);
+    if(resCode != CURLE_OK){
+        return curl_easy_strerror(CURLcode(resCode));
+    }
+
+    QJsonParseError jsError;
+    QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
+    if(jsError.error != QJsonParseError::NoError){
+        return jsError.errorString();
+    }
+
+    QJsonObject jsObj = jsDoc.object();
+    int status = jsObj.value("status").toInt();
+    if(status != 200){
+        return jsObj.value("message").toString();
+    }
+    cameraMap = jsObj.value("data").toObject().toVariantMap();
+    return QString();
 }
 
 QString DLL::CloudHttpDao::getGroup(QString groupNo, QVector<RestServiceI::CameraGoup> &resGroups)
@@ -116,6 +141,49 @@ QString DLL::CloudHttpDao::faceLink(RestServiceI::FaceLinkArgs &args)
     return QString();
 }
 
+QString DLL::CloudHttpDao::faceLink_(RestServiceI::FaceLinkArgs &args, QString &finishId)
+{
+    std::vector<std::string> headers;
+    headers.emplace_back("Content-Type:application/json;charset=UTF-8");
+    headers.emplace_back("User-Agent:Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36");
+    headers.emplace_back("Expect:");
+    setheader(headers);
+
+    QByteArray imgArray;
+    QBuffer imgBuf(&imgArray);
+    imgBuf.open(QIODevice::WriteOnly);
+    args.faceImg.save(&imgBuf,"PNG");
+    QString urlStr = host_ + QObject::tr("api/v2/external/monitor-detail/person-link");
+    qDebug() << urlStr;
+    QJsonObject jsObj{{"startTime",args.startT.toString("yyyy-MM-dd HH:mm:ss")},
+                      {"finishTime",args.endT.toString("yyyy-MM-dd HH:mm:ss")},
+                      {"depth",args.depth},
+                      {"number",args.num},
+                      {"objId",args.oid},
+                      {"thresh",args.thresh},
+                      {"file",QString::fromLatin1(imgArray.toBase64())}};
+    QJsonDocument jsDoc(jsObj);
+    QByteArray argsJsonArray = jsDoc.toJson();
+    int resCode = send(DLL::POST,urlStr.toStdString(),argsJsonArray.toStdString(),5);
+    if(resCode != CURLE_OK){
+        return curl_easy_strerror(CURLcode(resCode));
+    }
+
+    QJsonParseError jsError;
+    jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
+    if(jsError.error != QJsonParseError::NoError){
+        return jsError.errorString();
+    }
+
+    jsObj = jsDoc.object();
+    int status = jsObj.value("status").toInt();
+    if(status != 200){
+        return jsObj.value("message").toString();
+    }
+    finishId = args.oid;
+    return QString();
+}
+
 QString DLL::CloudHttpDao::getFaceLinkPoint(QString &faceLinkId, RestServiceI::FaceLinkPointData &rootPointData)
 {
     QString urlStr = host_ + QObject::tr("graph/node/find/name?name=%1").arg(faceLinkId);
@@ -180,9 +248,56 @@ QString DLL::CloudHttpDao::getFaceLinkTree(QString &objectId, QJsonObject &treeJ
     return QString();
 }
 
+QString DLL::CloudHttpDao::tracking(RestServiceI::FaceTrackingArgs &args,QVector<RestServiceI::TrackingReturnData> &resVec)
+{
+    QByteArray imgArray;
+    QBuffer imgBuf(&imgArray);
+    imgBuf.open(QIODevice::WriteOnly);
+    args.faceImg.save(&imgBuf,"PNG");
+    QString urlStr = QObject::tr("http://192.168.100.60:8080/api/v2/external/monitor-detail/trajectory-tracking");
+    QString postData = QObject::tr("base64=%1&objId=%2&similarity=%3&startTime=%4&finishTime=%5&property=false")
+            .arg(QString(imgArray),args.oid)
+            .arg(args.thresh)
+            .arg(args.startT.toString("yyyy-MM-dd HH:mm:ss"),args.endT.toString("yyyy-MM-dd HH:mm:ss"));
+    qDebug() << urlStr;
+    qDebug() << postData;
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),5);
+    if(resCode != CURLE_OK){
+        return curl_easy_strerror(CURLcode(resCode));
+    }
+
+    QJsonParseError jsError;
+    QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
+    if(jsError.error != QJsonParseError::NoError){
+        return jsError.errorString();
+    }
+    QJsonObject jsObj = jsDoc.object();
+    int status = jsObj.value("status").toInt();
+    if(status != 200){
+        return jsObj.value("message").toString();
+    }
+    QJsonArray jsArray = jsObj.value("data").toArray();
+    for(auto &jsVal : jsArray){
+        QJsonObject  dataObj = jsVal.toObject();
+        RestServiceI::TrackingReturnData pdata;
+        pdata.bodyAttribute = dataObj.value("bodyAttribute").toArray().toVariantList();
+        pdata.bodyIds = dataObj.value("bodyId").toArray().toVariantList();
+        pdata.bodyImg.loadFromData(QByteArray::fromBase64(dataObj.value("bodySnap").toString().toLatin1()));
+        pdata.cameraId = dataObj.value("cameraId").toString();
+        pdata.objId = dataObj.value("id").toString();
+        pdata.faceAttr = dataObj.value("faceAttribute").toArray().toVariantList();
+        pdata.faceIds = dataObj.value("faceId").toArray().toVariantList();
+        pdata.faceImg.loadFromData(QByteArray::fromBase64(dataObj.value("faceSnap").toString().toLatin1()));
+        pdata.timeIn = QDateTime::fromMSecsSinceEpoch(dataObj.value("tsIn").toVariant().toULongLong());
+        pdata.timeOut = QDateTime::fromMSecsSinceEpoch(dataObj.value("tsOut").toVariant().toULongLong());
+        resVec << pdata;
+    }
+    return QString();
+}
+
 QString DLL::CloudHttpDao::getPersonNumbers(RestServiceI::PersonsStayArgs &args,int &num)
 {
-    QString urlStr = host_ + QObject::tr("api/v2/external/monitor-detail/person-total?cameraId=%1&startTime=%2&finishTime=%3")
+    QString urlStr = QObject::tr("http://192.168.100.66:8080/api/v2/external/monitor-detail/person-total?cameraId=%1&startTime=%2&finishTime=%3")
             .arg(args.cameraId)
             .arg(args.startT.toString("yyyy-MM-dd%20HH:mm:ss"))
             .arg(args.endT.toString("yyyy-MM-dd%20HH:mm:ss"));
@@ -228,9 +343,9 @@ QString DLL::CloudHttpDao::getPeronAverageTime(RestServiceI::AveragePersonTimeAr
     return QString();
 }
 
-QString DLL::CloudHttpDao::getPersonDetailes(QString &objId)
+QString DLL::CloudHttpDao::getPersonDetailes(QString &objId, QImage &face, QImage &body, QStringList &attrsface, QStringList &attrsbody)
 {
-    QString urlStr = host_ + QObject::tr("graph/node/find/hierarchical?objId=%1");
+    QString urlStr = QObject::tr("http://192.168.100.66:8080/api/v2/external/monitor-detail/portrait?objId=%1&threshold=%2").arg(objId).arg(attributeThresold_);
     int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),5);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
@@ -247,15 +362,142 @@ QString DLL::CloudHttpDao::getPersonDetailes(QString &objId)
     if(status != 200){
         return jsObj.value("message").toString();
     }
+
+    QJsonObject dataJsObj = jsObj.value("data").toObject();
+    face.loadFromData(QByteArray::fromBase64(dataJsObj.value("faceSnap").toString().toLatin1()));
+    body.loadFromData(QByteArray::fromBase64(dataJsObj.value("bodySnap").toString().toLatin1()));
+    QJsonArray jsArray = dataJsObj.value("faceAttrs").toArray();
+    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(attrsface),[](QJsonValue jsValue){
+        return jsValue.toString();
+    });
+    jsArray = dataJsObj.value("bodyAttrs").toArray();
+    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(attrsbody),[](QJsonValue jsValue){
+        return jsValue.toString();
+    });
     return QString();
 }
 
-QString DLL::CloudHttpDao::semanticSearch(RestServiceI::SemanticSearchArgs &args)
+QString DLL::CloudHttpDao::getScenePic(QString &scenId, QImage &img)
 {
+    QString urlStr = host_ + QObject::tr("api/v2/external/monitor-detail/query/picture?pictureType=snap-scene&objId=%1").arg(scenId);
+    int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),15);
+    if(resCode != CURLE_OK){
+        return curl_easy_strerror(CURLcode(resCode));
+    }
+
+    QJsonParseError jsError;
+    QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
+    if(jsError.error != QJsonParseError::NoError){
+        return jsError.errorString();
+    }
+
+    QJsonObject jsObj = jsDoc.object();
+    int status = jsObj.value("status").toInt();
+    if(status != 200){
+        return jsObj.value("message").toString();
+    }
+    img.loadFromData(QByteArray::fromBase64(jsObj.value("data").toObject().value("base64").toString().toLatin1()));
     return QString();
 }
 
-QString DLL::CloudHttpDao::searchByImage(RestServiceI::SearchUseImageArgs &args)
+QString DLL::CloudHttpDao::semanticSearch(RestServiceI::SemanticSearchArgs &args, RestServiceI::SemanticReturnData &resDatas)
+{
+    QString urlStr = QObject::tr("http://192.168.100.66:8080/api/v2/external/monitor-detail/find-history");
+    QString postData = QObject::tr("mode=%1&faceAttrs=%2&bodyAttrs=%3&cameraId=%4&startTime=%5&finishTime=%6&pageNo=%7&pageSize=%8&property=true")
+            .arg(args.mode)
+            .arg(args.faceAttributList.join(','))
+            .arg(args.bodyAttributeList.join(','))
+            .arg(args.cameraId)
+            .arg(args.startT.toString("yyyy-MM-dd HH:mm:ss"))
+            .arg(args.endT.toString("yyyy-MM-dd HH:mm:ss"))
+            .arg(args.pageNo)
+            .arg(args.pageSize);
+    qDebug() << urlStr;
+    qDebug() << postData;
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),5);
+    if(resCode != CURLE_OK){
+        return curl_easy_strerror(CURLcode(resCode));
+    }
+
+    QJsonParseError jsError;
+    QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
+    if(jsError.error != QJsonParseError::NoError){
+        return jsError.errorString();
+    }
+
+    QJsonObject jsObj = jsDoc.object();
+    int status = jsObj.value("status").toInt();
+    if(status != 200){
+        return jsObj.value("message").toString();
+    }
+    resDatas.toatal = jsObj.value("total").toInt();
+    resDatas.totalPage = jsObj.value("pageNumber").toInt();
+    QJsonArray jsArray = jsObj.value("data").toArray();
+    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(resDatas.records),[](const QJsonValue &jsValue){
+        RestServiceI::DataRectureItem item;
+        QJsonObject itemObj = jsValue.toObject();
+        item.cameraId = itemObj.value("cameraId").toString();
+        item.id = itemObj.value("id").toString();
+        item.sceneId = itemObj.value("sceneId").toString();
+        item.time = QDateTime::fromMSecsSinceEpoch(itemObj.value("ts").toVariant().toULongLong());
+        QImage img;
+        img.loadFromData(QByteArray::fromBase64(itemObj.value("snapshot").toString().toLatin1()));
+        item.img = img;
+        item.personId = itemObj.value("personId").toString();
+        return item;
+    });
+    return QString();
+}
+
+QString DLL::CloudHttpDao::searchByImage(RestServiceI::SearchUseImageArgs &args,QVector<RestServiceI::DataRectureItem> &resVec)
+{
+    QString urlStr = QObject::tr("http://192.168.100.66:8080/api/v2/external/monitor-detail/find-history");
+    QByteArray imgStr;
+    QBuffer imgBuf(&imgStr);
+    imgBuf.open(QIODevice::WriteOnly);
+    args.image.save(&imgBuf,"jpg");
+    QString postData = QObject::tr("mode=%1&number=%2&similarity=%3&base64=%4&cameraId=%5&objId=%6&startTime=%7&finishTime=%8&property=false")
+            .arg(args.mode)
+            .arg(args.recordsCount)
+            .arg(args.smilarty)
+            .arg(QString(imgStr.toBase64()))
+            .arg(args.cameraId)
+            .arg(args.faceId)
+            .arg(args.startT.toString("yyyy-MM-dd HH:mm:ss"))
+            .arg(args.endT.toString("yyyy-MM-dd HH:mm:ss"));
+    qDebug() << urlStr;
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),30);
+    if(resCode != CURLE_OK){
+        return curl_easy_strerror(CURLcode(resCode));
+    }
+
+    QJsonParseError jsError;
+    QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
+    if(jsError.error != QJsonParseError::NoError){
+        return jsError.errorString();
+    }
+
+    QJsonObject jsObj = jsDoc.object();
+    int status = jsObj.value("status").toInt();
+    if(status != 200){
+        return jsObj.value("message").toString();
+    }
+    QJsonArray dataJsArray = jsObj.value("data").toArray();
+    std::transform(dataJsArray.begin(),dataJsArray.end(),std::back_inserter(resVec),[](QJsonValue jsVal){
+        RestServiceI::DataRectureItem sitem;
+        QJsonObject itemObj = jsVal.toObject();
+        sitem.cameraId = itemObj.value("cameraId").toString();
+        sitem.id = itemObj.value("id").toString();
+        sitem.img.loadFromData(QByteArray::fromBase64(itemObj.value("snapshot").toString().toLatin1()));
+        sitem.personId = itemObj.value("personId").toString();
+        sitem.sceneId = itemObj.value("sceneId").toString();
+        sitem.time = QDateTime::fromMSecsSinceEpoch(itemObj.value("ts").toVariant().toULongLong());
+        return sitem;
+    });
+    return QString();
+}
+
+QString DLL::CloudHttpDao::multipleSearch(RestServiceI::MultipleSearchArgs &args)
 {
     return QString();
 }

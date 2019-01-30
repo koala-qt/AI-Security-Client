@@ -7,10 +7,12 @@
 #include <QGridLayout>
 #include <QVBoxLayout>
 #include <QPainter>
+#include <QMessageBox>
 #include <QFileDialog>
 #include <QStandardPaths>
 #include "multiplesearch.h"
 #include "pageindicator.h"
+#include "waitinglabel.h"
 #include "service/restservice.h"
 
 MultipleSearch::MultipleSearch(WidgetManagerI *wm, WidgetI *parent):
@@ -76,6 +78,8 @@ MultipleSearch::MultipleSearch(WidgetManagerI *wm, WidgetI *parent):
     }
 
     connect(imgList_,SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(slotItemClicked(QListWidgetItem*)));
+    connect(searchBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSearchBtnClicked()));
+    connect(pageIndicator_,SIGNAL(sigPageClicked(int)),this,SLOT(slotPageNoChanged(int)));
     getCameraInfo();
 }
 
@@ -235,6 +239,7 @@ void MultipleSearch::resizeEvent(QResizeEvent *event)
             QListWidgetItem *item = new QListWidgetItem;
             item->setSizeHint(QSize(itemW,itemH));
             item->setIcon(QPixmap("images/person-face-back.png").scaled(imgList_->iconSize()));
+            item->setData(Qt::UserRole,false);
             imgList_->addItem(item);
         }
     }
@@ -256,6 +261,11 @@ void MultipleSearch::getCameraInfo()
     startWorker(worker);
 }
 
+void MultipleSearch::slotPageNoChanged(int index)
+{
+
+}
+
 void MultipleSearch::slotOnCameraInfo(QVector<CameraInfo> data)
 {
     posCombox_->clear();
@@ -270,7 +280,39 @@ void MultipleSearch::slotItemClicked(QListWidgetItem *item)
     QString filePath = QFileDialog::getOpenFileName(this,tr("添加图片"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),"*.png *.jpg *.tmp");
     QPixmap pix(filePath);
     if(pix.isNull()){
+        item->setData(Qt::UserRole,false);
         return;
     }
     item->setIcon(pix);
+    item->setData(Qt::UserRole,true);
+    item->setData(Qt::UserRole + 1, pix.toImage());
+}
+
+void MultipleSearch::slotSearchBtnClicked()
+{
+    BLL::Worker *worker = new BLL::RestService(widgetManger()->workerManager());
+    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    WaitingLabel *label = new WaitingLabel(this);
+    connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
+        label->close();
+        delete label;
+        QMessageBox::information(this,objectName(),str);
+        searchBtn_->setEnabled(true);
+        pageIndicator_->setEnabled(true);
+    });
+    RestServiceI::MultipleSearchArgs args;
+    args.cameraId = posCombox_->currentData().toString();
+    args.similarity = similaritySpin_->value() / qreal(100);
+    args.count = queryCountCobox_->currentText().toInt();
+    args.startT = startTimeEdit_->dateTime();
+    args.endT = endTimeEdit_->dateTime();
+    for(int i = 0; i < imgList_->count(); i++){
+        if(imgList_->item(i)->data(Qt::UserRole).toBool()){
+            args.images << imgList_->item(i)->data(Qt::UserRole + 1).value<QImage>();
+        }
+    }
+    serviceI->multipleSearch(args);
+    label->show(500);
+    searchBtn_->setEnabled(false);
+    pageIndicator_->setEnabled(false);
 }

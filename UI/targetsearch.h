@@ -32,6 +32,7 @@ private:
     typedef struct item_
     {
         QString name;
+        int value;
         QVector<item_> childrens;
     }itemData;
 
@@ -51,7 +52,10 @@ private:
     QPushButton *semanticSearchBtn_{nullptr};
     const int semanticPageCount_ = 40;
     QImage semanticCurImg_;
+
+    int curSearchMode_ = -1;
     QString semanticCurCameraId_;
+    QStringList curfaceAttrList_,curbodyAttrList_;
     QDateTime semanticCurStartTime_,semanticCurEndTime_;
 
     //main page controls
@@ -67,12 +71,16 @@ private:
     QMenu *dataMenu_{nullptr};
     bool needUpdatePageInfo_ = true;
     int curSearchType_ = -1;
+    QVariantMap cameraMapInfo_;
 
     void createTreeItem(QTreeWidget *treeW,QTreeWidgetItem *parentItem,itemData &items);
     void getCameraInfo();
-    void updateDataList(int totalRecords, int totalPages, QVector<std::tuple<QImage,QString,QString,QString,QDateTime>> &data);
+    void updateDataList(int totalRecords, int totalPages, QVector<std::tuple<QImage, QString, QString, QString, QDateTime, QString,QString> > &data);
+    void semanticSearch(int);
+    QStringList checkedAttrbute(QTreeWidgetItem*);
 
 private slots:
+    void slotOnCameraMap(QVariantMap);
     void slotDataBaseTreeItemClicked(QTreeWidgetItem *, int);
     void slotConditionListIndexChanged(int);
     void slotImageFaceImgBtnClicked();

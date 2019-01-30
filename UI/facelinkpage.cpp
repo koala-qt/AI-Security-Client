@@ -172,20 +172,33 @@ void FaceLinkPage::slotSearchBtnClicked()
     if(waitingL_){
         return;
     }
+#if 0
     NotifyServiceI *notifyServiceI_ = dynamic_cast<NotifyServiceI*>(getWoker("NotifyService"));
     notifyServiceI_->disconnect(SIGNAL(sigFaceLinkDataFinished(QString)));
     connect(notifyServiceI_,SIGNAL(sigFaceLinkDataFinished(QString)),this,SLOT(slotFaceLinkFinished(QString)));
+#else
     BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
     RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
     RestServiceI::FaceLinkArgs args;
-    args.depth = 3;
+    args.depth = levelCombox_->currentText().toInt();
     args.endT = endTimeEdit_->dateTime();
     args.faceImg = imgBtn_->property("pixmap").value<QPixmap>().toImage();
-    args.num = levelCombox_->currentText().toInt();
+    args.num = 12;
     args.oid = imgOid_;
     args.startT = startTimeEdit_->dateTime();
     args.thresh = 0.6;
     waitingL_ = new WaitingLabel(this);
+#if 1
+    connect(serviceI,&RestServiceI::sigError,this,[this](QString str){
+        waitingL_->close();
+        delete waitingL_;
+        waitingL_ = nullptr;
+        QMessageBox::information(this,objectName(),str);
+        searchBtn_->setEnabled(true);
+    });
+    connect(serviceI,SIGNAL(sigFaceLinkFinished(QString)),this,SLOT(slotFaceLinkFinished(QString)));
+#endif
+#endif
     serviceI->generateFaceLink(args);
     startWorker(worker);
     waitingL_->show(500);

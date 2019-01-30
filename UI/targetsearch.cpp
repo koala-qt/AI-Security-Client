@@ -13,6 +13,7 @@
 #include <QApplication>
 #include <QHeaderView>
 #include <QFileDialog>
+#include <QDir>
 #include <QMessageBox>
 #include <QMenu>
 #include <QGraphicsView>
@@ -29,6 +30,7 @@
 #include "trackingpage.h"
 #include "facelinkpage.h"
 #include "portrait.h"
+//#define   USEOLDMOLD
 
 #pragma execution_character_set("utf-8")
 TargetSearch::TargetSearch(WidgetManagerI *wm, WidgetI *parent):
@@ -145,10 +147,12 @@ TargetSearch::TargetSearch(WidgetManagerI *wm, WidgetI *parent):
     QVector<itemData> devicesVec;
     itemData items;
     items.name = tr("Face search");
-    items.childrens << itemData{tr("Query in the capture database"),QVector<itemData>()};
+    items.value = 0;
+    items.childrens << itemData{tr("Query in the capture database"),0,QVector<itemData>()};
     devicesVec << items;
     items.childrens.clear();
     items.name = tr("Combinatorial search");
+    items.value= 1;
     devicesVec << items;
     for(auto value : devicesVec){
         createTreeItem(treeW_,nullptr,value);
@@ -157,47 +161,49 @@ TargetSearch::TargetSearch(WidgetManagerI *wm, WidgetI *parent):
 
     devicesVec.clear();
     items.name = tr("faceAttribute");
+    items.value = 0;
     items.childrens.clear();
-    items.childrens << itemData{tr("5_o_Clock_Shadow "),QVector<itemData>()} << itemData{tr("Arched_Eyebrows"),QVector<itemData>()}
-                    << itemData{tr("Attractive"),QVector<itemData>()} << itemData{tr("Bags_Under_Eyes"),QVector<itemData>()}
-                    << itemData{tr("Bald"),QVector<itemData>()} << itemData{tr("Bangs"),QVector<itemData>()}
-                    << itemData{tr("Big_Lips"),QVector<itemData>()} << itemData{tr("Big_Nose"),QVector<itemData>()}
-                    << itemData{tr("Black_Hair"),QVector<itemData>()} << itemData{tr("Blond_Hair"),QVector<itemData>()}
-                    << itemData{tr("Blurry"),QVector<itemData>()} << itemData{tr("Brown_Hair"),QVector<itemData>()}
-                    << itemData{tr("Bushy_Eyebrows"),QVector<itemData>()} << itemData{tr("Chubby"),QVector<itemData>()}
-                    << itemData{tr("Double_Chin"),QVector<itemData>()} << itemData{tr("Eyeglasses"),QVector<itemData>()}
-                    << itemData{tr("Goatee"),QVector<itemData>()} << itemData{tr("Gray_Hair"),QVector<itemData>()}
-                    << itemData{tr("Heavy_Makeup"),QVector<itemData>()} << itemData{tr("High_Cheekbones"),QVector<itemData>()}
-                    << itemData{tr("Male/Female"),QVector<itemData>()} << itemData{tr("Mouth_Slightly_Open"),QVector<itemData>()}
-                    << itemData{tr("Mustache"),QVector<itemData>()} << itemData{tr("Narrow_Eyes"),QVector<itemData>()}
-                    << itemData{tr("No_Beard"),QVector<itemData>()} << itemData{tr("Oval_Face"),QVector<itemData>()}
-                    << itemData{tr("Pale_Skin"),QVector<itemData>()} << itemData{tr("Pointy_Nose"),QVector<itemData>()}
-                    << itemData{tr("Receding_Hairline"),QVector<itemData>()} << itemData{tr("Rosy_Cheeks"),QVector<itemData>()}
-                    << itemData{tr("Sideburns"),QVector<itemData>()} << itemData{tr("Smiling"),QVector<itemData>()}
-                    << itemData{tr("Straight_Hair"),QVector<itemData>()} << itemData{tr("Wavy_Hair"),QVector<itemData>()}
-                    << itemData{tr("Wearing_Earrings"),QVector<itemData>()} << itemData{tr("Wearing_Hat"),QVector<itemData>()}
-                    << itemData{tr("Wearing_Lipstick"),QVector<itemData>()} << itemData{tr("Young"),QVector<itemData>()};
+    items.childrens << itemData{tr("5_o_Clock_Shadow "),0,QVector<itemData>()} << itemData{tr("Arched_Eyebrows"),0,QVector<itemData>()}
+                    << itemData{tr("Attractive"),0,QVector<itemData>()} << itemData{tr("Bags_Under_Eyes"),0,QVector<itemData>()}
+                    << itemData{tr("Bald"),0,QVector<itemData>()} << itemData{tr("Bangs"),0,QVector<itemData>()}
+                    << itemData{tr("Big_Lips"),0,QVector<itemData>()} << itemData{tr("Big_Nose"),0,QVector<itemData>()}
+                    << itemData{tr("Black_Hair"),0,QVector<itemData>()} << itemData{tr("Blond_Hair"),0,QVector<itemData>()}
+                    << itemData{tr("Blurry"),0,QVector<itemData>()} << itemData{tr("Brown_Hair"),0,QVector<itemData>()}
+                    << itemData{tr("Bushy_Eyebrows"),0,QVector<itemData>()} << itemData{tr("Chubby"),0,QVector<itemData>()}
+                    << itemData{tr("Double_Chin"),0,QVector<itemData>()} << itemData{tr("Eyeglasses"),0,QVector<itemData>()}
+                    << itemData{tr("Goatee"),0,QVector<itemData>()} << itemData{tr("Gray_Hair"),0,QVector<itemData>()}
+                    << itemData{tr("Heavy_Makeup"),0,QVector<itemData>()} << itemData{tr("High_Cheekbones"),0,QVector<itemData>()}
+                    << itemData{tr("Male/Female"),0,QVector<itemData>()} << itemData{tr("Mouth_Slightly_Open"),0,QVector<itemData>()}
+                    << itemData{tr("Mustache"),0,QVector<itemData>()} << itemData{tr("Narrow_Eyes"),0,QVector<itemData>()}
+                    << itemData{tr("No_Beard"),0,QVector<itemData>()} << itemData{tr("Oval_Face"),0,QVector<itemData>()}
+                    << itemData{tr("Pale_Skin"),0,QVector<itemData>()} << itemData{tr("Pointy_Nose"),0,QVector<itemData>()}
+                    << itemData{tr("Receding_Hairline"),0,QVector<itemData>()} << itemData{tr("Rosy_Cheeks"),0,QVector<itemData>()}
+                    << itemData{tr("Sideburns"),0,QVector<itemData>()} << itemData{tr("Smiling"),0,QVector<itemData>()}
+                    << itemData{tr("Straight_Hair"),0,QVector<itemData>()} << itemData{tr("Wavy_Hair"),0,QVector<itemData>()}
+                    << itemData{tr("Wearing_Earrings"),0,QVector<itemData>()} << itemData{tr("Wearing_Hat"),0,QVector<itemData>()}
+                    << itemData{tr("Wearing_Lipstick"),0,QVector<itemData>()} << itemData{tr("Young"),0,QVector<itemData>()};
     devicesVec << items;
     items.childrens.clear();
     items.name = tr("personAttribute");
-    items.childrens << itemData{tr("personalLess30 "),QVector<itemData>()} << itemData{tr("personalLess45"),QVector<itemData>()}
-                    << itemData{tr("personalLess60"),QVector<itemData>()} << itemData{tr("personalLarger60"),QVector<itemData>()}
-                    << itemData{tr("carryingBackpack"),QVector<itemData>()} << itemData{tr("carryingOther"),QVector<itemData>()}
-                    << itemData{tr("lowerBodyCasual"),QVector<itemData>()} << itemData{tr("upperBodyCasual"),QVector<itemData>()}
-                    << itemData{tr("lowerBodyFormal"),QVector<itemData>()} << itemData{tr("upperBodyFormal"),QVector<itemData>()}
-                    << itemData{tr("accessoryHat"),QVector<itemData>()} << itemData{tr("upperBodyJacket"),QVector<itemData>()}
-                    << itemData{tr("lowerBodyJeans"),QVector<itemData>()} << itemData{tr("footwearLeatherShoes"),QVector<itemData>()}
-                    << itemData{tr("upperBodyLogo"),QVector<itemData>()} << itemData{tr("hairLong"),QVector<itemData>()}
-                    << itemData{tr("personalMale"),QVector<itemData>()} << itemData{tr("carryingMessengerBag"),QVector<itemData>()}
-                    << itemData{tr("accessoryMuffler"),QVector<itemData>()} << itemData{tr("accessoryNothing"),QVector<itemData>()}
-                    << itemData{tr("carryingNothing"),QVector<itemData>()} << itemData{tr("upperBodyPlaid"),QVector<itemData>()}
-                    << itemData{tr("carryingPlasticBags"),QVector<itemData>()} << itemData{tr("footwearSandals"),QVector<itemData>()}
-                    << itemData{tr("footwearShoes"),QVector<itemData>()} << itemData{tr("lowerBodyShorts"),QVector<itemData>()}
-                    << itemData{tr("upperBodyShortSleeve"),QVector<itemData>()} << itemData{tr("lowerBodyShortSkirt"),QVector<itemData>()}
-                    << itemData{tr("footwearSneakers"),QVector<itemData>()} << itemData{tr("upperBodyThinStripes"),QVector<itemData>()}
-                    << itemData{tr("accessorySunglasses"),QVector<itemData>()} << itemData{tr("lowerBodyTrousers"),QVector<itemData>()}
-                    << itemData{tr("upperBodyTshirt"),QVector<itemData>()} << itemData{tr("upperBodyOther"),QVector<itemData>()}
-                    << itemData{tr("upperBodyVNeck"),QVector<itemData>()};
+    items.value = 0;
+    items.childrens << itemData{tr("personalLess30 "),0,QVector<itemData>()} << itemData{tr("personalLess45"),0,QVector<itemData>()}
+                    << itemData{tr("personalLess60"),0,QVector<itemData>()} << itemData{tr("personalLarger60"),0,QVector<itemData>()}
+                    << itemData{tr("carryingBackpack"),0,QVector<itemData>()} << itemData{tr("carryingOther"),0,QVector<itemData>()}
+                    << itemData{tr("lowerBodyCasual"),0,QVector<itemData>()} << itemData{tr("upperBodyCasual"),0,QVector<itemData>()}
+                    << itemData{tr("lowerBodyFormal"),0,QVector<itemData>()} << itemData{tr("upperBodyFormal"),0,QVector<itemData>()}
+                    << itemData{tr("accessoryHat"),0,QVector<itemData>()} << itemData{tr("upperBodyJacket"),0,QVector<itemData>()}
+                    << itemData{tr("lowerBodyJeans"),0,QVector<itemData>()} << itemData{tr("footwearLeatherShoes"),0,QVector<itemData>()}
+                    << itemData{tr("upperBodyLogo"),0,QVector<itemData>()} << itemData{tr("hairLong"),0,QVector<itemData>()}
+                    << itemData{tr("personalMale"),0,QVector<itemData>()} << itemData{tr("carryingMessengerBag"),0,QVector<itemData>()}
+                    << itemData{tr("accessoryMuffler"),0,QVector<itemData>()} << itemData{tr("accessoryNothing"),0,QVector<itemData>()}
+                    << itemData{tr("carryingNothing"),0,QVector<itemData>()} << itemData{tr("upperBodyPlaid"),0,QVector<itemData>()}
+                    << itemData{tr("carryingPlasticBags"),0,QVector<itemData>()} << itemData{tr("footwearSandals"),0,QVector<itemData>()}
+                    << itemData{tr("footwearShoes"),0,QVector<itemData>()} << itemData{tr("lowerBodyShorts"),0,QVector<itemData>()}
+                    << itemData{tr("upperBodyShortSleeve"),0,QVector<itemData>()} << itemData{tr("lowerBodyShortSkirt"),0,QVector<itemData>()}
+                    << itemData{tr("footwearSneakers"),0,QVector<itemData>()} << itemData{tr("upperBodyThinStripes"),0,QVector<itemData>()}
+                    << itemData{tr("accessorySunglasses"),0,QVector<itemData>()} << itemData{tr("lowerBodyTrousers"),0,QVector<itemData>()}
+                    << itemData{tr("upperBodyTshirt"),0,QVector<itemData>()} << itemData{tr("upperBodyOther"),0,QVector<itemData>()}
+                    << itemData{tr("upperBodyVNeck"),0,QVector<itemData>()};
     devicesVec << items;
     for(auto value : devicesVec){
         createTreeItem(attributTreeW_,nullptr,value);
@@ -240,7 +246,7 @@ TargetSearch::TargetSearch(WidgetManagerI *wm, WidgetI *parent):
             QMessageBox::information(this,tr("Details"),str);
             dataMenu_->setEnabled(true);
         });
-        connect(serviceI,&RestServiceI::sigPeronsDetails,this,[this,label](QImage face,QImage body,QStringList attribute){
+        connect(serviceI,&RestServiceI::sigPeronsDetails,this,[this,label](QImage face,QImage body,QStringList attrface,QStringList attrbody){
             label->close();
             delete label;
             Portrait *detailsW = new Portrait(widgetManger(),this);
@@ -248,11 +254,11 @@ TargetSearch::TargetSearch(WidgetManagerI *wm, WidgetI *parent):
             detailsW->setWindowFlags(Qt::Window | Qt::Dialog);
             detailsW->setWindowModality(Qt::ApplicationModal);
             detailsW->setUserStyle(widgetManger()->currentStyle());
-            detailsW->slotSetData(face,body,attribute);
+            detailsW->slotSetData(face,body,attrface,attrbody);
             detailsW->show();
             dataMenu_->setEnabled(true);
         });
-        serviceI->getPersonDetails(dataListW_->currentItem()->data(Qt::UserRole + 2).toString());
+        serviceI->getPersonDetails(dataListW_->currentItem()->data(Qt::UserRole + 4).toString());
         startWorker(worker);
         label->show(500);
         dataMenu_->setEnabled(false);
@@ -273,7 +279,7 @@ TargetSearch::TargetSearch(WidgetManagerI *wm, WidgetI *parent):
             SceneImageDialog dialog;
             dialog.setUserStyle(widgetManger()->currentStyle());
             dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
-            dialog.setImage(img);
+            dialog.setImage(img,dataListW_->currentItem()->data(Qt::UserRole + 5).toString());
             dialog.setRectLinePen(Qt::yellow);
             connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
                 if(!images.count()){
@@ -287,18 +293,20 @@ TargetSearch::TargetSearch(WidgetManagerI *wm, WidgetI *parent):
             dialog.exec();
             dataMenu_->setEnabled(true);
         });
-        serviceI->getScenePic(dataListW_->currentItem()->data(Qt::UserRole + 2).toString());
+//        serviceI->getScenePic(dataListW_->currentItem()->data(Qt::UserRole + 2).toString());
+        serviceI->getScenePic(dataListW_->currentItem()->data(Qt::UserRole + 5).toString());
         startWorker(worker);
         label->show(500);
         dataMenu_->setEnabled(false);
     });
     dataMenu_->addAction(tr("Search using the image"),[this]{
-#if 1
+#if 0
         imageCurOid_ = dataListW_->currentItem()->data(Qt::UserRole + 2).toString();
         QPixmap pix = QPixmap::fromImage(dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>());
         imageBtn_->setIcon(pix.scaled(imageBtn_->iconSize()));
         imageBtn_->setProperty("pixmap",pix);
 #else
+        imageCurOid_ = dataListW_->currentItem()->data(Qt::UserRole + 2).toString();
         QPixmap pix = QPixmap::fromImage(dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>());
         imageBtn_->setIcon(pix.scaled(imageBtn_->iconSize()));
         imageBtn_->setProperty("pixmap",pix);
@@ -322,7 +330,7 @@ TargetSearch::TargetSearch(WidgetManagerI *wm, WidgetI *parent):
         view->setWindowModality(Qt::ApplicationModal);
         view->setMinimumSize(1655,924);
         view->setImgageOid(dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>(),
-                           dataListW_->currentItem()->data(Qt::UserRole + 2).toString());
+                           dataListW_->currentItem()->data(Qt::UserRole + 4).toString());
         view->show();
 #endif
     });
@@ -334,7 +342,7 @@ TargetSearch::TargetSearch(WidgetManagerI *wm, WidgetI *parent):
         faceLinkP->setWindowFlags(Qt::Window | Qt::Dialog);
         faceLinkP->setWindowModality(Qt::ApplicationModal);
         QPixmap pix = QPixmap::fromImage(dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>());
-        faceLinkP->setFaceLinkOidAndImg(dataListW_->currentItem()->data(Qt::UserRole + 2).toString(),pix);
+        faceLinkP->setFaceLinkOidAndImg(dataListW_->currentItem()->data(Qt::UserRole + 4).toString(),pix);
 //        faceLinkP->resize(1200,900);
         faceLinkP->show();
 #else
@@ -853,6 +861,9 @@ void TargetSearch::createTreeItem(QTreeWidget *treeW, QTreeWidgetItem *parentIte
     if(item->type() && treeW == attributTreeW_){
         item->setCheckState(0,Qt::Unchecked);
     }
+    if(treeW == treeW_){
+        item->setData(0,Qt::UserRole,items.value);
+    }
     for(auto value : items.childrens){
         createTreeItem(treeW,item,value);
     }
@@ -862,12 +873,16 @@ void TargetSearch::getCameraInfo()
 {
     BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
     RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+#if 0
     connect(serviceI,SIGNAL(sigCameraInfo(QVector<CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<CameraInfo>)));
+#else
+    connect(serviceI,SIGNAL(sigCameraMap(QVariantMap)),this,SLOT(slotOnCameraMap(QVariantMap)));
+#endif
     serviceI->getCameraInfo();
     startWorker(worker);
 }
 
-void TargetSearch::updateDataList(int totalRecords, int totalPages, QVector<std::tuple<QImage, QString, QString, QString, QDateTime> > &data)
+void TargetSearch::updateDataList(int totalRecords, int totalPages, QVector<std::tuple<QImage, QString, QString, QString, QDateTime, QString,QString> > &data)
 {
     dataListW_->clear();
     pageIndicator_->adjustRow();
@@ -882,9 +897,79 @@ void TargetSearch::updateDataList(int totalRecords, int totalPages, QVector<std:
         item->setData(Qt::UserRole+1,img);
         item->setData(Qt::UserRole+2,std::get<1>(info));
         item->setData(Qt::UserRole+3,std::get<2>(info));
+        item->setData(Qt::UserRole+4,std::get<5>(info));
+        item->setData(Qt::UserRole+5,std::get<6>(info));
         item->setTextAlignment(Qt::AlignHCenter);
         dataListW_->addItem(item);
     }
+}
+
+void TargetSearch::semanticSearch(int index)
+{
+    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
+    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    WaitingLabel *label = new WaitingLabel(this);
+    label->setAttribute(Qt::WA_DeleteOnClose);
+    connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
+        label->close();
+        imageCurOid_.clear();
+        QMessageBox::information(this,imageConditionBackW_->objectName(),str);
+        stackedW_->setEnabled(true);
+        pageIndicator_->setEnabled(true);
+    });
+    connect(serviceI,&RestServiceI::sigSemanticSearch,this,[this,label](RestServiceI::SemanticReturnData &returnData){
+        label->close();
+        imageCurOid_.clear();
+        curSearchType_ = 1;
+        QVector<std::tuple<QImage, QString, QString, QString, QDateTime,QString,QString> > dataListVec;
+        std::transform(returnData.records.begin(),returnData.records.end(),std::back_inserter(dataListVec),[this](RestServiceI::DataRectureItem &nodeV){
+            return std::make_tuple(nodeV.img,nodeV.id,nodeV.cameraId,cameraMapInfo_.value(nodeV.cameraId).toString(),nodeV.time,nodeV.personId,nodeV.sceneId);
+        });
+        updateDataList(returnData.toatal,returnData.totalPage,dataListVec);
+        stackedW_->setEnabled(true);
+        pageIndicator_->setEnabled(true);
+    });
+    RestServiceI::SemanticSearchArgs args;
+    args.cameraId = semanticCurCameraId_;
+    args.mode = curSearchMode_;
+    args.startT = semanticCurStartTime_;
+    args.endT = semanticCurEndTime_;
+    args.pageNo = index;
+    args.pageSize = 40;
+    args.faceAttributList = curfaceAttrList_;
+    args.bodyAttributeList = curbodyAttrList_;
+    serviceI->semanticSearch(args);
+    startWorker(worker);
+    label->show(500);
+    stackedW_->setEnabled(false);
+    pageIndicator_->setEnabled(false);
+}
+
+QStringList TargetSearch::checkedAttrbute(QTreeWidgetItem *item)
+{
+    QStringList attrbuteList;
+    QTreeWidgetItemIterator it(item);
+    while (*it) {
+        if ((*it)->type() && (*it)->checkState(0) == Qt::Checked){
+            attrbuteList << (*it)->text(0);
+        }
+        ++it;
+    }
+    return attrbuteList;
+}
+
+void TargetSearch::slotOnCameraMap(QVariantMap data)
+{
+    imagePosCombox_->clear();
+    semanticPosCombox_->clear();
+    imagePosCombox_->addItem(tr("Unlimited"),"");
+    semanticPosCombox_->addItem(tr("Unlimited"),"");
+    QStringList mapKeys = data.keys();
+    for(auto mapKey : mapKeys){
+        imagePosCombox_->addItem(data.value(mapKey).toString(),mapKey);
+        semanticPosCombox_->addItem(data.value(mapKey).toString(),mapKey);
+    }
+    cameraMapInfo_ = data;
 }
 
 void TargetSearch::slotDataBaseTreeItemClicked(QTreeWidgetItem *item, int column)
@@ -965,6 +1050,7 @@ void TargetSearch::slotImageSearchBtnClicked()
         stackedW_->setEnabled(true);
         pageIndicator_->setEnabled(true);
     });
+#if USEOLDMOLD
     connect(serviceI,&RestServiceI::sigFaceSearch,this,[this,label](const QVector<SearchFace> value){
         label->close();
         imageCurOid_.clear();
@@ -993,6 +1079,31 @@ void TargetSearch::slotImageSearchBtnClicked()
                              imageSmilarSpin_->value() / (qreal)100,imageStartTimeEdit_->dateTime(),
                              imageEndTimeEdit_->dateTime());
     }
+#else
+    RestServiceI::SearchUseImageArgs args;
+    args.cameraId = imagePosCombox_->currentData().toString();
+    args.image = faceImg;
+    args.endT = imageEndTimeEdit_->dateTime();
+    args.mode = treeW_->currentItem()->data(0,Qt::UserRole).toInt();
+    args.recordsCount = imageCountCombox_->currentData().toInt();
+    args.smilarty = imageSmilarSpin_->value() / (qreal)100;
+    args.startT = imageStartTimeEdit_->dateTime();
+    args.faceId = imageCurOid_;
+    connect(serviceI,&RestServiceI::sigSearchByImage,this,[this,label](QVector<RestServiceI::DataRectureItem> &returnData){
+        label->close();
+        imageCurOid_.clear();
+        curSearchType_ = 0;
+        QVector<std::tuple<QImage, QString, QString, QString, QDateTime,QString,QString> > dataListVec;
+        std::transform(returnData.begin(),returnData.end(),std::back_inserter(dataListVec),[this](RestServiceI::DataRectureItem &nodeV){
+            return std::make_tuple(nodeV.img,nodeV.id,nodeV.cameraId,cameraMapInfo_.value(nodeV.cameraId).toString(),nodeV.time,nodeV.personId,nodeV.sceneId);
+        });
+        needUpdatePageInfo_ = true;
+        updateDataList(returnData.count(),1,dataListVec);
+        stackedW_->setEnabled(true);
+        pageIndicator_->setEnabled(true);
+    });
+    serviceI->searchByImage(args);
+#endif
     startWorker(worker);
     label->show(500);
     stackedW_->setEnabled(false);
@@ -1005,6 +1116,7 @@ void TargetSearch::slotSemanticSearchBtnClicked()
         QMessageBox::information(this,imageConditionBackW_->objectName(),tr("please select database"));
         return;
     }
+#if USEOLDMOLD
     BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
     RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
     WaitingLabel *label = new WaitingLabel(this);
@@ -1042,6 +1154,20 @@ void TargetSearch::slotSemanticSearchBtnClicked()
     label->show(500);
     stackedW_->setEnabled(false);
     pageIndicator_->setEnabled(false);
+#else
+    curSearchMode_ = treeW_->currentItem()->data(0,Qt::UserRole).toInt();
+    curfaceAttrList_.clear();
+    curbodyAttrList_.clear();
+    curfaceAttrList_ = checkedAttrbute(attributTreeW_->topLevelItem(0));
+    if(curSearchMode_ == 1){
+        curbodyAttrList_ = checkedAttrbute(attributTreeW_->topLevelItem(1));
+    }
+    semanticCurCameraId_ = semanticPosCombox_->currentData().toString();
+    semanticCurStartTime_ = semanticStartTimeEdit_->dateTime();
+    semanticCurEndTime_ = semanticEndTimeEdit_->dateTime();
+    needUpdatePageInfo_ = true;
+    semanticSearch(1);
+#endif
 }
 
 void TargetSearch::slotOnCameraInfo(QVector<CameraInfo> data)
@@ -1058,6 +1184,7 @@ void TargetSearch::slotOnCameraInfo(QVector<CameraInfo> data)
 void TargetSearch::slotNextPage(int page)
 {
     if(curSearchType_ == 1){
+#if USEOLDMOLD
         BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
         RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
         WaitingLabel *label = new WaitingLabel(this);
@@ -1090,5 +1217,8 @@ void TargetSearch::slotNextPage(int page)
         label->show(500);
         stackedW_->setEnabled(false);
         pageIndicator_->setEnabled(false);
+#else
+        semanticSearch(page);
+#endif
     }
 }
