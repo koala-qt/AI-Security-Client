@@ -8,12 +8,14 @@ QT_FORWARD_DECLARE_CLASS(QDialogButtonBox)
 QT_FORWARD_DECLARE_CLASS(QPushButton)
 QT_FORWARD_DECLARE_CLASS(QLabel)
 QT_FORWARD_DECLARE_CLASS(SelectImage)
+QT_FORWARD_DECLARE_CLASS(QMenu)
 class SceneImageDialog : public QDialog
 {
     Q_OBJECT
 public:
     SceneImageDialog(QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
     void setImage(QImage img);
+    void setImage(QImage img,QString sceneId);
     void setRectLinePen(QColor);
     void setUserStyle(int);
 
@@ -30,6 +32,9 @@ private:
     QDialogButtonBox *btnBox_{nullptr};
     QSize itemSizeHint_;
     QPushButton *searchBtn_{nullptr},*cancelBtn_{nullptr},*sureSelectBtn_{nullptr},*deleSelectBtn_{nullptr};
+    QMenu *menu_{nullptr};
+    QImage curImage_;
+    QString curSceneId_;
 
 private slots:
     void slotSearchBtnClicked();

@@ -53,6 +53,7 @@ private:
     int totalPerson_ = 0;
     QTimer *numberPersonTimer_{nullptr};
     QImage backImg_;
+    QVariantMap curCameraMap_;
 
 private slots:
     void slotCameraComboxIndexChanged(int);
@@ -62,6 +63,7 @@ private slots:
     void slotAddEventitem(QStringList,QImage);
     void slotAddDevice(QVector<CameraInfo>);
     void slotOnCameraGroup(QVector<RestServiceI::CameraGoup>);
+    void slotOnCameraMap(QVariantMap);
     void slotOnScenePic(QImage);
     void slotPersonStayInfoTimeout();
     void slotPersonTotalCountTimeout();

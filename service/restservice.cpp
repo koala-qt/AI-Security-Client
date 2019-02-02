@@ -10,6 +10,7 @@
 #include "restservice.h"
 #include "dao/thriftdao.h"
 #include "dao/cloudhttpdao.h"
+#define NEWSTRCUTER
 
 using namespace std;
 using namespace apache::thrift;
@@ -41,6 +42,16 @@ void BLL::RestService::getScenePic(const QString old)
 void BLL::RestService::faceTracking(RestServiceI::FaceTrackingArgs args)
 {
     pushBackTask(FaceTracking,QVariant::fromValue(args));
+}
+
+void BLL::RestService::searchAbDoorTime(RestServiceI::SearchABDoorTimeArg &args)
+{
+    pushBackTask(SearchABDoorTime,QVariant::fromValue(args));
+}
+
+void BLL::RestService::multipleSearch(RestServiceI::MultipleSearchArgs &args)
+{
+    pushBackTask(MultipleSearch,QVariant::fromValue(args));
 }
 
 void BLL::RestService::getPersonDetails(QString &objId)
@@ -128,6 +139,16 @@ void BLL::RestService::searchAlarmHistory(const int page, const int pageCount, c
     pushBackTask(GetAlarmHistory,QVariant::fromValue(alarmHistoryArg{page,pageCount,cameraId,alarmType,start,end}));
 }
 
+void BLL::RestService::semanticSearch(RestServiceI::SemanticSearchArgs &args)
+{
+    pushBackTask(SemanticSearch,QVariant::fromValue(args));
+}
+
+void BLL::RestService::searchByImage(RestServiceI::SearchUseImageArgs &args)
+{
+    pushBackTask(SearchUseImage,QVariant::fromValue(args));
+}
+
 void BLL::RestService::searchSnap(const QString &dataBaseName, const QImage &img, const QString &oid, const QString &cameraId, const int topK, double similarty, QDateTime &start, QDateTime &end)
 {
     pushBackTask(GetSnapHistory,QVariant::fromValue(searchSnapArgs{dataBaseName,img,oid,cameraId,topK,similarty,start,end}));
@@ -148,12 +169,21 @@ void BLL::RestService::run()
     if(argType == GetTop){
 
     }else if(argType == GetCameraInfo){
+#if  0
         std::vector<CameraInfo> cameras = thriftDaoObj.getCameraInfo(errorStr);
         if(errorStr.empty()){
             emit sigCameraInfo(QVector<CameraInfo>::fromStdVector(cameras));
         }else{
             emit sigError(QString::fromStdString(errorStr));
         }
+#else
+        DLL::CloudHttpDao httpDao;
+        QVariantMap cameraMap;
+        QString qerrorStr = httpDao.getCameraInfoMap(cameraMap);
+        if(qerrorStr.isEmpty()){
+            emit sigCameraMap(cameraMap);
+        }
+#endif
     }else if(argType == GetCameraGroup){
         DLL::CloudHttpDao httpDao;
         QVector<RestServiceI::CameraGoup> resGroup;
@@ -169,9 +199,18 @@ void BLL::RestService::run()
             emit sigCameraInfo(devices);
         }
     }else if(argType == GenerateFaceLink){
-        FaceLinkArgs faceArgs = args.second.value<FaceLinkArgs>();
         DLL::CloudHttpDao httpDao;
+#ifdef NEWSTRCUTER
+        QString finishId;
+        QString qerrorStr = httpDao.faceLink_(args.second.value<FaceLinkArgs>(),finishId);
+        if(qerrorStr.isEmpty()){
+            emit sigFaceLinkFinished(finishId);
+        }else{
+            emit sigError(qerrorStr);
+        }
+#else
         QString qerrorStr = httpDao.faceLink(faceArgs);
+#endif
     }else if(argType == SearchFaceLinkPoint){
         DLL::CloudHttpDao httpDao;
         FaceLinkPointData rootPointdata;
@@ -186,11 +225,25 @@ void BLL::RestService::run()
         }
     }else if(argType == PersonDetailes){
         DLL::CloudHttpDao httDao;
-        QString qerrorStr = httDao.getPersonDetailes(args.second.toString());
+        QImage face,body;
+        QStringList attrsface,attrsbody;
+        QString qerrorStr = httDao.getPersonDetailes(args.second.toString(),face,body,attrsface,attrsbody);
         if(qerrorStr.isEmpty()){
-
+            emit sigPeronsDetails(face,body,attrsface,attrsbody);
+        }else{
+            emit sigError(qerrorStr);
         }
     }else if(argType == FaceTracking){
+#ifdef NEWSTRCUTER
+        DLL::CloudHttpDao httDao;
+        QVector<TrackingReturnData> resVec;
+        QString qerrorStr = httDao.tracking(args.second.value<FaceTrackingArgs>(),resVec);
+        if(qerrorStr.isEmpty()){
+            emit sigTrackingNew(resVec);
+        }else{
+            emit sigError(qerrorStr);
+        }
+#else
         FaceTrackingArgs faceArgs = args.second.value<FaceTrackingArgs>();
         QByteArray imgStr;
         QBuffer buf(&imgStr);
@@ -206,6 +259,7 @@ void BLL::RestService::run()
         }else{
             emit sigError(QString::fromStdString(errorStr));
         }
+#endif
     }else if(argType == CaptureSearch){
         capSearchArg arguments = args.second.value<capSearchArg>();
         if(arguments.dataBaseName != "Query in the capture database"){
@@ -219,6 +273,16 @@ void BLL::RestService::run()
             emit sigError(QString::fromStdString(errorStr));
         }
     }else if(argType == GetScenePic){
+#ifdef NEWSTRCUTER
+        DLL::CloudHttpDao httpDao;
+        QImage img;
+        QString qerrorStr = httpDao.getScenePic(args.second.toString(),img);
+        if(qerrorStr.isEmpty()){
+            emit sigSceneImage(img);
+        }else{
+            sigError(qerrorStr);
+        }
+#else
         std::string imgStr = thriftDaoObj.getScenePic(args.second.toString().toStdString(),errorStr);
         if(errorStr.empty()){
             QImage img;
@@ -227,6 +291,7 @@ void BLL::RestService::run()
         }else{
             emit sigError(QString::fromStdString(errorStr));
         }
+#endif
     }else if(argType == GetStatis){
         std::vector<StatisTask> resVec = thriftDaoObj.getStatisInfo(errorStr);
         if(errorStr.empty()){
@@ -380,10 +445,10 @@ void BLL::RestService::run()
         emit sigResultState(true);
     }else if(argType == GetPersonStayNumber){
         DLL::CloudHttpDao httpDao;
-        int personNum = 0;
-        QString qerrorStr = httpDao.getPersonNumbers(args.second.value<PersonsStayArgs>(),personNum);
+        int personNum = 0,time = 0;
+        QString qerrorStr = httpDao.getPersonNumbers(args.second.value<PersonsStayArgs>(),personNum,time);
         if(qerrorStr.isEmpty()){
-            emit sigPersonNumbers(personNum);
+            emit sigPersonNumbers(personNum,time);
         }
     }else if(argType == GetPersonAverageTime){
         DLL::CloudHttpDao httpDao;
@@ -391,5 +456,32 @@ void BLL::RestService::run()
         if(qerrorStr.isEmpty()){
 //            emit sigCameraGroup(resGroup);
         }
+    }else if(argType == SemanticSearch){
+        DLL::CloudHttpDao httpDao;
+        SemanticReturnData resDatas;
+        QString qerrorStr = httpDao.semanticSearch(args.second.value<SemanticSearchArgs>(),resDatas);
+        if(qerrorStr.isEmpty()){
+            emit sigSemanticSearch(resDatas);
+        }else{
+            emit sigError(qerrorStr);
+        }
+    }else if(argType == SearchUseImage){
+        DLL::CloudHttpDao httpDao;
+        QVector<RestServiceI::DataRectureItem> resVec;
+        QString qerrorStr = httpDao.searchByImage(args.second.value<SearchUseImageArgs>(),resVec);
+        if(qerrorStr.isEmpty()){
+            emit sigSearchByImage(resVec);
+        }else{
+            emit sigError(qerrorStr);
+        }
+    }else if(argType == MultipleSearch){
+        DLL::CloudHttpDao httpDao;
+        QString qerrorStr = httpDao.multipleSearch(args.second.value<MultipleSearchArgs>());
+        if(qerrorStr.isEmpty()){
+        }else{
+            emit sigError(qerrorStr);
+        }
+    }else if(argType == SearchABDoorTime){
+
     }
 }

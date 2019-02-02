@@ -12,14 +12,15 @@ public:
     void setUserStyle(WidgetManagerI::SkinStyle s) override;
 
 public slots:
-    void slotSetData(QImage face,QImage body,QStringList attributeList);
+    void slotSetData(QImage face,QImage body,QStringList faceAttributeList,QStringList bodyAttributeList);
 
 private:
     CornerWidget *faceCornerW_{nullptr};
     QLabel *faceL_{nullptr},*personL_{nullptr},*splitVL_{nullptr},*personBack_{nullptr},
+    *faceAttributeTitleL_,*bodyAttributeTitleL_{nullptr},*attributeSpliteL_{nullptr},
     *faceTextL{nullptr},*bodyTextL{nullptr};
-    QWidget *attributeBack{nullptr};
-    FlowLayout *flowLay_{nullptr};
+    QWidget *faceAttributeBack{nullptr},*bodyAttributeBack_{nullptr};
+    FlowLayout *flowLayFace_{nullptr},*flowLayBody_{nullptr};
 };
 
 #endif // PORTRAIT_H

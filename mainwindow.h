@@ -21,17 +21,12 @@ protected:
 #ifdef FULLTOP
     void resizeEvent(QResizeEvent *event) override;
 #endif
-    void mousePressEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
 
 private:
     QListWidget *m_topList{nullptr};
     QWidget *topWgt_{nullptr};
     QStackedWidget *m_centerW{nullptr};
     QLabel *logoLabel_{nullptr},*topBorderLine_{nullptr};
-    bool m_Drag = false;
-    QPoint m_DragPosition;
 };
 
 #endif // MAINWINDOW_H

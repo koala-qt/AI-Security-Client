@@ -118,7 +118,7 @@ bool ThriftDao::setWaringArea(const string cameraId, AreaType::type t, std::vect
     bool isOk = false;
     try{
         transport_->open();
-        client_->setAlarmArea(cameraId,t,area);
+        isOk = client_->setAlarmArea(cameraId,t,area);
     }catch(TException &e){
         errorStr = e.what();
     }

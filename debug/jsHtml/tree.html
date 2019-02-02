@@ -1,186 +1,124 @@
-<!DOCTYPE html>
-<head>
-    <meta charset="utf-8">
-    <title>ECharts</title>
-</head>
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+        <title>neo4jd3.js</title>
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/font-awesome.min.css">
+        <link rel="stylesheet" href="css/neo4jd3.min.css">
+        <style>   
+            body,
+            html,
+            .neo4jd3 {
+                height: 100%;
+                overflow: hidden;
+            }
+        </style>
+    </head>
+    <body style="background-color: transparent;">
+        <div id="neo4jd3"></div>
+        <!-- <a href="https://github.com/eisman/neo4jd3"><img style="cursor: pointer; position: absolute; top: 0; right: 0; border: 0;" src="img/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" data-canonical-src="img/forkme_right_gray_6d6d6d.png"></a> -->
 
-<style>
-    body {
-        background-color:  transparent;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-    }
-    #main, canvas {
-        position: absolute;
-        top: 0 !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-    }
-    #dialog {
-        display: none;
-    }
-    .dialog {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: none;
-        align-items: center;
-        justify-content: center;
-        display: flex;
-    }
-</style>
-
-<body>
-    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-    <div id="main"></div>
-    <div id="dialog">
-        <div  class="dialog">
-            <img src="" id="img"/>
-        </div>
-    </div>
-
-    <!-- ECharts单文件引入 -->
-    <script src="./echarts.min.js"></script>
-	<script src="./qwebchannel.js"></script> 
-  
-
-    <script>
-     // 基于准备好的dom，初始化echarts图表
-	var dom = document.getElementById('main');
-	var myChart = null;
-	let newData = null;
-	if(typeof qt != "undefined"){
-		new QWebChannel(qt.webChannelTransport, function(channel){
-			window.Bridge = channel.objects.Bridge;
-				Bridge.sigDataChanged.connect(function(dataObj) { //连接Qt中brideg类的信号并定义执行代码
-				if(myChart == null){
-					myChart = echarts.init(dom);
-				}
-				newData = dataObj;
-				changeData(newData);
-				showEcharts([newData]);
+        <!-- Scripts -->
+        <script src="js/d3.min.js"></script>
+		<script src="./qwebchannel.js"></script> 
+        <script src="js/neo4jd3.js?v=0.0.1"></script>
+        <script type="text/javascript">
+		if(typeof qt != "undefined"){
+			new QWebChannel(qt.webChannelTransport, function(channel){
+				window.Bridge = channel.objects.Bridge;
+					Bridge.sigDataChanged.connect(function(dataObj) { //连接Qt中brideg类的信号并定义执行代码
+					getData(dataObj)
+				});
+				Bridge.onInitsized(); //调用Qt内的函数
 			});
-			Bridge.onInitsized(); //调用Qt内的函数
-			myChart = echarts.init(dom);
-		});
-	}
-
-    function changeData(node) {
-        if(node.hasOwnProperty('intimacy')) {
-            var newnode = JSON.parse(JSON.stringify(node))
-            node.name = newnode.intimacy
-            node.symbolSize = [30, 30]
-            node.children = [{
-                name: newnode.name,
-                symbol: newnode.symbol,
-                symbolSize: newnode.symbolSize,
-                children: newnode.children
-            }]
-            delete node.intimacy
-            delete node.symbol
-        }
-        if (node.hasOwnProperty('children')) {
-            node.children.forEach(function(item, index) {
-                changeData(item);
-            });
-        }
-    }
-    function showEcharts(newData1) {
-      var option = {
-            title : {
-                text: '',
-                subtext: ''
-            },
-            tooltip : {
-                show:false,
-                trigger: 'item',
-                formatter: "{b}: {c}"
-            },
-            toolbox: {
-                show : false
-            },
-            calculable : false,
-            series : [
-                {
-                    name:'树图',
-                    type:'tree',
-                    roam: true,
-                    orient: 'horizontal',  // vertical horizontal
-                    initialTreeDepth: -1,
-                    itemStyle: {
-                        normal: {
-                            label: {
-                                show: true,
-                                position: 'inside',
-                                textStyle: {
-                                    color: '#000',
-                                    fontSize: 14,
-                                    align:'center',
-                                verticalAlign:'middle'
-                                }
-                            },
-                            lineStyle: {
-                                color: '#ccc',
-                                width: 1,
-                                type: 'solid' // 'curve'|'broken'|'solid'|'dotted'|'dashed'
-                            },
-                            color: '#fff',
-                            borderColor: '#fff'
+		}
+            // 以上是初始化数据
+            let images = {}
+            var demoJson = {
+                "results": [{
+                    "data": [{
+                        "graph": {
+                            "nodes": [
+                            ],
+                            "relationships": [
+                            ]
                         }
-                    },
-                    data: newData1,
-                    left: '12%',
-                    right: '5%',
-                    top: '7%',
-                    bottom: '7%',
+                    }]
+                }],
+                "errors": []
+            }
+            function changeData(node) {
+                images[node.objId] = node.symbol.split('image://')[1]
+                demoJson.results[0]['data'][0]['graph']['nodes'].push({
+                    'id': node.id,
+                    'labels': [node.objId],
+                    "properties": {}
+                })
+               
+                if(node.hasOwnProperty('children')) {
+                    node.children.forEach(item => {
+                        demoJson.results[0]['data'][0]['graph']['relationships'].push({
+                            id: demoJson.results[0]['data'][0]['graph']['relationships'].length + 1,
+                            type: item.intimacy,
+                            startNode: node.id,
+                            endNode: item.id
+                         })
+                    })
                 }
-            ]
-        };
-        // 为echarts对象加载数据
-        myChart.hideLoading(option);
-        myChart.setOption(option);
-        myChart.on("dblclick", clickFun);
-     }
-     //关键点！
-    function clickFun(param) {
-        console.log(param)
-        // if (typeof param.seriesIndex == 'undefined') {
-        //     return;
-        // }
-        if (param.type == 'dblclick') {
-            var imgurl = param.data.symbol.split('image://')[1];
-            document.getElementById('img').src = imgurl
-            document.getElementById('dialog').style.display = 'block'
+                if (node.hasOwnProperty('children')) {
+                    node.children.forEach(function(item, index) {
+                        changeData(item);
+                    });
+                }
+            }
+            function getData(data) {
+                changeData(data)
+                init()
+            }
+            function init() {
+                var neo4jd3 = new Neo4jd3('#neo4jd3', {
+                    highlight: [
+                        {
+                            class: 'Project',
+                            property: 'objId',
+                            value: 'neo4jd3'
+                        }
+                    ],
+                    icons: {
+                    },
+                    images,
+                    minCollision: 50,
+                    infoPanel: false,
+                    neo4jData: demoJson,
+                    nodeRadius: 34,
+                    onNodeDragEnd: function(node) {
+                        console.log(node)
+                    },
+                    onNodeDoubleClick: function(node) {
+                        console.log(node)
+                    },
+                    onRelationshipDoubleClick: function(relationship) {
+                        console.log('double click on relationship: ' + JSON.stringify(relationship));
+                    },
+                    zoomFit: true
+                });
+            }
 
-        }
-    }
-    document.getElementById("dialog").onclick = function() {
-        document.getElementById('dialog').style.display = 'none';
-    }
-	//window.onresize=function(){
-	//	adjustHeight();
-	//	myChart = echarts.init(dom);
-	//	if(newData != null){
-	//		changeData(newData);
-	//		showEcharts([newData]);
-	//	}
-	//}
-	
-	function adjustHeight(){
-		dom = document.getElementById("container");
-		pageHeight = document.documentElement.clientHeight || document.body.clientHeight;
-		pageWidth = document.body.clientWidth || document.documentElement.clientWidth;
-		dom.style.width = pageWidth + "px";
-		dom.style.height = pageHeight + "px";
-	}
-    </script>
-</body>
+         
+        </script>
+
+        <script>
+          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','','ga');
+
+          ga('create', 'UA-430863-29', 'auto');
+          ga('send', 'pageview');
+        </script>
+    </body>
+</html>

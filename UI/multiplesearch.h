@@ -34,12 +34,15 @@ private:
     PageIndicator *pageIndicator_{nullptr};
 
     QImage backImg_;
+    int curTotalCount_ = 0, pageSize = 20;
 
     void getCameraInfo();
 
 private slots:
+    void slotPageNoChanged(int);
     void slotOnCameraInfo(QVector<CameraInfo>);
     void slotItemClicked(QListWidgetItem *);
+    void slotSearchBtnClicked();
 };
 
 #endif // MULTIPLESEARCH_H

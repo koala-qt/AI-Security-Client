@@ -28,7 +28,7 @@
 RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
     WidgetI(wm,parent)
 {
-    setObjectName(tr("实时监控"));
+    setObjectName(tr("Real-time surveillance"));
     backImg_.load("images/Mask.png");
     QVBoxLayout *mainLay = new QVBoxLayout;
     QHBoxLayout *hboxLay = new QHBoxLayout;
@@ -40,12 +40,7 @@ RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
     QHBoxLayout *centerHboxL = new QHBoxLayout;
     m_treeW = new QTreeWidget;
     // 设置水平滚动条设备字体太长还是显示不完整，自动省略
-//    m_treeW->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     m_treeW->headerItem()->setText(0,tr("设备列表"));
-//    QScrollArea *m_devArea = new QScrollArea();
-//    m_devArea->setWidgetResizable(true);
-//    m_devArea->setFrameShape(QFrame::NoFrame);
-//    m_devArea->setWidget(m_treeW);
     centerHboxL->addWidget(m_treeW,2);
 
     m_realPlayM = new RealPlayManager(wm);
@@ -75,7 +70,7 @@ RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
     m_timeRightL = new QLabel(tr("终点"));
     stayPersonBack_ = new QWidget;
     cameraCombox_ = new QComboBox;
-    stayPersonTitleL_ = new QLabel(tr("Number of peoples"));
+    stayPersonTitleL_ = new QLabel(tr("Number of people"));
     stayPersonL_ = new QLabel(tr("0"));
     stayPersonL_->setAlignment(Qt::AlignLeft);
     stayPersonTitleL_->setAlignment(Qt::AlignLeft);
@@ -220,7 +215,7 @@ RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
     connect(m_treeW,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),this,SLOT(slotTreeItemDoubleClicked(QTreeWidgetItem*,int)));
     connect(cameraCombox_,SIGNAL(currentIndexChanged(int)),this,SLOT(slotCameraComboxIndexChanged(int)));
     connect(numberPersonTimer_,SIGNAL(timeout()),this,SLOT(slotPersonCountTimer()));
-    numberPersonTimer_->start(1000);
+//    numberPersonTimer_->start(1000);
 
     updateCamera();
     getCameraGroup(nullptr,"1005");
@@ -484,7 +479,11 @@ void RealtimeMonitoring::updateCamera()
 {
     BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
     RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+#if 0
     connect(serviceI,SIGNAL(sigCameraInfo(QVector<CameraInfo>)),this,SLOT(slotAddDevice(QVector<CameraInfo>)));
+#else
+    connect(serviceI,SIGNAL(sigCameraMap(QVariantMap)),this,SLOT(slotOnCameraMap(QVariantMap)));
+#endif
     serviceI->getCameraInfo();
     startWorker(worker);
 }
@@ -626,7 +625,7 @@ void RealtimeMonitoring::slotAddTimeitem(QMap<QString, QVariant> data)
     item->setSizeHint(QSize(item->sizeHint().width(),m_timeItemH));
     m_timeList->insertItem(0,item);
     m_timeList->setItemWidget(item,itemWidget);
-#if 1
+#if 0
     totalPerson_++;
     totalTime_ += data.value("timeCost").toInt();
     waitingTimeL_->setNum(totalTime_ / totalPerson_);
@@ -740,7 +739,6 @@ void RealtimeMonitoring::slotAddDevice(QVector<CameraInfo> data)
         cameraCombox_->addItem(QString::fromStdString(info.position),QString::fromStdString(info.id));
 #endif
     }
-    slotPersonTotalCountTimeout();
 }
 
 void RealtimeMonitoring::slotOnCameraGroup(QVector<RestServiceI::CameraGoup> groups)
@@ -750,6 +748,17 @@ void RealtimeMonitoring::slotOnCameraGroup(QVector<RestServiceI::CameraGoup> gro
         item->setData(0,Qt::UserRole,groupV.groupNo);
         item->setData(1,Qt::UserRole + 1,groupV.description);
     }
+}
+
+void RealtimeMonitoring::slotOnCameraMap(QVariantMap datas)
+{
+    curCameraMap_ = datas;
+    cameraCombox_->clear();
+    QStringList mapKeys = curCameraMap_.keys();
+    for(auto mapKey : mapKeys){
+        cameraCombox_->addItem(curCameraMap_.value(mapKey).toString(),mapKey);
+    }
+    slotPersonTotalCountTimeout();
 }
 
 void RealtimeMonitoring::slotOnScenePic(QImage img)
@@ -784,7 +793,6 @@ void RealtimeMonitoring::slotPersonStayInfoTimeout()
 
 void RealtimeMonitoring::slotPersonTotalCountTimeout()
 {
-    noNumbersPersonDataCount_ = 0;
     if(!widgetManger() || !widgetManger()->workerManager()){
         return;
     }
@@ -794,10 +802,12 @@ void RealtimeMonitoring::slotPersonTotalCountTimeout()
     args.cameraId = cameraCombox_->currentData().toString();
     args.startT = QDateTime::currentDateTime().addSecs(-1);
     args.endT = QDateTime::currentDateTime();
-    connect(serviceI,&RestServiceI::sigPersonNumbers,this,[this](int nums){
+    connect(serviceI,&RestServiceI::sigPersonNumbers,this,[this](int nums,int time){
         stayPersonL_->setNum(nums);
+        waitingTimeL_->setNum(time / 1000);
         qDebug() << "person numbers" << nums;
         QTimer::singleShot(1000,this,[this]{
+            noNumbersPersonDataCount_ = 0;
             slotPersonTotalCountTimeout();
         });
     });

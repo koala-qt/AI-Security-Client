@@ -8,6 +8,9 @@
 #include <QMessageBox>
 #include <QScrollBar>
 #include <QApplication>
+#include <QMenu>
+#include <QDebug>
+#include <QDir>
 #include "sceneimagedialog.h"
 #include "facesearch.h"
 #include "components/SelectImage/selectimage.h"
@@ -68,6 +71,19 @@ SceneImageDialog::SceneImageDialog(QWidget *parent, Qt::WindowFlags f):
     listW_->setFixedWidth(listWidth);
     spiteL_->setFixedWidth(1);
 
+    menu_ = new QMenu(listW_);
+    menu_->addAction(tr("Save"),[this]{
+        QDir usrDir("user/image");
+        if(!usrDir.exists()){
+            usrDir.mkpath(usrDir.path());
+        }
+        curImage_.save(usrDir.path() + "/" + curSceneId_ + ".jpg");
+    });
+    listW_->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(listW_,&QListWidget::customContextMenuRequested,this,[this](const QPoint &p){
+        menu_->move(QCursor::pos());
+        menu_->show();
+    });
     widgetM_ = reinterpret_cast<WidgetManagerI*>(qApp->property("WorkerManager").toULongLong());
     connect(sureSelectBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSureBtnClicked()));
     connect(deleSelectBtn_,SIGNAL(clicked(bool)),this,SLOT(slotDeleteBtnClicke()));
@@ -78,6 +94,13 @@ SceneImageDialog::SceneImageDialog(QWidget *parent, Qt::WindowFlags f):
 void SceneImageDialog::setImage(QImage img)
 {
     selectAreaW_->setBackImage(img);
+}
+
+void SceneImageDialog::setImage(QImage img, QString sceneId)
+{
+    selectAreaW_->setBackImage(img);
+    curImage_ = img;
+    curSceneId_ = sceneId;
 }
 
 void SceneImageDialog::setRectLinePen(QColor c)

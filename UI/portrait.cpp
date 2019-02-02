@@ -16,8 +16,13 @@ Portrait::Portrait(WidgetManagerI *wm, WidgetI *parent):
     bodyTextL = new QLabel(tr("Body recognition"));
     personL_ = new QLabel;
     splitVL_ = new QLabel;
-    attributeBack = new QWidget;
-    flowLay_ = new FlowLayout;
+    faceAttributeTitleL_ = new QLabel(tr("Face attribute"));
+    bodyAttributeTitleL_ = new QLabel(tr("body attribute"));
+    attributeSpliteL_ = new QLabel;
+    faceAttributeBack = new QWidget;
+    bodyAttributeBack_ = new QWidget;
+    flowLayFace_ = new FlowLayout;
+    flowLayBody_ = new FlowLayout;
     mainLay->addWidget(personBack_,1);
     QVBoxLayout *vlay = new QVBoxLayout;
     vlay->addWidget(faceTextL);
@@ -29,17 +34,27 @@ Portrait::Portrait(WidgetManagerI *wm, WidgetI *parent):
     vlay->addWidget(personL_);
     mainLay->addLayout(vlay,1);
     mainLay->addWidget(splitVL_);
-    attributeBack->setLayout(flowLay_);
-    mainLay->addWidget(attributeBack,2);
+    vlay = new QVBoxLayout;
+    vlay->addWidget(faceAttributeTitleL_);
+    faceAttributeBack->setLayout(flowLayFace_);
+    vlay->addWidget(faceAttributeBack);
+    vlay->addWidget(attributeSpliteL_);
+    vlay->addWidget(bodyAttributeTitleL_);
+    bodyAttributeBack_->setLayout(flowLayBody_);
+    vlay->addWidget(bodyAttributeBack_);
+    mainLay->addLayout(vlay,2);
     setLayout(mainLay);
 
     personBack_->setPixmap(QPixmap("images/portrait_back.png"));
     splitVL_->setFixedWidth(1);
+    attributeSpliteL_->setFixedHeight(1);
+    faceAttributeTitleL_->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Fixed);
+    bodyAttributeTitleL_->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Fixed);
     faceL_->setFixedSize(78,78);
     personL_->setFixedSize(73,273);
     faceL_->setScaledContents(true);
     personL_->setScaledContents(true);
-    attributeBack->setMinimumWidth(200);
+    faceAttributeBack->setMinimumWidth(325);
 }
 
 void Portrait::setUserStyle(WidgetManagerI::SkinStyle s)
@@ -55,6 +70,8 @@ void Portrait::setUserStyle(WidgetManagerI::SkinStyle s)
         pal.setColor(QPalette::Background,Qt::gray);
         splitVL_->setPalette(pal);
         splitVL_->setAutoFillBackground(true);
+        attributeSpliteL_->setPalette(pal);
+        attributeSpliteL_->setAutoFillBackground(true);
 
         pal = faceCornerW_->palette();
         pal.setColor(QPalette::Foreground,Qt::gray);
@@ -64,14 +81,16 @@ void Portrait::setUserStyle(WidgetManagerI::SkinStyle s)
         pal.setColor(QPalette::Foreground,Qt::white);
         faceTextL->setPalette(pal);
         bodyTextL->setPalette(pal);
+        faceAttributeTitleL_->setPalette(pal);
+        bodyAttributeTitleL_->setPalette(pal);
     }
 }
 
-void Portrait::slotSetData(QImage face, QImage body, QStringList attributeList)
+void Portrait::slotSetData(QImage face, QImage body, QStringList attributeList, QStringList bodyAttributeList)
 {
     faceL_->setPixmap(QPixmap::fromImage(face));
     personL_->setPixmap(QPixmap::fromImage(body));
-    while (QLayoutItem *item = flowLay_->takeAt(0)) {
+    while (QLayoutItem *item = flowLayFace_->takeAt(0)) {
         delete item;
     }
     for(auto attrStr : attributeList){
@@ -82,6 +101,19 @@ void Portrait::slotSetData(QImage face, QImage body, QStringList attributeList)
                             "border: 1px solid rgba(255,255,255,1);"
                             "border-radius: 10px;"
                             "}");
-        flowLay_->addWidget(attL);
+        flowLayFace_->addWidget(attL);
+    }
+    while (QLayoutItem *item = flowLayBody_->takeAt(0)) {
+        delete item;
+    }
+    for(auto attrStr : bodyAttributeList){
+        QLabel *attL = new QLabel(attrStr);
+        attL->setStyleSheet("QLabel{"
+                            "background:rgba(255,255,255,0.1);"
+                            "color: white;"
+                            "border: 1px solid rgba(255,255,255,1);"
+                            "border-radius: 10px;"
+                            "}");
+        flowLayBody_->addWidget(attL);
     }
 }

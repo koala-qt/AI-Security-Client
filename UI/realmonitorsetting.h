@@ -37,6 +37,7 @@ private slots:
     void slotRemoveStatis(bool);
     void slotSnapInfo(QVector<StatisTask>);
     void slotOnCameraInfo(QVector<CameraInfo>);
+    void slotOnCameraMap(QVariantMap);
 };
 
 #endif // REALMONITORSETTING_H

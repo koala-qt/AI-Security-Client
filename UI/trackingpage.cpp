@@ -72,6 +72,7 @@ TrackingPage::TrackingPage(WidgetManagerI *wm, WidgetI *parent):
 
     QSettings configSetting("config.ini",QSettings::IniFormat);
     hostname_ = configSetting.value("CloudHost/host").toString();
+    getCameraInfo();
 }
 
 void TrackingPage::setUserStyle(WidgetManagerI::SkinStyle s)
@@ -139,6 +140,15 @@ void TrackingPage::paintEvent(QPaintEvent *event)
     p.drawImage(rect(),backImg_);
 }
 
+void TrackingPage::getCameraInfo()
+{
+    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
+    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    connect(serviceI,SIGNAL(sigCameraMap(QVariantMap)),this,SLOT(slotOnCameraMap(QVariantMap)));
+    serviceI->getCameraInfo();
+    startWorker(worker);
+}
+
 void TrackingPage::slotImgBtnClicked()
 {
     QString filePath = QFileDialog::getOpenFileName(this,tr("add image"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),"*.png *.jpg *.tmp");
@@ -169,15 +179,50 @@ void TrackingPage::slotSearchBtnClicked()
         QMessageBox::information(this,objectName(),str);
         searchBtn_->setEnabled(true);
     });
+#if 0
     connect(serviceI,&RestServiceI::sigTracking,this,[this,label](const QVector<SearchFace> data){
         label->close();
         delete label;
         slotTracking(data);
         searchBtn_->setEnabled(true);
     });
+#else
+    connect(serviceI,&RestServiceI::sigTrackingNew,this,[this,label](const QVector<RestServiceI::TrackingReturnData> data){
+        label->close();
+        delete label;
+        slotTrackingNew(data);
+        searchBtn_->setEnabled(true);
+    });
+#endif
     serviceI->faceTracking(args);
     startWorker(worker);
     curOid_.clear();
+}
+
+void TrackingPage::slotOnCameraMap(QVariantMap data)
+{
+//    QStringList mapKeys = data.keys();
+//    for(auto mapKey : mapKeys){
+//        imagePosCombox_->addItem(data.value(mapKey).toString(),mapKey);
+//    }
+    curCameraMap_ = data;
+}
+
+void TrackingPage::slotTrackingNew(QVector<RestServiceI::TrackingReturnData> data)
+{
+    QVector<TrackingWebView::TrackingPoint> trackingVec;
+    std::transform(data.begin(),data.end(),std::back_inserter(trackingVec),[this](const RestServiceI::TrackingReturnData &value){
+        TrackingWebView::TrackingPoint pointData;
+        pointData.name = curCameraMap_.value(value.cameraId).toString();
+        pointData.grabTime = value.timeIn.toString("yyyy-MM-dd HH:mm:ss");
+//        pointData.holdTime = value.timeOut - value.timeIn;
+        pointData.personImgUr = "http://192.168.100.60:8080/graph/node/picture/" + value.objId;
+        qDebug() << pointData.personImgUr;
+        return pointData;
+    });
+    if(!trackingVec.isEmpty()){
+        dataView_->updateTracking(trackingVec);
+    }
 }
 
 void TrackingPage::slotTracking(QVector<SearchFace> data)

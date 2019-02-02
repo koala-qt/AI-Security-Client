@@ -40,9 +40,9 @@ MainWindow::MainWindow(WidgetManagerI *wm, WidgetI *parent)
     m_centerW->addWidget(new RealtimeMonitoring(wm));
     m_centerW->addWidget(new EventSearch(wm));
     m_centerW->addWidget(new FaceLinkPage(wm));
-    m_centerW->addWidget(new MultipleSearch(wm));
+//    m_centerW->addWidget(new MultipleSearch(wm));
     m_centerW->addWidget(new TargetSearch(wm));
-    m_centerW->addWidget(new VideoPlayback(wm));
+//    m_centerW->addWidget(new VideoPlayback(wm));
 
     for(int i = 0; i < m_centerW->count(); i++){
         QListWidgetItem *item = new QListWidgetItem;
@@ -108,30 +108,6 @@ void MainWindow::setUserStyle(WidgetManagerI::SkinStyle s)
                                  "border-image: url(images/item_selected.png);;"
                                  "}");
     }
-}
-
-void MainWindow::mousePressEvent(QMouseEvent *event)
-{
-    if (event->button() == Qt::LeftButton)
-    {
-        m_Drag = true;
-        m_DragPosition = event->globalPos() - this->pos();
-        event->accept();
-    }
-}
-
-void MainWindow::mouseMoveEvent(QMouseEvent *event)
-{
-    if (m_Drag && (event->buttons() && Qt::LeftButton))
-    {
-        move(event->globalPos() - m_DragPosition);
-        event->accept();
-    }
-}
-
-void MainWindow::mouseReleaseEvent(QMouseEvent *event)
-{
-    m_Drag = false;
 }
 
 #ifdef FULLTOP
