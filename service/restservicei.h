@@ -22,6 +22,7 @@ public:
         GenerateFaceLink,
         GetFaceLinkTreeData,
         SearchFaceLinkPoint,
+        SearchABDoorTime,
         MultipleSearch,
         GetCameraDevice,
         CaptureSearch,
@@ -56,6 +57,12 @@ public:
         QString groupName;
         QString groupNo;
         int deviceNumber;
+    };
+    struct SearchABDoorTimeArg
+    {
+        QString camera1;
+        QString camera2;
+        int count;
     };
     struct FaceLinkArgs
     {
@@ -174,6 +181,7 @@ public:
     virtual void getScenePic(const QString old) = 0;
     virtual void faceTracking(FaceTrackingArgs) = 0;
     virtual void getPersonDetails(QString &) = 0;
+    virtual void searchAbDoorTime(SearchABDoorTimeArg &) = 0;
     virtual void multipleSearch(MultipleSearchArgs &) = 0;
     virtual void getAlarmScenePic(const QString oid) = 0;
     virtual void getTop(const int id) = 0;
@@ -214,7 +222,7 @@ signals:
     void sigAlarmHistory(PagedAlarmHis);
     void sigFaceLinkTree(QJsonObject);
     void sigPeronsDetails(QImage,QImage,QStringList,QStringList);
-    void sigPersonNumbers(int);
+    void sigPersonNumbers(int,int);
     void sigSemanticSearch(RestServiceI::SemanticReturnData);
     void sigCameraMap(QVariantMap);
     void sigSearchByImage(QVector<RestServiceI::DataRectureItem>);
@@ -229,4 +237,5 @@ Q_DECLARE_METATYPE(RestServiceI::PersonsStayArgs)
 Q_DECLARE_METATYPE(RestServiceI::SemanticSearchArgs)
 Q_DECLARE_METATYPE(RestServiceI::SearchUseImageArgs)
 Q_DECLARE_METATYPE(RestServiceI::MultipleSearchArgs)
+Q_DECLARE_METATYPE(RestServiceI::SearchABDoorTimeArg)
 #endif // RESTSERVICEI_H

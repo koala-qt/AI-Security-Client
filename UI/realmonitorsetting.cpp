@@ -249,7 +249,8 @@ void RealMonitorSetting::getCameraInfo()
 {
     BLL::Worker * worker = new BLL::RestService(wm_);
     RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
-    connect(serviceI,SIGNAL(sigCameraInfo(QVector<CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<CameraInfo>)));
+//    connect(serviceI,SIGNAL(sigCameraInfo(QVector<CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<CameraInfo>)));
+    connect(serviceI,SIGNAL(sigCameraMap(QVariantMap)),this,SLOT(slotOnCameraMap(QVariantMap)));
     serviceI->getCameraInfo();
     wm_->startWorker(worker);
 }
@@ -340,4 +341,15 @@ void RealMonitorSetting::slotOnCameraInfo(QVector<CameraInfo> data)
         endLocationCombox_->addItem(pix,QString::fromStdString(info.position),QString::fromStdString(info.id));
     }
     updateStatis();
+}
+
+void RealMonitorSetting::slotOnCameraMap(QVariantMap datas)
+{
+    QPixmap pix(startLocationCombox_->iconSize());
+    pix.fill(Qt::transparent);
+    QStringList mapKeys = datas.keys();
+    for(auto mapKey : mapKeys){
+        startLocationCombox_->addItem(datas.value(mapKey).toString(),mapKey);
+        endLocationCombox_->addItem(datas.value(mapKey).toString(),mapKey);
+    }
 }

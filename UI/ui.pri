@@ -4,7 +4,6 @@ HEADERS += \
     $$PWD/koalawidgetmanager.h \
     $$PWD/widgetinterface.h \
     $$PWD/mainpage.h \
-    $$PWD/targetsearch.h \
     $$PWD/videoplayback.h \
     $$PWD/realtimemonitoring.h \
     $$PWD/realplaymanager.h \
@@ -41,12 +40,14 @@ HEADERS += \
     $$PWD/facelinkpage.h \
     $$PWD/portrait.h \
     $$PWD/flowlayout.h \
-    $$PWD/trackingpage.h
+    $$PWD/trackingpage.h \
+    $$PWD/queryincapturedatabasepage.h \
+    $$PWD/targetsearch.h \
+    $$PWD/combinationpage.h
 
 SOURCES += \
     $$PWD/koalawidgetmanager.cpp \
     $$PWD/mainpage.cpp \
-    $$PWD/targetsearch.cpp \
     $$PWD/videoplayback.cpp \
     $$PWD/realtimemonitoring.cpp \
     $$PWD/realplaymanager.cpp \
@@ -83,4 +84,7 @@ SOURCES += \
     $$PWD/facelinkpage.cpp \
     $$PWD/portrait.cpp \
     $$PWD/flowlayout.cpp \
-    $$PWD/trackingpage.cpp
+    $$PWD/trackingpage.cpp \
+    $$PWD/queryincapturedatabasepage.cpp \
+    $$PWD/targetsearch.cpp \
+    $$PWD/combinationpage.cpp

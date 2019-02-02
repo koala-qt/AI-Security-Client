@@ -15,7 +15,7 @@ public:
     QString getFaceLinkPoint(QString &faceLinkId,RestServiceI::FaceLinkPointData &rootPointData);
     QString getFaceLinkTree(QString &objectId,QJsonObject &treeJson);
     QString tracking(RestServiceI::FaceTrackingArgs &args, QVector<RestServiceI::TrackingReturnData> &resVec);
-    QString getPersonNumbers(RestServiceI::PersonsStayArgs &args,int &num);
+    QString getPersonNumbers(RestServiceI::PersonsStayArgs &args, int &num, int &times);
     QString getPeronAverageTime(RestServiceI::AveragePersonTimeArgs &args);
     QString getPersonDetailes(QString &objId,QImage &face,QImage &body,QStringList &attrsface,QStringList &attrsbody);
     QString getScenePic(QString &scenId,QImage &img);

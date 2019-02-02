@@ -44,6 +44,11 @@ void BLL::RestService::faceTracking(RestServiceI::FaceTrackingArgs args)
     pushBackTask(FaceTracking,QVariant::fromValue(args));
 }
 
+void BLL::RestService::searchAbDoorTime(RestServiceI::SearchABDoorTimeArg &args)
+{
+    pushBackTask(SearchABDoorTime,QVariant::fromValue(args));
+}
+
 void BLL::RestService::multipleSearch(RestServiceI::MultipleSearchArgs &args)
 {
     pushBackTask(MultipleSearch,QVariant::fromValue(args));
@@ -440,10 +445,10 @@ void BLL::RestService::run()
         emit sigResultState(true);
     }else if(argType == GetPersonStayNumber){
         DLL::CloudHttpDao httpDao;
-        int personNum = 0;
-        QString qerrorStr = httpDao.getPersonNumbers(args.second.value<PersonsStayArgs>(),personNum);
+        int personNum = 0,time = 0;
+        QString qerrorStr = httpDao.getPersonNumbers(args.second.value<PersonsStayArgs>(),personNum,time);
         if(qerrorStr.isEmpty()){
-            emit sigPersonNumbers(personNum);
+            emit sigPersonNumbers(personNum,time);
         }
     }else if(argType == GetPersonAverageTime){
         DLL::CloudHttpDao httpDao;
@@ -476,5 +481,7 @@ void BLL::RestService::run()
         }else{
             emit sigError(qerrorStr);
         }
+    }else if(argType == SearchABDoorTime){
+
     }
 }

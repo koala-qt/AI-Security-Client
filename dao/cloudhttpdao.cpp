@@ -24,7 +24,7 @@ DLL::CloudHttpDao::CloudHttpDao()
 
 QString DLL::CloudHttpDao::getCameraInfoMap(QMap<QString, QVariant> &cameraMap)
 {
-    QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/query/channel");
+    QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-camera-map");
     int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),5);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
@@ -254,14 +254,14 @@ QString DLL::CloudHttpDao::tracking(RestServiceI::FaceTrackingArgs &args,QVector
     QBuffer imgBuf(&imgArray);
     imgBuf.open(QIODevice::WriteOnly);
     args.faceImg.save(&imgBuf,"PNG");
-    QString urlStr = QObject::tr("http://192.168.100.60:8080/api/v2/external/monitor-detail/trajectory-tracking");
+    QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/trajectory-tracking");
     QString postData = QObject::tr("base64=%1&objId=%2&similarity=%3&startTime=%4&finishTime=%5&property=false")
             .arg(QString(imgArray),args.oid)
             .arg(args.thresh)
             .arg(args.startT.toString("yyyy-MM-dd HH:mm:ss"),args.endT.toString("yyyy-MM-dd HH:mm:ss"));
     qDebug() << urlStr;
     qDebug() << postData;
-    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),5);
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),15);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -295,9 +295,9 @@ QString DLL::CloudHttpDao::tracking(RestServiceI::FaceTrackingArgs &args,QVector
     return QString();
 }
 
-QString DLL::CloudHttpDao::getPersonNumbers(RestServiceI::PersonsStayArgs &args,int &num)
+QString DLL::CloudHttpDao::getPersonNumbers(RestServiceI::PersonsStayArgs &args,int &num,int &times)
 {
-    QString urlStr = QObject::tr("http://192.168.100.66:8080/api/v2/external/monitor-detail/person-total?cameraId=%1&startTime=%2&finishTime=%3")
+    QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/person-total?cameraId=%1&startTime=%2&finishTime=%3")
             .arg(args.cameraId)
             .arg(args.startT.toString("yyyy-MM-dd%20HH:mm:ss"))
             .arg(args.endT.toString("yyyy-MM-dd%20HH:mm:ss"));
@@ -317,7 +317,9 @@ QString DLL::CloudHttpDao::getPersonNumbers(RestServiceI::PersonsStayArgs &args,
     if(status != 200){
         return jsObj.value("message").toString();
     }
-    num = jsObj.value("data").toInt();
+    QJsonObject dataObj = jsObj.value("data").toObject();
+    num = dataObj.value("personNumber").toInt();
+    times = dataObj.value("stayTime").toVariant().toLongLong();
     return QString();
 }
 
@@ -345,7 +347,7 @@ QString DLL::CloudHttpDao::getPeronAverageTime(RestServiceI::AveragePersonTimeAr
 
 QString DLL::CloudHttpDao::getPersonDetailes(QString &objId, QImage &face, QImage &body, QStringList &attrsface, QStringList &attrsbody)
 {
-    QString urlStr = QObject::tr("http://192.168.100.66:8080/api/v2/external/monitor-detail/portrait?objId=%1&threshold=%2").arg(objId).arg(attributeThresold_);
+    QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/portrait?objId=%1&threshold=%2").arg(objId).arg(attributeThresold_);
     int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),5);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
@@ -402,7 +404,7 @@ QString DLL::CloudHttpDao::getScenePic(QString &scenId, QImage &img)
 
 QString DLL::CloudHttpDao::semanticSearch(RestServiceI::SemanticSearchArgs &args, RestServiceI::SemanticReturnData &resDatas)
 {
-    QString urlStr = QObject::tr("http://192.168.100.66:8080/api/v2/external/monitor-detail/find-history");
+    QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-history");
     QString postData = QObject::tr("mode=%1&faceAttrs=%2&bodyAttrs=%3&cameraId=%4&startTime=%5&finishTime=%6&pageNo=%7&pageSize=%8&property=true")
             .arg(args.mode)
             .arg(args.faceAttributList.join(','))
@@ -438,12 +440,12 @@ QString DLL::CloudHttpDao::semanticSearch(RestServiceI::SemanticSearchArgs &args
         QJsonObject itemObj = jsValue.toObject();
         item.cameraId = itemObj.value("cameraId").toString();
         item.id = itemObj.value("id").toString();
-        item.sceneId = itemObj.value("sceneId").toString();
-        item.time = QDateTime::fromMSecsSinceEpoch(itemObj.value("ts").toVariant().toULongLong());
+        item.sceneId = itemObj.value("faceSceneId").toString();
+        item.time = QDateTime::fromMSecsSinceEpoch(itemObj.value("tsOut").toVariant().toULongLong());
         QImage img;
-        img.loadFromData(QByteArray::fromBase64(itemObj.value("snapshot").toString().toLatin1()));
+        img.loadFromData(QByteArray::fromBase64(itemObj.value("faceSnap").toString().toLatin1()));
         item.img = img;
-        item.personId = itemObj.value("personId").toString();
+        item.personId = itemObj.value("id").toString();
         return item;
     });
     return QString();
@@ -451,7 +453,7 @@ QString DLL::CloudHttpDao::semanticSearch(RestServiceI::SemanticSearchArgs &args
 
 QString DLL::CloudHttpDao::searchByImage(RestServiceI::SearchUseImageArgs &args,QVector<RestServiceI::DataRectureItem> &resVec)
 {
-    QString urlStr = QObject::tr("http://192.168.100.66:8080/api/v2/external/monitor-detail/find-history");
+    QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-history");
     QByteArray imgStr;
     QBuffer imgBuf(&imgStr);
     imgBuf.open(QIODevice::WriteOnly);
@@ -485,6 +487,7 @@ QString DLL::CloudHttpDao::searchByImage(RestServiceI::SearchUseImageArgs &args,
     QJsonArray dataJsArray = jsObj.value("data").toArray();
     std::transform(dataJsArray.begin(),dataJsArray.end(),std::back_inserter(resVec),[](QJsonValue jsVal){
         RestServiceI::DataRectureItem sitem;
+#if 0
         QJsonObject itemObj = jsVal.toObject();
         sitem.cameraId = itemObj.value("cameraId").toString();
         sitem.id = itemObj.value("id").toString();
@@ -492,6 +495,16 @@ QString DLL::CloudHttpDao::searchByImage(RestServiceI::SearchUseImageArgs &args,
         sitem.personId = itemObj.value("personId").toString();
         sitem.sceneId = itemObj.value("sceneId").toString();
         sitem.time = QDateTime::fromMSecsSinceEpoch(itemObj.value("ts").toVariant().toULongLong());
+#endif
+        QJsonObject itemObj = jsVal.toObject();
+        sitem.cameraId = itemObj.value("cameraId").toString();
+        sitem.id = itemObj.value("id").toString();
+        sitem.sceneId = itemObj.value("faceSceneId").toString();
+        sitem.time = QDateTime::fromMSecsSinceEpoch(itemObj.value("tsOut").toVariant().toULongLong());
+        QImage img;
+        img.loadFromData(QByteArray::fromBase64(itemObj.value("faceSnap").toString().toLatin1()));
+        sitem.img = img;
+        sitem.personId = itemObj.value("id").toString();
         return sitem;
     });
     return QString();
