@@ -570,204 +570,6 @@ uint32_t FaceServ_getAlarmScenePic_presult::read(::apache::thrift::protocol::TPr
 }
 
 
-FaceServ_getAllCameraInfo_args::~FaceServ_getAllCameraInfo_args() throw() {
-}
-
-
-uint32_t FaceServ_getAllCameraInfo_args::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  ::apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    xfer += iprot->skip(ftype);
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t FaceServ_getAllCameraInfo_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  ::apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
-  xfer += oprot->writeStructBegin("FaceServ_getAllCameraInfo_args");
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-
-FaceServ_getAllCameraInfo_pargs::~FaceServ_getAllCameraInfo_pargs() throw() {
-}
-
-
-uint32_t FaceServ_getAllCameraInfo_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  ::apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
-  xfer += oprot->writeStructBegin("FaceServ_getAllCameraInfo_pargs");
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-
-FaceServ_getAllCameraInfo_result::~FaceServ_getAllCameraInfo_result() throw() {
-}
-
-
-uint32_t FaceServ_getAllCameraInfo_result::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  ::apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_LIST) {
-          {
-            this->success.clear();
-            uint32_t _size71;
-            ::apache::thrift::protocol::TType _etype74;
-            xfer += iprot->readListBegin(_etype74, _size71);
-            this->success.resize(_size71);
-            uint32_t _i75;
-            for (_i75 = 0; _i75 < _size71; ++_i75)
-            {
-              xfer += this->success[_i75].read(iprot);
-            }
-            xfer += iprot->readListEnd();
-          }
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t FaceServ_getAllCameraInfo_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
-
-  uint32_t xfer = 0;
-
-  xfer += oprot->writeStructBegin("FaceServ_getAllCameraInfo_result");
-
-  if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
-    {
-      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector<CameraInfo> ::const_iterator _iter76;
-      for (_iter76 = this->success.begin(); _iter76 != this->success.end(); ++_iter76)
-      {
-        xfer += (*_iter76).write(oprot);
-      }
-      xfer += oprot->writeListEnd();
-    }
-    xfer += oprot->writeFieldEnd();
-  }
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-
-FaceServ_getAllCameraInfo_presult::~FaceServ_getAllCameraInfo_presult() throw() {
-}
-
-
-uint32_t FaceServ_getAllCameraInfo_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  ::apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_LIST) {
-          {
-            (*(this->success)).clear();
-            uint32_t _size77;
-            ::apache::thrift::protocol::TType _etype80;
-            xfer += iprot->readListBegin(_etype80, _size77);
-            (*(this->success)).resize(_size77);
-            uint32_t _i81;
-            for (_i81 = 0; _i81 < _size77; ++_i81)
-            {
-              xfer += (*(this->success))[_i81].read(iprot);
-            }
-            xfer += iprot->readListEnd();
-          }
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-
 FaceServ_snapHistory_args::~FaceServ_snapHistory_args() throw() {
 }
 
@@ -908,14 +710,14 @@ uint32_t FaceServ_snapHistory_result::read(::apache::thrift::protocol::TProtocol
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size82;
-            ::apache::thrift::protocol::TType _etype85;
-            xfer += iprot->readListBegin(_etype85, _size82);
-            this->success.resize(_size82);
-            uint32_t _i86;
-            for (_i86 = 0; _i86 < _size82; ++_i86)
+            uint32_t _size69;
+            ::apache::thrift::protocol::TType _etype72;
+            xfer += iprot->readListBegin(_etype72, _size69);
+            this->success.resize(_size69);
+            uint32_t _i73;
+            for (_i73 = 0; _i73 < _size69; ++_i73)
             {
-              xfer += this->success[_i86].read(iprot);
+              xfer += this->success[_i73].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -946,10 +748,10 @@ uint32_t FaceServ_snapHistory_result::write(::apache::thrift::protocol::TProtoco
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector<SnapFaceHis> ::const_iterator _iter87;
-      for (_iter87 = this->success.begin(); _iter87 != this->success.end(); ++_iter87)
+      std::vector<SnapFaceHis> ::const_iterator _iter74;
+      for (_iter74 = this->success.begin(); _iter74 != this->success.end(); ++_iter74)
       {
-        xfer += (*_iter87).write(oprot);
+        xfer += (*_iter74).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -990,14 +792,14 @@ uint32_t FaceServ_snapHistory_presult::read(::apache::thrift::protocol::TProtoco
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size88;
-            ::apache::thrift::protocol::TType _etype91;
-            xfer += iprot->readListBegin(_etype91, _size88);
-            (*(this->success)).resize(_size88);
-            uint32_t _i92;
-            for (_i92 = 0; _i92 < _size88; ++_i92)
+            uint32_t _size75;
+            ::apache::thrift::protocol::TType _etype78;
+            xfer += iprot->readListBegin(_etype78, _size75);
+            (*(this->success)).resize(_size75);
+            uint32_t _i79;
+            for (_i79 = 0; _i79 < _size75; ++_i79)
             {
-              xfer += (*(this->success))[_i92].read(iprot);
+              xfer += (*(this->success))[_i79].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -1624,14 +1426,14 @@ uint32_t FaceServ_getStatisTask_result::read(::apache::thrift::protocol::TProtoc
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size93;
-            ::apache::thrift::protocol::TType _etype96;
-            xfer += iprot->readListBegin(_etype96, _size93);
-            this->success.resize(_size93);
-            uint32_t _i97;
-            for (_i97 = 0; _i97 < _size93; ++_i97)
+            uint32_t _size80;
+            ::apache::thrift::protocol::TType _etype83;
+            xfer += iprot->readListBegin(_etype83, _size80);
+            this->success.resize(_size80);
+            uint32_t _i84;
+            for (_i84 = 0; _i84 < _size80; ++_i84)
             {
-              xfer += this->success[_i97].read(iprot);
+              xfer += this->success[_i84].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -1662,10 +1464,10 @@ uint32_t FaceServ_getStatisTask_result::write(::apache::thrift::protocol::TProto
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector<StatisTask> ::const_iterator _iter98;
-      for (_iter98 = this->success.begin(); _iter98 != this->success.end(); ++_iter98)
+      std::vector<StatisTask> ::const_iterator _iter85;
+      for (_iter85 = this->success.begin(); _iter85 != this->success.end(); ++_iter85)
       {
-        xfer += (*_iter98).write(oprot);
+        xfer += (*_iter85).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -1706,14 +1508,14 @@ uint32_t FaceServ_getStatisTask_presult::read(::apache::thrift::protocol::TProto
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size99;
-            ::apache::thrift::protocol::TType _etype102;
-            xfer += iprot->readListBegin(_etype102, _size99);
-            (*(this->success)).resize(_size99);
-            uint32_t _i103;
-            for (_i103 = 0; _i103 < _size99; ++_i103)
+            uint32_t _size86;
+            ::apache::thrift::protocol::TType _etype89;
+            xfer += iprot->readListBegin(_etype89, _size86);
+            (*(this->success)).resize(_size86);
+            uint32_t _i90;
+            for (_i90 = 0; _i90 < _size86; ++_i90)
             {
-              xfer += (*(this->success))[_i103].read(iprot);
+              xfer += (*(this->success))[_i90].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2363,9 +2165,9 @@ uint32_t FaceServ_setAlarmArea_args::read(::apache::thrift::protocol::TProtocol*
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast104;
-          xfer += iprot->readI32(ecast104);
-          this->area_type = (AreaType::type)ecast104;
+          int32_t ecast91;
+          xfer += iprot->readI32(ecast91);
+          this->area_type = (AreaType::type)ecast91;
           this->__isset.area_type = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -2375,14 +2177,14 @@ uint32_t FaceServ_setAlarmArea_args::read(::apache::thrift::protocol::TProtocol*
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->area.clear();
-            uint32_t _size105;
-            ::apache::thrift::protocol::TType _etype108;
-            xfer += iprot->readListBegin(_etype108, _size105);
-            this->area.resize(_size105);
-            uint32_t _i109;
-            for (_i109 = 0; _i109 < _size105; ++_i109)
+            uint32_t _size92;
+            ::apache::thrift::protocol::TType _etype95;
+            xfer += iprot->readListBegin(_etype95, _size92);
+            this->area.resize(_size92);
+            uint32_t _i96;
+            for (_i96 = 0; _i96 < _size92; ++_i96)
             {
-              xfer += this->area[_i109].read(iprot);
+              xfer += this->area[_i96].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2419,10 +2221,10 @@ uint32_t FaceServ_setAlarmArea_args::write(::apache::thrift::protocol::TProtocol
   xfer += oprot->writeFieldBegin("area", ::apache::thrift::protocol::T_LIST, 3);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->area.size()));
-    std::vector<Point> ::const_iterator _iter110;
-    for (_iter110 = this->area.begin(); _iter110 != this->area.end(); ++_iter110)
+    std::vector<Point> ::const_iterator _iter97;
+    for (_iter97 = this->area.begin(); _iter97 != this->area.end(); ++_iter97)
     {
-      xfer += (*_iter110).write(oprot);
+      xfer += (*_iter97).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -2454,10 +2256,10 @@ uint32_t FaceServ_setAlarmArea_pargs::write(::apache::thrift::protocol::TProtoco
   xfer += oprot->writeFieldBegin("area", ::apache::thrift::protocol::T_LIST, 3);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>((*(this->area)).size()));
-    std::vector<Point> ::const_iterator _iter111;
-    for (_iter111 = (*(this->area)).begin(); _iter111 != (*(this->area)).end(); ++_iter111)
+    std::vector<Point> ::const_iterator _iter98;
+    for (_iter98 = (*(this->area)).begin(); _iter98 != (*(this->area)).end(); ++_iter98)
     {
-      xfer += (*_iter111).write(oprot);
+      xfer += (*_iter98).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -2781,14 +2583,14 @@ uint32_t FaceServ_searchSnap_result::read(::apache::thrift::protocol::TProtocol*
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size112;
-            ::apache::thrift::protocol::TType _etype115;
-            xfer += iprot->readListBegin(_etype115, _size112);
-            this->success.resize(_size112);
-            uint32_t _i116;
-            for (_i116 = 0; _i116 < _size112; ++_i116)
+            uint32_t _size99;
+            ::apache::thrift::protocol::TType _etype102;
+            xfer += iprot->readListBegin(_etype102, _size99);
+            this->success.resize(_size99);
+            uint32_t _i103;
+            for (_i103 = 0; _i103 < _size99; ++_i103)
             {
-              xfer += this->success[_i116].read(iprot);
+              xfer += this->success[_i103].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2819,10 +2621,10 @@ uint32_t FaceServ_searchSnap_result::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector<SearchFace> ::const_iterator _iter117;
-      for (_iter117 = this->success.begin(); _iter117 != this->success.end(); ++_iter117)
+      std::vector<SearchFace> ::const_iterator _iter104;
+      for (_iter104 = this->success.begin(); _iter104 != this->success.end(); ++_iter104)
       {
-        xfer += (*_iter117).write(oprot);
+        xfer += (*_iter104).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -2863,14 +2665,14 @@ uint32_t FaceServ_searchSnap_presult::read(::apache::thrift::protocol::TProtocol
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size118;
-            ::apache::thrift::protocol::TType _etype121;
-            xfer += iprot->readListBegin(_etype121, _size118);
-            (*(this->success)).resize(_size118);
-            uint32_t _i122;
-            for (_i122 = 0; _i122 < _size118; ++_i122)
+            uint32_t _size105;
+            ::apache::thrift::protocol::TType _etype108;
+            xfer += iprot->readListBegin(_etype108, _size105);
+            (*(this->success)).resize(_size105);
+            uint32_t _i109;
+            for (_i109 = 0; _i109 < _size105; ++_i109)
             {
-              xfer += (*(this->success))[_i122].read(iprot);
+              xfer += (*(this->success))[_i109].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -3379,14 +3181,14 @@ uint32_t FaceServ_gnerateFaceTrace_result::read(::apache::thrift::protocol::TPro
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size123;
-            ::apache::thrift::protocol::TType _etype126;
-            xfer += iprot->readListBegin(_etype126, _size123);
-            this->success.resize(_size123);
-            uint32_t _i127;
-            for (_i127 = 0; _i127 < _size123; ++_i127)
+            uint32_t _size110;
+            ::apache::thrift::protocol::TType _etype113;
+            xfer += iprot->readListBegin(_etype113, _size110);
+            this->success.resize(_size110);
+            uint32_t _i114;
+            for (_i114 = 0; _i114 < _size110; ++_i114)
             {
-              xfer += this->success[_i127].read(iprot);
+              xfer += this->success[_i114].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -3417,10 +3219,10 @@ uint32_t FaceServ_gnerateFaceTrace_result::write(::apache::thrift::protocol::TPr
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector<SearchFace> ::const_iterator _iter128;
-      for (_iter128 = this->success.begin(); _iter128 != this->success.end(); ++_iter128)
+      std::vector<SearchFace> ::const_iterator _iter115;
+      for (_iter115 = this->success.begin(); _iter115 != this->success.end(); ++_iter115)
       {
-        xfer += (*_iter128).write(oprot);
+        xfer += (*_iter115).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -3461,14 +3263,14 @@ uint32_t FaceServ_gnerateFaceTrace_presult::read(::apache::thrift::protocol::TPr
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size129;
-            ::apache::thrift::protocol::TType _etype132;
-            xfer += iprot->readListBegin(_etype132, _size129);
-            (*(this->success)).resize(_size129);
-            uint32_t _i133;
-            for (_i133 = 0; _i133 < _size129; ++_i133)
+            uint32_t _size116;
+            ::apache::thrift::protocol::TType _etype119;
+            xfer += iprot->readListBegin(_etype119, _size116);
+            (*(this->success)).resize(_size116);
+            uint32_t _i120;
+            for (_i120 = 0; _i120 < _size116; ++_i120)
             {
-              xfer += (*(this->success))[_i133].read(iprot);
+              xfer += (*(this->success))[_i120].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -3896,63 +3698,6 @@ void FaceServClient::recv_getAlarmScenePic(ScenePic& _return)
     return;
   }
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAlarmScenePic failed: unknown result");
-}
-
-void FaceServClient::getAllCameraInfo(std::vector<CameraInfo> & _return)
-{
-  send_getAllCameraInfo();
-  recv_getAllCameraInfo(_return);
-}
-
-void FaceServClient::send_getAllCameraInfo()
-{
-  int32_t cseqid = 0;
-  oprot_->writeMessageBegin("getAllCameraInfo", ::apache::thrift::protocol::T_CALL, cseqid);
-
-  FaceServ_getAllCameraInfo_pargs args;
-  args.write(oprot_);
-
-  oprot_->writeMessageEnd();
-  oprot_->getTransport()->writeEnd();
-  oprot_->getTransport()->flush();
-}
-
-void FaceServClient::recv_getAllCameraInfo(std::vector<CameraInfo> & _return)
-{
-
-  int32_t rseqid = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TMessageType mtype;
-
-  iprot_->readMessageBegin(fname, mtype, rseqid);
-  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
-    ::apache::thrift::TApplicationException x;
-    x.read(iprot_);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-    throw x;
-  }
-  if (mtype != ::apache::thrift::protocol::T_REPLY) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  if (fname.compare("getAllCameraInfo") != 0) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  FaceServ_getAllCameraInfo_presult result;
-  result.success = &_return;
-  result.read(iprot_);
-  iprot_->readMessageEnd();
-  iprot_->getTransport()->readEnd();
-
-  if (result.__isset.success) {
-    // _return pointer has now been filled
-    return;
-  }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllCameraInfo failed: unknown result");
 }
 
 void FaceServClient::snapHistory(std::vector<SnapFaceHis> & _return, const std::string& cameraid, const int64_t start_timestap, const int64_t end_timstap)
@@ -4867,60 +4612,6 @@ void FaceServProcessor::process_getAlarmScenePic(int32_t seqid, ::apache::thrift
   }
 }
 
-void FaceServProcessor::process_getAllCameraInfo(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
-{
-  void* ctx = NULL;
-  if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("FaceServ.getAllCameraInfo", callContext);
-  }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "FaceServ.getAllCameraInfo");
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "FaceServ.getAllCameraInfo");
-  }
-
-  FaceServ_getAllCameraInfo_args args;
-  args.read(iprot);
-  iprot->readMessageEnd();
-  uint32_t bytes = iprot->getTransport()->readEnd();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "FaceServ.getAllCameraInfo", bytes);
-  }
-
-  FaceServ_getAllCameraInfo_result result;
-  try {
-    iface_->getAllCameraInfo(result.success);
-    result.__isset.success = true;
-  } catch (const std::exception& e) {
-    if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "FaceServ.getAllCameraInfo");
-    }
-
-    ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("getAllCameraInfo", ::apache::thrift::protocol::T_EXCEPTION, seqid);
-    x.write(oprot);
-    oprot->writeMessageEnd();
-    oprot->getTransport()->writeEnd();
-    oprot->getTransport()->flush();
-    return;
-  }
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "FaceServ.getAllCameraInfo");
-  }
-
-  oprot->writeMessageBegin("getAllCameraInfo", ::apache::thrift::protocol::T_REPLY, seqid);
-  result.write(oprot);
-  oprot->writeMessageEnd();
-  bytes = oprot->getTransport()->writeEnd();
-  oprot->getTransport()->flush();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "FaceServ.getAllCameraInfo", bytes);
-  }
-}
-
 void FaceServProcessor::process_snapHistory(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
@@ -5819,89 +5510,6 @@ void FaceServConcurrentClient::recv_getAlarmScenePic(ScenePic& _return, const in
       }
       // in a bad state, don't commit
       throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAlarmScenePic failed: unknown result");
-    }
-    // seqid != rseqid
-    this->sync_.updatePending(fname, mtype, rseqid);
-
-    // this will temporarily unlock the readMutex, and let other clients get work done
-    this->sync_.waitForWork(seqid);
-  } // end while(true)
-}
-
-void FaceServConcurrentClient::getAllCameraInfo(std::vector<CameraInfo> & _return)
-{
-  int32_t seqid = send_getAllCameraInfo();
-  recv_getAllCameraInfo(_return, seqid);
-}
-
-int32_t FaceServConcurrentClient::send_getAllCameraInfo()
-{
-  int32_t cseqid = this->sync_.generateSeqId();
-  ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
-  oprot_->writeMessageBegin("getAllCameraInfo", ::apache::thrift::protocol::T_CALL, cseqid);
-
-  FaceServ_getAllCameraInfo_pargs args;
-  args.write(oprot_);
-
-  oprot_->writeMessageEnd();
-  oprot_->getTransport()->writeEnd();
-  oprot_->getTransport()->flush();
-
-  sentry.commit();
-  return cseqid;
-}
-
-void FaceServConcurrentClient::recv_getAllCameraInfo(std::vector<CameraInfo> & _return, const int32_t seqid)
-{
-
-  int32_t rseqid = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TMessageType mtype;
-
-  // the read mutex gets dropped and reacquired as part of waitForWork()
-  // The destructor of this sentry wakes up other clients
-  ::apache::thrift::async::TConcurrentRecvSentry sentry(&this->sync_, seqid);
-
-  while(true) {
-    if(!this->sync_.getPending(fname, mtype, rseqid)) {
-      iprot_->readMessageBegin(fname, mtype, rseqid);
-    }
-    if(seqid == rseqid) {
-      if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
-        ::apache::thrift::TApplicationException x;
-        x.read(iprot_);
-        iprot_->readMessageEnd();
-        iprot_->getTransport()->readEnd();
-        sentry.commit();
-        throw x;
-      }
-      if (mtype != ::apache::thrift::protocol::T_REPLY) {
-        iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-        iprot_->readMessageEnd();
-        iprot_->getTransport()->readEnd();
-      }
-      if (fname.compare("getAllCameraInfo") != 0) {
-        iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-        iprot_->readMessageEnd();
-        iprot_->getTransport()->readEnd();
-
-        // in a bad state, don't commit
-        using ::apache::thrift::protocol::TProtocolException;
-        throw TProtocolException(TProtocolException::INVALID_DATA);
-      }
-      FaceServ_getAllCameraInfo_presult result;
-      result.success = &_return;
-      result.read(iprot_);
-      iprot_->readMessageEnd();
-      iprot_->getTransport()->readEnd();
-
-      if (result.__isset.success) {
-        // _return pointer has now been filled
-        sentry.commit();
-        return;
-      }
-      // in a bad state, don't commit
-      throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllCameraInfo failed: unknown result");
     }
     // seqid != rseqid
     this->sync_.updatePending(fname, mtype, rseqid);

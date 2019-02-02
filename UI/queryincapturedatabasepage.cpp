@@ -30,13 +30,12 @@
 #include "trackingpage.h"
 #include "facelinkpage.h"
 #include "portrait.h"
-//#define   USEOLDMOLD
 
 #pragma execution_character_set("utf-8")
 QueryInCaptureDataBasePage::QueryInCaptureDataBasePage(WidgetManagerI *wm, WidgetI *parent):
     WidgetI(wm,parent)
 {
-    setObjectName(tr("Query in capture database"));
+    setObjectName(tr("Query in face database"));
     //search using an image
     imagePosL_ = new QLabel(tr("Position"));
     imagePosCombox_ = new QComboBox;
@@ -153,6 +152,7 @@ QueryInCaptureDataBasePage::QueryInCaptureDataBasePage(WidgetManagerI *wm, Widge
                     << itemData{tr("Wearing_Earrings"),0,QVector<itemData>()} << itemData{tr("Wearing_Hat"),0,QVector<itemData>()}
                     << itemData{tr("Wearing_Lipstick"),0,QVector<itemData>()} << itemData{tr("Young"),0,QVector<itemData>()};
     devicesVec << items;
+#if 0
     items.childrens.clear();
     items.name = tr("personAttribute");
     items.value = 0;
@@ -175,6 +175,7 @@ QueryInCaptureDataBasePage::QueryInCaptureDataBasePage(WidgetManagerI *wm, Widge
                     << itemData{tr("upperBodyTshirt"),0,QVector<itemData>()} << itemData{tr("upperBodyOther"),0,QVector<itemData>()}
                     << itemData{tr("upperBodyVNeck"),0,QVector<itemData>()};
     devicesVec << items;
+#endif
     for(auto value : devicesVec){
         createTreeItem(attributTreeW_,nullptr,value);
     }
@@ -766,11 +767,7 @@ void QueryInCaptureDataBasePage::getCameraInfo()
 {
     BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
     RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
-#if 0
-    connect(serviceI,SIGNAL(sigCameraInfo(QVector<CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<CameraInfo>)));
-#else
-    connect(serviceI,SIGNAL(sigCameraMap(QVariantMap)),this,SLOT(slotOnCameraMap(QVariantMap)));
-#endif
+    connect(serviceI,SIGNAL(sigCameraInfo(QVector<RestServiceI::CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<RestServiceI::CameraInfo>)));
     serviceI->getCameraInfo();
     startWorker(worker);
 }
@@ -817,7 +814,7 @@ void QueryInCaptureDataBasePage::semanticSearch(int index)
         curSearchType_ = 1;
         QVector<std::tuple<QImage, QString, QString, QString, QDateTime,QString,QString> > dataListVec;
         std::transform(returnData.records.begin(),returnData.records.end(),std::back_inserter(dataListVec),[this](RestServiceI::DataRectureItem &nodeV){
-            return std::make_tuple(nodeV.img,nodeV.id,nodeV.cameraId,cameraMapInfo_.value(nodeV.cameraId).toString(),nodeV.time,nodeV.personId,nodeV.sceneId);
+            return std::make_tuple(nodeV.img,nodeV.id,nodeV.cameraId,cameraMapInfo_.value(nodeV.cameraId),nodeV.time,nodeV.personId,nodeV.sceneId);
         });
         updateDataList(returnData.toatal,returnData.totalPage,dataListVec);
         stackedW_->setEnabled(true);
@@ -850,20 +847,6 @@ QStringList QueryInCaptureDataBasePage::checkedAttrbute(QTreeWidgetItem *item)
         ++it;
     }
     return attrbuteList;
-}
-
-void QueryInCaptureDataBasePage::slotOnCameraMap(QVariantMap data)
-{
-    imagePosCombox_->clear();
-    semanticPosCombox_->clear();
-    imagePosCombox_->addItem(tr("Unlimited"),"");
-    semanticPosCombox_->addItem(tr("Unlimited"),"");
-    QStringList mapKeys = data.keys();
-    for(auto mapKey : mapKeys){
-        imagePosCombox_->addItem(data.value(mapKey).toString(),mapKey);
-        semanticPosCombox_->addItem(data.value(mapKey).toString(),mapKey);
-    }
-    cameraMapInfo_ = data;
 }
 
 void QueryInCaptureDataBasePage::slotConditionListIndexChanged(int index)
@@ -959,7 +942,7 @@ void QueryInCaptureDataBasePage::slotImageSearchBtnClicked()
         curSearchType_ = 0;
         QVector<std::tuple<QImage, QString, QString, QString, QDateTime,QString,QString> > dataListVec;
         std::transform(returnData.begin(),returnData.end(),std::back_inserter(dataListVec),[this](RestServiceI::DataRectureItem &nodeV){
-            return std::make_tuple(nodeV.img,nodeV.id,nodeV.cameraId,cameraMapInfo_.value(nodeV.cameraId).toString(),nodeV.time,nodeV.personId,nodeV.sceneId);
+            return std::make_tuple(nodeV.img,nodeV.id,nodeV.cameraId,cameraMapInfo_.value(nodeV.cameraId),nodeV.time,nodeV.personId,nodeV.sceneId);
         });
         needUpdatePageInfo_ = true;
         updateDataList(returnData.count(),1,dataListVec);
@@ -1018,7 +1001,7 @@ void QueryInCaptureDataBasePage::slotSemanticSearchBtnClicked()
     curfaceAttrList_.clear();
     curbodyAttrList_.clear();
     curfaceAttrList_ = checkedAttrbute(attributTreeW_->topLevelItem(0));
-    curbodyAttrList_ = checkedAttrbute(attributTreeW_->topLevelItem(1));
+//    curbodyAttrList_ = checkedAttrbute(attributTreeW_->topLevelItem(1));
     semanticCurCameraId_ = semanticPosCombox_->currentData().toString();
     semanticCurStartTime_ = semanticStartTimeEdit_->dateTime();
     semanticCurEndTime_ = semanticEndTimeEdit_->dateTime();
@@ -1027,14 +1010,15 @@ void QueryInCaptureDataBasePage::slotSemanticSearchBtnClicked()
 #endif
 }
 
-void QueryInCaptureDataBasePage::slotOnCameraInfo(QVector<CameraInfo> data)
+void QueryInCaptureDataBasePage::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)
 {
     imagePosCombox_->clear();
     imagePosCombox_->addItem(tr("Unlimited"),"");
     semanticPosCombox_->addItem(tr("Unlimited"),"");
-    foreach (const CameraInfo &info, data) {
-        imagePosCombox_->addItem(QString::fromStdString(info.position),QString::fromStdString(info.id));
-        semanticPosCombox_->addItem(QString::fromStdString(info.position),QString::fromStdString(info.id));
+    for (auto &info : data) {
+        imagePosCombox_->addItem(info.cameraPos,info.cameraId);
+        semanticPosCombox_->addItem(info.cameraPos,info.cameraId);
+        cameraMapInfo_[info.cameraId] = info.cameraPos;
     }
 }
 

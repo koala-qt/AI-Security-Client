@@ -22,7 +22,7 @@ DLL::CloudHttpDao::CloudHttpDao()
 
 }
 
-QString DLL::CloudHttpDao::getCameraInfoMap(QMap<QString, QVariant> &cameraMap)
+QString DLL::CloudHttpDao::getCameraInfo(QVector<RestServiceI::CameraInfo> &cameras)
 {
     QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-camera-map");
     int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),5);
@@ -41,7 +41,15 @@ QString DLL::CloudHttpDao::getCameraInfoMap(QMap<QString, QVariant> &cameraMap)
     if(status != 200){
         return jsObj.value("message").toString();
     }
-    cameraMap = jsObj.value("data").toObject().toVariantMap();
+    QJsonArray jsArray = jsObj.value("data").toArray();
+    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(cameras),[](QJsonValue jsVal){
+        RestServiceI::CameraInfo camera;
+        QJsonObject cameraObj = jsVal.toObject();
+        camera.cameraId = QString::number(cameraObj.value("id").toInt());
+        camera.cameraPos = cameraObj.value("pos").toString();
+        camera.rtsp = cameraObj.value("client_rtsp").toString();
+        return camera;
+    });
     return QString();
 }
 
@@ -77,7 +85,7 @@ QString DLL::CloudHttpDao::getGroup(QString groupNo, QVector<RestServiceI::Camer
     return QString();
 }
 
-QString DLL::CloudHttpDao::getDevice(QString groupNo, QVector<CameraInfo> &devices)
+QString DLL::CloudHttpDao::getDevice(QString groupNo, QVector<RestServiceI::CameraInfo> &devices)
 {
     QString urlStr = host_ + QObject::tr("api/v2/external/device/info/find?type=1&pageSize=10000000&pageNo=1&groupNo=%1").arg(groupNo);
     int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),5);
@@ -98,13 +106,13 @@ QString DLL::CloudHttpDao::getDevice(QString groupNo, QVector<CameraInfo> &devic
     }
     QJsonArray jsArray = jsObj.value("data").toArray();
     std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(devices),[](const QJsonValue &jsVal){
-        CameraInfo camera;
+        RestServiceI::CameraInfo camera;
         QJsonObject cameraObj = jsVal.toObject();
         QString rtspStr = cameraObj.value("sourceAddress").toString();
-        camera.rtsp = rtspStr.toStdString();
+        camera.rtsp = rtspStr;
         int spiteIndex = rtspStr.lastIndexOf('/');
-        camera.id = rtspStr.mid(spiteIndex+1).toStdString();
-        camera.position = cameraObj.value("name").toString().toStdString();
+        camera.cameraId = rtspStr.mid(spiteIndex+1);
+        camera.cameraPos = cameraObj.value("name").toString();
         return camera;
     });
     return QString();

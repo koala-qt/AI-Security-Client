@@ -55,7 +55,7 @@ private slots:
     void slotSearchBtnClicked();
     void slotSearchSnapInfo(int page);
     void slotOnSearch(PagedSnapFaceHis);
-    void slotOnCameraInfo(QVector<CameraInfo>);
+    void slotOnCameraInfo(QVector<RestServiceI::CameraInfo>);
 };
 
 #endif // CAPTURESEARCH_H

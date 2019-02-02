@@ -6,7 +6,7 @@
 CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
     WidgetI(wm,parent)
 {
-    setObjectName(tr("Semantic search"));
+    setObjectName(tr("Combination search"));
     QHBoxLayout *mainLay = new QHBoxLayout;
     contentView_ = new QWebEngineView;
     mainLay->addWidget(contentView_);

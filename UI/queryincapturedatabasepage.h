@@ -65,7 +65,7 @@ private:
     QMenu *dataMenu_{nullptr};
     bool needUpdatePageInfo_ = true;
     int curSearchType_ = -1;
-    QVariantMap cameraMapInfo_;
+    QMap<QString,QString> cameraMapInfo_;
 
     void getCameraInfo();
     void updateDataList(int totalRecords, int totalPages, QVector<std::tuple<QImage, QString, QString, QString, QDateTime, QString,QString> > &data);
@@ -73,12 +73,11 @@ private:
     QStringList checkedAttrbute(QTreeWidgetItem*);
 
 private slots:
-    void slotOnCameraMap(QVariantMap);
     void slotConditionListIndexChanged(int);
     void slotImageFaceImgBtnClicked();
     void slotImageSearchBtnClicked();
     void slotSemanticSearchBtnClicked();
-    void slotOnCameraInfo(QVector<CameraInfo>);
+    void slotOnCameraInfo(QVector<RestServiceI::CameraInfo>);
     void slotNextPage(int);
     void createTreeItem(QTreeWidget *treeW,QTreeWidgetItem *parentItem,itemData &items);
 };

@@ -218,7 +218,7 @@ RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
 //    numberPersonTimer_->start(1000);
 
     updateCamera();
-    getCameraGroup(nullptr,"1005");
+//    getCameraGroup(nullptr,"1005");
 }
 
 RealtimeMonitoring::~RealtimeMonitoring()
@@ -479,11 +479,7 @@ void RealtimeMonitoring::updateCamera()
 {
     BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
     RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
-#if 0
-    connect(serviceI,SIGNAL(sigCameraInfo(QVector<CameraInfo>)),this,SLOT(slotAddDevice(QVector<CameraInfo>)));
-#else
-    connect(serviceI,SIGNAL(sigCameraMap(QVariantMap)),this,SLOT(slotOnCameraMap(QVariantMap)));
-#endif
+    connect(serviceI,SIGNAL(sigCameraInfo(QVector<RestServiceI::CameraInfo>)),this,SLOT(slotAddDevice(QVector<RestServiceI::CameraInfo>)));
     serviceI->getCameraInfo();
     startWorker(worker);
 }
@@ -517,19 +513,19 @@ void RealtimeMonitoring::getCameraDevice(QTreeWidgetItem *item, QString groupNo)
 {
     BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
     RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
-    connect(serviceI,&RestServiceI::sigCameraInfo,this,[this,item](QVector<CameraInfo> devices){
-        foreach (const CameraInfo &info, devices) {
-            QTreeWidgetItem *camera = new QTreeWidgetItem(item, QStringList() << QString::fromStdString(info.position),1);
-            camera->setData(0,Qt::UserRole + 1, QString::fromStdString(info.id));
-            camera->setData(0,Qt::UserRole + 2, QString::fromStdString(info.rtsp));
-            camera->setData(0,Qt::UserRole + 3, QString::fromStdString(info.position));
+    connect(serviceI,&RestServiceI::sigCameraInfo,this,[this,item](QVector<RestServiceI::CameraInfo> devices){
+        for (auto &info : devices) {
+            QTreeWidgetItem *camera = new QTreeWidgetItem(item, QStringList() << info.cameraPos,1);
+            camera->setData(0,Qt::UserRole + 1, info.cameraId);
+            camera->setData(0,Qt::UserRole + 2, info.rtsp);
+            camera->setData(0,Qt::UserRole + 3, info.cameraPos);
             camera->setToolTip(0,tr("position:%1\n"
                                    "cameraId:%2\n"
-                                    "%3").arg(QString::fromStdString(info.position))
-                               .arg(QString::fromStdString(info.id))
-                               .arg(QString::fromStdString(info.rtsp)));
+                                    "%3").arg(info.cameraPos)
+                               .arg(info.cameraId)
+                               .arg(info.rtsp));
             if(!camera->data(0,Qt::UserRole + 2).toString().isEmpty()){
-                m_realPlayM->playByOrder(QString::fromStdString(info.rtsp),QString::fromStdString(info.id),camera->text(0));
+                m_realPlayM->playByOrder(info.rtsp,info.cameraId,camera->text(0));
             }
         }
     });
@@ -717,28 +713,26 @@ void RealtimeMonitoring::slotAddEventitem(QStringList data, QImage img)
     m_eventList->setItemWidget(item,itemWidget);
 }
 
-void RealtimeMonitoring::slotAddDevice(QVector<CameraInfo> data)
+void RealtimeMonitoring::slotAddDevice(QVector<RestServiceI::CameraInfo> data)
 {
-//    QTreeWidgetItem *item = new QTreeWidgetItem(m_treeW,QStringList() << tr("Cameras"));
-    foreach (const CameraInfo &info, data) {
-#if 0
-        QTreeWidgetItem *camera = new QTreeWidgetItem(item, QStringList() << QString::fromStdString(info.position));
-        camera->setData(0,Qt::UserRole + 1, QString::fromStdString(info.id));
-        camera->setData(0,Qt::UserRole + 2, QString::fromStdString(info.rtsp));
-        camera->setData(0,Qt::UserRole + 3, QString::fromStdString(info.position));
+    QTreeWidgetItem *item = new QTreeWidgetItem(m_treeW,QStringList() << tr("Cameras"));
+    for (auto &info : data) {
+        QTreeWidgetItem *camera = new QTreeWidgetItem(item, QStringList() << info.cameraPos);
+        camera->setData(0,Qt::UserRole + 1, info.cameraId);
+        camera->setData(0,Qt::UserRole + 2, info.rtsp);
+        camera->setData(0,Qt::UserRole + 3, info.cameraPos);
         camera->setToolTip(0,tr("position:%1\n"
                                "cameraId:%2\n"
-                                "%3").arg(QString::fromStdString(info.position))
-                           .arg(QString::fromStdString(info.id))
-                           .arg(QString::fromStdString(info.rtsp)));
-        if(!info.rtsp.empty()){
-            m_realPlayM->playByOrder(QString::fromStdString(info.rtsp),QString::fromStdString(info.id),camera->text(0));
+                                "%3").arg(info.cameraPos)
+                           .arg(info.cameraId)
+                           .arg(info.rtsp));
+        if(!info.rtsp.isEmpty()){
+            m_realPlayM->playByOrder(info.rtsp,info.cameraId,camera->text(0));
         }
-        cameraCombox_->addItem(QString::fromStdString(info.position),QString::fromStdString(info.id));
-#else
-        cameraCombox_->addItem(QString::fromStdString(info.position),QString::fromStdString(info.id));
-#endif
+        cameraCombox_->addItem(info.cameraPos,info.cameraId);
+        curCameraMap_[info.cameraId] = info.cameraPos;
     }
+    slotPersonTotalCountTimeout();
 }
 
 void RealtimeMonitoring::slotOnCameraGroup(QVector<RestServiceI::CameraGoup> groups)
@@ -748,17 +742,6 @@ void RealtimeMonitoring::slotOnCameraGroup(QVector<RestServiceI::CameraGoup> gro
         item->setData(0,Qt::UserRole,groupV.groupNo);
         item->setData(1,Qt::UserRole + 1,groupV.description);
     }
-}
-
-void RealtimeMonitoring::slotOnCameraMap(QVariantMap datas)
-{
-    curCameraMap_ = datas;
-    cameraCombox_->clear();
-    QStringList mapKeys = curCameraMap_.keys();
-    for(auto mapKey : mapKeys){
-        cameraCombox_->addItem(curCameraMap_.value(mapKey).toString(),mapKey);
-    }
-    slotPersonTotalCountTimeout();
 }
 
 void RealtimeMonitoring::slotOnScenePic(QImage img)

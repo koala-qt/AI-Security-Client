@@ -36,7 +36,7 @@ private slots:
     void slotAddStatis(bool);
     void slotRemoveStatis(bool);
     void slotSnapInfo(QVector<StatisTask>);
-    void slotOnCameraInfo(QVector<CameraInfo>);
+    void slotOnCameraInfo(QVector<RestServiceI::CameraInfo>);
     void slotOnCameraMap(QVariantMap);
 };
 

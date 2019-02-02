@@ -53,18 +53,6 @@ void ThriftDao::getTop(const int id)
 
 }
 
-std::vector<CameraInfo> ThriftDao::getCameraInfo(string &errorStr)
-{
-    std::vector<CameraInfo> cameras;
-    try{
-        transport_->open();
-        client_->getAllCameraInfo(cameras);
-    }catch(TException &e){
-        errorStr = e.what();
-    }
-    return cameras;
-}
-
 bool ThriftDao::addStatis(const string startId, const string endId, string &errorStr)
 {
     bool isOk = false;

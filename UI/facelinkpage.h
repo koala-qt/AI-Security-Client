@@ -10,6 +10,7 @@ QT_FORWARD_DECLARE_CLASS(QWebEngineView)
 QT_FORWARD_DECLARE_CLASS(QComboBox)
 QT_FORWARD_DECLARE_CLASS(TreeCharts)
 QT_FORWARD_DECLARE_CLASS(QListWidget)
+QT_FORWARD_DECLARE_CLASS(QLineEdit)
 QT_FORWARD_DECLARE_CLASS(WaitingLabel)
 class FaceLinkPage : public WidgetI
 {
@@ -28,12 +29,11 @@ protected:
 
 private:
     QComboBox *levelCombox_{nullptr};
-    QPushButton *imgBtn_{nullptr},*searchBtn_{nullptr},*parameterSettingBtn_{nullptr},*cancelBtn_{nullptr},*okBtn_{nullptr};
-    QLabel *levelLabel_{nullptr},*startTimeL_{nullptr},*endTimeL_{nullptr},*parameterL_{nullptr};
+    QPushButton *imgBtn_{nullptr},*searchBtn_{nullptr};
+    QLabel *levelLabel_{nullptr},*startTimeL_{nullptr},*endTimeL_{nullptr},*maxnumL_{nullptr};
     QDateTimeEdit *startTimeEdit_{nullptr},*endTimeEdit_{nullptr};
+    QLineEdit *maxnumEdit_{nullptr};
     TreeCharts *dataView_{nullptr};
-    QWidget *parameterBackW_{nullptr};
-    QListWidget *parameterSettingList_{nullptr};
 
     QImage backImg_;
     QString imgOid_;
@@ -41,7 +41,6 @@ private:
 
 private slots:
     void slotSearchBtnClicked();
-    void slotParameterBtnClicked();
     void slotFaceLinkFinished(QString);
     void slotFaceLinkTree(QJsonObject);
     void slotImgBtnClicked();

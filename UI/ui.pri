@@ -43,7 +43,8 @@ HEADERS += \
     $$PWD/trackingpage.h \
     $$PWD/queryincapturedatabasepage.h \
     $$PWD/targetsearch.h \
-    $$PWD/combinationpage.h
+    $$PWD/combinationpage.h \
+    $$PWD/semanticsearchpage.h
 
 SOURCES += \
     $$PWD/koalawidgetmanager.cpp \
@@ -87,4 +88,5 @@ SOURCES += \
     $$PWD/trackingpage.cpp \
     $$PWD/queryincapturedatabasepage.cpp \
     $$PWD/targetsearch.cpp \
-    $$PWD/combinationpage.cpp
+    $$PWD/combinationpage.cpp \
+    $$PWD/semanticsearchpage.cpp

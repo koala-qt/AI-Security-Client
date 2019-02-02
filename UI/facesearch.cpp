@@ -389,14 +389,14 @@ void FaceSearch::getCameraInfo()
     startWorker(worker);
 }
 
-void FaceSearch::slotOnCameraInfo(QVector<CameraInfo> data)
+void FaceSearch::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)
 {
     cameraCombox_->clear();
     QPixmap pix(cameraCombox_->iconSize());
     pix.fill(Qt::transparent);
     cameraCombox_->addItem(pix,tr("不限"),"");
-    foreach (const CameraInfo &info, data) {
-        cameraCombox_->addItem(pix,QString::fromStdString(info.position),QString::fromStdString(info.id));
+    for (auto &info : data) {
+        cameraCombox_->addItem(info.cameraPos,info.cameraId);
     }
 }
 

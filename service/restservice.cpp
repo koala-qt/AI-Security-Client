@@ -169,21 +169,12 @@ void BLL::RestService::run()
     if(argType == GetTop){
 
     }else if(argType == GetCameraInfo){
-#if  0
-        std::vector<CameraInfo> cameras = thriftDaoObj.getCameraInfo(errorStr);
-        if(errorStr.empty()){
-            emit sigCameraInfo(QVector<CameraInfo>::fromStdVector(cameras));
-        }else{
-            emit sigError(QString::fromStdString(errorStr));
-        }
-#else
         DLL::CloudHttpDao httpDao;
-        QVariantMap cameraMap;
-        QString qerrorStr = httpDao.getCameraInfoMap(cameraMap);
+        QVector<CameraInfo> cameras;
+        QString qerrorStr = httpDao.getCameraInfo(cameras);
         if(qerrorStr.isEmpty()){
-            emit sigCameraMap(cameraMap);
+            emit sigCameraInfo(cameras);
         }
-#endif
     }else if(argType == GetCameraGroup){
         DLL::CloudHttpDao httpDao;
         QVector<RestServiceI::CameraGoup> resGroup;

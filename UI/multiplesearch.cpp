@@ -256,7 +256,7 @@ void MultipleSearch::getCameraInfo()
 {
     BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
     RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
-    connect(serviceI,SIGNAL(sigCameraInfo(QVector<CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<CameraInfo>)));
+    connect(serviceI,SIGNAL(sigCameraInfo(QVector<RestServiceI::CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<RestServiceI::CameraInfo>)));
     serviceI->getCameraInfo();
     startWorker(worker);
 }
@@ -266,12 +266,12 @@ void MultipleSearch::slotPageNoChanged(int index)
 
 }
 
-void MultipleSearch::slotOnCameraInfo(QVector<CameraInfo> data)
+void MultipleSearch::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)
 {
     posCombox_->clear();
     posCombox_->addItem(tr("Unlimited"),"");
-    foreach (const CameraInfo &info, data) {
-        posCombox_->addItem(QString::fromStdString(info.position),QString::fromStdString(info.id));
+    for (auto &info : data) {
+        posCombox_->addItem(info.cameraPos,info.cameraId);
     }
 }
 

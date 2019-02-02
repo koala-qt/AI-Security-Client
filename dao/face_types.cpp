@@ -298,238 +298,6 @@ void ScenePic::printTo(std::ostream& out) const {
 }
 
 
-CameraInfo::~CameraInfo() throw() {
-}
-
-
-void CameraInfo::__set_id(const std::string& val) {
-  this->id = val;
-}
-
-void CameraInfo::__set_position(const std::string& val) {
-  this->position = val;
-}
-
-void CameraInfo::__set_rtsp(const std::string& val) {
-  this->rtsp = val;
-}
-
-void CameraInfo::__set_dvr_ip(const std::string& val) {
-  this->dvr_ip = val;
-}
-
-void CameraInfo::__set_dvr_port(const int32_t val) {
-  this->dvr_port = val;
-}
-
-void CameraInfo::__set_dvr_user(const std::string& val) {
-  this->dvr_user = val;
-}
-
-void CameraInfo::__set_dvr_password(const std::string& val) {
-  this->dvr_password = val;
-}
-
-void CameraInfo::__set_dvr_channel(const int32_t val) {
-  this->dvr_channel = val;
-}
-std::ostream& operator<<(std::ostream& out, const CameraInfo& obj)
-{
-  obj.printTo(out);
-  return out;
-}
-
-
-uint32_t CameraInfo::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  ::apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->id);
-          this->__isset.id = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 2:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->position);
-          this->__isset.position = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 3:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->rtsp);
-          this->__isset.rtsp = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 4:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->dvr_ip);
-          this->__isset.dvr_ip = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 5:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->dvr_port);
-          this->__isset.dvr_port = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 6:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->dvr_user);
-          this->__isset.dvr_user = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 7:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->dvr_password);
-          this->__isset.dvr_password = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 8:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->dvr_channel);
-          this->__isset.dvr_channel = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t CameraInfo::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  ::apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
-  xfer += oprot->writeStructBegin("CameraInfo");
-
-  xfer += oprot->writeFieldBegin("id", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString(this->id);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("position", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString(this->position);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("rtsp", ::apache::thrift::protocol::T_STRING, 3);
-  xfer += oprot->writeString(this->rtsp);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("dvr_ip", ::apache::thrift::protocol::T_STRING, 4);
-  xfer += oprot->writeString(this->dvr_ip);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("dvr_port", ::apache::thrift::protocol::T_I32, 5);
-  xfer += oprot->writeI32(this->dvr_port);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("dvr_user", ::apache::thrift::protocol::T_STRING, 6);
-  xfer += oprot->writeString(this->dvr_user);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("dvr_password", ::apache::thrift::protocol::T_STRING, 7);
-  xfer += oprot->writeString(this->dvr_password);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("dvr_channel", ::apache::thrift::protocol::T_I32, 8);
-  xfer += oprot->writeI32(this->dvr_channel);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-void swap(CameraInfo &a, CameraInfo &b) {
-  using ::std::swap;
-  swap(a.id, b.id);
-  swap(a.position, b.position);
-  swap(a.rtsp, b.rtsp);
-  swap(a.dvr_ip, b.dvr_ip);
-  swap(a.dvr_port, b.dvr_port);
-  swap(a.dvr_user, b.dvr_user);
-  swap(a.dvr_password, b.dvr_password);
-  swap(a.dvr_channel, b.dvr_channel);
-  swap(a.__isset, b.__isset);
-}
-
-CameraInfo::CameraInfo(const CameraInfo& other4) {
-  id = other4.id;
-  position = other4.position;
-  rtsp = other4.rtsp;
-  dvr_ip = other4.dvr_ip;
-  dvr_port = other4.dvr_port;
-  dvr_user = other4.dvr_user;
-  dvr_password = other4.dvr_password;
-  dvr_channel = other4.dvr_channel;
-  __isset = other4.__isset;
-}
-CameraInfo& CameraInfo::operator=(const CameraInfo& other5) {
-  id = other5.id;
-  position = other5.position;
-  rtsp = other5.rtsp;
-  dvr_ip = other5.dvr_ip;
-  dvr_port = other5.dvr_port;
-  dvr_user = other5.dvr_user;
-  dvr_password = other5.dvr_password;
-  dvr_channel = other5.dvr_channel;
-  __isset = other5.__isset;
-  return *this;
-}
-void CameraInfo::printTo(std::ostream& out) const {
-  using ::apache::thrift::to_string;
-  out << "CameraInfo(";
-  out << "id=" << to_string(id);
-  out << ", " << "position=" << to_string(position);
-  out << ", " << "rtsp=" << to_string(rtsp);
-  out << ", " << "dvr_ip=" << to_string(dvr_ip);
-  out << ", " << "dvr_port=" << to_string(dvr_port);
-  out << ", " << "dvr_user=" << to_string(dvr_user);
-  out << ", " << "dvr_password=" << to_string(dvr_password);
-  out << ", " << "dvr_channel=" << to_string(dvr_channel);
-  out << ")";
-}
-
-
 SnapFaceHis::~SnapFaceHis() throw() {
 }
 
@@ -673,21 +441,21 @@ void swap(SnapFaceHis &a, SnapFaceHis &b) {
   swap(a.__isset, b.__isset);
 }
 
-SnapFaceHis::SnapFaceHis(const SnapFaceHis& other6) {
-  oid = other6.oid;
-  cameraid = other6.cameraid;
-  camera_pos = other6.camera_pos;
-  faceimg = other6.faceimg;
-  time = other6.time;
-  __isset = other6.__isset;
+SnapFaceHis::SnapFaceHis(const SnapFaceHis& other4) {
+  oid = other4.oid;
+  cameraid = other4.cameraid;
+  camera_pos = other4.camera_pos;
+  faceimg = other4.faceimg;
+  time = other4.time;
+  __isset = other4.__isset;
 }
-SnapFaceHis& SnapFaceHis::operator=(const SnapFaceHis& other7) {
-  oid = other7.oid;
-  cameraid = other7.cameraid;
-  camera_pos = other7.camera_pos;
-  faceimg = other7.faceimg;
-  time = other7.time;
-  __isset = other7.__isset;
+SnapFaceHis& SnapFaceHis::operator=(const SnapFaceHis& other5) {
+  oid = other5.oid;
+  cameraid = other5.cameraid;
+  camera_pos = other5.camera_pos;
+  faceimg = other5.faceimg;
+  time = other5.time;
+  __isset = other5.__isset;
   return *this;
 }
 void SnapFaceHis::printTo(std::ostream& out) const {
@@ -765,14 +533,14 @@ uint32_t PagedSnapFaceHis::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->snap_face_his.clear();
-            uint32_t _size8;
-            ::apache::thrift::protocol::TType _etype11;
-            xfer += iprot->readListBegin(_etype11, _size8);
-            this->snap_face_his.resize(_size8);
-            uint32_t _i12;
-            for (_i12 = 0; _i12 < _size8; ++_i12)
+            uint32_t _size6;
+            ::apache::thrift::protocol::TType _etype9;
+            xfer += iprot->readListBegin(_etype9, _size6);
+            this->snap_face_his.resize(_size6);
+            uint32_t _i10;
+            for (_i10 = 0; _i10 < _size6; ++_i10)
             {
-              xfer += this->snap_face_his[_i12].read(iprot);
+              xfer += this->snap_face_his[_i10].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -809,10 +577,10 @@ uint32_t PagedSnapFaceHis::write(::apache::thrift::protocol::TProtocol* oprot) c
   xfer += oprot->writeFieldBegin("snap_face_his", ::apache::thrift::protocol::T_LIST, 3);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->snap_face_his.size()));
-    std::vector<SnapFaceHis> ::const_iterator _iter13;
-    for (_iter13 = this->snap_face_his.begin(); _iter13 != this->snap_face_his.end(); ++_iter13)
+    std::vector<SnapFaceHis> ::const_iterator _iter11;
+    for (_iter11 = this->snap_face_his.begin(); _iter11 != this->snap_face_his.end(); ++_iter11)
     {
-      xfer += (*_iter13).write(oprot);
+      xfer += (*_iter11).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -831,17 +599,17 @@ void swap(PagedSnapFaceHis &a, PagedSnapFaceHis &b) {
   swap(a.__isset, b.__isset);
 }
 
-PagedSnapFaceHis::PagedSnapFaceHis(const PagedSnapFaceHis& other14) {
-  total_page = other14.total_page;
-  total_count = other14.total_count;
-  snap_face_his = other14.snap_face_his;
-  __isset = other14.__isset;
+PagedSnapFaceHis::PagedSnapFaceHis(const PagedSnapFaceHis& other12) {
+  total_page = other12.total_page;
+  total_count = other12.total_count;
+  snap_face_his = other12.snap_face_his;
+  __isset = other12.__isset;
 }
-PagedSnapFaceHis& PagedSnapFaceHis::operator=(const PagedSnapFaceHis& other15) {
-  total_page = other15.total_page;
-  total_count = other15.total_count;
-  snap_face_his = other15.snap_face_his;
-  __isset = other15.__isset;
+PagedSnapFaceHis& PagedSnapFaceHis::operator=(const PagedSnapFaceHis& other13) {
+  total_page = other13.total_page;
+  total_count = other13.total_count;
+  snap_face_his = other13.snap_face_his;
+  __isset = other13.__isset;
   return *this;
 }
 void PagedSnapFaceHis::printTo(std::ostream& out) const {
@@ -980,19 +748,19 @@ void swap(StatisTask &a, StatisTask &b) {
   swap(a.__isset, b.__isset);
 }
 
-StatisTask::StatisTask(const StatisTask& other16) {
-  start_camera_id = other16.start_camera_id;
-  end_camera_id = other16.end_camera_id;
-  start_camera_pos = other16.start_camera_pos;
-  end_camera_pos = other16.end_camera_pos;
-  __isset = other16.__isset;
+StatisTask::StatisTask(const StatisTask& other14) {
+  start_camera_id = other14.start_camera_id;
+  end_camera_id = other14.end_camera_id;
+  start_camera_pos = other14.start_camera_pos;
+  end_camera_pos = other14.end_camera_pos;
+  __isset = other14.__isset;
 }
-StatisTask& StatisTask::operator=(const StatisTask& other17) {
-  start_camera_id = other17.start_camera_id;
-  end_camera_id = other17.end_camera_id;
-  start_camera_pos = other17.start_camera_pos;
-  end_camera_pos = other17.end_camera_pos;
-  __isset = other17.__isset;
+StatisTask& StatisTask::operator=(const StatisTask& other15) {
+  start_camera_id = other15.start_camera_id;
+  end_camera_id = other15.end_camera_id;
+  start_camera_pos = other15.start_camera_pos;
+  end_camera_pos = other15.end_camera_pos;
+  __isset = other15.__isset;
   return *this;
 }
 void StatisTask::printTo(std::ostream& out) const {
@@ -1098,15 +866,15 @@ void swap(FaceStatistics &a, FaceStatistics &b) {
   swap(a.__isset, b.__isset);
 }
 
-FaceStatistics::FaceStatistics(const FaceStatistics& other18) {
-  snap_total = other18.snap_total;
-  today_total = other18.today_total;
-  __isset = other18.__isset;
+FaceStatistics::FaceStatistics(const FaceStatistics& other16) {
+  snap_total = other16.snap_total;
+  today_total = other16.today_total;
+  __isset = other16.__isset;
 }
-FaceStatistics& FaceStatistics::operator=(const FaceStatistics& other19) {
-  snap_total = other19.snap_total;
-  today_total = other19.today_total;
-  __isset = other19.__isset;
+FaceStatistics& FaceStatistics::operator=(const FaceStatistics& other17) {
+  snap_total = other17.snap_total;
+  today_total = other17.today_total;
+  __isset = other17.__isset;
   return *this;
 }
 void FaceStatistics::printTo(std::ostream& out) const {
@@ -1210,15 +978,15 @@ void swap(Point &a, Point &b) {
   swap(a.__isset, b.__isset);
 }
 
-Point::Point(const Point& other20) {
-  x = other20.x;
-  y = other20.y;
-  __isset = other20.__isset;
+Point::Point(const Point& other18) {
+  x = other18.x;
+  y = other18.y;
+  __isset = other18.__isset;
 }
-Point& Point::operator=(const Point& other21) {
-  x = other21.x;
-  y = other21.y;
-  __isset = other21.__isset;
+Point& Point::operator=(const Point& other19) {
+  x = other19.x;
+  y = other19.y;
+  __isset = other19.__isset;
   return *this;
 }
 void Point::printTo(std::ostream& out) const {
@@ -1390,23 +1158,23 @@ void swap(AlarmHis &a, AlarmHis &b) {
   swap(a.__isset, b.__isset);
 }
 
-AlarmHis::AlarmHis(const AlarmHis& other22) {
-  oid = other22.oid;
-  camera_id = other22.camera_id;
-  camera_pos = other22.camera_pos;
-  alarm_type = other22.alarm_type;
-  alarm_img = other22.alarm_img;
-  time = other22.time;
-  __isset = other22.__isset;
+AlarmHis::AlarmHis(const AlarmHis& other20) {
+  oid = other20.oid;
+  camera_id = other20.camera_id;
+  camera_pos = other20.camera_pos;
+  alarm_type = other20.alarm_type;
+  alarm_img = other20.alarm_img;
+  time = other20.time;
+  __isset = other20.__isset;
 }
-AlarmHis& AlarmHis::operator=(const AlarmHis& other23) {
-  oid = other23.oid;
-  camera_id = other23.camera_id;
-  camera_pos = other23.camera_pos;
-  alarm_type = other23.alarm_type;
-  alarm_img = other23.alarm_img;
-  time = other23.time;
-  __isset = other23.__isset;
+AlarmHis& AlarmHis::operator=(const AlarmHis& other21) {
+  oid = other21.oid;
+  camera_id = other21.camera_id;
+  camera_pos = other21.camera_pos;
+  alarm_type = other21.alarm_type;
+  alarm_img = other21.alarm_img;
+  time = other21.time;
+  __isset = other21.__isset;
   return *this;
 }
 void AlarmHis::printTo(std::ostream& out) const {
@@ -1485,14 +1253,14 @@ uint32_t PagedAlarmHis::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->alarm_his.clear();
-            uint32_t _size24;
-            ::apache::thrift::protocol::TType _etype27;
-            xfer += iprot->readListBegin(_etype27, _size24);
-            this->alarm_his.resize(_size24);
-            uint32_t _i28;
-            for (_i28 = 0; _i28 < _size24; ++_i28)
+            uint32_t _size22;
+            ::apache::thrift::protocol::TType _etype25;
+            xfer += iprot->readListBegin(_etype25, _size22);
+            this->alarm_his.resize(_size22);
+            uint32_t _i26;
+            for (_i26 = 0; _i26 < _size22; ++_i26)
             {
-              xfer += this->alarm_his[_i28].read(iprot);
+              xfer += this->alarm_his[_i26].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -1529,10 +1297,10 @@ uint32_t PagedAlarmHis::write(::apache::thrift::protocol::TProtocol* oprot) cons
   xfer += oprot->writeFieldBegin("alarm_his", ::apache::thrift::protocol::T_LIST, 3);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->alarm_his.size()));
-    std::vector<AlarmHis> ::const_iterator _iter29;
-    for (_iter29 = this->alarm_his.begin(); _iter29 != this->alarm_his.end(); ++_iter29)
+    std::vector<AlarmHis> ::const_iterator _iter27;
+    for (_iter27 = this->alarm_his.begin(); _iter27 != this->alarm_his.end(); ++_iter27)
     {
-      xfer += (*_iter29).write(oprot);
+      xfer += (*_iter27).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -1551,17 +1319,17 @@ void swap(PagedAlarmHis &a, PagedAlarmHis &b) {
   swap(a.__isset, b.__isset);
 }
 
-PagedAlarmHis::PagedAlarmHis(const PagedAlarmHis& other30) {
-  total_page = other30.total_page;
-  total_count = other30.total_count;
-  alarm_his = other30.alarm_his;
-  __isset = other30.__isset;
+PagedAlarmHis::PagedAlarmHis(const PagedAlarmHis& other28) {
+  total_page = other28.total_page;
+  total_count = other28.total_count;
+  alarm_his = other28.alarm_his;
+  __isset = other28.__isset;
 }
-PagedAlarmHis& PagedAlarmHis::operator=(const PagedAlarmHis& other31) {
-  total_page = other31.total_page;
-  total_count = other31.total_count;
-  alarm_his = other31.alarm_his;
-  __isset = other31.__isset;
+PagedAlarmHis& PagedAlarmHis::operator=(const PagedAlarmHis& other29) {
+  total_page = other29.total_page;
+  total_count = other29.total_count;
+  alarm_his = other29.alarm_his;
+  __isset = other29.__isset;
   return *this;
 }
 void PagedAlarmHis::printTo(std::ostream& out) const {
@@ -1617,14 +1385,14 @@ uint32_t Area::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->points.clear();
-            uint32_t _size32;
-            ::apache::thrift::protocol::TType _etype35;
-            xfer += iprot->readListBegin(_etype35, _size32);
-            this->points.resize(_size32);
-            uint32_t _i36;
-            for (_i36 = 0; _i36 < _size32; ++_i36)
+            uint32_t _size30;
+            ::apache::thrift::protocol::TType _etype33;
+            xfer += iprot->readListBegin(_etype33, _size30);
+            this->points.resize(_size30);
+            uint32_t _i34;
+            for (_i34 = 0; _i34 < _size30; ++_i34)
             {
-              xfer += this->points[_i36].read(iprot);
+              xfer += this->points[_i34].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -1635,9 +1403,9 @@ uint32_t Area::read(::apache::thrift::protocol::TProtocol* iprot) {
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast37;
-          xfer += iprot->readI32(ecast37);
-          this->area_type = (AreaType::type)ecast37;
+          int32_t ecast35;
+          xfer += iprot->readI32(ecast35);
+          this->area_type = (AreaType::type)ecast35;
           this->__isset.area_type = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -1663,10 +1431,10 @@ uint32_t Area::write(::apache::thrift::protocol::TProtocol* oprot) const {
   xfer += oprot->writeFieldBegin("points", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->points.size()));
-    std::vector<Point> ::const_iterator _iter38;
-    for (_iter38 = this->points.begin(); _iter38 != this->points.end(); ++_iter38)
+    std::vector<Point> ::const_iterator _iter36;
+    for (_iter36 = this->points.begin(); _iter36 != this->points.end(); ++_iter36)
     {
-      xfer += (*_iter38).write(oprot);
+      xfer += (*_iter36).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -1688,15 +1456,15 @@ void swap(Area &a, Area &b) {
   swap(a.__isset, b.__isset);
 }
 
-Area::Area(const Area& other39) {
-  points = other39.points;
-  area_type = other39.area_type;
-  __isset = other39.__isset;
+Area::Area(const Area& other37) {
+  points = other37.points;
+  area_type = other37.area_type;
+  __isset = other37.__isset;
 }
-Area& Area::operator=(const Area& other40) {
-  points = other40.points;
-  area_type = other40.area_type;
-  __isset = other40.__isset;
+Area& Area::operator=(const Area& other38) {
+  points = other38.points;
+  area_type = other38.area_type;
+  __isset = other38.__isset;
   return *this;
 }
 void Area::printTo(std::ostream& out) const {
@@ -1868,23 +1636,23 @@ void swap(SearchFace &a, SearchFace &b) {
   swap(a.__isset, b.__isset);
 }
 
-SearchFace::SearchFace(const SearchFace& other41) {
-  oid = other41.oid;
-  camera_id = other41.camera_id;
-  camera_pos = other41.camera_pos;
-  score = other41.score;
-  face_img = other41.face_img;
-  time = other41.time;
-  __isset = other41.__isset;
+SearchFace::SearchFace(const SearchFace& other39) {
+  oid = other39.oid;
+  camera_id = other39.camera_id;
+  camera_pos = other39.camera_pos;
+  score = other39.score;
+  face_img = other39.face_img;
+  time = other39.time;
+  __isset = other39.__isset;
 }
-SearchFace& SearchFace::operator=(const SearchFace& other42) {
-  oid = other42.oid;
-  camera_id = other42.camera_id;
-  camera_pos = other42.camera_pos;
-  score = other42.score;
-  face_img = other42.face_img;
-  time = other42.time;
-  __isset = other42.__isset;
+SearchFace& SearchFace::operator=(const SearchFace& other40) {
+  oid = other40.oid;
+  camera_id = other40.camera_id;
+  camera_pos = other40.camera_pos;
+  score = other40.score;
+  face_img = other40.face_img;
+  time = other40.time;
+  __isset = other40.__isset;
   return *this;
 }
 void SearchFace::printTo(std::ostream& out) const {
@@ -1943,14 +1711,14 @@ uint32_t FaceLink::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->node_oids.clear();
-            uint32_t _size43;
-            ::apache::thrift::protocol::TType _etype46;
-            xfer += iprot->readListBegin(_etype46, _size43);
-            this->node_oids.resize(_size43);
-            uint32_t _i47;
-            for (_i47 = 0; _i47 < _size43; ++_i47)
+            uint32_t _size41;
+            ::apache::thrift::protocol::TType _etype44;
+            xfer += iprot->readListBegin(_etype44, _size41);
+            this->node_oids.resize(_size41);
+            uint32_t _i45;
+            for (_i45 = 0; _i45 < _size41; ++_i45)
             {
-              xfer += iprot->readString(this->node_oids[_i47]);
+              xfer += iprot->readString(this->node_oids[_i45]);
             }
             xfer += iprot->readListEnd();
           }
@@ -1963,23 +1731,23 @@ uint32_t FaceLink::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->link_oids.clear();
-            uint32_t _size48;
-            ::apache::thrift::protocol::TType _etype51;
-            xfer += iprot->readListBegin(_etype51, _size48);
-            this->link_oids.resize(_size48);
-            uint32_t _i52;
-            for (_i52 = 0; _i52 < _size48; ++_i52)
+            uint32_t _size46;
+            ::apache::thrift::protocol::TType _etype49;
+            xfer += iprot->readListBegin(_etype49, _size46);
+            this->link_oids.resize(_size46);
+            uint32_t _i50;
+            for (_i50 = 0; _i50 < _size46; ++_i50)
             {
               {
-                this->link_oids[_i52].clear();
-                uint32_t _size53;
-                ::apache::thrift::protocol::TType _etype56;
-                xfer += iprot->readListBegin(_etype56, _size53);
-                this->link_oids[_i52].resize(_size53);
-                uint32_t _i57;
-                for (_i57 = 0; _i57 < _size53; ++_i57)
+                this->link_oids[_i50].clear();
+                uint32_t _size51;
+                ::apache::thrift::protocol::TType _etype54;
+                xfer += iprot->readListBegin(_etype54, _size51);
+                this->link_oids[_i50].resize(_size51);
+                uint32_t _i55;
+                for (_i55 = 0; _i55 < _size51; ++_i55)
                 {
-                  xfer += iprot->readString(this->link_oids[_i52][_i57]);
+                  xfer += iprot->readString(this->link_oids[_i50][_i55]);
                 }
                 xfer += iprot->readListEnd();
               }
@@ -2011,10 +1779,10 @@ uint32_t FaceLink::write(::apache::thrift::protocol::TProtocol* oprot) const {
   xfer += oprot->writeFieldBegin("node_oids", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->node_oids.size()));
-    std::vector<std::string> ::const_iterator _iter58;
-    for (_iter58 = this->node_oids.begin(); _iter58 != this->node_oids.end(); ++_iter58)
+    std::vector<std::string> ::const_iterator _iter56;
+    for (_iter56 = this->node_oids.begin(); _iter56 != this->node_oids.end(); ++_iter56)
     {
-      xfer += oprot->writeString((*_iter58));
+      xfer += oprot->writeString((*_iter56));
     }
     xfer += oprot->writeListEnd();
   }
@@ -2023,15 +1791,15 @@ uint32_t FaceLink::write(::apache::thrift::protocol::TProtocol* oprot) const {
   xfer += oprot->writeFieldBegin("link_oids", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_LIST, static_cast<uint32_t>(this->link_oids.size()));
-    std::vector<std::vector<std::string> > ::const_iterator _iter59;
-    for (_iter59 = this->link_oids.begin(); _iter59 != this->link_oids.end(); ++_iter59)
+    std::vector<std::vector<std::string> > ::const_iterator _iter57;
+    for (_iter57 = this->link_oids.begin(); _iter57 != this->link_oids.end(); ++_iter57)
     {
       {
-        xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>((*_iter59).size()));
-        std::vector<std::string> ::const_iterator _iter60;
-        for (_iter60 = (*_iter59).begin(); _iter60 != (*_iter59).end(); ++_iter60)
+        xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>((*_iter57).size()));
+        std::vector<std::string> ::const_iterator _iter58;
+        for (_iter58 = (*_iter57).begin(); _iter58 != (*_iter57).end(); ++_iter58)
         {
-          xfer += oprot->writeString((*_iter60));
+          xfer += oprot->writeString((*_iter58));
         }
         xfer += oprot->writeListEnd();
       }
@@ -2052,15 +1820,15 @@ void swap(FaceLink &a, FaceLink &b) {
   swap(a.__isset, b.__isset);
 }
 
-FaceLink::FaceLink(const FaceLink& other61) {
-  node_oids = other61.node_oids;
-  link_oids = other61.link_oids;
-  __isset = other61.__isset;
+FaceLink::FaceLink(const FaceLink& other59) {
+  node_oids = other59.node_oids;
+  link_oids = other59.link_oids;
+  __isset = other59.__isset;
 }
-FaceLink& FaceLink::operator=(const FaceLink& other62) {
-  node_oids = other62.node_oids;
-  link_oids = other62.link_oids;
-  __isset = other62.__isset;
+FaceLink& FaceLink::operator=(const FaceLink& other60) {
+  node_oids = other60.node_oids;
+  link_oids = other60.link_oids;
+  __isset = other60.__isset;
   return *this;
 }
 void FaceLink::printTo(std::ostream& out) const {
@@ -2123,14 +1891,14 @@ uint32_t PageSnapFaceHis::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->snap_face_his.clear();
-            uint32_t _size63;
-            ::apache::thrift::protocol::TType _etype66;
-            xfer += iprot->readListBegin(_etype66, _size63);
-            this->snap_face_his.resize(_size63);
-            uint32_t _i67;
-            for (_i67 = 0; _i67 < _size63; ++_i67)
+            uint32_t _size61;
+            ::apache::thrift::protocol::TType _etype64;
+            xfer += iprot->readListBegin(_etype64, _size61);
+            this->snap_face_his.resize(_size61);
+            uint32_t _i65;
+            for (_i65 = 0; _i65 < _size61; ++_i65)
             {
-              xfer += this->snap_face_his[_i67].read(iprot);
+              xfer += this->snap_face_his[_i65].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2163,10 +1931,10 @@ uint32_t PageSnapFaceHis::write(::apache::thrift::protocol::TProtocol* oprot) co
   xfer += oprot->writeFieldBegin("snap_face_his", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->snap_face_his.size()));
-    std::vector<SnapFaceHis> ::const_iterator _iter68;
-    for (_iter68 = this->snap_face_his.begin(); _iter68 != this->snap_face_his.end(); ++_iter68)
+    std::vector<SnapFaceHis> ::const_iterator _iter66;
+    for (_iter66 = this->snap_face_his.begin(); _iter66 != this->snap_face_his.end(); ++_iter66)
     {
-      xfer += (*_iter68).write(oprot);
+      xfer += (*_iter66).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -2184,15 +1952,15 @@ void swap(PageSnapFaceHis &a, PageSnapFaceHis &b) {
   swap(a.__isset, b.__isset);
 }
 
-PageSnapFaceHis::PageSnapFaceHis(const PageSnapFaceHis& other69) {
-  session_id = other69.session_id;
-  snap_face_his = other69.snap_face_his;
-  __isset = other69.__isset;
+PageSnapFaceHis::PageSnapFaceHis(const PageSnapFaceHis& other67) {
+  session_id = other67.session_id;
+  snap_face_his = other67.snap_face_his;
+  __isset = other67.__isset;
 }
-PageSnapFaceHis& PageSnapFaceHis::operator=(const PageSnapFaceHis& other70) {
-  session_id = other70.session_id;
-  snap_face_his = other70.snap_face_his;
-  __isset = other70.__isset;
+PageSnapFaceHis& PageSnapFaceHis::operator=(const PageSnapFaceHis& other68) {
+  session_id = other68.session_id;
+  snap_face_his = other68.snap_face_his;
+  __isset = other68.__isset;
   return *this;
 }
 void PageSnapFaceHis::printTo(std::ostream& out) const {

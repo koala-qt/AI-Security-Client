@@ -234,17 +234,17 @@ void VideoPlayback::getCameraDevice(QTreeWidgetItem *item, QString groupNo)
 {
     BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
     RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
-    connect(serviceI,&RestServiceI::sigCameraInfo,this,[this,item](QVector<CameraInfo> devices){
-        foreach (const CameraInfo &info, devices) {
-            QTreeWidgetItem *camera = new QTreeWidgetItem(item, QStringList() << QString::fromStdString(info.position),1);
-            camera->setData(0,Qt::UserRole + 1, QString::fromStdString(info.id));
-            camera->setData(0,Qt::UserRole + 2, QString::fromStdString(info.rtsp));
-            camera->setData(0,Qt::UserRole + 3, QString::fromStdString(info.position));
+    connect(serviceI,&RestServiceI::sigCameraInfo,this,[this,item](QVector<RestServiceI::CameraInfo> devices){
+        for (auto &info : devices) {
+            QTreeWidgetItem *camera = new QTreeWidgetItem(item, QStringList() << info.cameraPos,1);
+            camera->setData(0,Qt::UserRole + 1, info.cameraId);
+            camera->setData(0,Qt::UserRole + 2, info.rtsp);
+            camera->setData(0,Qt::UserRole + 3, info.cameraPos);
             camera->setToolTip(0,tr("position:%1\n"
                                    "cameraId:%2\n"
-                                    "%3").arg(QString::fromStdString(info.position))
-                               .arg(QString::fromStdString(info.id))
-                               .arg(QString::fromStdString(info.rtsp)));
+                                    "%3").arg(info.cameraPos)
+                               .arg(info.cameraId)
+                               .arg(info.rtsp));
         }
     });
     serviceI->getCameraDevice(groupNo);
@@ -308,25 +308,20 @@ void VideoPlayback::slotItemClicked(QTreeWidgetItem *item, int column)
     slotUploadTable(calendarWidget->selectedDate());
 }
 
-void VideoPlayback::slotAddDevice(QVector<CameraInfo> data)
+void VideoPlayback::slotAddDevice(QVector<RestServiceI::CameraInfo> data)
 {
     QTreeWidgetItem *item = new QTreeWidgetItem(deviceTree_,QStringList() << tr("Cameras"));
     int txtLen = 0;
     QString devTitle;
-    foreach (const CameraInfo &info, data) {
-        devTitle = QString::fromStdString(info.position);
+    for (auto &info : data) {
+        devTitle = info.cameraPos;
         QTreeWidgetItem *camera = new QTreeWidgetItem(item, QStringList() << devTitle);
         if (devTitle.length() > txtLen)
         {
             txtLen = devTitle.length();
         }
-        camera->setData(0,Qt::UserRole + 1, QString::fromStdString(info.id));
-        camera->setData(0,Qt::UserRole + 2, QString::fromStdString(info.rtsp));
-        camera->setData(0,Qt::UserRole + 3, QString::fromStdString(info.dvr_ip));
-        camera->setData(0,Qt::UserRole + 4, info.dvr_port);
-        camera->setData(0,Qt::UserRole + 5, QString::fromStdString(info.dvr_user));
-        camera->setData(0,Qt::UserRole + 6, QString::fromStdString(info.dvr_password));
-        camera->setData(0,Qt::UserRole + 7, info.dvr_channel);
+        camera->setData(0,Qt::UserRole + 1, info.cameraId);
+        camera->setData(0,Qt::UserRole + 2, info.rtsp);
     }
     if(item->childCount()){
         deviceTree_->setItemSelected(item->child(0),true);

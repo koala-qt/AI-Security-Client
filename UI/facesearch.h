@@ -45,7 +45,7 @@ private:
     void getCameraInfo();
 
 private slots:
-    void slotOnCameraInfo(QVector<CameraInfo>);
+    void slotOnCameraInfo(QVector<RestServiceI::CameraInfo>);
     void slotSearchClicked();
     void slotImgBtnClicked();
     void slotOnScenePic(QImage);
