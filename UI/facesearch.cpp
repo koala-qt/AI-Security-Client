@@ -11,6 +11,7 @@
 #include <QHeaderView>
 #include <QFileDialog>
 #include <QStandardPaths>
+#include <QScrollBar>
 #include <QSpinBox>
 #include <QMenu>
 #include <QDebug>
@@ -206,6 +207,12 @@ void FaceSearch::setUserStyle(WidgetManagerI::SkinStyle s)
         endTimeL_->setPalette(pal);
         similarL_->setPalette(pal);
 
+        menu_->setStyleSheet("QMenu{"
+                             "background-color: rgb(75,75,75);"
+                             "}"
+                             "QMenu::item:selected{"
+                             "background-color: rgba(255,255,255,0.4);"
+                             "}");
         m_imgBtn->setStyleSheet("QPushButton{"
                                  "background-color: transparent;"
                                  "}");
@@ -226,6 +233,45 @@ void FaceSearch::setUserStyle(WidgetManagerI::SkinStyle s)
                     "color: white;"
                     "background-color: rgba(206,206,206,40);"
                     "}");
+        m_tableW->verticalScrollBar()->setStyleSheet(
+                                                    "QScrollBar:vertical{"
+                                                    "background: transparent;"
+                                                    "border-radius: 10px;"
+                                                    "border: none;"
+                                                    "width: 13px;"
+                                                    "}"
+                                                    "QScrollBar::handle:vertical{"
+                                                    "background: rgba(255,255,255,0.5);"
+                                                    "border-radius: 5px;"
+                                                    "}"
+                                                    "QScrollBar::add-line:vertical{"
+                                                    "background: transparent;"
+                                                    "border:0px solid #274168;"
+                                                    "border-radius: 5px;"
+                                                    "min-height: 10px;"
+                                                    "width: 13px;"
+                                                    "}"
+                                                    "QScrollBar::sub-line:vertical{"
+                                                    "background: transparent;"
+                                                    "border:0px solid #274168;"
+                                                    "min-height: 10px;"
+                                                    "width: 13px;"
+                                                    "}"
+                                                    "QScrollBar::up-arrow:vertical{"
+                                                    "subcontrol-origin: margin;"
+                                                    "height: 0px;"
+                                                    "border:0 0 0 0;"
+                                                    "visible:false;"
+                                                    "}"
+                                                    "QScrollBar::down-arrow:vertical{"
+                                                    "subcontrol-origin: margin;"
+                                                    "height: 0px;"
+                                                    "visible:false;"
+                                                    "}"
+                                                    "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
+                                                    "background: transparent;"
+                                                    "border-radius: 10px;"
+                                                    "}");
 
         m_pageIndicator->setUserStyle();
 
