@@ -215,7 +215,6 @@ RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
     connect(m_treeW,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),this,SLOT(slotTreeItemDoubleClicked(QTreeWidgetItem*,int)));
     connect(cameraCombox_,SIGNAL(currentIndexChanged(int)),this,SLOT(slotCameraComboxIndexChanged(int)));
     connect(numberPersonTimer_,SIGNAL(timeout()),this,SLOT(slotPersonCountTimer()));
-//    numberPersonTimer_->start(1000);
 
     updateCamera();
 //    getCameraGroup(nullptr,"1005");
@@ -790,6 +789,8 @@ void RealtimeMonitoring::slotPersonTotalCountTimeout()
         waitingTimeL_->setNum(time / 1000);
         qDebug() << "person numbers" << nums;
         QTimer::singleShot(1000,this,[this]{
+            numberPersonTimer_->stop();
+            numberPersonTimer_->start(1000);
             noNumbersPersonDataCount_ = 0;
             slotPersonTotalCountTimeout();
         });
