@@ -35,8 +35,6 @@ class FaceInfo;
 
 class ScenePic;
 
-class CameraInfo;
-
 class SnapFaceHis;
 
 class PagedSnapFaceHis;
@@ -166,90 +164,6 @@ class ScenePic : public virtual ::apache::thrift::TBase {
 void swap(ScenePic &a, ScenePic &b);
 
 std::ostream& operator<<(std::ostream& out, const ScenePic& obj);
-
-typedef struct _CameraInfo__isset {
-  _CameraInfo__isset() : id(false), position(false), rtsp(false), dvr_ip(false), dvr_port(false), dvr_user(false), dvr_password(false), dvr_channel(false) {}
-  bool id :1;
-  bool position :1;
-  bool rtsp :1;
-  bool dvr_ip :1;
-  bool dvr_port :1;
-  bool dvr_user :1;
-  bool dvr_password :1;
-  bool dvr_channel :1;
-} _CameraInfo__isset;
-
-class CameraInfo : public virtual ::apache::thrift::TBase {
- public:
-
-  CameraInfo(const CameraInfo&);
-  CameraInfo& operator=(const CameraInfo&);
-  CameraInfo() : id(), position(), rtsp(), dvr_ip(), dvr_port(0), dvr_user(), dvr_password(), dvr_channel(0) {
-  }
-
-  virtual ~CameraInfo() throw();
-  std::string id;
-  std::string position;
-  std::string rtsp;
-  std::string dvr_ip;
-  int32_t dvr_port;
-  std::string dvr_user;
-  std::string dvr_password;
-  int32_t dvr_channel;
-
-  _CameraInfo__isset __isset;
-
-  void __set_id(const std::string& val);
-
-  void __set_position(const std::string& val);
-
-  void __set_rtsp(const std::string& val);
-
-  void __set_dvr_ip(const std::string& val);
-
-  void __set_dvr_port(const int32_t val);
-
-  void __set_dvr_user(const std::string& val);
-
-  void __set_dvr_password(const std::string& val);
-
-  void __set_dvr_channel(const int32_t val);
-
-  bool operator == (const CameraInfo & rhs) const
-  {
-    if (!(id == rhs.id))
-      return false;
-    if (!(position == rhs.position))
-      return false;
-    if (!(rtsp == rhs.rtsp))
-      return false;
-    if (!(dvr_ip == rhs.dvr_ip))
-      return false;
-    if (!(dvr_port == rhs.dvr_port))
-      return false;
-    if (!(dvr_user == rhs.dvr_user))
-      return false;
-    if (!(dvr_password == rhs.dvr_password))
-      return false;
-    if (!(dvr_channel == rhs.dvr_channel))
-      return false;
-    return true;
-  }
-  bool operator != (const CameraInfo &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const CameraInfo & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  virtual void printTo(std::ostream& out) const;
-};
-
-void swap(CameraInfo &a, CameraInfo &b);
-
-std::ostream& operator<<(std::ostream& out, const CameraInfo& obj);
 
 typedef struct _SnapFaceHis__isset {
   _SnapFaceHis__isset() : oid(false), cameraid(false), camera_pos(false), faceimg(false), time(false) {}

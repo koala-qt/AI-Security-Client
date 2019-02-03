@@ -34,7 +34,7 @@ private:
 
 private slots:
     void slotItemClicked(QTreeWidgetItem*,int);
-    void slotAddDevice(QVector<CameraInfo>);
+    void slotAddDevice(QVector<RestServiceI::CameraInfo>);
     void slotTableItemDoubleClicked(QTableWidgetItem *);
     void slotUploadTable(QDate);
 };

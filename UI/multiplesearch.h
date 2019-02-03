@@ -40,7 +40,7 @@ private:
 
 private slots:
     void slotPageNoChanged(int);
-    void slotOnCameraInfo(QVector<CameraInfo>);
+    void slotOnCameraInfo(QVector<RestServiceI::CameraInfo>);
     void slotItemClicked(QListWidgetItem *);
     void slotSearchBtnClicked();
 };

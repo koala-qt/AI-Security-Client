@@ -24,7 +24,6 @@ class FaceServIf {
   virtual void getFacePic(std::string& _return, const std::string& oid) = 0;
   virtual void getScenePic(ScenePic& _return, const std::string& oid) = 0;
   virtual void getAlarmScenePic(ScenePic& _return, const std::string& oid) = 0;
-  virtual void getAllCameraInfo(std::vector<CameraInfo> & _return) = 0;
   virtual void snapHistory(std::vector<SnapFaceHis> & _return, const std::string& cameraid, const int64_t start_timestap, const int64_t end_timstap) = 0;
   virtual void pagenateSnapHistory(PagedSnapFaceHis& _return, const int32_t page, const int32_t num, const std::string& cameraid, const int64_t start_timestap, const int64_t end_timstap) = 0;
   virtual void pagenateAlarmHistory(PagedAlarmHis& _return, const int32_t page, const int32_t num, const std::string& camera_id, const std::string& alarm_type, const int64_t start_timestap, const int64_t end_timstap) = 0;
@@ -73,9 +72,6 @@ class FaceServNull : virtual public FaceServIf {
     return;
   }
   void getAlarmScenePic(ScenePic& /* _return */, const std::string& /* oid */) {
-    return;
-  }
-  void getAllCameraInfo(std::vector<CameraInfo> & /* _return */) {
     return;
   }
   void snapHistory(std::vector<SnapFaceHis> & /* _return */, const std::string& /* cameraid */, const int64_t /* start_timestap */, const int64_t /* end_timstap */) {
@@ -426,98 +422,6 @@ class FaceServ_getAlarmScenePic_presult {
   ScenePic* success;
 
   _FaceServ_getAlarmScenePic_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-
-class FaceServ_getAllCameraInfo_args {
- public:
-
-  FaceServ_getAllCameraInfo_args(const FaceServ_getAllCameraInfo_args&);
-  FaceServ_getAllCameraInfo_args& operator=(const FaceServ_getAllCameraInfo_args&);
-  FaceServ_getAllCameraInfo_args() {
-  }
-
-  virtual ~FaceServ_getAllCameraInfo_args() throw();
-
-  bool operator == (const FaceServ_getAllCameraInfo_args & /* rhs */) const
-  {
-    return true;
-  }
-  bool operator != (const FaceServ_getAllCameraInfo_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const FaceServ_getAllCameraInfo_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class FaceServ_getAllCameraInfo_pargs {
- public:
-
-
-  virtual ~FaceServ_getAllCameraInfo_pargs() throw();
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _FaceServ_getAllCameraInfo_result__isset {
-  _FaceServ_getAllCameraInfo_result__isset() : success(false) {}
-  bool success :1;
-} _FaceServ_getAllCameraInfo_result__isset;
-
-class FaceServ_getAllCameraInfo_result {
- public:
-
-  FaceServ_getAllCameraInfo_result(const FaceServ_getAllCameraInfo_result&);
-  FaceServ_getAllCameraInfo_result& operator=(const FaceServ_getAllCameraInfo_result&);
-  FaceServ_getAllCameraInfo_result() {
-  }
-
-  virtual ~FaceServ_getAllCameraInfo_result() throw();
-  std::vector<CameraInfo>  success;
-
-  _FaceServ_getAllCameraInfo_result__isset __isset;
-
-  void __set_success(const std::vector<CameraInfo> & val);
-
-  bool operator == (const FaceServ_getAllCameraInfo_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    return true;
-  }
-  bool operator != (const FaceServ_getAllCameraInfo_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const FaceServ_getAllCameraInfo_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _FaceServ_getAllCameraInfo_presult__isset {
-  _FaceServ_getAllCameraInfo_presult__isset() : success(false) {}
-  bool success :1;
-} _FaceServ_getAllCameraInfo_presult__isset;
-
-class FaceServ_getAllCameraInfo_presult {
- public:
-
-
-  virtual ~FaceServ_getAllCameraInfo_presult() throw();
-  std::vector<CameraInfo> * success;
-
-  _FaceServ_getAllCameraInfo_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -2045,9 +1949,6 @@ class FaceServClient : virtual public FaceServIf {
   void getAlarmScenePic(ScenePic& _return, const std::string& oid);
   void send_getAlarmScenePic(const std::string& oid);
   void recv_getAlarmScenePic(ScenePic& _return);
-  void getAllCameraInfo(std::vector<CameraInfo> & _return);
-  void send_getAllCameraInfo();
-  void recv_getAllCameraInfo(std::vector<CameraInfo> & _return);
   void snapHistory(std::vector<SnapFaceHis> & _return, const std::string& cameraid, const int64_t start_timestap, const int64_t end_timstap);
   void send_snapHistory(const std::string& cameraid, const int64_t start_timestap, const int64_t end_timstap);
   void recv_snapHistory(std::vector<SnapFaceHis> & _return);
@@ -2102,7 +2003,6 @@ class FaceServProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_getFacePic(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getScenePic(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getAlarmScenePic(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_getAllCameraInfo(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_snapHistory(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_pagenateSnapHistory(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_pagenateAlarmHistory(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -2121,7 +2021,6 @@ class FaceServProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["getFacePic"] = &FaceServProcessor::process_getFacePic;
     processMap_["getScenePic"] = &FaceServProcessor::process_getScenePic;
     processMap_["getAlarmScenePic"] = &FaceServProcessor::process_getAlarmScenePic;
-    processMap_["getAllCameraInfo"] = &FaceServProcessor::process_getAllCameraInfo;
     processMap_["snapHistory"] = &FaceServProcessor::process_snapHistory;
     processMap_["pagenateSnapHistory"] = &FaceServProcessor::process_pagenateSnapHistory;
     processMap_["pagenateAlarmHistory"] = &FaceServProcessor::process_pagenateAlarmHistory;
@@ -2189,16 +2088,6 @@ class FaceServMultiface : virtual public FaceServIf {
       ifaces_[i]->getAlarmScenePic(_return, oid);
     }
     ifaces_[i]->getAlarmScenePic(_return, oid);
-    return;
-  }
-
-  void getAllCameraInfo(std::vector<CameraInfo> & _return) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getAllCameraInfo(_return);
-    }
-    ifaces_[i]->getAllCameraInfo(_return);
     return;
   }
 
@@ -2358,9 +2247,6 @@ class FaceServConcurrentClient : virtual public FaceServIf {
   void getAlarmScenePic(ScenePic& _return, const std::string& oid);
   int32_t send_getAlarmScenePic(const std::string& oid);
   void recv_getAlarmScenePic(ScenePic& _return, const int32_t seqid);
-  void getAllCameraInfo(std::vector<CameraInfo> & _return);
-  int32_t send_getAllCameraInfo();
-  void recv_getAllCameraInfo(std::vector<CameraInfo> & _return, const int32_t seqid);
   void snapHistory(std::vector<SnapFaceHis> & _return, const std::string& cameraid, const int64_t start_timestap, const int64_t end_timstap);
   int32_t send_snapHistory(const std::string& cameraid, const int64_t start_timestap, const int64_t end_timstap);
   void recv_snapHistory(std::vector<SnapFaceHis> & _return, const int32_t seqid);

@@ -44,7 +44,7 @@ private slots:
     void slotFaceGrab(int,int,int,int);
     void slotTotalEventStatics(int,int);
     void slotSpiderData(QVector<QVector<double>>);
-    void slotOnCameraInfo(QVector<CameraInfo>);
+    void slotOnCameraInfo(QVector<RestServiceI::CameraInfo>);
     void slotPieChart(QVector<kf::PieCharData>);
 
 private:

@@ -33,11 +33,6 @@ class FaceServHandler : virtual public FaceServIf {
     printf("getAlarmScenePic\n");
   }
 
-  void getAllCameraInfo(std::vector<CameraInfo> & _return) {
-    // Your implementation goes here
-    printf("getAllCameraInfo\n");
-  }
-
   void snapHistory(std::vector<SnapFaceHis> & _return, const std::string& cameraid, const int64_t start_timestap, const int64_t end_timstap) {
     // Your implementation goes here
     printf("snapHistory\n");

@@ -6,6 +6,7 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QApplication>
+#include <QLineEdit>
 #include <QFileDialog>
 #include <QListWidget>
 #include <QStandardPaths>
@@ -25,9 +26,10 @@ FaceLinkPage::FaceLinkPage(WidgetManagerI *wm, WidgetI *parent) :
     backImg_.load("images/Mask.png");
     levelCombox_ = new QComboBox;
     imgBtn_ = new QPushButton;
-    parameterSettingBtn_ = new QPushButton(tr("Setting"));
     searchBtn_ = new QPushButton(tr("search"));
     levelLabel_ = new QLabel(tr("Level"));
+    maxnumL_ = new QLabel(tr("Max number"));
+    maxnumEdit_ = new QLineEdit;
     startTimeL_ = new QLabel(tr("Starting time"));
     endTimeL_ = new QLabel(tr("Ending time"));
     startTimeEdit_ = new QDateTimeEdit;
@@ -38,7 +40,8 @@ FaceLinkPage::FaceLinkPage(WidgetManagerI *wm, WidgetI *parent) :
     QGridLayout *gridLay = new QGridLayout;
     gridLay->addWidget(levelLabel_,0,0,1,1);
     gridLay->addWidget(levelCombox_,0,1,1,1);
-    gridLay->addWidget(parameterSettingBtn_,0,2,1,1);
+    gridLay->addWidget(maxnumL_,0,2,1,1);
+    gridLay->addWidget(maxnumEdit_,0,3,1,1);
     gridLay->addWidget(startTimeL_,1,0,1,1);
     gridLay->addWidget(startTimeEdit_,1,1,1,1);
     gridLay->addWidget(endTimeL_,1,2,1,1);
@@ -52,25 +55,6 @@ FaceLinkPage::FaceLinkPage(WidgetManagerI *wm, WidgetI *parent) :
     mainLay->addWidget(dataView_,7);
     setLayout(mainLay);
 
-    parameterBackW_ = new QWidget(this);
-    parameterL_ = new QLabel(tr("Parameter settings"));
-    cancelBtn_ = new QPushButton(tr("cancel"));
-    okBtn_ = new QPushButton(tr("OK"));
-    parameterSettingList_ = new QListWidget(this);
-    QVBoxLayout *parameterMainLay = new QVBoxLayout;
-    parameterMainLay->addWidget(parameterL_);
-    parameterMainLay->addWidget(parameterSettingList_);
-    hlay = new QHBoxLayout;
-    hlay->addStretch();
-    hlay->addWidget(cancelBtn_);
-    hlay->addWidget(okBtn_);
-    parameterMainLay->addLayout(hlay);
-    parameterBackW_->setLayout(parameterMainLay);
-    parameterBackW_->resize(QSize(400,300));
-    parameterBackW_->hide();
-    parameterBackW_->setWindowModality(Qt::WindowModal);
-    parameterBackW_->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
-
     imgBtn_->setFixedSize(95,95);
     imgBtn_->setIconSize(imgBtn_->size());
     QPixmap defaultPersonBackPix("images/person-face-back.png");
@@ -81,9 +65,11 @@ FaceLinkPage::FaceLinkPage(WidgetManagerI *wm, WidgetI *parent) :
     imgBtn_->setCursor(imgBtnCoursor);
     imgBtn_->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
     levelCombox_->setMinimumHeight(44);
+    maxnumEdit_->setMaximumWidth(250);
+    maxnumEdit_->setMinimumHeight(44);
+    maxnumEdit_->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     startTimeEdit_->setMinimumSize(250,44);
     endTimeEdit_->setMinimumSize(250,44);
-    parameterSettingBtn_->setMinimumSize(120,44);
     searchBtn_->setMinimumSize(120,44);
     startTimeEdit_->setDisplayFormat("yyyy/MM/dd HH:mm:ss");
     endTimeEdit_->setDisplayFormat("yyyy/MM/dd HH:mm:ss");
@@ -94,8 +80,6 @@ FaceLinkPage::FaceLinkPage(WidgetManagerI *wm, WidgetI *parent) :
 
     connect(searchBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSearchBtnClicked()));
     connect(imgBtn_,SIGNAL(clicked(bool)),this,SLOT(slotImgBtnClicked()));
-    connect(parameterSettingBtn_,SIGNAL(clicked(bool)),this,SLOT(slotParameterBtnClicked()));
-    connect(cancelBtn_,SIGNAL(clicked(bool)),parameterBackW_,SLOT(close()));
 }
 
 void FaceLinkPage::setUserStyle(WidgetManagerI::SkinStyle s)
@@ -138,10 +122,12 @@ void FaceLinkPage::setUserStyle(WidgetManagerI::SkinStyle s)
                                  "color: white;"
                                  "background-color: rgba(112, 112, 112, 1);"
                                  "}");
-        parameterSettingBtn_->setStyleSheet("QPushButton{"
-                                 "color: white;"
-                                 "background-color: rgba(112, 112, 112, 1);"
-                                 "}");
+        maxnumEdit_->setStyleSheet("QLineEdit{"
+                                   "color: white;"
+                                   "border-radius: 4px;"
+                                   "border: 1px solid white;"
+                                   "background-color: transparent;"
+                                   "}");
         imgBtn_->setStyleSheet("QPushButton{"
                                "background-color: transparent;"
                                "}");
@@ -150,6 +136,7 @@ void FaceLinkPage::setUserStyle(WidgetManagerI::SkinStyle s)
         levelLabel_->setPalette(pal);
         startTimeL_->setPalette(pal);
         endTimeL_->setPalette(pal);
+        maxnumL_->setPalette(pal);
     }
 }
 
@@ -183,7 +170,7 @@ void FaceLinkPage::slotSearchBtnClicked()
     args.depth = levelCombox_->currentText().toInt();
     args.endT = endTimeEdit_->dateTime();
     args.faceImg = imgBtn_->property("pixmap").value<QPixmap>().toImage();
-    args.num = 12;
+    args.num = maxnumEdit_->text().toInt();
     args.oid = imgOid_;
     args.startT = startTimeEdit_->dateTime();
     args.thresh = 0.6;
@@ -203,12 +190,6 @@ void FaceLinkPage::slotSearchBtnClicked()
     startWorker(worker);
     waitingL_->show(500);
     searchBtn_->setEnabled(false);
-}
-
-void FaceLinkPage::slotParameterBtnClicked()
-{
-    parameterBackW_->move(mapToGlobal(parameterSettingBtn_->pos() + QPoint(0,parameterSettingBtn_->height())));
-    parameterBackW_->show();
 }
 
 void FaceLinkPage::slotFaceLinkFinished(QString oid)
@@ -259,6 +240,7 @@ void FaceLinkPage::slotFaceLinkTree(QJsonObject jsObj)
 
 void FaceLinkPage::slotImgBtnClicked()
 {
+    imgOid_.clear();
     QString filePath = QFileDialog::getOpenFileName(this,tr("add image"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),"*.png *.jpg *.tmp");
     QPixmap pix(filePath);
     if(pix.isNull()){

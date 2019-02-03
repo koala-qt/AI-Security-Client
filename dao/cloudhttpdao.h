@@ -7,9 +7,9 @@ class CloudHttpDao : public HttpExector
 {
 public:
     CloudHttpDao();
-    QString getCameraInfoMap(QMap<QString, QVariant> &cameraMap);
+    QString getCameraInfo(QVector<RestServiceI::CameraInfo> &cameras);
     QString getGroup(QString groupNo,QVector<RestServiceI::CameraGoup> &resGroups);
-    QString getDevice(QString groupNo,QVector<CameraInfo> &devices);
+    QString getDevice(QString groupNo,QVector<RestServiceI::CameraInfo> &devices);
     QString faceLink(RestServiceI::FaceLinkArgs &args);
     QString faceLink_(RestServiceI::FaceLinkArgs &args,QString &finishId);
     QString getFaceLinkPoint(QString &faceLinkId,RestServiceI::FaceLinkPointData &rootPointData);

@@ -332,13 +332,13 @@ void RealMonitorSetting::slotSnapInfo(QVector<StatisTask> data)
     }
 }
 
-void RealMonitorSetting::slotOnCameraInfo(QVector<CameraInfo> data)
+void RealMonitorSetting::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)
 {
     QPixmap pix(startLocationCombox_->iconSize());
     pix.fill(Qt::transparent);
-    foreach (const CameraInfo &info, data) {
-        startLocationCombox_->addItem(pix,QString::fromStdString(info.position),QString::fromStdString(info.id));
-        endLocationCombox_->addItem(pix,QString::fromStdString(info.position),QString::fromStdString(info.id));
+    for (auto &info : data) {
+        startLocationCombox_->addItem(pix,info.cameraPos,info.cameraId);
+        endLocationCombox_->addItem(pix,info.cameraPos,info.cameraId);
     }
     updateStatis();
 }

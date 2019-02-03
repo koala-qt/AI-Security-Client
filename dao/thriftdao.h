@@ -18,7 +18,6 @@ public:
     std::string getScenePic(const std::string old,std::string &errorStr);
     std::string getAlarmScenePic(const std::string oid,std::string &errorStr);
     void getTop(const int id);
-    std::vector<CameraInfo> getCameraInfo(std::string &errorStr);
     bool addStatis(const std::string startId,const std::string endId,std::string &errorStr);
     bool removeStatis(const std::string startId,const std::string endId,std::string &errorStr);
     std::vector<StatisTask> getStatisInfo(std::string &errorStr);

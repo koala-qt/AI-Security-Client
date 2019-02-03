@@ -341,7 +341,7 @@ void EventSearch::getCameraInfo()
 {
     BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
     RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
-    connect(serviceI,SIGNAL(sigCameraInfo(QVector<CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<CameraInfo>)));
+    connect(serviceI,SIGNAL(sigCameraInfo(QVector<RestServiceI::CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<RestServiceI::CameraInfo>)));
     serviceI->getCameraInfo();
     startWorker(worker);
 }
@@ -386,14 +386,14 @@ void EventSearch::slotOnSceneImage(QImage img)
     dialog.exec();
 }
 
-void EventSearch::slotOnCameraInfo(QVector<CameraInfo> data)
+void EventSearch::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)
 {
     m_positionCombox->clear();
     QPixmap pix(m_positionCombox->iconSize());
     pix.fill(Qt::transparent);
     m_positionCombox->addItem(tr("不限"),"");
-    foreach (const CameraInfo &info, data) {
-        m_positionCombox->addItem(QString::fromStdString(info.position),QString::fromStdString(info.id));
+    for (auto &info : data) {
+        m_positionCombox->addItem(info.cameraPos,info.cameraId);
     }
     installEventFilter(this);
 }

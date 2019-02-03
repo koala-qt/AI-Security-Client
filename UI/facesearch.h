@@ -24,7 +24,7 @@ public:
     void setUserStyle(WidgetManagerI::SkinStyle s) override;
 
 public slots:
-    void slotAddRow(QVector<SearchFace>);
+    void slotAddRow(QVector<RestServiceI::DataRectureItem>);
 
 protected:
     bool event(QEvent *event) override;
@@ -40,12 +40,13 @@ private:
     QComboBox *topCombox_{nullptr},*cameraCombox_{nullptr};
     QImage faceImg_;
     PageIndicator *m_pageIndicator{nullptr};
-    //QVector<SearchFace> m_vec;
+    QMap<QString,QString> cameraMap_;
 
     void getCameraInfo();
 
 private slots:
-    void slotOnCameraInfo(QVector<CameraInfo>);
+    void slotOnCameraInfo(QVector<RestServiceI::CameraInfo>);
+    void slotSectionClicked(int);
     void slotSearchClicked();
     void slotImgBtnClicked();
     void slotOnScenePic(QImage);

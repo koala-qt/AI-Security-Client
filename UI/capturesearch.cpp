@@ -398,13 +398,13 @@ void CaptureSearch::slotOnSearch(PagedSnapFaceHis data)
     }
 }
 
-void CaptureSearch::slotOnCameraInfo(QVector<CameraInfo> data)
+void CaptureSearch::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)
 {
     QPixmap pix(cameraCombox_->iconSize());
     pix.fill(Qt::transparent);
     cameraCombox_->clear();
     cameraCombox_->addItem(pix,tr("不限"),"");
-    foreach (const CameraInfo &info, data) {
-        cameraCombox_->addItem(pix,QString::fromStdString(info.position),QString::fromStdString(info.id));
+    for (auto &info : data) {
+        cameraCombox_->addItem(pix,info.cameraPos,info.cameraId);
     }
 }

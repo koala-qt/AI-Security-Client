@@ -58,6 +58,12 @@ public:
         QString groupNo;
         int deviceNumber;
     };
+    struct CameraInfo
+    {
+        QString cameraId;
+        QString cameraPos;
+        QString rtsp;
+    };
     struct SearchABDoorTimeArg
     {
         QString camera1;
@@ -153,6 +159,7 @@ public:
         QString cameraId;
         QString sceneId;
         QString personId;
+        double similarity;
         QDateTime time;
         QImage img;
     };
@@ -163,7 +170,7 @@ public:
         QVector<DataRectureItem> records;
     };
     RestServiceI(QObject *parent = nullptr):QObject(parent){
-        qRegisterMetaType<QVector<CameraInfo>>("QVector<CameraInfo>");
+        qRegisterMetaType<QVector<RestServiceI::CameraInfo>>("QVector<RestServiceI::CameraInfo>");
         qRegisterMetaType<PagedSnapFaceHis>("PagedSnapFaceHis");
         qRegisterMetaType<QVector<StatisTask>>("QVector<StatisTask>");
         qRegisterMetaType<QVector<QPolygonF>>("QVector<QPolygonF>");
@@ -217,7 +224,7 @@ signals:
     void sigStatisInfo(QVector<StatisTask>);
     void sigFaceInfo(QStringList,QImage);
     void sigCameraGroup(QVector<RestServiceI::CameraGoup>);
-    void sigCameraInfo(QVector<CameraInfo>);
+    void sigCameraInfo(QVector<RestServiceI::CameraInfo>);
     void sigSnapHistory(PagedSnapFaceHis);
     void sigAlarmHistory(PagedAlarmHis);
     void sigFaceLinkTree(QJsonObject);

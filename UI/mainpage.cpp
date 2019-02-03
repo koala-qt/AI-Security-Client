@@ -719,22 +719,22 @@ void MainPage::slotSpiderData(QVector<QVector<double> > datas)
     eventDistribution_->update();
 }
 
-void MainPage::slotOnCameraInfo(QVector<CameraInfo> cameraDatas)
+void MainPage::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> cameraDatas)
 {
     QVector<QString> axies;
-    std::transform(cameraDatas.begin(),cameraDatas.end(),std::back_inserter(axies),[](CameraInfo &info){return QString::fromStdString(info.position);});
+    std::transform(cameraDatas.begin(),cameraDatas.end(),std::back_inserter(axies),[](RestServiceI::CameraInfo &info){return info.cameraPos;});
     eventDistribution_->setAxiesX(axies);
     std::random_device device;
     std::mt19937 gen(device());
     std::uniform_int_distribution<int> dis(0,300);
-    for(const CameraInfo &info : cameraDatas){
+    for(auto &info : cameraDatas){
         MovieLabel *ml = new MovieLabel(this);
-        movieLabelMap_.insert(QString::fromStdString(info.position),ml);
+        movieLabelMap_.insert(info.cameraPos,ml);
         ml->setFixedSize(60,80);
         QRect cr = ml->geometry();
         cr.moveCenter(rect().center());
         ml->move(cr.topLeft() + QPoint(dis(gen),dis(gen)));
-        ml->setInfo(QString::fromStdString(info.position));
+        ml->setInfo(info.cameraPos);
         QPalette pal = ml->palette();
         pal.setColor(QPalette::Foreground,Qt::white);
         ml->setPalette(pal);
@@ -779,7 +779,7 @@ void MainPage::getCameraInfo()
 {
     BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
     RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
-    connect(serviceI,SIGNAL(sigCameraInfo(QVector<CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<CameraInfo>)));
+    connect(serviceI,SIGNAL(sigCameraInfo(QVector<RestServiceI::CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<RestServiceI::CameraInfo>)));
     serviceI->getCameraInfo();
     startWorker(worker);
 }

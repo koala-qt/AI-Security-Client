@@ -27,7 +27,7 @@ TargetSearch::TargetSearch(WidgetManagerI *wm, WidgetI *parent):
 
     stackedW_->addWidget(queryInCapture_);
     stackedW_->addWidget(combinationSearch_);
-    stackedW_->installEventFilter(this);
+//    stackedW_->installEventFilter(this);
     QVector<itemData> devicesVec;
     itemData items;
     items.name = queryInCapture_->objectName();
@@ -44,6 +44,7 @@ TargetSearch::TargetSearch(WidgetManagerI *wm, WidgetI *parent):
     treeW_->headerItem()->setSizeHint(0,QSize(-1,45));
     treeW_->headerItem()->setText(0,tr(""));
     connect(treeW_,SIGNAL(itemClicked(QTreeWidgetItem*,int)),this,SLOT(slotTreeWidgetItemClicked(QTreeWidgetItem*,int)));
+    treeW_->setCurrentItem(treeW_->topLevelItem(0));
 }
 
 void TargetSearch::setUserStyle(WidgetManagerI::SkinStyle s)
