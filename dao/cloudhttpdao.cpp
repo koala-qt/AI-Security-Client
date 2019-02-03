@@ -448,12 +448,12 @@ QString DLL::CloudHttpDao::semanticSearch(RestServiceI::SemanticSearchArgs &args
         QJsonObject itemObj = jsValue.toObject();
         item.cameraId = itemObj.value("cameraId").toString();
         item.id = itemObj.value("id").toString();
-        item.sceneId = itemObj.value("faceSceneId").toString();
-        item.time = QDateTime::fromMSecsSinceEpoch(itemObj.value("tsOut").toVariant().toULongLong());
+        item.sceneId = itemObj.value("sceneId").toString();
+        item.time = QDateTime::fromMSecsSinceEpoch(itemObj.value("ts").toVariant().toULongLong());
         QImage img;
-        img.loadFromData(QByteArray::fromBase64(itemObj.value("faceSnap").toString().toLatin1()));
+        img.loadFromData(QByteArray::fromBase64(itemObj.value("snapshot").toString().toLatin1()));
         item.img = img;
-        item.personId = itemObj.value("id").toString();
+        item.personId = itemObj.value("personId").toString();
         return item;
     });
     return QString();
@@ -495,7 +495,6 @@ QString DLL::CloudHttpDao::searchByImage(RestServiceI::SearchUseImageArgs &args,
     QJsonArray dataJsArray = jsObj.value("data").toArray();
     std::transform(dataJsArray.begin(),dataJsArray.end(),std::back_inserter(resVec),[](QJsonValue jsVal){
         RestServiceI::DataRectureItem sitem;
-#if 0
         QJsonObject itemObj = jsVal.toObject();
         sitem.cameraId = itemObj.value("cameraId").toString();
         sitem.id = itemObj.value("id").toString();
@@ -503,16 +502,7 @@ QString DLL::CloudHttpDao::searchByImage(RestServiceI::SearchUseImageArgs &args,
         sitem.personId = itemObj.value("personId").toString();
         sitem.sceneId = itemObj.value("sceneId").toString();
         sitem.time = QDateTime::fromMSecsSinceEpoch(itemObj.value("ts").toVariant().toULongLong());
-#endif
-        QJsonObject itemObj = jsVal.toObject();
-        sitem.cameraId = itemObj.value("cameraId").toString();
-        sitem.id = itemObj.value("id").toString();
-        sitem.sceneId = itemObj.value("faceSceneId").toString();
-        sitem.time = QDateTime::fromMSecsSinceEpoch(itemObj.value("tsOut").toVariant().toULongLong());
-        QImage img;
-        img.loadFromData(QByteArray::fromBase64(itemObj.value("faceSnap").toString().toLatin1()));
-        sitem.img = img;
-        sitem.personId = itemObj.value("id").toString();
+        sitem.similarity = itemObj.value("similarity").toDouble();
         return sitem;
     });
     return QString();

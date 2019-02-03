@@ -12,10 +12,8 @@ QT_FORWARD_DECLARE_CLASS(QComboBox)
 QT_FORWARD_DECLARE_CLASS(QTreeWidgetItem)
 QT_FORWARD_DECLARE_CLASS(QDateTimeEdit)
 QT_FORWARD_DECLARE_CLASS(QPushButton)
-QT_FORWARD_DECLARE_CLASS(QHBoxLayout)
 QT_FORWARD_DECLARE_CLASS(PageIndicator)
 QT_FORWARD_DECLARE_CLASS(QMenu)
-QT_FORWARD_DECLARE_CLASS(TreeCharts)
 class SemanticSearchPage : public WidgetI
 {
     Q_OBJECT
@@ -48,12 +46,11 @@ private:
     QMap<QString,QString> cameraMapInfo_;
 
     void getCameraInfo();
-    void updateDataList(int totalRecords, int totalPages, QVector<std::tuple<QImage, QString, QString, QString, QDateTime, QString,QString> > &data);
     QStringList checkedAttrbute(QTreeWidgetItem*);
 
 private slots:
     void slotSemanticSearch(int);
-    void slotSemanticSearchBtnClicked();
+    void slotSearchBtnClicked();
     void slotOnCameraInfo(QVector<RestServiceI::CameraInfo>);
     void createTreeItem(QTreeWidget *treeW,QTreeWidgetItem *parentItem,itemData &items);
 };

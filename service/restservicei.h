@@ -159,6 +159,7 @@ public:
         QString cameraId;
         QString sceneId;
         QString personId;
+        double similarity;
         QDateTime time;
         QImage img;
     };

@@ -27,7 +27,7 @@ TargetSearch::TargetSearch(WidgetManagerI *wm, WidgetI *parent):
 
     stackedW_->addWidget(queryInCapture_);
     stackedW_->addWidget(combinationSearch_);
-    stackedW_->installEventFilter(this);
+//    stackedW_->installEventFilter(this);
     QVector<itemData> devicesVec;
     itemData items;
     items.name = queryInCapture_->objectName();

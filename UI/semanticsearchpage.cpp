@@ -15,11 +15,17 @@
 #include "semanticsearchpage.h"
 #include "pageindicator.h"
 #include "waitinglabel.h"
+#include "sceneimagedialog.h"
+#include "facelinkpage.h"
+#include "trackingpage.h"
+#include "portrait.h"
+#include "facesearch.h"
 #include "service/restservice.h"
 
 SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
     WidgetI(wm,parent)
 {
+    setObjectName(tr("Semantic search"));
     posL_ = new QLabel(tr("Position"));
     posCombox_ = new QComboBox;
     startTimeL_ = new QLabel(tr("Starting time"));
@@ -33,7 +39,6 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
     pageIndicator_ = new PageIndicator;
     dataMenu_ = new QMenu(dataListW_);
 
-    QVBoxLayout *mainLay = new QVBoxLayout;
     QVBoxLayout *vlay = new QVBoxLayout;
     QGridLayout *topGridLay = new QGridLayout;
     topGridLay->addWidget(posL_,0,0,1,1);
@@ -49,12 +54,126 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
     vlay->addLayout(topGridLay);
     vlay->addWidget(dataListW_);
     vlay->addWidget(pageIndicator_);
-    QHBoxLayout *hlay = new QHBoxLayout;
-    hlay->addLayout(vlay);
-    hlay->addWidget(centeVSplieL_);
-    hlay->addWidget(attributTreeW_);
+    QHBoxLayout *mainLay = new QHBoxLayout;
+    mainLay->addLayout(vlay);
+    mainLay->addWidget(centeVSplieL_);
+    mainLay->addWidget(attributTreeW_);
     setLayout(mainLay);
 
+    attributTreeW_->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Preferred);
+    dataMenu_->addAction(tr("Details"),[this]{
+        BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
+        RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+        WaitingLabel *label = new WaitingLabel(this);
+        connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
+            label->close();
+            delete label;
+            QMessageBox::information(this,tr("Details"),str);
+            dataMenu_->setEnabled(true);
+        });
+        connect(serviceI,&RestServiceI::sigPeronsDetails,this,[this,label](QImage face,QImage body,QStringList faceAttr,QStringList bodyAttr){
+            label->close();
+            delete label;
+            Portrait *detailsW = new Portrait(widgetManger(),this);
+            detailsW->setAttribute(Qt::WA_DeleteOnClose);
+            detailsW->setWindowFlags(Qt::Window | Qt::Dialog);
+            detailsW->setWindowModality(Qt::ApplicationModal);
+            detailsW->setUserStyle(widgetManger()->currentStyle());
+            detailsW->slotSetData(face,body,faceAttr,bodyAttr);
+            detailsW->show();
+            dataMenu_->setEnabled(true);
+        });
+        serviceI->getPersonDetails(dataListW_->currentItem()->data(Qt::UserRole + 4).toString());
+        startWorker(worker);
+        label->show(500);
+        dataMenu_->setEnabled(false);
+    });
+    dataMenu_->addAction(tr("Scene analysis"),[this]{
+        BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
+        RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+        WaitingLabel *label = new WaitingLabel(this);
+        connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
+            label->close();
+            delete label;
+            QMessageBox::information(this,tr("Scene"),str);
+            dataMenu_->setEnabled(true);
+        });
+        connect(serviceI,&RestServiceI::sigSceneImage,this,[this,label](const QImage img){
+            label->close();
+            delete label;
+            SceneImageDialog dialog;
+            dialog.setUserStyle(widgetManger()->currentStyle());
+            dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+            dialog.setImage(img);
+            dialog.setRectLinePen(Qt::yellow);
+            connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
+                if(!images.count()){
+                    return;
+                }
+#if 0
+                QPixmap pix = QPixmap::fromImage(images.first());
+                imageBtn_->setIcon(pix.scaled(imageBtn_->iconSize()));
+                imageBtn_->setProperty("pixmap",pix);
+                slotImageSearchBtnClicked();
+#endif
+            });
+            dialog.exec();
+            dataMenu_->setEnabled(true);
+        });
+        serviceI->getScenePic(dataListW_->currentItem()->data(Qt::UserRole + 5).toString());
+        startWorker(worker);
+        label->show(500);
+        dataMenu_->setEnabled(false);
+    });
+    dataMenu_->addAction(tr("Search using the image"),[this]{
+        FaceSearch *faceDialog = new FaceSearch(widgetManger());
+        faceDialog->setAttribute(Qt::WA_DeleteOnClose);
+        faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+        faceDialog->setWindowModality(Qt::ApplicationModal);
+        QPalette pal = faceDialog->palette();
+        pal.setColor(QPalette::Background,QColor(112,110,119));
+        faceDialog->setPalette(pal);
+        faceDialog->setAutoFillBackground(true);
+        faceDialog->setUserStyle(widgetManger()->currentStyle());
+        faceDialog->layout()->setMargin(10);
+        faceDialog->setFaceImage(dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>());
+        faceDialog->setOid(dataListW_->currentItem()->data(Qt::UserRole + 2).toString());
+        faceDialog->setMinimumHeight(700);
+        faceDialog->show();
+    });
+    dataMenu_->addAction(tr("Tracking"),[this]{
+        TrackingPage *view = new TrackingPage(widgetManger());
+        view->setUserStyle(widgetManger()->currentStyle());
+        view->setAttribute(Qt::WA_DeleteOnClose);
+        view->setWindowFlags(Qt::Window | Qt::Dialog);
+        view->setWindowModality(Qt::ApplicationModal);
+        view->setMinimumSize(1655,924);
+        view->setImgageOid(dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>(),
+                           dataListW_->currentItem()->data(Qt::UserRole + 2).toString());
+        view->show();
+    });
+    dataMenu_->addAction(tr("Face link"),[this]{
+        FaceLinkPage *faceLinkP = new FaceLinkPage(widgetManger(),this);
+        faceLinkP->setUserStyle(widgetManger()->currentStyle());
+        faceLinkP->setAttribute(Qt::WA_DeleteOnClose);
+        faceLinkP->setWindowFlags(Qt::Window | Qt::Dialog);
+        faceLinkP->setWindowModality(Qt::ApplicationModal);
+        QPixmap pix = QPixmap::fromImage(dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>());
+        faceLinkP->setFaceLinkOidAndImg(dataListW_->currentItem()->data(Qt::UserRole + 4).toString(),pix);
+        faceLinkP->resize(1200,900);
+        faceLinkP->show();
+    });
+    dataListW_->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(dataListW_,&QListWidget::customContextMenuRequested,this,[&](QPoint p){
+        if(!dataListW_->itemAt(p))return;
+        dataMenu_->move(QCursor::pos());
+        dataMenu_->show();
+    });
+    dataListW_->setFocusPolicy(Qt::NoFocus);
+    dataListW_->setMovement(QListWidget::Static);
+    dataListW_->setIconSize(QSize(112,112));
+    dataListW_->setResizeMode(QListWidget::Adjust);
+    dataListW_->setViewMode(QListWidget::IconMode);
     centeVSplieL_->setFixedWidth(1);
     QVector<itemData> devicesVec;
     itemData items;
@@ -90,13 +209,27 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
     attributTreeW_->header()->setIconSize(QSize(50,50));
     QSize s = attributTreeW_->headerItem()->sizeHint(0);
     attributTreeW_->headerItem()->setSizeHint(0,QSize(s.width(),30));
+    posCombox_->setMinimumHeight(44);
+    posCombox_->setMaximumWidth(390);
+    startTimeEdit_->setMinimumHeight(44);
+    startTimeEdit_->setMinimumWidth(250);
+    startTimeEdit_->setDisplayFormat("yyyy-MM-dd HH:mm:ss");
+    startTimeEdit_->setDateTime(QDateTime::currentDateTime().addDays(-1));
+    endTimeEdit_->setMinimumHeight(44);
+    endTimeEdit_->setDisplayFormat("yyyy-MM-dd HH:mm:ss");
+    endTimeEdit_->setDateTime(QDateTime::currentDateTime());
+    endTimeEdit_->setMinimumWidth(250);
+    searchBtn_->setMinimumSize(120,44);
+    pageIndicator_->setPageInfo(0,0);
 
     connect(pageIndicator_,SIGNAL(sigPageClicked(int)),this,SLOT(slotSemanticSearch(int)));
+    connect(searchBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSearchBtnClicked()));
+
+    getCameraInfo();
 }
 
 void SemanticSearchPage::setUserStyle(WidgetManagerI::SkinStyle s)
 {
-    QPalette pal;
     if(WidgetManagerI::Danyahei == s){
         posL_->setStyleSheet("QLabel{"
                                 "background-color: transparent;"
@@ -190,10 +323,10 @@ void SemanticSearchPage::setUserStyle(WidgetManagerI::SkinStyle s)
                                  "color: white;"
                                  "background-color: rgba(112, 112, 112, 1);"
                                  "}");
-        pal = dataListW_->palette();
-        pal.setColor(QPalette::Base,Qt::transparent);
-        pal.setColor(QPalette::Text,Qt::white);
-        dataListW_->setPalette(pal);
+        dataListW_->setStyleSheet("QListWidget{"
+                                  "background: transparent;"
+                                  "color: white;"
+                                  "}");
         dataListW_->verticalScrollBar()->setStyleSheet(
                                                     "QScrollBar:vertical{"
                                                     "background: transparent;"
@@ -298,11 +431,16 @@ void SemanticSearchPage::setUserStyle(WidgetManagerI::SkinStyle s)
                                          "background-color: transparent;"
                                          "}");
     }
+    pageIndicator_->setUserStyle();
 }
 
 void SemanticSearchPage::getCameraInfo()
 {
-
+    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
+    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    connect(serviceI,SIGNAL(sigCameraInfo(QVector<RestServiceI::CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<RestServiceI::CameraInfo>)));
+    serviceI->getCameraInfo();
+    startWorker(worker);
 }
 
 void SemanticSearchPage::slotSemanticSearch(int page)
@@ -319,11 +457,29 @@ void SemanticSearchPage::slotSemanticSearch(int page)
     });
     connect(serviceI,&RestServiceI::sigSemanticSearch,this,[this,label](RestServiceI::SemanticReturnData &returnData){
         label->close();
+        dataListW_->clear();
+        pageIndicator_->adjustRow();
+        if(needUpdatePageInfo_){
+            pageIndicator_->setPageInfo(returnData.totalPage,returnData.toatal);
+            needUpdatePageInfo_ = false;
+        }
         QVector<std::tuple<QImage, QString, QString, QString, QDateTime,QString,QString> > dataListVec;
         std::transform(returnData.records.begin(),returnData.records.end(),std::back_inserter(dataListVec),[this](RestServiceI::DataRectureItem &nodeV){
             return std::make_tuple(nodeV.img,nodeV.id,nodeV.cameraId,cameraMapInfo_.value(nodeV.cameraId),nodeV.time,nodeV.personId,nodeV.sceneId);
         });
-//        updateDataList(returnData.toatal,returnData.totalPage,dataListVec);
+        for (RestServiceI::DataRectureItem &info : returnData.records) {
+            QString posText = cameraMapInfo_.value(info.cameraId);
+            QListWidgetItem *item = new QListWidgetItem(posText.left(16) + '\n' + info.time.toString("yyyy-MM-dd HH:mm:ss"));
+            item->setIcon(QPixmap::fromImage(info.img));
+            item->setData(Qt::UserRole+1,info.img);
+            item->setData(Qt::UserRole+2,info.id);
+            item->setData(Qt::UserRole+3,info.cameraId);
+            item->setData(Qt::UserRole+4,info.personId);
+            item->setData(Qt::UserRole+5,info.sceneId);
+            item->setToolTip(posText);
+            item->setTextAlignment(Qt::AlignHCenter);
+            dataListW_->addItem(item);
+        }
         pageIndicator_->setEnabled(true);
         searchBtn_->setEnabled(true);
     });
@@ -355,7 +511,7 @@ QStringList SemanticSearchPage::checkedAttrbute(QTreeWidgetItem *item)
     return attrbuteList;
 }
 
-void SemanticSearchPage::slotSemanticSearchBtnClicked()
+void SemanticSearchPage::slotSearchBtnClicked()
 {
     curfaceAttrList_.clear();
     curfaceAttrList_ = checkedAttrbute(attributTreeW_->topLevelItem(0));

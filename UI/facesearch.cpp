@@ -26,8 +26,7 @@
 FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
     WidgetI(wm,parent)
 {
-    setObjectName(tr("Recent snapshots and Tracking"));
-    //this->setWindowFlags(Qt::Widget | Qt::WindowCloseButtonHint);
+    setObjectName(tr("Search using an image"));
     QVBoxLayout *mainLay = new QVBoxLayout;
     QHBoxLayout *hlay = new QHBoxLayout;
     m_imgBtn = new QPushButton;
@@ -35,6 +34,9 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
     m_imgBtn->setFixedSize(150,150);
     m_imgBtn->setIconSize(QSize(m_imgBtn->size()));
     m_imgBtn->setFocusPolicy(Qt::NoFocus);
+    QPixmap imgPix("images/person-face-back.png");
+    m_imgBtn->setIcon(imgPix.scaled(m_imgBtn->iconSize()));
+    m_imgBtn->setProperty("default-pix",imgPix);
     QCursor curSor = cursor();
     curSor.setShape(Qt::PointingHandCursor);
     m_imgBtn->setCursor(curSor);
@@ -93,7 +95,7 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
     gridLay->addWidget(startTimeEdit_,1,1,1,1);
     gridLay->addWidget(endTimeL_,1,2,1,1);
     gridLay->addWidget(endTimeEdit_,1,3,1,1);
-    gridLay->addWidget(m_searchBtn,2,5,1,1);
+    gridLay->addWidget(m_searchBtn,1,5,1,1);
     gridLay->setContentsMargins(10,5,0,0);
     gridLay->setHorizontalSpacing(15);
     gridLay->setVerticalSpacing(0);
@@ -115,7 +117,7 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
     setLayout(mainLay);
 
     menu_ = new QMenu(this);
-    menu_->addAction(tr("View recent snapshots"),[&]{
+    menu_->addAction(objectName(),[&]{
         QLabel *curLab = dynamic_cast<QLabel *>(m_tableW->cellWidget(m_tableW->currentRow(), 0));
         if (curLab)
         {
@@ -150,6 +152,7 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
         menu_->move(QCursor::pos());
         menu_->show();
     });
+    connect(m_tableW->horizontalHeader(),SIGNAL(sectionClicked(int)),this,SLOT(slotSectionClicked(int)));
     connect(m_searchBtn,SIGNAL(clicked(bool)),this,SLOT(slotSearchClicked()));
     connect(m_imgBtn,SIGNAL(clicked(bool)),this,SLOT(slotImgBtnClicked()));
     m_pageIndicator->setPageInfo(0,0);
@@ -163,6 +166,7 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
     m_tableW->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     m_tableW->horizontalHeader()->setSectionResizeMode(0,QHeaderView::Fixed);
     m_tableW->setHorizontalHeaderLabels(QStringList() << tr("人脸") << tr("ID号") << tr("位置") << tr("相似度") << tr("时间"));
+    m_tableW->horizontalHeader()->setSortIndicatorShown(true);
     getCameraInfo();
 }
 
@@ -194,9 +198,6 @@ void FaceSearch::setUserStyle(WidgetManagerI::SkinStyle s)
         endTimeL_->setFont(f);
         similarL_->setFont(f);
 
-        m_imgBtn->setFlat(true);
-        m_imgBtn->setStyleSheet("background-color:#B4A06C;border:1px solid #B4A06C;border-radius:6px;");
-
         pal = cameraLabel_->palette();
         pal.setColor(QPalette::Foreground,Qt::white);
         cameraLabel_->setPalette(pal);
@@ -205,6 +206,9 @@ void FaceSearch::setUserStyle(WidgetManagerI::SkinStyle s)
         endTimeL_->setPalette(pal);
         similarL_->setPalette(pal);
 
+        m_imgBtn->setStyleSheet("QPushButton{"
+                                 "background-color: transparent;"
+                                 "}");
         m_tableW->setStyleSheet(
                     "QTableView{"
                     "color: white;border:1px solid #CECECE;"
@@ -231,25 +235,10 @@ void FaceSearch::setUserStyle(WidgetManagerI::SkinStyle s)
                                    "background: #B4A06C;"
                                    "border-radius: 6px;"
                                    "font-size:18px;"
-                                   //"font-family:微软雅黑;"
                                    "}"
                                    "QPushButton:pressed{"
                                    "padding: 1px;"
                                    "}");
-
-//        m_idEdit_->setStyleSheet("QLineEdit{"
-//                                  "color:white;"
-//                                  "background-color:transparent;"
-//                                  "font-size:24px;"
-//                                  "border:1px solid #CECECE;"
-//                                  "border-radius:6px;"
-//                                  "}");
-        // 设置 min-width有效果，其它无效果
-        //        "QComboBox QAbstractItemView{"
-        //        "selection-color: red; min-width: 250px;"
-        //        "outline: 0px;"
-        //        "selection-background-color: red;"
-        //        "}"
         cameraCombox_->setStyleSheet(
                     "QComboBoxListView{"
                     "color: #CECECE;"
@@ -325,47 +314,38 @@ void FaceSearch::setUserStyle(WidgetManagerI::SkinStyle s)
                                  "width: 16px;"
                                  "border-image: url(images/under.png) 1;"
                                  "}");
-
-//        "QSpinBox::up-arrow{"
-//        "image: url(images/on.png);"
-//        "}"
-//        "QSpinBox::down-arrow{"
-//        "image: url(images/under.png);"
-//        "}"
     }
 }
 
-void FaceSearch::slotAddRow(QVector<SearchFace> info)
+void FaceSearch::slotAddRow(QVector<RestServiceI::DataRectureItem> info)
 {
     m_tableW->model()->removeRows(0,m_tableW->rowCount());
-    for(const SearchFace &itemData : info){
+    for(const RestServiceI::DataRectureItem &itemData : info){
         m_tableW->insertRow(m_tableW->rowCount());
         QTableWidgetItem *item = new QTableWidgetItem;
         m_tableW->setItem(m_tableW->rowCount() - 1,0,item);
-        QImage img;
-        img.loadFromData(QByteArray::fromStdString(itemData.face_img));
         QLabel *label = new QLabel;
         label->setScaledContents(true);
-        label->setPixmap(QPixmap::fromImage(img));
+        label->setPixmap(QPixmap::fromImage(itemData.img));
         m_tableW->setCellWidget(m_tableW->rowCount() - 1,0,label);
 
         item = new QTableWidgetItem;
-        item->setText(QString::fromStdString(itemData.oid));
+        item->setText(itemData.sceneId);
         item->setTextAlignment(Qt::AlignCenter);
         m_tableW->setItem(m_tableW->rowCount() - 1,1,item);
 
         item = new QTableWidgetItem;
-        item->setText(QString::fromStdString(itemData.camera_pos));
+        item->setText(cameraMap_.value(itemData.cameraId));
         item->setTextAlignment(Qt::AlignCenter);
         m_tableW->setItem(m_tableW->rowCount() - 1,2,item);
 
         item = new QTableWidgetItem;
-        item->setText(QString::number(itemData.score));
+        item->setText(QString::number(itemData.similarity));
         item->setTextAlignment(Qt::AlignCenter);
         m_tableW->setItem(m_tableW->rowCount() - 1,3,item);
 
         item = new QTableWidgetItem;
-        item->setText(QDateTime::fromMSecsSinceEpoch(itemData.time).toString("yyyy-MM-dd HH:mm:ss"));
+        item->setText(itemData.time.toString("yyyy-MM-dd HH:mm:ss"));
         item->setTextAlignment(Qt::AlignCenter);
         m_tableW->setItem(m_tableW->rowCount() - 1,4,item);
     }
@@ -384,7 +364,7 @@ void FaceSearch::getCameraInfo()
 {
     BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
     RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
-    connect(serviceI,SIGNAL(sigCameraInfo(QVector<CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<CameraInfo>)));
+    connect(serviceI,SIGNAL(sigCameraInfo(QVector<RestServiceI::CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<RestServiceI::CameraInfo>)));
     serviceI->getCameraInfo();
     startWorker(worker);
 }
@@ -394,10 +374,22 @@ void FaceSearch::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)
     cameraCombox_->clear();
     QPixmap pix(cameraCombox_->iconSize());
     pix.fill(Qt::transparent);
-    cameraCombox_->addItem(pix,tr("不限"),"");
+    cameraCombox_->addItem(tr("不限"),"");
     for (auto &info : data) {
         cameraCombox_->addItem(info.cameraPos,info.cameraId);
+        cameraMap_[info.cameraId] = info.cameraPos;
     }
+}
+
+void FaceSearch::slotSectionClicked(int index)
+{
+    static bool isDescendingOrder = false;
+    if(isDescendingOrder){
+        m_tableW->sortByColumn(index, Qt::AscendingOrder);
+    }else{
+        m_tableW->sortByColumn(index, Qt::DescendingOrder);
+    }
+    isDescendingOrder = !isDescendingOrder;
 }
 
 void FaceSearch::slotSearchClicked()
@@ -408,26 +400,32 @@ void FaceSearch::slotSearchClicked()
     BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
     RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
     WaitingLabel *label = new WaitingLabel(this);
-    label->setAttribute(Qt::WA_DeleteOnClose);
     connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
         label->close();
+        delete label;
         oidStr_.clear();
         QMessageBox::information(this,objectName(),str);
         m_searchBtn->setEnabled(true);
         m_pageIndicator->setEnabled(true);
     });
-    connect(serviceI,&RestServiceI::sigFaceSearch,this,[&,label](const QVector<SearchFace> value){
+    connect(serviceI,&RestServiceI::sigSearchByImage,this,[&,label](const QVector<RestServiceI::DataRectureItem> value){
         label->close();
+        delete label;
         oidStr_.clear();
         slotAddRow(value);
         m_searchBtn->setEnabled(true);
         m_pageIndicator->setEnabled(true);
     });
-    if(oidStr_.isEmpty()){
-        serviceI->searchSnap("",faceImg_,"",cameraCombox_->currentData().toString(),topCombox_->currentData().toInt(), qreal(similarSpin_->value()) / 100,startTimeEdit_->dateTime(),endTimeEdit_->dateTime());
-    }else{
-        serviceI->searchSnap("",QImage(),oidStr_,cameraCombox_->currentData().toString(),topCombox_->currentData().toInt(), qreal(similarSpin_->value()) / 100,startTimeEdit_->dateTime(),endTimeEdit_->dateTime());
-    }
+    RestServiceI::SearchUseImageArgs args;
+    args.cameraId = cameraCombox_->currentData().toString();
+    args.faceId = oidStr_;
+    args.image = faceImg_;
+    args.mode = 0;
+    args.recordsCount = topCombox_->currentData().toInt();
+    args.smilarty = qreal(similarSpin_->value()) / 100;
+    args.startT = startTimeEdit_->dateTime();
+    args.endT = endTimeEdit_->dateTime();
+    serviceI->searchByImage(args);
     startWorker(worker);
     label->show(500);
     m_searchBtn->setEnabled(false);
@@ -437,8 +435,13 @@ void FaceSearch::slotSearchClicked()
 void FaceSearch::slotImgBtnClicked()
 {
     QString filePath = QFileDialog::getOpenFileName(this,tr("添加图片"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),"*.png *.jpg *.tmp");
-    faceImg_ = QImage(filePath);
-    m_imgBtn->setIcon(QPixmap::fromImage(faceImg_).scaled(m_imgBtn->iconSize()));
+    if(filePath.isEmpty()){
+        m_imgBtn->setIcon(m_imgBtn->property("default-pix").value<QPixmap>().scaled(m_imgBtn->iconSize()));
+
+    }else{
+        faceImg_ = QImage(filePath);
+        m_imgBtn->setIcon(QPixmap::fromImage(faceImg_).scaled(m_imgBtn->iconSize()));
+    }
 }
 
 void FaceSearch::slotOnScenePic(QImage img)

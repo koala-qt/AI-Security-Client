@@ -240,6 +240,7 @@ void FaceLinkPage::slotFaceLinkTree(QJsonObject jsObj)
 
 void FaceLinkPage::slotImgBtnClicked()
 {
+    imgOid_.clear();
     QString filePath = QFileDialog::getOpenFileName(this,tr("add image"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),"*.png *.jpg *.tmp");
     QPixmap pix(filePath);
     if(pix.isNull()){
