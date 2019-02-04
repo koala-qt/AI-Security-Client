@@ -39,6 +39,7 @@ public:
     RestService(WorkerManager *wm, QObject*parent = nullptr);
     WorkerType workerType() const override;
     void login(const LoginParameter &args) override;
+    void combinationSearch(CombinationSearchArgs &) override;
     void getScenePic(const QString old) override;
     void faceTracking(FaceTrackingArgs) override;
     void searchAbDoorTime(SearchABDoorTimeArg &) override;

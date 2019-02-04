@@ -34,6 +34,11 @@ void BLL::RestService::login(const RestServiceI::LoginParameter &args)
     pushBackTask(Login,QVariant::fromValue(args));
 }
 
+void BLL::RestService::combinationSearch(RestServiceI::CombinationSearchArgs &args)
+{
+    pushBackTask(CombinationSearch,QVariant::fromValue(args));
+}
+
 void BLL::RestService::getScenePic(const QString old)
 {
     pushBackTask(GetScenePic,QVariant::fromValue(old));
@@ -174,6 +179,12 @@ void BLL::RestService::run()
         QString qerrorStr = httpDao.getCameraInfo(cameras);
         if(qerrorStr.isEmpty()){
             emit sigCameraInfo(cameras);
+        }
+    }else if(argType == CombinationSearch){
+        DLL::CloudHttpDao httpDao;
+        QString qerrorStr = httpDao.combinationSearch(args.second.value<RestServiceI::CombinationSearchArgs>());
+        if(qerrorStr.isEmpty()){
+//            emit sigCameraGroup(resGroup);
         }
     }else if(argType == GetCameraGroup){
         DLL::CloudHttpDao httpDao;

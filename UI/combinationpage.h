@@ -33,6 +33,9 @@ private:
     QComboBox *cameraCombox_{nullptr},*queryCountCombox_{nullptr};
     QPushButton *searchBtn_{nullptr},*imageBtn_{nullptr};
     QTableWidget *faceTable_{nullptr},*bodyTable_{nullptr};
+
+private:
+    void slotSearchBtnClicked();
 };
 
 #endif // COMBINATIONPAGE_H

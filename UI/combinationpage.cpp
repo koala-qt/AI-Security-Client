@@ -9,7 +9,10 @@
 #include <QSpinBox>
 #include <QEvent>
 #include <QPainter>
+#include <QMessageBox>
 #include "combinationpage.h"
+#include "waitinglabel.h"
+#include "service/restservice.h"
 
 CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
     WidgetI(wm,parent)
@@ -115,6 +118,36 @@ bool CombinationPage::eventFilter(QObject *watched, QEvent *event)
     }
 
     return WidgetI::eventFilter(watched,event);
+}
+
+void CombinationPage::slotSearchBtnClicked()
+{
+    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
+    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    WaitingLabel *label = new WaitingLabel(this);
+    connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
+        label->close();
+        delete label;
+        QMessageBox::information(this,objectName(),str);
+        searchBtn_->setEnabled(true);
+    });
+    connect(serviceI,&RestServiceI::sigSemanticSearch,this,[this,label](RestServiceI::SemanticReturnData &returnData){
+        label->close();
+        delete label;
+        searchBtn_->setEnabled(true);
+    });
+    RestServiceI::CombinationSearchArgs args;
+    args.cameraId = cameraCombox_->currentData().toString();
+    args.startTime = startTimeEdit_->dateTime();
+    args.endTime = endTimeEdit_->dateTime();
+    args.img = imageBtn_->property("pixmap").value<QPixmap>().toImage();
+    args.queryCount = queryCountCombox_->currentData().toInt();
+    args.similarity = similaritySpin_->value() / (qreal)100;
+    args.tradeoff = quanzhongSpin_->value() / (qreal)100;
+    serviceI->combinationSearch(args);
+    startWorker(worker);
+    label->show(500);
+    searchBtn_->setEnabled(false);
 }
 void CombinationPage::setUserStyle(WidgetManagerI::SkinStyle s)
 {

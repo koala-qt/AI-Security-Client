@@ -149,7 +149,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
         view->setWindowModality(Qt::ApplicationModal);
         view->setMinimumSize(1655,924);
         view->setImgageOid(dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>(),
-                           dataListW_->currentItem()->data(Qt::UserRole + 2).toString());
+                           dataListW_->currentItem()->data(Qt::UserRole + 4).toString());
         view->show();
     });
     dataMenu_->addAction(tr("Face link"),[this]{

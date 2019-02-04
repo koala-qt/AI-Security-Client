@@ -144,7 +144,7 @@ void TrackingPage::getCameraInfo()
 {
     BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
     RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
-    connect(serviceI,SIGNAL(sigCameraMap(QVariantMap)),this,SLOT(slotOnCameraMap(QVariantMap)));
+    connect(serviceI,SIGNAL(sigCameraInfo(QVector<RestServiceI::CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<RestServiceI::CameraInfo>)));
     serviceI->getCameraInfo();
     startWorker(worker);
 }
@@ -197,15 +197,14 @@ void TrackingPage::slotSearchBtnClicked()
     serviceI->faceTracking(args);
     startWorker(worker);
     curOid_.clear();
+    label->show(500);
 }
 
-void TrackingPage::slotOnCameraMap(QVariantMap data)
+void TrackingPage::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)
 {
-//    QStringList mapKeys = data.keys();
-//    for(auto mapKey : mapKeys){
-//        imagePosCombox_->addItem(data.value(mapKey).toString(),mapKey);
-//    }
-    curCameraMap_ = data;
+    for(RestServiceI::CameraInfo &info : data){
+        curCameraMap_[info.cameraId] = info.cameraPos;
+    }
 }
 
 void TrackingPage::slotTrackingNew(QVector<RestServiceI::TrackingReturnData> data)
@@ -213,10 +212,11 @@ void TrackingPage::slotTrackingNew(QVector<RestServiceI::TrackingReturnData> dat
     QVector<TrackingWebView::TrackingPoint> trackingVec;
     std::transform(data.begin(),data.end(),std::back_inserter(trackingVec),[this](const RestServiceI::TrackingReturnData &value){
         TrackingWebView::TrackingPoint pointData;
-        pointData.name = curCameraMap_.value(value.cameraId).toString();
+        pointData.name = curCameraMap_.value(value.cameraId);
         pointData.grabTime = value.timeIn.toString("yyyy-MM-dd HH:mm:ss");
-//        pointData.holdTime = value.timeOut - value.timeIn;
-        pointData.personImgUr = "http://192.168.100.60:8080/graph/node/picture/" + value.objId;
+        pointData.holdTime.setNum((value.timeOut.toMSecsSinceEpoch() - value.timeIn.toMSecsSinceEpoch())/1000);
+        pointData.holdTime.append('s');
+        pointData.personImgUr = hostname_ + "graph/node/picture/" + value.objId;
         qDebug() << pointData.personImgUr;
         return pointData;
     });

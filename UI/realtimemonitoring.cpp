@@ -101,7 +101,7 @@ RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
 
     numberPersonTimer_ = new QTimer(this);
     faceItemMenu_ = new QMenu(m_faceList);
-    faceItemMenu_->addAction(tr("查看最近抓拍记录"),[&]{
+    faceItemMenu_->addAction(tr("Search using an image"),[&]{
         FaceSearch *faceDialog = new FaceSearch(widgetManger());
         faceDialog->setAttribute(Qt::WA_DeleteOnClose);
         faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
@@ -714,9 +714,9 @@ void RealtimeMonitoring::slotAddEventitem(QStringList data, QImage img)
 
 void RealtimeMonitoring::slotAddDevice(QVector<RestServiceI::CameraInfo> data)
 {
-    QTreeWidgetItem *item = new QTreeWidgetItem(m_treeW,QStringList() << tr("Cameras"));
+    QTreeWidgetItem *item = new QTreeWidgetItem(m_treeW,QStringList() << tr("Cameras"),0);
     for (auto &info : data) {
-        QTreeWidgetItem *camera = new QTreeWidgetItem(item, QStringList() << info.cameraPos);
+        QTreeWidgetItem *camera = new QTreeWidgetItem(item, QStringList() << info.cameraPos,1);
         camera->setData(0,Qt::UserRole + 1, info.cameraId);
         camera->setData(0,Qt::UserRole + 2, info.rtsp);
         camera->setData(0,Qt::UserRole + 3, info.cameraPos);
@@ -775,6 +775,7 @@ void RealtimeMonitoring::slotPersonStayInfoTimeout()
 
 void RealtimeMonitoring::slotPersonTotalCountTimeout()
 {
+    noNumbersPersonDataCount_ = 0;
     if(!widgetManger() || !widgetManger()->workerManager()){
         return;
     }
@@ -791,7 +792,6 @@ void RealtimeMonitoring::slotPersonTotalCountTimeout()
         QTimer::singleShot(1000,this,[this]{
             numberPersonTimer_->stop();
             numberPersonTimer_->start(1000);
-            noNumbersPersonDataCount_ = 0;
             slotPersonTotalCountTimeout();
         });
     });

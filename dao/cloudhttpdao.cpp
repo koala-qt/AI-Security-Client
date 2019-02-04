@@ -285,21 +285,51 @@ QString DLL::CloudHttpDao::tracking(RestServiceI::FaceTrackingArgs &args,QVector
         return jsObj.value("message").toString();
     }
     QJsonArray jsArray = jsObj.value("data").toArray();
+#if 0
     for(auto &jsVal : jsArray){
         QJsonObject  dataObj = jsVal.toObject();
         RestServiceI::TrackingReturnData pdata;
-        pdata.bodyAttribute = dataObj.value("bodyAttribute").toArray().toVariantList();
-        pdata.bodyIds = dataObj.value("bodyId").toArray().toVariantList();
-        pdata.bodyImg.loadFromData(QByteArray::fromBase64(dataObj.value("bodySnap").toString().toLatin1()));
         pdata.cameraId = dataObj.value("cameraId").toString();
         pdata.objId = dataObj.value("id").toString();
-        pdata.faceAttr = dataObj.value("faceAttribute").toArray().toVariantList();
-        pdata.faceIds = dataObj.value("faceId").toArray().toVariantList();
         pdata.faceImg.loadFromData(QByteArray::fromBase64(dataObj.value("faceSnap").toString().toLatin1()));
         pdata.timeIn = QDateTime::fromMSecsSinceEpoch(dataObj.value("tsIn").toVariant().toULongLong());
         pdata.timeOut = QDateTime::fromMSecsSinceEpoch(dataObj.value("tsOut").toVariant().toULongLong());
         resVec << pdata;
     }
+#else
+    QVector<RestServiceI::TrackingReturnData> allData;
+    for(auto &jsVal : jsArray){
+        QJsonObject  dataObj = jsVal.toObject();
+        RestServiceI::TrackingReturnData pdata;
+        pdata.cameraId = dataObj.value("cameraId").toString();
+        pdata.objId = dataObj.value("id").toString();
+        pdata.faceImg.loadFromData(QByteArray::fromBase64(dataObj.value("faceSnap").toString().toLatin1()));
+        pdata.timeIn = QDateTime::fromMSecsSinceEpoch(dataObj.value("tsIn").toVariant().toULongLong());
+        pdata.timeOut = QDateTime::fromMSecsSinceEpoch(dataObj.value("tsOut").toVariant().toULongLong());
+        allData << pdata;
+    }
+    if(allData.isEmpty())return QString();
+    QVector<QVector<RestServiceI::TrackingReturnData>> rightDataVec;
+    rightDataVec << (QVector<RestServiceI::TrackingReturnData>() << allData.first());
+    for(int i = 1; i < allData.count(); i++){
+        if(allData.at(i).cameraId != allData.at(i-1).cameraId){
+            rightDataVec << (QVector<RestServiceI::TrackingReturnData>() << allData.at(i));
+        }else{
+            rightDataVec.last() << allData.at(i);
+        }
+    }
+    for(QVector<RestServiceI::TrackingReturnData> &sameIdVec : rightDataVec){
+        QVector<qint64> tsVec;
+        for(RestServiceI::TrackingReturnData &ddv : sameIdVec){
+            tsVec << ddv.timeIn.toMSecsSinceEpoch() << ddv.timeOut.toMSecsSinceEpoch();
+        }
+        auto minmaxRes = std::minmax_element(tsVec.begin(),tsVec.end());
+        RestServiceI::TrackingReturnData rdata = sameIdVec.first();
+        rdata.timeIn = QDateTime::fromMSecsSinceEpoch(*minmaxRes.first);
+        rdata.timeOut = QDateTime::fromMSecsSinceEpoch(*minmaxRes.second);
+        resVec << rdata;
+    }
+#endif
     return QString();
 }
 
@@ -466,11 +496,12 @@ QString DLL::CloudHttpDao::searchByImage(RestServiceI::SearchUseImageArgs &args,
     QBuffer imgBuf(&imgStr);
     imgBuf.open(QIODevice::WriteOnly);
     args.image.save(&imgBuf,"jpg");
+    QString base64Str(imgStr.toBase64(QByteArray::Base64UrlEncoding));
     QString postData = QObject::tr("mode=%1&number=%2&similarity=%3&base64=%4&cameraId=%5&objId=%6&startTime=%7&finishTime=%8&property=false")
             .arg(args.mode)
             .arg(args.recordsCount)
             .arg(args.smilarty)
-            .arg(QString(imgStr.toBase64()))
+            .arg(base64Str)
             .arg(args.cameraId)
             .arg(args.faceId)
             .arg(args.startT.toString("yyyy-MM-dd HH:mm:ss"))
@@ -505,6 +536,11 @@ QString DLL::CloudHttpDao::searchByImage(RestServiceI::SearchUseImageArgs &args,
         sitem.similarity = itemObj.value("similarity").toDouble();
         return sitem;
     });
+    return QString();
+}
+
+QString DLL::CloudHttpDao::combinationSearch(RestServiceI::CombinationSearchArgs &)
+{
     return QString();
 }
 

@@ -15,6 +15,7 @@ public:
     enum{
         Login = 1,
         GetTop,
+        CombinationSearch,
         GetCameraInfo,
         GetCameraGroup,
         FaceTracking,
@@ -50,6 +51,16 @@ public:
         QString password;
         int authenticationMethod;
         int xprotectProductFamily;
+    };
+    struct CombinationSearchArgs
+    {
+        float similarity;
+        int queryCount;
+        float tradeoff;
+        QString cameraId;
+        QDateTime startTime;
+        QDateTime endTime;
+        QImage img;
     };
     struct CameraGoup
     {
@@ -188,6 +199,7 @@ public:
     virtual void getScenePic(const QString old) = 0;
     virtual void faceTracking(FaceTrackingArgs) = 0;
     virtual void getPersonDetails(QString &) = 0;
+    virtual void combinationSearch(CombinationSearchArgs &) = 0;
     virtual void searchAbDoorTime(SearchABDoorTimeArg &) = 0;
     virtual void multipleSearch(MultipleSearchArgs &) = 0;
     virtual void getAlarmScenePic(const QString oid) = 0;
@@ -231,7 +243,6 @@ signals:
     void sigPeronsDetails(QImage,QImage,QStringList,QStringList);
     void sigPersonNumbers(int,int);
     void sigSemanticSearch(RestServiceI::SemanticReturnData);
-    void sigCameraMap(QVariantMap);
     void sigSearchByImage(QVector<RestServiceI::DataRectureItem>);
     void sigTrackingNew(QVector<TrackingReturnData>);
 };
@@ -245,4 +256,5 @@ Q_DECLARE_METATYPE(RestServiceI::SemanticSearchArgs)
 Q_DECLARE_METATYPE(RestServiceI::SearchUseImageArgs)
 Q_DECLARE_METATYPE(RestServiceI::MultipleSearchArgs)
 Q_DECLARE_METATYPE(RestServiceI::SearchABDoorTimeArg)
+Q_DECLARE_METATYPE(RestServiceI::CombinationSearchArgs)
 #endif // RESTSERVICEI_H
