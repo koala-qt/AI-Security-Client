@@ -23,9 +23,10 @@ SceneImageDialog::SceneImageDialog(QWidget *parent, Qt::WindowFlags f):
     spiteL_ = new QLabel;
     listW_ = new QListWidget;
     btnBox_ = new QDialogButtonBox;
-    sureSelectBtn_ = new QPushButton(tr("sure"));
+    sureSelectBtn_ = new QPushButton(tr("ok"));
     deleSelectBtn_ = new QPushButton(tr("delete all"));
     operateAreaW_ = new QWidget;
+    saveBtn_ = new QPushButton(tr("Save scene"),operateAreaW_);
     QVBoxLayout *vlay = new QVBoxLayout;
     vlay->addWidget(selectAreaW_);
     QHBoxLayout *hlay = new QHBoxLayout;
@@ -71,24 +72,12 @@ SceneImageDialog::SceneImageDialog(QWidget *parent, Qt::WindowFlags f):
     listW_->setFixedWidth(listWidth);
     spiteL_->setFixedWidth(1);
 
-    menu_ = new QMenu(listW_);
-    menu_->addAction(tr("Save"),[this]{
-        QDir usrDir("user/image");
-        if(!usrDir.exists()){
-            usrDir.mkpath(usrDir.path());
-        }
-        curImage_.save(usrDir.path() + "/" + curSceneId_ + ".jpg");
-    });
-    listW_->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(listW_,&QListWidget::customContextMenuRequested,this,[this](const QPoint &p){
-        menu_->move(QCursor::pos());
-        menu_->show();
-    });
     widgetM_ = reinterpret_cast<WidgetManagerI*>(qApp->property("WorkerManager").toULongLong());
     connect(sureSelectBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSureBtnClicked()));
     connect(deleSelectBtn_,SIGNAL(clicked(bool)),this,SLOT(slotDeleteBtnClicke()));
     connect(searchBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSearchBtnClicked()));
     connect(cancelBtn_,SIGNAL(clicked(bool)),btnBox_,SIGNAL(rejected()));
+    connect(saveBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSaveBtnClicked()));
 }
 
 void SceneImageDialog::setImage(QImage img)
@@ -152,6 +141,9 @@ void SceneImageDialog::setUserStyle(int styleArg)
         deleSelectBtn_->setStyleSheet("QPushButton{"
                                       "background-color: rgb(100,100,100);"
                                       "}");
+        saveBtn_->setStyleSheet("QPushButton{"
+                                      "background-color: rgb(100,100,100);"
+                                      "}");
 
         pal = listW_->palette();
         pal.setColor(QPalette::Base,Qt::transparent);
@@ -176,6 +168,15 @@ void SceneImageDialog::setUserStyle(int styleArg)
                                                     "background: transparent;"
                                                     "}");
     }
+}
+
+void SceneImageDialog::slotSaveBtnClicked()
+{
+    QDir usrDir("user/image");
+    if(!usrDir.exists()){
+        usrDir.mkpath(usrDir.path());
+    }
+    curImage_.save(usrDir.path() + "/" + curSceneId_ + ".jpg");
 }
 
 void SceneImageDialog::slotSearchBtnClicked()

@@ -10,6 +10,7 @@
 #include <QScrollBar>
 #include <QHeaderView>
 #include <QSpinBox>
+#include <QDir>
 #include <QMenu>
 #include <QMessageBox>
 #include "semanticsearchpage.h"
@@ -104,18 +105,25 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
             SceneImageDialog dialog;
             dialog.setUserStyle(widgetManger()->currentStyle());
             dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
-            dialog.setImage(img);
+            dialog.setImage(img,dataListW_->currentItem()->data(Qt::UserRole + 5).toString());
             dialog.setRectLinePen(Qt::yellow);
             connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
                 if(!images.count()){
                     return;
                 }
-#if 0
-                QPixmap pix = QPixmap::fromImage(images.first());
-                imageBtn_->setIcon(pix.scaled(imageBtn_->iconSize()));
-                imageBtn_->setProperty("pixmap",pix);
-                slotImageSearchBtnClicked();
-#endif
+                FaceSearch *faceDialog = new FaceSearch(widgetManger());
+                faceDialog->setAttribute(Qt::WA_DeleteOnClose);
+                faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+                faceDialog->setWindowModality(Qt::ApplicationModal);
+                QPalette pal = faceDialog->palette();
+                pal.setColor(QPalette::Background,QColor(112,110,119));
+                faceDialog->setPalette(pal);
+                faceDialog->setAutoFillBackground(true);
+                faceDialog->setUserStyle(widgetManger()->currentStyle());
+                faceDialog->layout()->setMargin(10);
+                faceDialog->setFaceImage(images.first());
+                faceDialog->setMinimumHeight(700);
+                faceDialog->show();
             });
             dialog.exec();
             dataMenu_->setEnabled(true);
@@ -162,6 +170,13 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
         faceLinkP->setFaceLinkOidAndImg(dataListW_->currentItem()->data(Qt::UserRole + 4).toString(),pix);
         faceLinkP->resize(1200,900);
         faceLinkP->show();
+    });
+    dataMenu_->addAction(tr("Save face image"),[this]{
+        QDir usrDir("user/image");
+        if(!usrDir.exists()){
+            usrDir.mkpath(usrDir.path());
+        }
+        dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>().save(usrDir.path() + "/" + dataListW_->currentItem()->data(Qt::UserRole + 2).toString() + ".jpg");
     });
     dataListW_->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(dataListW_,&QListWidget::customContextMenuRequested,this,[&](QPoint p){

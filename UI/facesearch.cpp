@@ -122,8 +122,8 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
         QLabel *curLab = dynamic_cast<QLabel *>(m_tableW->cellWidget(m_tableW->currentRow(), 0));
         if (curLab)
         {
-            this->setFaceImage(curLab->pixmap()->toImage());
-            this->setOid(m_tableW->item(m_tableW->currentRow(),1)->text());
+            setFaceImage(curLab->pixmap()->toImage());
+            setOid(m_tableW->item(m_tableW->currentRow(),1)->text());
         }
     });
     menu_->addAction(tr("Scene analysis"),[&]{
@@ -142,7 +142,7 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
             slotOnScenePic(img);
             menu_->setEnabled(true);
         });
-        serviceI->getScenePic(m_tableW->item(m_tableW->currentRow(),1)->text());
+        serviceI->getScenePic(m_tableW->item(m_tableW->currentRow(),1)->data(Qt::UserRole).toString());
         startWorker(worker);
         label->show(500);
         menu_->setEnabled(false);
@@ -376,7 +376,8 @@ void FaceSearch::slotAddRow(QVector<RestServiceI::DataRectureItem> info)
         m_tableW->setCellWidget(m_tableW->rowCount() - 1,0,label);
 
         item = new QTableWidgetItem;
-        item->setText(itemData.sceneId);
+        item->setText(itemData.id);
+        item->setData(Qt::UserRole,itemData.sceneId);
         item->setTextAlignment(Qt::AlignCenter);
         m_tableW->setItem(m_tableW->rowCount() - 1,1,item);
 

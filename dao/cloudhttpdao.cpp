@@ -172,7 +172,7 @@ QString DLL::CloudHttpDao::faceLink_(RestServiceI::FaceLinkArgs &args, QString &
                       {"file",QString::fromLatin1(imgArray.toBase64())}};
     QJsonDocument jsDoc(jsObj);
     QByteArray argsJsonArray = jsDoc.toJson();
-    int resCode = send(DLL::POST,urlStr.toStdString(),argsJsonArray.toStdString(),5);
+    int resCode = send(DLL::POST,urlStr.toStdString(),argsJsonArray.toStdString(),30);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
