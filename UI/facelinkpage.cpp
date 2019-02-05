@@ -223,7 +223,7 @@ void FaceLinkPage::slotFaceLinkTree(QJsonObject jsObj)
     waitingL_ = nullptr;
     searchBtn_->setEnabled(true);
     if(jsObj.isEmpty()){
-        QMessageBox::information(this,objectName(),"tree data return null JsonObject");
+        QMessageBox::information(this,objectName(),tr("No matched result !"));
         return;
     }
 #if 0

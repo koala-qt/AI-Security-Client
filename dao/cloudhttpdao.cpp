@@ -440,6 +440,52 @@ QString DLL::CloudHttpDao::getScenePic(QString &scenId, QImage &img)
     return QString();
 }
 
+QString DLL::CloudHttpDao::captureSearch(RestServiceI::CaptureSearchArgs &args, RestServiceI::CaptureSearchReturnData &resDatas)
+{
+    QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-history");
+    QString postData = QObject::tr("mode=2&faceAttrs=&bodyAttrs=&cameraId=%4&startTime=%5&finishTime=%6&pageNo=%7&pageSize=%8&property=true")
+            .arg(args.position)
+            .arg(args.start.toString("yyyy-MM-dd HH:mm:ss"))
+            .arg(args.end.toString("yyyy-MM-dd HH:mm:ss"))
+            .arg(args.page)
+            .arg(args.pageCount);
+    qDebug() << urlStr;
+    qDebug() << postData;
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),5);
+    if(resCode != CURLE_OK){
+        return curl_easy_strerror(CURLcode(resCode));
+    }
+
+    QJsonParseError jsError;
+    QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
+    if(jsError.error != QJsonParseError::NoError){
+        return jsError.errorString();
+    }
+
+    QJsonObject jsObj = jsDoc.object();
+    int status = jsObj.value("status").toInt();
+    if(status != 200){
+        return jsObj.value("message").toString();
+    }
+    resDatas.totalCount = jsObj.value("total").toInt();
+    resDatas.totalPage = jsObj.value("pageNumber").toInt();
+    QJsonArray jsArray = jsObj.value("data").toArray();
+    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(resDatas.data),[](const QJsonValue &jsValue){
+        RestServiceI::DataRectureItem item;
+        QJsonObject itemObj = jsValue.toObject();
+        item.cameraId = itemObj.value("cameraId").toString();
+        item.id = itemObj.value("id").toString();
+        item.sceneId = itemObj.value("sceneId").toString();
+        item.time = QDateTime::fromMSecsSinceEpoch(itemObj.value("ts").toVariant().toULongLong());
+        QImage img;
+        img.loadFromData(QByteArray::fromBase64(itemObj.value("snapshot").toString().toLatin1()));
+        item.img = img;
+        item.personId = itemObj.value("personId").toString();
+        return item;
+    });
+    return QString();
+}
+
 QString DLL::CloudHttpDao::semanticSearch(RestServiceI::SemanticSearchArgs &args, RestServiceI::SemanticReturnData &resDatas)
 {
     QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-history");
@@ -549,5 +595,49 @@ QString DLL::CloudHttpDao::combinationSearch(RestServiceI::CombinationSearchArgs
 
 QString DLL::CloudHttpDao::multipleSearch(RestServiceI::MultipleSearchArgs &args)
 {
+    QString urlStr = host_ +  QObject::tr("/api/v2/external/monitor-detail/multiple-find");
+    QStringList imgsBase64StrList;
+    for(QImage &img : args.images){
+        QByteArray imgStr;
+        QBuffer imgBuf(&imgStr);
+        imgBuf.open(QIODevice::WriteOnly);
+        img.save(&imgBuf,"jpg");
+        imgsBase64StrList << imgStr.toBase64(QByteArray::Base64UrlEncoding);
+    }
+    QString postData = QObject::tr("base64s=%1&cameraId=%2&startTime=%3&finishTime=%4")
+            .arg(imgsBase64StrList.join(','))
+            .arg(args.cameraId)
+            .arg(args.startT.toString("yyyy-MM-dd HH:mm:ss"))
+            .arg(args.endT.toString("yyyy-MM-dd HH:mm:ss"));
+    qDebug() << urlStr;
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),30);
+    if(resCode != CURLE_OK){
+        return curl_easy_strerror(CURLcode(resCode));
+    }
+
+    QJsonParseError jsError;
+    QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
+    if(jsError.error != QJsonParseError::NoError){
+        return jsError.errorString();
+    }
+
+    QJsonObject jsObj = jsDoc.object();
+    int status = jsObj.value("status").toInt();
+    if(status != 200){
+        return jsObj.value("message").toString();
+    }
+    QJsonArray dataJsArray = jsObj.value("data").toArray();
+//    std::transform(dataJsArray.begin(),dataJsArray.end(),std::back_inserter(resVec),[](QJsonValue jsVal){
+//        RestServiceI::DataRectureItem sitem;
+//        QJsonObject itemObj = jsVal.toObject();
+//        sitem.cameraId = itemObj.value("cameraId").toString();
+//        sitem.id = itemObj.value("id").toString();
+//        sitem.img.loadFromData(QByteArray::fromBase64(itemObj.value("snapshot").toString().toLatin1()));
+//        sitem.personId = itemObj.value("personId").toString();
+//        sitem.sceneId = itemObj.value("sceneId").toString();
+//        sitem.time = QDateTime::fromMSecsSinceEpoch(itemObj.value("ts").toVariant().toULongLong());
+//        sitem.similarity = itemObj.value("similarity").toDouble();
+//        return sitem;
+//    });
     return "Developing";
 }

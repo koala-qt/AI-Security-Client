@@ -463,7 +463,7 @@ void FaceSearch::slotSearchClicked()
         m_searchBtn->setEnabled(true);
         m_pageIndicator->setEnabled(true);
         if(value.isEmpty()){
-            QMessageBox::information(this,objectName(),tr("No data!"));
+            QMessageBox::information(this,objectName(),tr("No matched result!"));
             return;
         }
     });

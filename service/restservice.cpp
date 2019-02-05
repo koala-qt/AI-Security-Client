@@ -129,9 +129,9 @@ void BLL::RestService::getStatisInfo()
     pushBackTask(GetStatis,QVariant());
 }
 
-void BLL::RestService::captureSearch(QString &dataBasename, const int page, const int pageCount, const QString &position, const QDateTime &start, const QDateTime &end)
+void BLL::RestService::captureSearch(CaptureSearchArgs &args)
 {
-    pushBackTask(CaptureSearch,QVariant::fromValue(capSearchArg{dataBasename,page, pageCount, position,start,end}));
+    pushBackTask(CaptureSearch,QVariant::fromValue(args));
 }
 
 void BLL::RestService::getWaringArea(const QString cameraId)
@@ -152,11 +152,6 @@ void BLL::RestService::semanticSearch(RestServiceI::SemanticSearchArgs &args)
 void BLL::RestService::searchByImage(RestServiceI::SearchUseImageArgs &args)
 {
     pushBackTask(SearchUseImage,QVariant::fromValue(args));
-}
-
-void BLL::RestService::searchSnap(const QString &dataBaseName, const QImage &img, const QString &oid, const QString &cameraId, const int topK, double similarty, QDateTime &start, QDateTime &end)
-{
-    pushBackTask(GetSnapHistory,QVariant::fromValue(searchSnapArgs{dataBaseName,img,oid,cameraId,topK,similarty,start,end}));
 }
 
 void BLL::RestService::setWaringArea(const QString cameraId, const QVector<QPair<int, QPolygonF> > &polygons)
@@ -265,16 +260,13 @@ void BLL::RestService::run()
         }
 #endif
     }else if(argType == CaptureSearch){
-        capSearchArg arguments = args.second.value<capSearchArg>();
-        if(arguments.dataBaseName != "Query in the capture database"){
-            emit sigError("Only support querying in the capture database");
-            return;
-        }
-        PagedSnapFaceHis resInfo = thriftDaoObj.captureSearch(arguments.page,arguments.pageCount,arguments.position.toStdString(),arguments.start.toMSecsSinceEpoch(),arguments.end.toMSecsSinceEpoch(),errorStr);
-        if(errorStr.empty()){
-            emit sigSnapHistory(resInfo);
+        DLL::CloudHttpDao httpDao;
+        RestServiceI::CaptureSearchReturnData resdatas;
+        QString qerrorStr = httpDao.captureSearch(args.second.value<CaptureSearchArgs>(),resdatas);
+        if(qerrorStr.isEmpty()){
+            emit sigCaptureSearch(resdatas);
         }else{
-            emit sigError(QString::fromStdString(errorStr));
+            emit sigError(qerrorStr);
         }
     }else if(argType == GetScenePic){
 #ifdef NEWSTRCUTER
@@ -365,24 +357,6 @@ void BLL::RestService::run()
                                                                 alarmArgs.start.toMSecsSinceEpoch(),alarmArgs.end.toMSecsSinceEpoch(),errorStr);
         if(errorStr.empty()){
             emit sigAlarmHistory(resData);
-        }else{
-            emit sigError(QString::fromStdString(errorStr));
-        }
-    }else if(argType == GetSnapHistory){
-        searchSnapArgs sargs = args.second.value<searchSnapArgs>();
-        if(sargs.dataBaseName != "Query in the capture database" && !sargs.dataBaseName.isEmpty()){
-            emit sigError("Only support querying in the capture database");
-            return;
-        }
-        QByteArray imgStr;
-        QBuffer bufer;
-        bufer.setBuffer(&imgStr);
-        sargs.img.save(&bufer,"jpg");
-        std::vector<SearchFace> resData = thriftDaoObj.searchSnap(imgStr.toStdString(),sargs.oid.toStdString(),sargs.cameraId.toStdString(),
-                                                                  sargs.topK,sargs.similarty,sargs.start.toMSecsSinceEpoch(),
-                                                                  sargs.end.toMSecsSinceEpoch(),errorStr);
-        if(errorStr.empty()){
-            emit sigFaceSearch(QVector<SearchFace>::fromStdVector(resData));
         }else{
             emit sigError(QString::fromStdString(errorStr));
         }

@@ -19,7 +19,7 @@ public:
     QString getPeronAverageTime(RestServiceI::AveragePersonTimeArgs &args);
     QString getPersonDetailes(QString &objId,QImage &face,QImage &body,QStringList &attrsface,QStringList &attrsbody);
     QString getScenePic(QString &scenId,QImage &img);
-
+    QString captureSearch(RestServiceI::CaptureSearchArgs&, RestServiceI::CaptureSearchReturnData &resDatas);
     QString semanticSearch(RestServiceI::SemanticSearchArgs &,RestServiceI::SemanticReturnData &resDatas);
     QString searchByImage(RestServiceI::SearchUseImageArgs &, QVector<RestServiceI::DataRectureItem> &resVec);
     QString combinationSearch(RestServiceI::CombinationSearchArgs &);

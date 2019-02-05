@@ -69,6 +69,14 @@ public:
         QString groupNo;
         int deviceNumber;
     };
+    struct CaptureSearchArgs
+    {
+        int page;
+        int pageCount;
+        QString position;
+        QDateTime start;
+        QDateTime end;
+    };
     struct CameraInfo
     {
         QString cameraId;
@@ -196,6 +204,12 @@ public:
         QVector<DataRectureItem> faceList;
         QVector<CombinationScoreReturnItem> bodyList;
     };
+    struct CaptureSearchReturnData
+    {
+        int totalPage;
+        int totalCount;
+        QVector<DataRectureItem> data;
+    };
     RestServiceI(QObject *parent = nullptr):QObject(parent){
         qRegisterMetaType<QVector<RestServiceI::CameraInfo>>("QVector<RestServiceI::CameraInfo>");
         qRegisterMetaType<PagedSnapFaceHis>("PagedSnapFaceHis");
@@ -211,6 +225,7 @@ public:
         qRegisterMetaType<QVector<RestServiceI::DataRectureItem>>("QVector<RestServiceI::DataRectureItem>");
         qRegisterMetaType<QVector<TrackingReturnData>>("QVector<TrackingReturnData>");
         qRegisterMetaType<CombinationSearchReturenData>("CombinationSearchReturenData");
+        qRegisterMetaType<RestServiceI::CaptureSearchReturnData>("RestServiceI::CaptureSearchReturnData");
     }
     virtual void login(const LoginParameter &) = 0;
     virtual void getScenePic(const QString old) = 0;
@@ -232,11 +247,10 @@ public:
     virtual void getStatisInfo() = 0;
     virtual void addStatis(const QString startId,const QString endId) = 0;
     virtual void removeStatis(const QString startId,const QString endId) = 0;
-    virtual void captureSearch(QString &dataBasename,const int page,const int pageCount, const QString &position, const QDateTime &start, const QDateTime &end) = 0;
+    virtual void captureSearch(CaptureSearchArgs &) = 0;
     virtual void setWaringArea(const QString,const QVector<QPair<int,QPolygonF>> &) = 0;
     virtual void getWaringArea(const QString) = 0;
     virtual void searchAlarmHistory(const int page,const int pageCount, const QString &cameraId,const QString &alarmType,const QDateTime &start,const QDateTime &end) = 0;
-    virtual void searchSnap(const QString &dataBasename,const QImage &img,const QString &oid,const QString &cameraId,const int topK,double similarty,QDateTime &start,QDateTime &end) = 0;
 
     virtual void semanticSearch(SemanticSearchArgs &) = 0;
     virtual void searchByImage(SearchUseImageArgs &) = 0;
@@ -254,7 +268,7 @@ signals:
     void sigFaceInfo(QStringList,QImage);
     void sigCameraGroup(QVector<RestServiceI::CameraGoup>);
     void sigCameraInfo(QVector<RestServiceI::CameraInfo>);
-    void sigSnapHistory(PagedSnapFaceHis);
+    void sigCaptureSearch(RestServiceI::CaptureSearchReturnData);
     void sigAlarmHistory(PagedAlarmHis);
     void sigFaceLinkTree(QJsonObject);
     void sigPeronsDetails(QImage,QImage,QStringList,QStringList);
@@ -275,4 +289,5 @@ Q_DECLARE_METATYPE(RestServiceI::SearchUseImageArgs)
 Q_DECLARE_METATYPE(RestServiceI::MultipleSearchArgs)
 Q_DECLARE_METATYPE(RestServiceI::SearchABDoorTimeArg)
 Q_DECLARE_METATYPE(RestServiceI::CombinationSearchArgs)
+Q_DECLARE_METATYPE(RestServiceI::CaptureSearchArgs)
 #endif // RESTSERVICEI_H
