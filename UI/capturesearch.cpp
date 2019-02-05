@@ -84,6 +84,12 @@ CaptureSearch::CaptureSearch(WidgetManagerI *wm, WidgetI *parent):
         BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
         RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
         WaitingLabel *label = new WaitingLabel(this);
+        connect(serviceI,&RestServiceI::sigError,this,[&,label](const QString str){
+            label->close();
+            delete label;
+            QMessageBox::information(this,objectName(),str);
+            menu_->setEnabled(true);
+        });
         connect(serviceI,&RestServiceI::sigSceneImage,this,[&,label](const QImage img){
             label->close();
             delete label;

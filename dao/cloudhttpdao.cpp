@@ -420,7 +420,7 @@ QString DLL::CloudHttpDao::getPersonDetailes(QString &objId, QImage &face, QImag
 QString DLL::CloudHttpDao::getScenePic(QString &scenId, QImage &img)
 {
     QString urlStr = host_ + QObject::tr("api/v2/external/monitor-detail/query/picture?pictureType=snap-scene&objId=%1").arg(scenId);
-    int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),15);
+    int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),10);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
