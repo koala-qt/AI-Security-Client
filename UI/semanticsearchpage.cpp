@@ -13,6 +13,8 @@
 #include <QDir>
 #include <QMenu>
 #include <QMessageBox>
+#include <QFileDialog>
+#include <QStandardPaths>
 #include "semanticsearchpage.h"
 #include "pageindicator.h"
 #include "waitinglabel.h"
@@ -172,11 +174,10 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
         faceLinkP->show();
     });
     dataMenu_->addAction(tr("Save face image"),[this]{
-        QDir usrDir("user/image");
-        if(!usrDir.exists()){
-            usrDir.mkpath(usrDir.path());
+        QString filePath =  QFileDialog::getSaveFileName(this,tr("Save face image"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),tr("Images (*.png *.jpg)"));
+        if(!dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>().save(filePath)){
+            QMessageBox::information(this,tr("Save face image"),tr("Operation failed!"));
         }
-        dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>().save(usrDir.path() + "/" + dataListW_->currentItem()->data(Qt::UserRole + 2).toString() + ".jpg");
     });
     dataListW_->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(dataListW_,&QListWidget::customContextMenuRequested,this,[&](QPoint p){

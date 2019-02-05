@@ -10,6 +10,8 @@
 #include <QApplication>
 #include <QMenu>
 #include <QDebug>
+#include <QFileDialog>
+#include <QStandardPaths>
 #include <QDir>
 #include "sceneimagedialog.h"
 #include "facesearch.h"
@@ -26,7 +28,7 @@ SceneImageDialog::SceneImageDialog(QWidget *parent, Qt::WindowFlags f):
     sureSelectBtn_ = new QPushButton(tr("ok"));
     deleSelectBtn_ = new QPushButton(tr("delete all"));
     operateAreaW_ = new QWidget;
-    saveBtn_ = new QPushButton(tr("Save scene"),operateAreaW_);
+    saveBtn_ = new QPushButton(tr("Save scene"),selectAreaW_);
     QVBoxLayout *vlay = new QVBoxLayout;
     vlay->addWidget(selectAreaW_);
     QHBoxLayout *hlay = new QHBoxLayout;
@@ -54,6 +56,7 @@ SceneImageDialog::SceneImageDialog(QWidget *parent, Qt::WindowFlags f):
     cancelBtn_->setFocusPolicy(Qt::NoFocus);
     searchBtn_->setFocusPolicy(Qt::NoFocus);
     searchBtn_->setDefault(false);
+    saveBtn_->setFocusPolicy(Qt::NoFocus);
     sureSelectBtn_->setFocusPolicy(Qt::NoFocus);
     deleSelectBtn_->setFocusPolicy(Qt::NoFocus);
     cancelBtn_->setFixedSize(120,44);
@@ -172,11 +175,10 @@ void SceneImageDialog::setUserStyle(int styleArg)
 
 void SceneImageDialog::slotSaveBtnClicked()
 {
-    QDir usrDir("user/image");
-    if(!usrDir.exists()){
-        usrDir.mkpath(usrDir.path());
+    QString filePath =  QFileDialog::getSaveFileName(this,tr("Save face image"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),tr("Images (*.png *.jpg)"));
+    if(!curImage_.save(filePath)){
+        QMessageBox::information(this,tr("Save face image"),tr("Operation failed!"));
     }
-    curImage_.save(usrDir.path() + "/" + curSceneId_ + ".jpg");
 }
 
 void SceneImageDialog::slotSearchBtnClicked()
