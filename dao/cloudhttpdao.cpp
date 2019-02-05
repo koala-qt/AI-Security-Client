@@ -497,6 +497,8 @@ QString DLL::CloudHttpDao::searchByImage(RestServiceI::SearchUseImageArgs &args,
     imgBuf.open(QIODevice::WriteOnly);
     args.image.save(&imgBuf,"jpg");
     QString base64Str(imgStr.toBase64(QByteArray::Base64UrlEncoding));
+    //直接以人脸图搜索，不启用抓拍ID搜索功能
+    args.faceId.clear();
     QString postData = QObject::tr("mode=%1&number=%2&similarity=%3&base64=%4&cameraId=%5&objId=%6&startTime=%7&finishTime=%8&property=false")
             .arg(args.mode)
             .arg(args.recordsCount)
@@ -547,5 +549,5 @@ QString DLL::CloudHttpDao::combinationSearch(RestServiceI::CombinationSearchArgs
 
 QString DLL::CloudHttpDao::multipleSearch(RestServiceI::MultipleSearchArgs &args)
 {
-    return QString();
+    return "Developing";
 }

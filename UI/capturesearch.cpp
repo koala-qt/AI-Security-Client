@@ -24,9 +24,8 @@
 CaptureSearch::CaptureSearch(WidgetManagerI *wm, WidgetI *parent):
     WidgetI(wm,parent)
 {
-    setObjectName(tr("抓拍检索"));
-    QHBoxLayout *mainLay = new QHBoxLayout;
-    QVBoxLayout *mainHLay = new QVBoxLayout;
+    setObjectName(tr("Search in capture database"));
+    QVBoxLayout *mainLay = new QVBoxLayout;
     QHBoxLayout *hlay = new QHBoxLayout;
     hlay->setSpacing(15);
     m_cameraL = new QLabel(tr("位置"));
@@ -50,23 +49,14 @@ CaptureSearch::CaptureSearch(WidgetManagerI *wm, WidgetI *parent):
     hlay->addWidget(m_endTimeEdit);
     hlay->addWidget(m_searchBtn);
     hlay->setAlignment(Qt::AlignLeft);
-    mainHLay->addLayout(hlay);
+    mainLay->addLayout(hlay);
 
     m_listW = new QListWidget;
-    mainHLay->addWidget(m_listW);
+    mainLay->addWidget(m_listW);
 
     m_pageIndicator = new PageIndicator;
     m_pageIndicator->setPageInfo(0,0);
-    hlay = new QHBoxLayout;
-    hlay->addStretch();
-    hlay->addWidget(m_pageIndicator);
-    hlay->addStretch();
-    mainHLay->addLayout(hlay);
-    mainHLay->setMargin(0);
-    mainLay->addLayout(mainHLay,9);
-
-    attributeTreeW_ = new QTreeWidget;
-    mainLay->addWidget(attributeTreeW_,1);
+    mainLay->addWidget(m_pageIndicator);
     mainLay->setMargin(0);
     setLayout(mainLay);
 
@@ -124,38 +114,6 @@ CaptureSearch::CaptureSearch(WidgetManagerI *wm, WidgetI *parent):
         menu_->show();
     });
 
-    attributeTreeW_->setHeaderLabel(tr("Attribule labels"));
-    attributeTreeW_->headerItem()->setTextAlignment(0,Qt::AlignCenter);
-    QVector<itemData> devicesVec;
-    itemData items;
-    items.name = tr("Eye");
-    items.childrens << itemData{tr("Arched_Eyebrows"),QVector<itemData>()} << itemData{tr("Bushy_Eyebrows"),QVector<itemData>()}
-                    << itemData{tr("Babs_Under_Eyes"),QVector<itemData>()} << itemData{tr("Eyeglasses"),QVector<itemData>()}
-                    << itemData{tr("Narrow_Eyes"),QVector<itemData>()};
-    devicesVec << items;
-    items.childrens.clear();
-    items.name = tr("Hair");
-    items.childrens << itemData{tr("Yellow"),QVector<itemData>()} << itemData{tr("black"),QVector<itemData>()};
-    devicesVec << items;
-    items.childrens.clear();
-    items.name = tr("Lips");
-    items.childrens << itemData{tr("lip"),QVector<itemData>()};
-    devicesVec << items;
-    items.name = tr("Nose");
-    items.childrens.clear();
-    items.childrens << itemData{tr("Big"),QVector<itemData>()} << itemData{tr("Small"),QVector<itemData>()};
-    devicesVec << items;
-    items.name = tr("Chine");
-    items.childrens.clear();
-    items.childrens << itemData{tr("Big"),QVector<itemData>()} << itemData{tr("Small"),QVector<itemData>()};
-    devicesVec << items;
-    items.name = tr("Other");
-    items.childrens.clear();
-    items.childrens << itemData{tr("Big"),QVector<itemData>()} << itemData{tr("Small"),QVector<itemData>()};
-    devicesVec << items;
-    for(auto value : devicesVec){
-        createTreeItem(nullptr,value);
-    }
     getCameraInfo();
 }
 
@@ -295,7 +253,7 @@ bool CaptureSearch::event(QEvent *event)
 {
     if(event->type() == QEvent::Show){
         m_endTimeEdit->setDateTime(QDateTime::currentDateTime());
-        slotSearchBtnClicked();
+//        slotSearchBtnClicked();
         return true;
     }
     return WidgetI::event(event);
@@ -305,22 +263,9 @@ void CaptureSearch::getCameraInfo()
 {
     BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
     RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
-    connect(serviceI,SIGNAL(sigCameraInfo(QVector<CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<CameraInfo>)));
+    connect(serviceI,SIGNAL(sigCameraInfo(QVector<RestServiceI::CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<RestServiceI::CameraInfo>)));
     serviceI->getCameraInfo();
     startWorker(worker);
-}
-
-void CaptureSearch::createTreeItem(QTreeWidgetItem *parentItem, CaptureSearch::itemData &items)
-{
-    QTreeWidgetItem *item{nullptr};
-    if(parentItem){
-        item = new QTreeWidgetItem(parentItem, QStringList() << items.name, items.childrens.isEmpty());
-    }else{
-        item = new QTreeWidgetItem(attributeTreeW_, QStringList() << items.name, items.childrens.isEmpty());
-    }
-    for(auto value : items.childrens){
-        createTreeItem(item,value);
-    }
 }
 
 void CaptureSearch::slotOnScenePic(QImage img)
@@ -406,5 +351,6 @@ void CaptureSearch::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)
     cameraCombox_->addItem(pix,tr("不限"),"");
     for (auto &info : data) {
         cameraCombox_->addItem(pix,info.cameraPos,info.cameraId);
+        curCameraMapInfo_[info.cameraId] = info.cameraPos;
     }
 }

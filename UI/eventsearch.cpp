@@ -16,6 +16,8 @@
 #include "pageindicator.h"
 #include "waitinglabel.h"
 #include "service/restservice.h"
+#include "sceneimagedialog.h"
+#include "facesearch.h"
 
 #pragma execution_character_set("utf-8")
 EventSearch::EventSearch(WidgetManagerI *wm, WidgetI *parent):
@@ -373,6 +375,7 @@ void EventSearch::slotSearchPageAlarmHistory(int page)
 
 void EventSearch::slotOnSceneImage(QImage img)
 {
+#if 0
     QDialog dialog;
     QLabel *label = new QLabel;
     QHBoxLayout *lay = new QHBoxLayout;
@@ -384,6 +387,32 @@ void EventSearch::slotOnSceneImage(QImage img)
     label->setPixmap(QPixmap::fromImage(img));
     dialog.setFixedSize(960,540);
     dialog.exec();
+#else
+    SceneImageDialog dialog;
+    dialog.setUserStyle(widgetManger()->currentStyle());
+    dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+    dialog.setImage(img);
+    dialog.setRectLinePen(Qt::yellow);
+    connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
+        if(!images.count()){
+            return;
+        }
+        FaceSearch *faceDialog = new FaceSearch(widgetManger());
+        faceDialog->setAttribute(Qt::WA_DeleteOnClose);
+        faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+        faceDialog->setWindowModality(Qt::ApplicationModal);
+        QPalette pal = faceDialog->palette();
+        pal.setColor(QPalette::Background,QColor(112,110,119));
+        faceDialog->setPalette(pal);
+        faceDialog->setAutoFillBackground(true);
+        faceDialog->setUserStyle(widgetManger()->currentStyle());
+        faceDialog->layout()->setMargin(10);
+        faceDialog->setFaceImage(images.first());
+        faceDialog->setMinimumHeight(700);
+        faceDialog->show();
+    });
+    dialog.exec();
+#endif
 }
 
 void EventSearch::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)

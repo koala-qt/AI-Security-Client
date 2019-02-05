@@ -462,6 +462,10 @@ void FaceSearch::slotSearchClicked()
         slotAddRow(value);
         m_searchBtn->setEnabled(true);
         m_pageIndicator->setEnabled(true);
+        if(value.isEmpty()){
+            QMessageBox::information(this,objectName(),tr("No data!"));
+            return;
+        }
     });
     RestServiceI::SearchUseImageArgs args;
     args.cameraId = cameraCombox_->currentData().toString();

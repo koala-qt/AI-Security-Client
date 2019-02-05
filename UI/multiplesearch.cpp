@@ -312,6 +312,7 @@ void MultipleSearch::slotSearchBtnClicked()
         }
     }
     serviceI->multipleSearch(args);
+    startWorker(worker);
     label->show(500);
     searchBtn_->setEnabled(false);
     pageIndicator_->setEnabled(false);

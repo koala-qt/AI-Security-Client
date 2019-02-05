@@ -66,6 +66,7 @@ private:
     CalendarEcharts *eventCalender_{nullptr};
 #endif
     PlatBack *mapCenterBack_{nullptr};
+    QMenu *listMenu_{nullptr};
     QImage backImage_;
 
     QMap<QString,QColor> pieChartColor_,spiderColor_;

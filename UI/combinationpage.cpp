@@ -235,26 +235,30 @@ void CombinationPage::slotSearchBtnClicked()
         }
 
         bodyTable_->model()->removeRows(0,bodyTable_->rowCount());
-        for(const RestServiceI::DataRectureItem &itemData : returnData.faceList){
+        for(const RestServiceI::CombinationScoreReturnItem &itemData : returnData.bodyList){
             bodyTable_->insertRow(bodyTable_->rowCount());
             QTableWidgetItem *item = new QTableWidgetItem;
-            item->setIcon(QPixmap::fromImage(itemData.img));
+            item->setIcon(QPixmap::fromImage(itemData.faceImg));
             bodyTable_->setItem(bodyTable_->rowCount() - 1,0,item);
+
+            item = new QTableWidgetItem;
+            item->setIcon(QPixmap::fromImage(itemData.bodyImg));
+            bodyTable_->setItem(bodyTable_->rowCount() - 1,1,item);
 
             item = new QTableWidgetItem;
             item->setText(curCameraMapInfo_.value(itemData.cameraId));
             item->setTextAlignment(Qt::AlignCenter);
-            bodyTable_->setItem(bodyTable_->rowCount() - 1,1,item);
+            bodyTable_->setItem(bodyTable_->rowCount() - 1,2,item);
 
             item = new QTableWidgetItem;
             item->setText(QString::number(itemData.similarity));
             item->setTextAlignment(Qt::AlignCenter);
-            bodyTable_->setItem(bodyTable_->rowCount() - 1,2,item);
+            bodyTable_->setItem(bodyTable_->rowCount() - 1,3,item);
 
             item = new QTableWidgetItem;
             item->setText(itemData.time.toString("yyyy-MM-dd HH:mm:ss"));
             item->setTextAlignment(Qt::AlignCenter);
-            bodyTable_->setItem(bodyTable_->rowCount() - 1,3,item);
+            bodyTable_->setItem(bodyTable_->rowCount() - 1,5,item);
         }
 
         searchBtn_->setEnabled(true);

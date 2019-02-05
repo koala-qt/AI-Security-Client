@@ -176,6 +176,7 @@ void SceneImageDialog::setUserStyle(int styleArg)
 void SceneImageDialog::slotSaveBtnClicked()
 {
     QString filePath =  QFileDialog::getSaveFileName(this,tr("Save face image"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),tr("Images (*.png *.jpg)"));
+    if(filePath.isEmpty())return;
     if(!curImage_.save(filePath)){
         QMessageBox::information(this,tr("Save face image"),tr("Operation failed!"));
     }

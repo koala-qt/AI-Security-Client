@@ -7,6 +7,7 @@ QT_FORWARD_DECLARE_CLASS(QStackedWidget)
 QT_FORWARD_DECLARE_CLASS(QTreeWidgetItem)
 QT_FORWARD_DECLARE_CLASS(CombinationPage)
 QT_FORWARD_DECLARE_CLASS(QueryInCaptureDataBasePage)
+QT_FORWARD_DECLARE_CLASS(CaptureSearch)
 class TargetSearch : public WidgetI
 {
     Q_OBJECT
@@ -30,6 +31,7 @@ private:
     QStackedWidget *stackedW_{nullptr};
     QueryInCaptureDataBasePage *queryInCapture_{nullptr};
     CombinationPage *combinationSearch_{nullptr};
+    CaptureSearch *capturePage_{nullptr};
 
     QImage backImg_;
 

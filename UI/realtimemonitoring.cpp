@@ -118,7 +118,7 @@ RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
         faceDialog->setMinimumHeight(700);
         faceDialog->show();
     });
-    faceItemMenu_->addAction(tr("查看场景图"),[&]{
+    faceItemMenu_->addAction(tr("Scene analysis"),[&]{
         BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
         RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
         WaitingLabel *label = new WaitingLabel(this);
@@ -149,7 +149,7 @@ RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
     });
 
     eventItemMenu_ = new QMenu(m_eventList);
-    eventItemMenu_->addAction(tr("查看场景图"),[&]{
+    eventItemMenu_->addAction(tr("Scene analysis"),[&]{
         BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
         RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
         WaitingLabel *label = new WaitingLabel(this);

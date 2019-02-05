@@ -174,6 +174,17 @@ public:
         QDateTime time;
         QImage img;
     };
+    struct CombinationScoreReturnItem
+    {
+        QString id;
+        QString cameraId;
+        QString sceneId;
+        QString personId;
+        double similarity;
+        QDateTime time;
+        QImage faceImg;
+        QImage bodyImg;
+    };
     struct SemanticReturnData
     {
         int toatal;
@@ -183,7 +194,7 @@ public:
     struct CombinationSearchReturenData
     {
         QVector<DataRectureItem> faceList;
-        QVector<DataRectureItem> bodyList;
+        QVector<CombinationScoreReturnItem> bodyList;
     };
     RestServiceI(QObject *parent = nullptr):QObject(parent){
         qRegisterMetaType<QVector<RestServiceI::CameraInfo>>("QVector<RestServiceI::CameraInfo>");

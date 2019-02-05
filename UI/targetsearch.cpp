@@ -8,6 +8,7 @@
 #include "combinationpage.h"
 #include "targetsearch.h"
 #include "queryincapturedatabasepage.h"
+#include "capturesearch.h"
 
 TargetSearch::TargetSearch(WidgetManagerI *wm, WidgetI *parent):
     WidgetI(wm,parent)
@@ -16,6 +17,7 @@ TargetSearch::TargetSearch(WidgetManagerI *wm, WidgetI *parent):
     backImg_.load("images/Mask.png");
     treeW_ = new QTreeWidget;
     stackedW_ = new QStackedWidget;
+    capturePage_ = new CaptureSearch(wm);
     queryInCapture_ = new QueryInCaptureDataBasePage(wm);
     combinationSearch_ = new CombinationPage(wm);
     QHBoxLayout *mainLay = new QHBoxLayout;
@@ -25,16 +27,20 @@ TargetSearch::TargetSearch(WidgetManagerI *wm, WidgetI *parent):
     mainLay->setSpacing(20);
     setLayout(mainLay);
 
+    stackedW_->addWidget(capturePage_);
     stackedW_->addWidget(queryInCapture_);
     stackedW_->addWidget(combinationSearch_);
 //    stackedW_->installEventFilter(this);
     QVector<itemData> devicesVec;
     itemData items;
-    items.name = queryInCapture_->objectName();
+    items.name = capturePage_->objectName();
     items.value = 0;
     devicesVec << items;
-    items.name = combinationSearch_->objectName();
+    items.name = queryInCapture_->objectName();
     items.value = 1;
+    devicesVec << items;
+    items.name = combinationSearch_->objectName();
+    items.value = 2;
     devicesVec << items;
     for(auto value : devicesVec){
         createTreeItem(treeW_,nullptr,value);

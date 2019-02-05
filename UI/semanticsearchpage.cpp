@@ -174,7 +174,11 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
         faceLinkP->show();
     });
     dataMenu_->addAction(tr("Save face image"),[this]{
-        QString filePath =  QFileDialog::getSaveFileName(this,tr("Save face image"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),tr("Images (*.png *.jpg)"));
+        QString personId = dataListW_->currentItem()->data(Qt::UserRole + 4).toString();
+        QString filePath =  QFileDialog::getSaveFileName(this,tr("Save face image"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/" + personId + ".jpg",tr("Images (*.png *.jpg)"));
+        if(filePath.isEmpty()){
+            return;
+        }
         if(!dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>().save(filePath)){
             QMessageBox::information(this,tr("Save face image"),tr("Operation failed!"));
         }

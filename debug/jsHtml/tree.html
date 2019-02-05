@@ -178,47 +178,12 @@
 			new QWebChannel(qt.webChannelTransport, function(channel){
 				window.Bridge = channel.objects.Bridge;
 					Bridge.sigDataChanged.connect(function(dataObj) { //连接Qt中brideg类的信号并定义执行代码
+					console.log(JSON.stringify(dataObj))
 					getData(dataObj)
 				});
 				Bridge.onInitsized(); //调用Qt内的函数
 			});
 		}
-            window.onload = function() {
-                var demoJson =  {
-                        "id": 575,
-                        "objId": "5c484739ce57d11b2562fc57",
-                        "symbol": "image://http://192.168.100.66:8080/graph/node/picture/5c5734be08c16353f60baf52",
-                        "symbolSize": [
-                            60,
-                            60
-                        ],
-                        "children": [
-                            {
-                                "id": 519,
-                                "objId": "5c484739ce57d11b2562fc58",
-                                "intimacy": "1",
-                                "symbol": "image://https://is1-ssl.mzstatic.com/image/thumb/Purple118/v4/c1/af/fe/c1affef6-5542-29fb-0f46-14687e0966bd/AppIcon-0-1x_U007emarketing-0-0-85-220-0-7.png/246x0w.jpg",
-                                "symbolSize": [
-                                    60,
-                                    60
-                                ],
-                                "snapScenes":['5c57347c08c16353f60b9dbb','5c57347c08c16353f60b9d8a']
-                            },
-                            {
-                                "id": 576,
-                                "objId": "5c484731ce57d11b2562fc52",
-                                "intimacy": "1",
-                                "symbol": "image://https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1548844855009&di=26dcaa3f822b702593d1847979b7c365&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201503%2F29%2F20150329115308_sZNYQ.jpeg",
-                                "symbolSize": [
-                                    60,
-                                    60
-                                ],
-                                "snapScenes":['5c57347c08c16353f60b9dbb', '5c57347c08c16353f60b9dbb']
-                            }
-                        ]
-               }
-              getData(demoJson)
-            }
             // 以上是初始化数据
             let images = {}
             let locIp = ''
@@ -237,12 +202,16 @@
             }
             
             function changeData(node) {
+				var snapscenes =[];
+				if(node.scenes){
+					snapscenes = node.scenes.split(',')
+				}
                 images[node.objId] = node.symbol.split('image://')[1]
                 demoJson.results[0]['data'][0]['graph']['nodes'].push({
                     'id': node.id,
                     'labels': [node.objId],
                     "properties": {
-                        "scene": node.snapScenes,
+                        "scene": snapscenes,
                         "headImg": node.symbol.split('image://')[1]
                     }
                 })
@@ -313,11 +282,11 @@
                                 type: "GET",
                                 dataType: 'json',
                                 success: function(data) {
-                                //   console.log(data.data.base64)
+                                 var finishTime = getLocalTime(data.data.finishTime)
                                   var html = '<div class="img-div">'+
                                                 '<img onclick="bigScene(this)" src='+"data:image/png;base64,"+data.data.base64+'>'+
                                                 '<div class="tro">'+data.data.cameraId+'</div>'+
-                                                '<div class="tro">'+data.data.finishTime+'</div>'+
+                                                '<div class="tro">'+finishTime+'</div>'+
                                              '</div>'
                                   $('#dialogImg').append(html)
                                 }
@@ -328,7 +297,17 @@
                     zoomFit: true
                 });
             }
-
+            function getLocalTime(nS) {    
+                // debugger 
+                var date = new Date(parseInt(nS));
+                Y = date.getFullYear() + '-';
+                M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+                D = date.getDate()+1 < 10 ? '0'+(date.getDate()+1) : date.getDate()+1 + ' ';
+                h = date.getHours() + ':';
+                m = date.getMinutes() + ':';
+                s = date.getSeconds(); 
+                return(Y+M+D+' '+h+m+s);     
+            }
             function bigScene(v) {
                 $("#showDialogTwo").show()
                 $("#showBigScene").attr('src', $(v).attr('src'))
