@@ -461,8 +461,10 @@ void BLL::RestService::run()
         }
     }else if(argType == MultipleSearch){
         DLL::CloudHttpDao httpDao;
-        QString qerrorStr = httpDao.multipleSearch(args.second.value<MultipleSearchArgs>());
+        QVector<RestServiceI::MultipleSearchItem> resData;
+        QString qerrorStr = httpDao.multipleSearch(args.second.value<MultipleSearchArgs>(),resData);
         if(qerrorStr.isEmpty()){
+            emit sigMultipleSearch(resData);
         }else{
             emit sigError(qerrorStr);
         }

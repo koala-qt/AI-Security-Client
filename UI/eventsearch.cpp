@@ -360,7 +360,7 @@ void EventSearch::slotSearchPageAlarmHistory(int page)
         m_searchBtn->setEnabled(true);
         m_pageindicator->setEnabled(true);
     });
-    connect(serviceI,&RestServiceI::sigAlarmHistory,this,[&,label](const PagedAlarmHis value){
+    connect(serviceI,&RestServiceI::sigAlarmHistory,this,[this,label](const PagedAlarmHis value){
         label->close();
         slotAlarmHistory(value);
         m_searchBtn->setEnabled(true);

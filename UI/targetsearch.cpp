@@ -131,6 +131,9 @@ void TargetSearch::createTreeItem(QTreeWidget *treeW, QTreeWidgetItem *parentIte
         item = new QTreeWidgetItem(treeW, QStringList() << items.name, items.childrens.isEmpty());
     }
     item->setData(0,Qt::UserRole,items.value);
+    if(item->type()){
+        item->setSizeHint(0,QSize(-1,50));
+    }
     for(auto value : items.childrens){
         createTreeItem(treeW,item,value);
     }

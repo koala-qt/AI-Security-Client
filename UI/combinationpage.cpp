@@ -131,10 +131,11 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
     bodyTable_->horizontalHeader()->setDefaultSectionSize(112);
     bodyTable_->verticalHeader()->setDefaultSectionSize(112);
     bodyTable_->setSelectionBehavior(QAbstractItemView::SelectRows);
-    bodyTable_->setColumnCount(4);
+    bodyTable_->setColumnCount(5);
     bodyTable_->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     bodyTable_->horizontalHeader()->setSectionResizeMode(0,QHeaderView::Fixed);
-    bodyTable_->setHorizontalHeaderLabels(QStringList() << tr("Face")  << tr("Position") << tr("Similarity") << tr("Time"));
+    bodyTable_->horizontalHeader()->setSectionResizeMode(1,QHeaderView::Fixed);
+    bodyTable_->setHorizontalHeaderLabels(QStringList() << tr("Face") << tr("Body") << tr("Position") << tr("Similarity") << tr("Time"));
     bodyTable_->horizontalHeader()->setSortIndicatorShown(true);
 
     connect(faceTable_->horizontalHeader(),SIGNAL(sectionClicked(int)),this,SLOT(slotFaceTabelSectionClicked(int)));
@@ -208,7 +209,7 @@ void CombinationPage::slotSearchBtnClicked()
         QMessageBox::information(this,objectName(),str);
         searchBtn_->setEnabled(true);
     });
-    connect(serviceI,&RestServiceI::sigCombinationSearch,this,[this,label](RestServiceI::CombinationSearchReturenData &returnData){
+    connect(serviceI,&RestServiceI::sigCombinationSearch,this,[this,label](RestServiceI::CombinationSearchReturenData returnData){
         label->close();
         delete label;
         faceTable_->model()->removeRows(0,faceTable_->rowCount());
@@ -458,9 +459,14 @@ void CombinationPage::setUserStyle(WidgetManagerI::SkinStyle s)
                     "border-radius: 0px;"
                     "}");
         searchBtn_->setStyleSheet("QPushButton{"
-                                 "color: white;"
-                                 "background-color: rgba(112, 112, 112, 1);"
-                                 "}");
+                                   "background-color: #B4A06C;"
+                                   "color: white;"
+                                   "border-radius: 6px;"
+                                   "font-size:18px;"
+                                   "}"
+                                   "QPushButton:pressed{"
+                                   "padding: 2px;"
+                                   "}");
         similaritySpin_->setStyleSheet("QSpinBox{"
                                  "padding-right: 15px;"
                                  "border-width: 3;"

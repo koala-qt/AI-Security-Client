@@ -53,7 +53,9 @@ MultipleSearch::MultipleSearch(WidgetManagerI *wm, WidgetI *parent):
     posCombox_->setMaximumWidth(290);
     posCombox_->setMinimumHeight(44);
     startTimeEdit_->setMinimumSize(250,44);
+    startTimeEdit_->setDateTime(QDateTime::currentDateTime().addDays(-1));
     endTimeEdit_->setMinimumSize(250,44);
+    endTimeEdit_->setDateTime(QDateTime::currentDateTime());
     searchBtn_->setMinimumSize(120,44);
 
     connect(imgList_,SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(slotItemClicked(QListWidgetItem*)));
@@ -147,9 +149,14 @@ void MultipleSearch::setUserStyle(WidgetManagerI::SkinStyle style)
             "background-color: transparent;"
             "}");
         searchBtn_->setStyleSheet("QPushButton{"
-                                 "color: white;"
-                                 "background-color: rgba(112, 112, 112, 1);"
-                                 "}");
+                                   "background-color: #B4A06C;"
+                                   "color: white;"
+                                   "border-radius: 6px;"
+                                   "font-size:18px;"
+                                   "}"
+                                   "QPushButton:pressed{"
+                                   "padding: 2px;"
+                                   "}");
         dataList_->setStyleSheet("QListWidget{"
                                  "background-color: transparent;"
                                  "}");
@@ -229,6 +236,21 @@ void MultipleSearch::slotSearchBtnClicked()
         label->close();
         delete label;
         QMessageBox::information(this,objectName(),str);
+        searchBtn_->setEnabled(true);
+    });
+    connect(serviceI,&RestServiceI::sigMultipleSearch,this,[this,label](QVector<RestServiceI::MultipleSearchItem> data){
+        label->close();
+        delete label;
+        if(data.isEmpty()){
+            QMessageBox::information(this,objectName(),tr("No matched result !"));
+        }
+        for(auto &itemInfo : data){
+            QListWidgetItem *item = new QListWidgetItem;
+            item->setIcon(QPixmap::fromImage(itemInfo.img).scaled(dataList_->iconSize()));
+            item->setText(curCameraMapInfo_.value(itemInfo.cameraId).left(18) + "\n" + itemInfo.time.toString("yyyy-MM-dd HH:mm:ss"));
+            item->setData(Qt::UserRole,itemInfo.img);
+            dataList_->addItem(item);
+        }
         searchBtn_->setEnabled(true);
     });
     RestServiceI::MultipleSearchArgs args;

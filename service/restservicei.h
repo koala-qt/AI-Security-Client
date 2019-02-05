@@ -182,6 +182,12 @@ public:
         QDateTime time;
         QImage img;
     };
+    struct MultipleSearchItem
+    {
+        QString cameraId;
+        QDateTime time;
+        QImage img;
+    };
     struct CombinationScoreReturnItem
     {
         QString id;
@@ -226,6 +232,7 @@ public:
         qRegisterMetaType<QVector<TrackingReturnData>>("QVector<TrackingReturnData>");
         qRegisterMetaType<CombinationSearchReturenData>("CombinationSearchReturenData");
         qRegisterMetaType<RestServiceI::CaptureSearchReturnData>("RestServiceI::CaptureSearchReturnData");
+        qRegisterMetaType<QVector<RestServiceI::MultipleSearchItem>>("QVector<RestServiceI::MultipleSearchItem>");
     }
     virtual void login(const LoginParameter &) = 0;
     virtual void getScenePic(const QString old) = 0;
@@ -277,6 +284,7 @@ signals:
     void sigSearchByImage(QVector<RestServiceI::DataRectureItem>);
     void sigTrackingNew(QVector<TrackingReturnData>);
     void sigCombinationSearch(CombinationSearchReturenData);
+    void sigMultipleSearch(QVector<RestServiceI::MultipleSearchItem>);
 };
 
 Q_DECLARE_METATYPE(RestServiceI::LoginParameter)

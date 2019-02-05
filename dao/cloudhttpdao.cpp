@@ -593,7 +593,7 @@ QString DLL::CloudHttpDao::combinationSearch(RestServiceI::CombinationSearchArgs
     return "Developing";
 }
 
-QString DLL::CloudHttpDao::multipleSearch(RestServiceI::MultipleSearchArgs &args)
+QString DLL::CloudHttpDao::multipleSearch(RestServiceI::MultipleSearchArgs &args, QVector<RestServiceI::MultipleSearchItem> &resVec)
 {
     QString urlStr = host_ +  QObject::tr("/api/v2/external/monitor-detail/multiple-find");
     QStringList imgsBase64StrList;
@@ -627,17 +627,13 @@ QString DLL::CloudHttpDao::multipleSearch(RestServiceI::MultipleSearchArgs &args
         return jsObj.value("message").toString();
     }
     QJsonArray dataJsArray = jsObj.value("data").toArray();
-//    std::transform(dataJsArray.begin(),dataJsArray.end(),std::back_inserter(resVec),[](QJsonValue jsVal){
-//        RestServiceI::DataRectureItem sitem;
-//        QJsonObject itemObj = jsVal.toObject();
-//        sitem.cameraId = itemObj.value("cameraId").toString();
-//        sitem.id = itemObj.value("id").toString();
-//        sitem.img.loadFromData(QByteArray::fromBase64(itemObj.value("snapshot").toString().toLatin1()));
-//        sitem.personId = itemObj.value("personId").toString();
-//        sitem.sceneId = itemObj.value("sceneId").toString();
-//        sitem.time = QDateTime::fromMSecsSinceEpoch(itemObj.value("ts").toVariant().toULongLong());
-//        sitem.similarity = itemObj.value("similarity").toDouble();
-//        return sitem;
-//    });
-    return "Developing";
+    std::transform(dataJsArray.begin(),dataJsArray.end(),std::back_inserter(resVec),[](QJsonValue jsVal){
+        RestServiceI::MultipleSearchItem sitem;
+        QJsonObject itemObj = jsVal.toObject();
+        sitem.cameraId = itemObj.value("cameraId").toString();
+        sitem.img.loadFromData(QByteArray::fromBase64(itemObj.value("snapshot").toString().toLatin1()));
+        sitem.time = QDateTime::fromMSecsSinceEpoch(itemObj.value("ts").toVariant().toULongLong());
+        return sitem;
+    });
+    return QString();
 }

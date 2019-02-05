@@ -23,7 +23,7 @@ public:
     QString semanticSearch(RestServiceI::SemanticSearchArgs &,RestServiceI::SemanticReturnData &resDatas);
     QString searchByImage(RestServiceI::SearchUseImageArgs &, QVector<RestServiceI::DataRectureItem> &resVec);
     QString combinationSearch(RestServiceI::CombinationSearchArgs &);
-    QString multipleSearch(RestServiceI::MultipleSearchArgs &);
+    QString multipleSearch(RestServiceI::MultipleSearchArgs &,QVector<RestServiceI::MultipleSearchItem> &);
 
 private:
     QString host_;

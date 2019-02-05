@@ -27,7 +27,7 @@
 CaptureSearch::CaptureSearch(WidgetManagerI *wm, WidgetI *parent):
     WidgetI(wm,parent)
 {
-    setObjectName(tr("Search in capture database"));
+    setObjectName(tr("Capture face history"));
     QVBoxLayout *mainLay = new QVBoxLayout;
     QHBoxLayout *hlay = new QHBoxLayout;
     hlay->setSpacing(15);
@@ -266,7 +266,7 @@ bool CaptureSearch::event(QEvent *event)
 {
     if(event->type() == QEvent::Show){
         m_endTimeEdit->setDateTime(QDateTime::currentDateTime());
-//        slotSearchBtnClicked();
+        slotSearchBtnClicked();
         return true;
     }
     return WidgetI::event(event);
@@ -337,9 +337,16 @@ void CaptureSearch::slotSearchSnapInfo(int page)
     BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
     RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
     WaitingLabel *label = new WaitingLabel(this);
-    label->setAttribute(Qt::WA_DeleteOnClose);
-    connect(serviceI,&RestServiceI::sigCaptureSearch,this,[&,label](const RestServiceI::CaptureSearchReturnData value){
+    connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
         label->close();
+        delete label;
+        QMessageBox::information(this,objectName(),str);
+        m_searchBtn->setEnabled(true);
+        m_pageIndicator->setEnabled(true);
+    });
+    connect(serviceI,&RestServiceI::sigCaptureSearch,this,[this,label](const RestServiceI::CaptureSearchReturnData value){
+        label->close();
+        delete label;
         slotOnSearch(value);
         m_searchBtn->setEnabled(true);
         m_pageIndicator->setEnabled(true);

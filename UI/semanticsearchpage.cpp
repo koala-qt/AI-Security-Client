@@ -340,9 +340,14 @@ void SemanticSearchPage::setUserStyle(WidgetManagerI::SkinStyle s)
             "background-color: transparent;"
             "}");
         searchBtn_->setStyleSheet("QPushButton{"
-                                 "color: white;"
-                                 "background-color: rgba(112, 112, 112, 1);"
-                                 "}");
+                                   "background-color: #B4A06C;"
+                                   "color: white;"
+                                   "border-radius: 6px;"
+                                   "font-size:18px;"
+                                   "}"
+                                   "QPushButton:pressed{"
+                                   "padding: 2px;"
+                                   "}");
         dataListW_->setStyleSheet("QListWidget{"
                                   "background: transparent;"
                                   "color: white;"
