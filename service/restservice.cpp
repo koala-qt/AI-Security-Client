@@ -185,6 +185,8 @@ void BLL::RestService::run()
         QString qerrorStr = httpDao.combinationSearch(args.second.value<RestServiceI::CombinationSearchArgs>());
         if(qerrorStr.isEmpty()){
 //            emit sigCameraGroup(resGroup);
+        }else{
+            emit sigError(qerrorStr);
         }
     }else if(argType == GetCameraGroup){
         DLL::CloudHttpDao httpDao;
@@ -333,6 +335,13 @@ void BLL::RestService::run()
                 polyPoints.push_back(std::make_pair(AreaType::type(polygon.first),pVec));
             }
             bool res = thriftDaoObj.setWaringArea(arguments.first.toStdString(),polyPoints.front().first,polyPoints.front().second,errorStr);
+            if(errorStr.empty()){
+                emit sigResultState(res);
+            }else{
+                emit sigError(QString::fromStdString(errorStr));
+            }
+        }else{
+            bool res = thriftDaoObj.setWaringArea(arguments.first.toStdString(),AreaType::FORBIDDENZONE,std::vector<Point>(),errorStr);
             if(errorStr.empty()){
                 emit sigResultState(res);
             }else{

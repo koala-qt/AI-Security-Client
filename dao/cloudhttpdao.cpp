@@ -541,7 +541,8 @@ QString DLL::CloudHttpDao::searchByImage(RestServiceI::SearchUseImageArgs &args,
 
 QString DLL::CloudHttpDao::combinationSearch(RestServiceI::CombinationSearchArgs &)
 {
-    return QString();
+
+    return "Developing";
 }
 
 QString DLL::CloudHttpDao::multipleSearch(RestServiceI::MultipleSearchArgs &args)

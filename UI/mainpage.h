@@ -18,6 +18,7 @@ QT_FORWARD_DECLARE_CLASS(QCalendarWidget)
 QT_FORWARD_DECLARE_CLASS(PlatBack)
 QT_FORWARD_DECLARE_CLASS(MovieLabel)
 QT_FORWARD_DECLARE_CLASS(CalendarEcharts)
+QT_FORWARD_DECLARE_CLASS(QMenu)
 #include "widgetinterface.h"
 #include "service/notifyservicei.h"
 #include "service/restservicei.h"

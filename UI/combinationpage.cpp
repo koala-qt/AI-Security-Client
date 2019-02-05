@@ -6,8 +6,12 @@
 #include <QLabel>
 #include <QComboBox>
 #include <QTableWidget>
+#include <QHeaderView>
+#include <QScrollBar>
 #include <QSpinBox>
 #include <QEvent>
+#include <QFileDialog>
+#include <QStandardPaths>
 #include <QPainter>
 #include <QMessageBox>
 #include "combinationpage.h"
@@ -80,15 +84,18 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
     imageBtn_->setIconSize(imageBtn_->size());
     imageBtn_->setIcon(pix.scaled(imageBtn_->iconSize()));
     imageBtn_->setProperty("default-pix",pix);
+    imageBtn_->setFocusPolicy(Qt::NoFocus);
     faceDataBackW_->installEventFilter(this);
     bodyDataBackW_->installEventFilter(this);
     conditionBackW_->installEventFilter(this);
     similaritySpin_->setMinimumSize(120,44);
     similaritySpin_->setSuffix("%");
+    similaritySpin_->setValue(50);
     queryCountCombox_->setMinimumHeight(44);
     queryCountCombox_->setMaximumWidth(250);
     quanzhongSpin_->setMinimumHeight(44);
     quanzhongSpin_->setSuffix("%");
+    quanzhongSpin_->setValue(40);
     cameraCombox_->setMinimumHeight(44);
     cameraCombox_->setMaximumWidth(250);
     startTimeEdit_->setMinimumHeight(44);
@@ -98,6 +105,7 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
     endTimeEdit_->setDisplayFormat("yyyy/MM/dd HH:mm:ss");
     endTimeEdit_->setDateTime(QDateTime::currentDateTime());
     searchBtn_->setMinimumSize(120,44);
+    searchBtn_->setFocusPolicy(Qt::NoFocus);
     QVector<QPair<QString,int>> itemVec{qMakePair(tr("20"),20),
                 qMakePair(tr("50"),50),qMakePair(tr("100"),100),
                 qMakePair(tr("200"),200),qMakePair(tr("300"),300),
@@ -105,6 +113,36 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
     for(const QPair<QString,int> &value : itemVec){
         queryCountCombox_->addItem(value.first,value.second);
     }
+    faceTable_->setIconSize(QSize(112,112));
+    faceTable_->setFocusPolicy(Qt::NoFocus);
+    faceTable_->horizontalHeader()->setHighlightSections(false);
+    faceTable_->horizontalHeader()->setDefaultSectionSize(112);
+    faceTable_->verticalHeader()->setDefaultSectionSize(112);
+    faceTable_->setSelectionBehavior(QAbstractItemView::SelectRows);
+    faceTable_->setColumnCount(4);
+    faceTable_->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    faceTable_->horizontalHeader()->setSectionResizeMode(0,QHeaderView::Fixed);
+    faceTable_->setHorizontalHeaderLabels(QStringList() << tr("Face")  << tr("Position") << tr("Similarity") << tr("Time"));
+    faceTable_->horizontalHeader()->setSortIndicatorShown(true);
+
+    bodyTable_->setIconSize(QSize(112,112));
+    bodyTable_->setFocusPolicy(Qt::NoFocus);
+    bodyTable_->horizontalHeader()->setHighlightSections(false);
+    bodyTable_->horizontalHeader()->setDefaultSectionSize(112);
+    bodyTable_->verticalHeader()->setDefaultSectionSize(112);
+    bodyTable_->setSelectionBehavior(QAbstractItemView::SelectRows);
+    bodyTable_->setColumnCount(4);
+    bodyTable_->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    bodyTable_->horizontalHeader()->setSectionResizeMode(0,QHeaderView::Fixed);
+    bodyTable_->setHorizontalHeaderLabels(QStringList() << tr("Face")  << tr("Position") << tr("Similarity") << tr("Time"));
+    bodyTable_->horizontalHeader()->setSortIndicatorShown(true);
+
+    connect(faceTable_->horizontalHeader(),SIGNAL(sectionClicked(int)),this,SLOT(slotFaceTabelSectionClicked(int)));
+    connect(bodyTable_->horizontalHeader(),SIGNAL(sectionClicked(int)),this,SLOT(slotBodyTabelSectionClicked(int)));
+    connect(imageBtn_,SIGNAL(clicked(bool)),this,SLOT(slotImageBtnClicked()));
+    connect(searchBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSearchBtnClicked()));
+
+    getCameraInfo();
 }
 
 bool CombinationPage::eventFilter(QObject *watched, QEvent *event)
@@ -120,6 +158,45 @@ bool CombinationPage::eventFilter(QObject *watched, QEvent *event)
     return WidgetI::eventFilter(watched,event);
 }
 
+void CombinationPage::getCameraInfo()
+{
+    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
+    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    connect(serviceI,SIGNAL(sigCameraInfo(QVector<RestServiceI::CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<RestServiceI::CameraInfo>)));
+    serviceI->getCameraInfo();
+    startWorker(worker);
+}
+
+void CombinationPage::slotFaceTabelSectionClicked(int index)
+{
+    if(faceTableOrder_){
+        faceTable_->sortByColumn(index, Qt::AscendingOrder);
+    }else{
+        faceTable_->sortByColumn(index, Qt::DescendingOrder);
+    }
+    faceTableOrder_ = !faceTableOrder_;
+}
+
+void CombinationPage::slotBodyTabelSectionClicked(int index)
+{
+    if(bodyTableOrder_){
+        bodyTable_->sortByColumn(index, Qt::AscendingOrder);
+    }else{
+        bodyTable_->sortByColumn(index, Qt::DescendingOrder);
+    }
+    bodyTableOrder_ = !bodyTableOrder_;
+}
+
+void CombinationPage::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)
+{
+    cameraCombox_->clear();
+    cameraCombox_->addItem(tr("Unlimited"),"");
+    for (auto &info : data) {
+        cameraCombox_->addItem(info.cameraPos,info.cameraId);
+        curCameraMapInfo_[info.cameraId] = info.cameraPos;
+    }
+}
+
 void CombinationPage::slotSearchBtnClicked()
 {
     BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
@@ -131,9 +208,55 @@ void CombinationPage::slotSearchBtnClicked()
         QMessageBox::information(this,objectName(),str);
         searchBtn_->setEnabled(true);
     });
-    connect(serviceI,&RestServiceI::sigSemanticSearch,this,[this,label](RestServiceI::SemanticReturnData &returnData){
+    connect(serviceI,&RestServiceI::sigCombinationSearch,this,[this,label](RestServiceI::CombinationSearchReturenData &returnData){
         label->close();
         delete label;
+        faceTable_->model()->removeRows(0,faceTable_->rowCount());
+        for(const RestServiceI::DataRectureItem &itemData : returnData.faceList){
+            faceTable_->insertRow(faceTable_->rowCount());
+            QTableWidgetItem *item = new QTableWidgetItem;
+            item->setIcon(QPixmap::fromImage(itemData.img));
+            faceTable_->setItem(faceTable_->rowCount() - 1,0,item);
+
+            item = new QTableWidgetItem;
+            item->setText(curCameraMapInfo_.value(itemData.cameraId));
+            item->setTextAlignment(Qt::AlignCenter);
+            faceTable_->setItem(faceTable_->rowCount() - 1,1,item);
+
+            item = new QTableWidgetItem;
+            item->setText(QString::number(itemData.similarity));
+            item->setTextAlignment(Qt::AlignCenter);
+            faceTable_->setItem(faceTable_->rowCount() - 1,2,item);
+
+            item = new QTableWidgetItem;
+            item->setText(itemData.time.toString("yyyy-MM-dd HH:mm:ss"));
+            item->setTextAlignment(Qt::AlignCenter);
+            faceTable_->setItem(faceTable_->rowCount() - 1,3,item);
+        }
+
+        bodyTable_->model()->removeRows(0,bodyTable_->rowCount());
+        for(const RestServiceI::DataRectureItem &itemData : returnData.faceList){
+            bodyTable_->insertRow(bodyTable_->rowCount());
+            QTableWidgetItem *item = new QTableWidgetItem;
+            item->setIcon(QPixmap::fromImage(itemData.img));
+            bodyTable_->setItem(bodyTable_->rowCount() - 1,0,item);
+
+            item = new QTableWidgetItem;
+            item->setText(curCameraMapInfo_.value(itemData.cameraId));
+            item->setTextAlignment(Qt::AlignCenter);
+            bodyTable_->setItem(bodyTable_->rowCount() - 1,1,item);
+
+            item = new QTableWidgetItem;
+            item->setText(QString::number(itemData.similarity));
+            item->setTextAlignment(Qt::AlignCenter);
+            bodyTable_->setItem(bodyTable_->rowCount() - 1,2,item);
+
+            item = new QTableWidgetItem;
+            item->setText(itemData.time.toString("yyyy-MM-dd HH:mm:ss"));
+            item->setTextAlignment(Qt::AlignCenter);
+            bodyTable_->setItem(bodyTable_->rowCount() - 1,3,item);
+        }
+
         searchBtn_->setEnabled(true);
     });
     RestServiceI::CombinationSearchArgs args;
@@ -148,6 +271,18 @@ void CombinationPage::slotSearchBtnClicked()
     startWorker(worker);
     label->show(500);
     searchBtn_->setEnabled(false);
+}
+
+void CombinationPage::slotImageBtnClicked()
+{
+    QString filePath = QFileDialog::getOpenFileName(this,tr("添加图片"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),"*.png *.jpg *.tmp");
+    if(filePath.isEmpty()){
+        imageBtn_->setIcon(imageBtn_->property("default-pix").value<QPixmap>().scaled(imageBtn_->iconSize()));
+    }else{
+        QPixmap pix(filePath);
+        imageBtn_->setIcon(pix.scaled(imageBtn_->iconSize()));
+        imageBtn_->setProperty("pixmap",pix);
+    }
 }
 void CombinationPage::setUserStyle(WidgetManagerI::SkinStyle s)
 {

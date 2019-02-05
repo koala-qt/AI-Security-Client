@@ -180,6 +180,11 @@ public:
         int totalPage;
         QVector<DataRectureItem> records;
     };
+    struct CombinationSearchReturenData
+    {
+        QVector<DataRectureItem> faceList;
+        QVector<DataRectureItem> bodyList;
+    };
     RestServiceI(QObject *parent = nullptr):QObject(parent){
         qRegisterMetaType<QVector<RestServiceI::CameraInfo>>("QVector<RestServiceI::CameraInfo>");
         qRegisterMetaType<PagedSnapFaceHis>("PagedSnapFaceHis");
@@ -194,6 +199,7 @@ public:
         qRegisterMetaType<RestServiceI::SemanticReturnData>("RestServiceI::SemanticReturnData");
         qRegisterMetaType<QVector<RestServiceI::DataRectureItem>>("QVector<RestServiceI::DataRectureItem>");
         qRegisterMetaType<QVector<TrackingReturnData>>("QVector<TrackingReturnData>");
+        qRegisterMetaType<CombinationSearchReturenData>("CombinationSearchReturenData");
     }
     virtual void login(const LoginParameter &) = 0;
     virtual void getScenePic(const QString old) = 0;
@@ -245,6 +251,7 @@ signals:
     void sigSemanticSearch(RestServiceI::SemanticReturnData);
     void sigSearchByImage(QVector<RestServiceI::DataRectureItem>);
     void sigTrackingNew(QVector<TrackingReturnData>);
+    void sigCombinationSearch(CombinationSearchReturenData);
 };
 
 Q_DECLARE_METATYPE(RestServiceI::LoginParameter)

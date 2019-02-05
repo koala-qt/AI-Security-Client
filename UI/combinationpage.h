@@ -2,6 +2,7 @@
 #define COMBINATIONPAGE_H
 
 #include "widgetinterface.h"
+#include "service/restservicei.h"
 QT_FORWARD_DECLARE_CLASS(QListWidget)
 QT_FORWARD_DECLARE_CLASS(QStackedWidget)
 QT_FORWARD_DECLARE_CLASS(QLabel)
@@ -34,8 +35,17 @@ private:
     QPushButton *searchBtn_{nullptr},*imageBtn_{nullptr};
     QTableWidget *faceTable_{nullptr},*bodyTable_{nullptr};
 
-private:
+    QMap<QString,QString> curCameraMapInfo_;
+    bool faceTableOrder_ = false,bodyTableOrder_ = false;
+
+    void getCameraInfo();
+
+private slots:
+    void slotFaceTabelSectionClicked(int);
+    void slotBodyTabelSectionClicked(int);
+    void slotOnCameraInfo(QVector<RestServiceI::CameraInfo>);
     void slotSearchBtnClicked();
+    void slotImageBtnClicked();
 };
 
 #endif // COMBINATIONPAGE_H

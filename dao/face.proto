@@ -27,7 +27,8 @@ message FaceInfoPT
     required string camera_id = 2;
     required string camera_pos = 3;
     required bytes img_data = 4;
-    required int64 timestamp = 5;
+    required string scene_id = 5;
+    required int64 timestamp = 6;
 }
 
 
