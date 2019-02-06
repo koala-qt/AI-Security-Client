@@ -575,10 +575,25 @@ class FaceInfoPT : public ::google::protobuf::Message /* @@protoc_insertion_poin
   ::std::string* release_img_data();
   void set_allocated_img_data(::std::string* img_data);
 
-  // required int64 timestamp = 5;
+  // required string scene_id = 5;
+  bool has_scene_id() const;
+  void clear_scene_id();
+  static const int kSceneIdFieldNumber = 5;
+  const ::std::string& scene_id() const;
+  void set_scene_id(const ::std::string& value);
+  #if LANG_CXX11
+  void set_scene_id(::std::string&& value);
+  #endif
+  void set_scene_id(const char* value);
+  void set_scene_id(const char* value, size_t size);
+  ::std::string* mutable_scene_id();
+  ::std::string* release_scene_id();
+  void set_allocated_scene_id(::std::string* scene_id);
+
+  // required int64 timestamp = 6;
   bool has_timestamp() const;
   void clear_timestamp();
-  static const int kTimestampFieldNumber = 5;
+  static const int kTimestampFieldNumber = 6;
   ::google::protobuf::int64 timestamp() const;
   void set_timestamp(::google::protobuf::int64 value);
 
@@ -592,6 +607,8 @@ class FaceInfoPT : public ::google::protobuf::Message /* @@protoc_insertion_poin
   void clear_has_camera_pos();
   void set_has_img_data();
   void clear_has_img_data();
+  void set_has_scene_id();
+  void clear_has_scene_id();
   void set_has_timestamp();
   void clear_has_timestamp();
 
@@ -605,6 +622,7 @@ class FaceInfoPT : public ::google::protobuf::Message /* @@protoc_insertion_poin
   ::google::protobuf::internal::ArenaStringPtr camera_id_;
   ::google::protobuf::internal::ArenaStringPtr camera_pos_;
   ::google::protobuf::internal::ArenaStringPtr img_data_;
+  ::google::protobuf::internal::ArenaStringPtr scene_id_;
   ::google::protobuf::int64 timestamp_;
   friend struct ::protobuf_face_2eproto::TableStruct;
 };
@@ -3934,15 +3952,81 @@ inline void FaceInfoPT::set_allocated_img_data(::std::string* img_data) {
   // @@protoc_insertion_point(field_set_allocated:kf.FaceInfoPT.img_data)
 }
 
-// required int64 timestamp = 5;
-inline bool FaceInfoPT::has_timestamp() const {
+// required string scene_id = 5;
+inline bool FaceInfoPT::has_scene_id() const {
   return (_has_bits_[0] & 0x00000010u) != 0;
 }
-inline void FaceInfoPT::set_has_timestamp() {
+inline void FaceInfoPT::set_has_scene_id() {
   _has_bits_[0] |= 0x00000010u;
 }
-inline void FaceInfoPT::clear_has_timestamp() {
+inline void FaceInfoPT::clear_has_scene_id() {
   _has_bits_[0] &= ~0x00000010u;
+}
+inline void FaceInfoPT::clear_scene_id() {
+  scene_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_scene_id();
+}
+inline const ::std::string& FaceInfoPT::scene_id() const {
+  // @@protoc_insertion_point(field_get:kf.FaceInfoPT.scene_id)
+  return scene_id_.GetNoArena();
+}
+inline void FaceInfoPT::set_scene_id(const ::std::string& value) {
+  set_has_scene_id();
+  scene_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:kf.FaceInfoPT.scene_id)
+}
+#if LANG_CXX11
+inline void FaceInfoPT::set_scene_id(::std::string&& value) {
+  set_has_scene_id();
+  scene_id_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:kf.FaceInfoPT.scene_id)
+}
+#endif
+inline void FaceInfoPT::set_scene_id(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  set_has_scene_id();
+  scene_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:kf.FaceInfoPT.scene_id)
+}
+inline void FaceInfoPT::set_scene_id(const char* value, size_t size) {
+  set_has_scene_id();
+  scene_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:kf.FaceInfoPT.scene_id)
+}
+inline ::std::string* FaceInfoPT::mutable_scene_id() {
+  set_has_scene_id();
+  // @@protoc_insertion_point(field_mutable:kf.FaceInfoPT.scene_id)
+  return scene_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* FaceInfoPT::release_scene_id() {
+  // @@protoc_insertion_point(field_release:kf.FaceInfoPT.scene_id)
+  if (!has_scene_id()) {
+    return NULL;
+  }
+  clear_has_scene_id();
+  return scene_id_.ReleaseNonDefaultNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void FaceInfoPT::set_allocated_scene_id(::std::string* scene_id) {
+  if (scene_id != NULL) {
+    set_has_scene_id();
+  } else {
+    clear_has_scene_id();
+  }
+  scene_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), scene_id);
+  // @@protoc_insertion_point(field_set_allocated:kf.FaceInfoPT.scene_id)
+}
+
+// required int64 timestamp = 6;
+inline bool FaceInfoPT::has_timestamp() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void FaceInfoPT::set_has_timestamp() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void FaceInfoPT::clear_has_timestamp() {
+  _has_bits_[0] &= ~0x00000020u;
 }
 inline void FaceInfoPT::clear_timestamp() {
   timestamp_ = GOOGLE_LONGLONG(0);

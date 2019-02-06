@@ -27,26 +27,29 @@ RealMonitorSetting::RealMonitorSetting(BLL::WorkerManager *wm, QWidget *parent, 
     screenCountCombox_->setIconSize(QSize(1,30));
 
     gridLay->addWidget(videoL_,0,0,1,1);
-    gridLay->addWidget(screenCountL_,1,1,1,1);
+    gridLay->addWidget(screenCountL_,1,1,1,1,Qt::AlignRight);
     gridLay->addWidget(screenCountCombox_,1,2,1,1);
 
     timeCostL_ = new QLabel(tr("时间差路线设置"));
     startLocationL_ = new QLabel(tr("起点"));
     startLocationCombox_ = new QComboBox;
     startLocationCombox_->setIconSize(QSize(1,30));
+    startLocationCombox_->setMinimumWidth(360);
 
     endLocationL_ = new QLabel(tr("Ending point"));
     endLocationCombox_ = new QComboBox;
     endLocationCombox_->setIconSize(QSize(1,30));
+    endLocationCombox_->setMinimumWidth(360);
     arrorL_ = new QLabel(tr(">>>"));
     addStatisBtn_ = new QPushButton(tr("添加"));
     gridLay->addWidget(timeCostL_,2,0,1,1);
     gridLay->addWidget(startLocationL_,3,1,1,1,Qt::AlignRight);
     gridLay->addWidget(startLocationCombox_,3,2,1,1);
     gridLay->addWidget(arrorL_,3,3,1,1);
-    gridLay->addWidget(endLocationL_,3,4,1,1);
+    gridLay->addWidget(endLocationL_,3,4,1,1,Qt::AlignRight);
     gridLay->addWidget(endLocationCombox_,3,5,1,1);
     gridLay->addWidget(addStatisBtn_,3,6,1,1);
+    gridLay->setAlignment(Qt::AlignLeft);
     mainLay->addLayout(gridLay);
 
     timeCostTable_ = new QTableWidget;
@@ -249,8 +252,7 @@ void RealMonitorSetting::getCameraInfo()
 {
     BLL::Worker * worker = new BLL::RestService(wm_);
     RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
-//    connect(serviceI,SIGNAL(sigCameraInfo(QVector<CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<CameraInfo>)));
-    connect(serviceI,SIGNAL(sigCameraMap(QVariantMap)),this,SLOT(slotOnCameraMap(QVariantMap)));
+    connect(serviceI,SIGNAL(sigCameraInfo(QVector<RestServiceI::CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<RestServiceI::CameraInfo>)));
     serviceI->getCameraInfo();
     wm_->startWorker(worker);
 }

@@ -11,7 +11,6 @@ BLL::BaseWorkerManager::~BaseWorkerManager()
             p.first->quit();
         }
     }
-    threadPool()->waitForDone();
 }
 
 void BLL::BaseWorkerManager::installWorker(QString name, BLL::Worker *w)

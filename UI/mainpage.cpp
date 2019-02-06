@@ -20,14 +20,20 @@
 #include <QDebug>
 #include <QDesktopWidget>
 #include <QGraphicsBlurEffect>
+#include <QMenu>
+#include <QCursor>
+#include <QMessageBox>
 #include "mainpage.h"
 #include "rectnumberwidget.h"
 #include "radarchart.h"
 #include "eventcalender.h"
 #include "platback.h"
 #include "movielabel.h"
+#include "waitinglabel.h"
 #include "calendarecharts.h"
 #include "service/restservice.h"
+#include "sceneimagedialog.h"
+#include "facesearch.h"
 
 #pragma execution_character_set("utf-8")
 MainPage::MainPage(WidgetManagerI *wm, WidgetI *parent):
@@ -283,6 +289,40 @@ MainPage::MainPage(WidgetManagerI *wm, WidgetI *parent):
     mainLay->setContentsMargins(m);
     mainLay->addLayout(mainVLay,459);
     setLayout(mainLay);
+
+    listMenu_ = new QMenu(eventList_);
+    listMenu_->addAction(tr("Scene analysis"),[this]{
+            SceneImageDialog dialog;
+            dialog.setUserStyle(widgetManger()->currentStyle());
+            dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+            dialog.setImage(eventList_->currentItem()->data(Qt::UserRole + 1).value<QImage>());
+            dialog.setRectLinePen(Qt::yellow);
+            connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
+                if(!images.count()){
+                    return;
+                }
+                FaceSearch *faceDialog = new FaceSearch(widgetManger());
+                faceDialog->setAttribute(Qt::WA_DeleteOnClose);
+                faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+                faceDialog->setWindowModality(Qt::ApplicationModal);
+                QPalette pal = faceDialog->palette();
+                pal.setColor(QPalette::Background,QColor(112,110,119));
+                faceDialog->setPalette(pal);
+                faceDialog->setAutoFillBackground(true);
+                faceDialog->setUserStyle(widgetManger()->currentStyle());
+                faceDialog->layout()->setMargin(10);
+                faceDialog->setFaceImage(images.first());
+                faceDialog->setMinimumHeight(700);
+                faceDialog->show();
+            });
+            dialog.exec();
+    });
+    eventList_->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(eventList_,&QListWidget::customContextMenuRequested,this,[this](const QPoint& p){
+        if(!eventList_->itemAt(p))return;
+        listMenu_->move(QCursor::pos());
+        listMenu_->show();
+    });
 
     notifyService_ = dynamic_cast<NotifyServiceI*>(getWoker("NotifyService"));
     connect(notifyService_,SIGNAL(sigAreaGarphics(QVector<QPointF>)),this,SLOT(slotAreaGraphics(QVector<QPointF>)));
@@ -554,6 +594,14 @@ void MainPage::setUserStyle(WidgetManagerI::SkinStyle s)
                                          "border: none;"
                                          "border-image: none;"
                                          "}");
+        listMenu_->setStyleSheet("QMenu{"
+                                 "color: white;"
+                                 "border-image:none;"
+                                 "background-color: rgb(75,75,75);"
+                                 "}"
+                                 "QMenu::item:selected{"
+                                 "background-color: rgba(255,255,255,0.4);"
+                                 "}");
     }
 }
 

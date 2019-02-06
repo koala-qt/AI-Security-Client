@@ -10,8 +10,12 @@
 #include <QScrollBar>
 #include <QHeaderView>
 #include <QSpinBox>
+#include <QDir>
 #include <QMenu>
+#include <QDebug>
 #include <QMessageBox>
+#include <QFileDialog>
+#include <QStandardPaths>
 #include "semanticsearchpage.h"
 #include "pageindicator.h"
 #include "waitinglabel.h"
@@ -81,6 +85,10 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
             detailsW->setUserStyle(widgetManger()->currentStyle());
             detailsW->slotSetData(face,body,faceAttr,bodyAttr);
             detailsW->show();
+            QPoint r = dataListW_->mapToGlobal(dataListW_->rect().center());
+            QRect dr = detailsW->rect();
+            dr.moveCenter(r);
+            detailsW->move(dr.topLeft());
             dataMenu_->setEnabled(true);
         });
         serviceI->getPersonDetails(dataListW_->currentItem()->data(Qt::UserRole + 4).toString());
@@ -104,18 +112,25 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
             SceneImageDialog dialog;
             dialog.setUserStyle(widgetManger()->currentStyle());
             dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
-            dialog.setImage(img);
+            dialog.setImage(img,dataListW_->currentItem()->data(Qt::UserRole + 5).toString());
             dialog.setRectLinePen(Qt::yellow);
             connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
                 if(!images.count()){
                     return;
                 }
-#if 0
-                QPixmap pix = QPixmap::fromImage(images.first());
-                imageBtn_->setIcon(pix.scaled(imageBtn_->iconSize()));
-                imageBtn_->setProperty("pixmap",pix);
-                slotImageSearchBtnClicked();
-#endif
+                FaceSearch *faceDialog = new FaceSearch(widgetManger());
+                faceDialog->setAttribute(Qt::WA_DeleteOnClose);
+                faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+                faceDialog->setWindowModality(Qt::ApplicationModal);
+                QPalette pal = faceDialog->palette();
+                pal.setColor(QPalette::Background,QColor(112,110,119));
+                faceDialog->setPalette(pal);
+                faceDialog->setAutoFillBackground(true);
+                faceDialog->setUserStyle(widgetManger()->currentStyle());
+                faceDialog->layout()->setMargin(10);
+                faceDialog->setFaceImage(images.first());
+                faceDialog->setMinimumHeight(700);
+                faceDialog->show();
             });
             dialog.exec();
             dataMenu_->setEnabled(true);
@@ -149,7 +164,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
         view->setWindowModality(Qt::ApplicationModal);
         view->setMinimumSize(1655,924);
         view->setImgageOid(dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>(),
-                           dataListW_->currentItem()->data(Qt::UserRole + 2).toString());
+                           dataListW_->currentItem()->data(Qt::UserRole + 4).toString());
         view->show();
     });
     dataMenu_->addAction(tr("Face link"),[this]{
@@ -162,6 +177,16 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
         faceLinkP->setFaceLinkOidAndImg(dataListW_->currentItem()->data(Qt::UserRole + 4).toString(),pix);
         faceLinkP->resize(1200,900);
         faceLinkP->show();
+    });
+    dataMenu_->addAction(tr("Save face image"),[this]{
+        QString personId = dataListW_->currentItem()->data(Qt::UserRole + 4).toString();
+        QString filePath =  QFileDialog::getSaveFileName(this,tr("Save face image"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/" + personId + ".jpg",tr("Images (*.png *.jpg)"));
+        if(filePath.isEmpty()){
+            return;
+        }
+        if(!dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>().save(filePath)){
+            QMessageBox::information(this,tr("Save face image"),tr("Operation failed!"));
+        }
     });
     dataListW_->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(dataListW_,&QListWidget::customContextMenuRequested,this,[&](QPoint p){
@@ -320,9 +345,14 @@ void SemanticSearchPage::setUserStyle(WidgetManagerI::SkinStyle s)
             "background-color: transparent;"
             "}");
         searchBtn_->setStyleSheet("QPushButton{"
-                                 "color: white;"
-                                 "background-color: rgba(112, 112, 112, 1);"
-                                 "}");
+                                   "background-color: #B4A06C;"
+                                   "color: white;"
+                                   "border-radius: 6px;"
+                                   "font-size:18px;"
+                                   "}"
+                                   "QPushButton:pressed{"
+                                   "padding: 2px;"
+                                   "}");
         dataListW_->setStyleSheet("QListWidget{"
                                   "background: transparent;"
                                   "color: white;"

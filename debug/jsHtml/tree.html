@@ -9,28 +9,176 @@
         <link rel="stylesheet" href="css/bootstrap.min.css">
         <link rel="stylesheet" href="css/font-awesome.min.css">
         <link rel="stylesheet" href="css/neo4jd3.min.css">
-        <style>   
+        <style>
             body,
             html,
             .neo4jd3 {
                 height: 100%;
                 overflow: hidden;
             }
+            .bg-meng-ceng {
+                position: absolute;
+                z-index: 10;
+                left: 0;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                opacity: .5;
+                background: #000;
+            }
+            #mengceng {
+                display: none;
+                opacity: 0;
+            }
+            .meng-ceng {
+                position: absolute;
+                z-index: 20;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                left: 0;
+                right: 0;
+                top: 0;
+                bottom: 0;
+            }
+            .show-dialog {
+                position: absolute;
+                padding-left: 20px;
+                padding-right: 20px;
+                z-index: 100;
+                background: #4B4B4B;
+                width: 1100px;
+                top: 30px;
+                bottom: 30px;
+            }
+            .hide-dialog {
+                position: absolute;
+                width: 16px;
+                height: 16px;
+                top: 4px;
+                right: 4px;
+                cursor: pointer;
+            }
+            #showDialogTwo {
+                display: none;
+            }
+            .show-dialog-two {
+                position: fixed;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                top: 10px;
+                left: 10px;
+                right: 10px;
+                bottom: 10px;
+                z-index: 100;
+            }
+            .show-dialog-two .kuang {
+                border: 2px solid #ccc;
+            }
+            .show-dialog-two img {
+                width: 960px;
+                height: 540px;
+            }
+            .show-dialog .title {
+              height: 40px;
+              line-height: 40px;
+              color: #CECECE;
+            }
+            .show-dialog .head-img {
+                height: 60px;
+                margin-bottom: 10px;
+            }
+            .head-img .head-img-s {
+              display: inline-block;
+            }
+            .head-img .head-img-s img {
+              width: 60px;
+              height: 60px;
+              border-radius: 60px;
+            }
+            .show-dialog .dialog-img {
+              overflow: auto;
+              top: 110px;
+              bottom: 0;
+              position: absolute;  
+            }
+            .meng-ceng .img-div {
+                display: inline-block;
+                margin-right: 10px;
+                width: 202px;
+                height: 154px;
+                margin-bottom: 10px;
+            }
+            .meng-ceng .img-div img {
+                cursor: pointer;
+                width: 202px;
+                height: 120px;
+                margin-bottom: 4px;
+            }
+            .img-div .tro {
+              text-align: center;
+              color:rgba(255,255,255,1);
+              font-size: 14px;
+            }
+            #dialog {
+                display: none;
+            }
         </style>
     </head>
-    <body style="background-color: transparent;">
+    <body style="background-color:transparent;">
+        
+        <div id="mengceng">
+            <div class="meng-ceng" >
+                <div class="bg-meng-ceng" id="bgmc"></div>
+                <div class="show-dialog">
+                    <img src="delete.png" class="hide-dialog" id="hideDialog">
+                    <!-- 放大场景 -->
+                    <div id="showDialogTwo">
+                        <div class="show-dialog-two">
+                            <div class="kuang">
+                                    <img id="showBigScene" src="">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="title">Relationship map</div>
+                    <!-- 连接得两个节点得头像 -->
+                    <div class="head-img">
+                        <div class="head-img-s">
+                          <img src="" id="sourceImg">
+                        </div>
+                        <div class="head-img-s" style="margin-left: 16px">
+                          <img src="" id="targetImg">
+                        </div>
+                    </div>
+                    <!-- 场景图片 -->
+                    <div class="dialog-img" id="dialogImg">
+                        <!-- <div class="img-div">
+                            <img onclick="bigScene(this)" src="data:image/jpeg;base64,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">
+                            <div class="tro">P3-98 MAIN ENTRANCE RIGHT</div>
+                            <div class="tro">2018-01-09 13:23:25</div>
+                        </div> -->
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
         <div id="neo4jd3"></div>
         <!-- <a href="https://github.com/eisman/neo4jd3"><img style="cursor: pointer; position: absolute; top: 0; right: 0; border: 0;" src="img/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" data-canonical-src="img/forkme_right_gray_6d6d6d.png"></a> -->
 
         <!-- Scripts -->
+        <script src="js/jquery-3.1.1.min.js"></script>
         <script src="js/d3.min.js"></script>
-		<script src="./qwebchannel.js"></script> 
         <script src="js/neo4jd3.js?v=0.0.1"></script>
+		<script src="./qwebchannel.js"></script> 
         <script type="text/javascript">
 		if(typeof qt != "undefined"){
 			new QWebChannel(qt.webChannelTransport, function(channel){
 				window.Bridge = channel.objects.Bridge;
 					Bridge.sigDataChanged.connect(function(dataObj) { //连接Qt中brideg类的信号并定义执行代码
+					console.log(JSON.stringify(dataObj))
 					getData(dataObj)
 				});
 				Bridge.onInitsized(); //调用Qt内的函数
@@ -38,6 +186,7 @@
 		}
             // 以上是初始化数据
             let images = {}
+            let locIp = ''
             var demoJson = {
                 "results": [{
                     "data": [{
@@ -51,12 +200,20 @@
                 }],
                 "errors": []
             }
+            
             function changeData(node) {
+				var snapscenes =[];
+				if(node.scenes){
+					snapscenes = node.scenes.split(',')
+				}
                 images[node.objId] = node.symbol.split('image://')[1]
                 demoJson.results[0]['data'][0]['graph']['nodes'].push({
                     'id': node.id,
                     'labels': [node.objId],
-                    "properties": {}
+                    "properties": {
+                        "scene": snapscenes,
+                        "headImg": node.symbol.split('image://')[1]
+                    }
                 })
                
                 if(node.hasOwnProperty('children')) {
@@ -75,8 +232,18 @@
                     });
                 }
             }
+            function getIp(url) {
+                var newurl =url.split('image://')[1].split('://')[1]
+                var ip = newurl.split(':')[0]
+                var host = newurl.split(':')[1].split('/')[0]
+                console.log(newurl)
+                console.log(ip)
+                console.log(host)
+                locIp = `http://${ip}:${host}`
+            }
             function getData(data) {
                 changeData(data)
+                getIp(data.symbol)
                 init()
             }
             function init() {
@@ -94,21 +261,68 @@
                     minCollision: 50,
                     infoPanel: false,
                     neo4jData: demoJson,
-                    nodeRadius: 34,
-                    onNodeDragEnd: function(node) {
+                    nodeRadius: 14,
+                    onNodeClick: function(node) {
                         console.log(node)
                     },
-                    onNodeDoubleClick: function(node) {
-                        console.log(node)
-                    },
+                    // 改为了单击
                     onRelationshipDoubleClick: function(relationship) {
-                        console.log('double click on relationship: ' + JSON.stringify(relationship));
+                        console.log(relationship);
+                        $("#mengceng").show()
+                        $("#mengceng").animate({opacity:'1.0'});
+                        $("#sourceImg").attr('src', relationship.source.properties.headImg)
+                        $("#targetImg").attr('src', relationship.target.properties.headImg)
+                        $('#dialogImg').html('')
+                        relationship.target.properties.scene.forEach(item => {
+                            $.ajax({
+                                url: `${locIp}/api/v2/external/monitor-detail/query/picture?pictureType=snap-scene`,
+                                data: {
+                                    objId: item
+                                },
+                                type: "GET",
+                                dataType: 'json',
+                                success: function(data) {
+                                 var finishTime = getLocalTime(data.data.finishTime)
+                                  var html = '<div class="img-div">'+
+                                                '<img onclick="bigScene(this)" src='+"data:image/png;base64,"+data.data.base64+'>'+
+                                                '<div class="tro">'+data.data.cameraId+'</div>'+
+                                                '<div class="tro">'+finishTime+'</div>'+
+                                             '</div>'
+                                  $('#dialogImg').append(html)
+                                }
+                            });
+                        })
+                        
                     },
                     zoomFit: true
                 });
             }
-
-         
+            function getLocalTime(nS) {    
+                // debugger 
+                var date = new Date(parseInt(nS));
+                Y = date.getFullYear() + '-';
+                M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+                D = date.getDate()+1 < 10 ? '0'+(date.getDate()+1) : date.getDate()+1 + ' ';
+                h = date.getHours() + ':';
+                m = date.getMinutes() + ':';
+                s = date.getSeconds(); 
+                return(Y+M+D+' '+h+m+s);     
+            }
+            function bigScene(v) {
+                $("#showDialogTwo").show()
+                $("#showBigScene").attr('src', $(v).attr('src'))
+            }
+            $(".show-dialog-two").click(function() {
+                $("#showDialogTwo").hide()
+            })
+            $("#bgmc").click(function() {
+                $("#mengceng").hide()
+                $("#mengceng").animate({opacity:'0'});
+            })
+            $("#hideDialog").click(function() {
+                $("#mengceng").hide()
+                $("#mengceng").animate({opacity:'0'});
+            })
         </script>
 
         <script>

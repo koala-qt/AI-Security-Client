@@ -72,7 +72,7 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
     similarSpin_->setSuffix("%");
     similarSpin_->setMinimumHeight(40);
     similarSpin_->setMinimumWidth(200);
-    similarSpin_->setValue(40);
+    similarSpin_->setValue(50);
     startTimeL_ = new QLabel(tr("开始时间"));
     startTimeEdit_ = new QDateTimeEdit;
     startTimeEdit_->setMinimumSize(160,40);
@@ -119,12 +119,8 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
 
     menu_ = new QMenu(this);
     menu_->addAction(objectName(),[&]{
-        QLabel *curLab = dynamic_cast<QLabel *>(m_tableW->cellWidget(m_tableW->currentRow(), 0));
-        if (curLab)
-        {
-            this->setFaceImage(curLab->pixmap()->toImage());
-            this->setOid(m_tableW->item(m_tableW->currentRow(),1)->text());
-        }
+        setFaceImage(m_tableW->item(m_tableW->currentRow(),0)->data(Qt::UserRole).value<QImage>());
+        setOid(m_tableW->item(m_tableW->currentRow(),1)->text());
     });
     menu_->addAction(tr("Scene analysis"),[&]{
         BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
@@ -142,10 +138,20 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
             slotOnScenePic(img);
             menu_->setEnabled(true);
         });
-        serviceI->getScenePic(m_tableW->item(m_tableW->currentRow(),1)->text());
+        serviceI->getScenePic(m_tableW->item(m_tableW->currentRow(),1)->data(Qt::UserRole).toString());
         startWorker(worker);
         label->show(500);
         menu_->setEnabled(false);
+    });
+    menu_->addAction(tr("Save face image"),[this]{
+        QString personId = m_tableW->item(m_tableW->currentRow(),1)->text();
+        QString filePath =  QFileDialog::getSaveFileName(this,tr("Save face image"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/" + personId + ".jpg",tr("Images (*.png *.jpg)"));
+        if(filePath.isEmpty()){
+            return;
+        }
+        if(!m_tableW->item(m_tableW->currentRow(),0)->data(Qt::UserRole).value<QImage>().save(filePath)){
+            QMessageBox::information(this,tr("Save face image"),tr("Operation failed!"));
+        }
     });
     m_tableW->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(m_tableW,&QTableWidget::customContextMenuRequested,this,[&](QPoint p){
@@ -369,14 +375,13 @@ void FaceSearch::slotAddRow(QVector<RestServiceI::DataRectureItem> info)
     for(const RestServiceI::DataRectureItem &itemData : info){
         m_tableW->insertRow(m_tableW->rowCount());
         QTableWidgetItem *item = new QTableWidgetItem;
+        item->setIcon(QPixmap::fromImage(itemData.img));
+        item->setData(Qt::UserRole,itemData.img);
         m_tableW->setItem(m_tableW->rowCount() - 1,0,item);
-        QLabel *label = new QLabel;
-        label->setScaledContents(true);
-        label->setPixmap(QPixmap::fromImage(itemData.img));
-        m_tableW->setCellWidget(m_tableW->rowCount() - 1,0,label);
 
         item = new QTableWidgetItem;
-        item->setText(itemData.sceneId);
+        item->setText(itemData.id);
+        item->setData(Qt::UserRole,itemData.sceneId);
         item->setTextAlignment(Qt::AlignCenter);
         m_tableW->setItem(m_tableW->rowCount() - 1,1,item);
 
@@ -461,6 +466,10 @@ void FaceSearch::slotSearchClicked()
         slotAddRow(value);
         m_searchBtn->setEnabled(true);
         m_pageIndicator->setEnabled(true);
+        if(value.isEmpty()){
+            QMessageBox::information(this,objectName(),tr("No matched result!"));
+            return;
+        }
     });
     RestServiceI::SearchUseImageArgs args;
     args.cameraId = cameraCombox_->currentData().toString();

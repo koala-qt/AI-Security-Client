@@ -490,12 +490,14 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kf::FaceInfoPT, camera_id_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kf::FaceInfoPT, camera_pos_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kf::FaceInfoPT, img_data_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kf::FaceInfoPT, scene_id_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kf::FaceInfoPT, timestamp_),
   0,
   1,
   2,
   3,
   4,
+  5,
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kf::FaceStatis, _has_bits_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kf::FaceStatis, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -712,25 +714,25 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
 static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
   { 0, 9, sizeof(::kf::Box)},
   { 13, 20, sizeof(::kf::PersonBoxs)},
-  { 22, 32, sizeof(::kf::FaceInfoPT)},
-  { 37, 45, sizeof(::kf::FaceStatis)},
-  { 48, 55, sizeof(::kf::TrackedFace)},
-  { 57, 68, sizeof(::kf::BlackListFaceAlarm)},
-  { 74, 85, sizeof(::kf::Intruder)},
-  { 91, 102, sizeof(::kf::ABDoorAlarm)},
-  { 108, 118, sizeof(::kf::StopAlarm)},
-  { 123, 133, sizeof(::kf::ClimbAlarm)},
-  { 138, 148, sizeof(::kf::LingerAlarm)},
-  { 153, 163, sizeof(::kf::GatherAlarm)},
-  { 168, 175, sizeof(::kf::TodayTotalEventCount)},
-  { 177, 183, sizeof(::kf::OneDayEventCount)},
-  { 184, 190, sizeof(::kf::EventSpiderGiagram)},
-  { 191, 199, sizeof(::kf::TodayAlarmEventCount)},
-  { 202, 209, sizeof(::kf::PieCharData)},
-  { 211, 217, sizeof(::kf::PieChart)},
-  { 218, 227, sizeof(::kf::TodayFaceCount)},
-  { 231, 237, sizeof(::kf::SnapAreaGiagram)},
-  { 238, 246, sizeof(::kf::Tree)},
+  { 22, 33, sizeof(::kf::FaceInfoPT)},
+  { 39, 47, sizeof(::kf::FaceStatis)},
+  { 50, 57, sizeof(::kf::TrackedFace)},
+  { 59, 70, sizeof(::kf::BlackListFaceAlarm)},
+  { 76, 87, sizeof(::kf::Intruder)},
+  { 93, 104, sizeof(::kf::ABDoorAlarm)},
+  { 110, 120, sizeof(::kf::StopAlarm)},
+  { 125, 135, sizeof(::kf::ClimbAlarm)},
+  { 140, 150, sizeof(::kf::LingerAlarm)},
+  { 155, 165, sizeof(::kf::GatherAlarm)},
+  { 170, 177, sizeof(::kf::TodayTotalEventCount)},
+  { 179, 185, sizeof(::kf::OneDayEventCount)},
+  { 186, 192, sizeof(::kf::EventSpiderGiagram)},
+  { 193, 201, sizeof(::kf::TodayAlarmEventCount)},
+  { 204, 211, sizeof(::kf::PieCharData)},
+  { 213, 219, sizeof(::kf::PieChart)},
+  { 220, 229, sizeof(::kf::TodayFaceCount)},
+  { 233, 239, sizeof(::kf::SnapAreaGiagram)},
+  { 240, 248, sizeof(::kf::Tree)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -781,53 +783,54 @@ void AddDescriptorsImpl() {
       "\n\nface.proto\022\002kf\":\n\003Box\022\t\n\001x\030\001 \002(\005\022\t\n\001y\030"
       "\002 \002(\005\022\r\n\005width\030\003 \002(\005\022\016\n\006height\030\004 \002(\005\"7\n\n"
       "PersonBoxs\022\021\n\tcamera_id\030\001 \002(\t\022\026\n\005boxes\030\002"
-      " \003(\0132\007.kf.Box\"d\n\nFaceInfoPT\022\n\n\002id\030\001 \002(\t\022"
+      " \003(\0132\007.kf.Box\"v\n\nFaceInfoPT\022\n\n\002id\030\001 \002(\t\022"
       "\021\n\tcamera_id\030\002 \002(\t\022\022\n\ncamera_pos\030\003 \002(\t\022\020"
-      "\n\010img_data\030\004 \002(\014\022\021\n\ttimestamp\030\005 \002(\003\"h\n\nF"
-      "aceStatis\022#\n\013before_face\030\001 \002(\0132\016.kf.Face"
-      "InfoPT\022\"\n\nafter_face\030\002 \002(\0132\016.kf.FaceInfo"
-      "PT\022\021\n\ttime_cost\030\003 \002(\005\"D\n\013TrackedFace\022!\n\t"
-      "face_info\030\001 \002(\0132\016.kf.FaceInfoPT\022\022\n\ntrack"
-      "ed_id\030\002 \002(\t\"\206\001\n\022BlackListFaceAlarm\022\013\n\003oi"
-      "d\030\001 \002(\t\022\021\n\tcamera_id\030\002 \002(\t\022\022\n\ncamera_pos"
-      "\030\003 \002(\t\022\020\n\010face_img\030\004 \002(\014\022\027\n\017thumbnail_sc"
-      "ene\030\005 \002(\014\022\021\n\ttimestamp\030\006 \002(\003\"\177\n\010Intruder"
-      "\022\013\n\003oid\030\001 \002(\t\022\021\n\tcamera_id\030\002 \002(\t\022\022\n\ncame"
-      "ra_pos\030\003 \002(\t\022\023\n\013pseron_imgs\030\004 \003(\014\022\027\n\017thu"
-      "mbnail_scene\030\005 \002(\014\022\021\n\ttimestamp\030\006 \002(\003\"\201\001"
-      "\n\013ABDoorAlarm\022\013\n\003oid\030\001 \002(\t\022\021\n\tcamera_id\030"
-      "\002 \002(\t\022\022\n\ncamera_pos\030\003 \002(\t\022\022\n\npseron_img\030"
-      "\004 \002(\014\022\027\n\017thumbnail_scene\030\005 \002(\014\022\021\n\ttimest"
-      "amp\030\006 \002(\003\"s\n\tStopAlarm\022\021\n\tcamera_id\030\001 \002("
-      "\t\022\022\n\ncamera_pos\030\002 \002(\t\022\023\n\013person_imgs\030\003 \003"
-      "(\014\022\027\n\017thumbnail_scene\030\004 \002(\014\022\021\n\ttimestamp"
-      "\030\005 \002(\003\"t\n\nClimbAlarm\022\021\n\tcamera_id\030\001 \002(\t\022"
-      "\022\n\ncamera_pos\030\002 \002(\t\022\023\n\013person_imgs\030\003 \003(\014"
-      "\022\027\n\017thumbnail_scene\030\004 \002(\014\022\021\n\ttimestamp\030\005"
-      " \002(\003\"u\n\013LingerAlarm\022\021\n\tcamera_id\030\001 \002(\t\022\022"
-      "\n\ncamera_pos\030\002 \002(\t\022\023\n\013person_imgs\030\003 \003(\014\022"
-      "\027\n\017thumbnail_scene\030\004 \002(\014\022\021\n\ttimestamp\030\005 "
-      "\002(\003\"t\n\013GatherAlarm\022\021\n\tcamera_id\030\001 \002(\t\022\022\n"
-      "\ncamera_pos\030\002 \002(\t\022\022\n\nperson_img\030\003 \002(\014\022\027\n"
-      "\017thumbnail_scene\030\004 \002(\014\022\021\n\ttimestamp\030\005 \002("
-      "\003\"D\n\024TodayTotalEventCount\022\023\n\013total_count"
-      "\030\001 \002(\005\022\027\n\017blacklist_count\030\002 \002(\005\"\'\n\020OneDa"
-      "yEventCount\022\023\n\013event_count\030\001 \003(\005\"A\n\022Even"
-      "tSpiderGiagram\022+\n\rsomeday_count\030\001 \003(\0132\024."
-      "kf.OneDayEventCount\"X\n\024TodayAlarmEventCo"
-      "unt\022\020\n\010ab_count\030\001 \002(\005\022\025\n\rintrude_count\030\002"
-      " \002(\005\022\027\n\017blacklist_count\030\003 \002(\005\"4\n\013PieChar"
-      "Data\022\022\n\ncamera_pos\030\001 \002(\t\022\021\n\tcost_time\030\002 "
-      "\002(\005\"3\n\010PieChart\022\'\n\016pie_chart_data\030\001 \003(\0132"
-      "\017.kf.PieCharData\"r\n\016TodayFaceCount\022\022\n\nsn"
-      "ap_count\030\001 \002(\005\022\027\n\017blacklist_count\030\002 \002(\005\022"
-      "\024\n\014served_count\030\003 \002(\005\022\035\n\025blacklist_alarm"
-      "_count\030\004 \002(\005\"+\n\017SnapAreaGiagram\022\030\n\020snap_"
-      "count_point\030\001 \003(\005\"0\n\004Tree\022\016\n\006status\030\001 \002("
-      "\005\022\013\n\003oid\030\002 \002(\t\022\013\n\003msg\030\003 \002(\t"
+      "\n\010img_data\030\004 \002(\014\022\020\n\010scene_id\030\005 \002(\t\022\021\n\tti"
+      "mestamp\030\006 \002(\003\"h\n\nFaceStatis\022#\n\013before_fa"
+      "ce\030\001 \002(\0132\016.kf.FaceInfoPT\022\"\n\nafter_face\030\002"
+      " \002(\0132\016.kf.FaceInfoPT\022\021\n\ttime_cost\030\003 \002(\005\""
+      "D\n\013TrackedFace\022!\n\tface_info\030\001 \002(\0132\016.kf.F"
+      "aceInfoPT\022\022\n\ntracked_id\030\002 \002(\t\"\206\001\n\022BlackL"
+      "istFaceAlarm\022\013\n\003oid\030\001 \002(\t\022\021\n\tcamera_id\030\002"
+      " \002(\t\022\022\n\ncamera_pos\030\003 \002(\t\022\020\n\010face_img\030\004 \002"
+      "(\014\022\027\n\017thumbnail_scene\030\005 \002(\014\022\021\n\ttimestamp"
+      "\030\006 \002(\003\"\177\n\010Intruder\022\013\n\003oid\030\001 \002(\t\022\021\n\tcamer"
+      "a_id\030\002 \002(\t\022\022\n\ncamera_pos\030\003 \002(\t\022\023\n\013pseron"
+      "_imgs\030\004 \003(\014\022\027\n\017thumbnail_scene\030\005 \002(\014\022\021\n\t"
+      "timestamp\030\006 \002(\003\"\201\001\n\013ABDoorAlarm\022\013\n\003oid\030\001"
+      " \002(\t\022\021\n\tcamera_id\030\002 \002(\t\022\022\n\ncamera_pos\030\003 "
+      "\002(\t\022\022\n\npseron_img\030\004 \002(\014\022\027\n\017thumbnail_sce"
+      "ne\030\005 \002(\014\022\021\n\ttimestamp\030\006 \002(\003\"s\n\tStopAlarm"
+      "\022\021\n\tcamera_id\030\001 \002(\t\022\022\n\ncamera_pos\030\002 \002(\t\022"
+      "\023\n\013person_imgs\030\003 \003(\014\022\027\n\017thumbnail_scene\030"
+      "\004 \002(\014\022\021\n\ttimestamp\030\005 \002(\003\"t\n\nClimbAlarm\022\021"
+      "\n\tcamera_id\030\001 \002(\t\022\022\n\ncamera_pos\030\002 \002(\t\022\023\n"
+      "\013person_imgs\030\003 \003(\014\022\027\n\017thumbnail_scene\030\004 "
+      "\002(\014\022\021\n\ttimestamp\030\005 \002(\003\"u\n\013LingerAlarm\022\021\n"
+      "\tcamera_id\030\001 \002(\t\022\022\n\ncamera_pos\030\002 \002(\t\022\023\n\013"
+      "person_imgs\030\003 \003(\014\022\027\n\017thumbnail_scene\030\004 \002"
+      "(\014\022\021\n\ttimestamp\030\005 \002(\003\"t\n\013GatherAlarm\022\021\n\t"
+      "camera_id\030\001 \002(\t\022\022\n\ncamera_pos\030\002 \002(\t\022\022\n\np"
+      "erson_img\030\003 \002(\014\022\027\n\017thumbnail_scene\030\004 \002(\014"
+      "\022\021\n\ttimestamp\030\005 \002(\003\"D\n\024TodayTotalEventCo"
+      "unt\022\023\n\013total_count\030\001 \002(\005\022\027\n\017blacklist_co"
+      "unt\030\002 \002(\005\"\'\n\020OneDayEventCount\022\023\n\013event_c"
+      "ount\030\001 \003(\005\"A\n\022EventSpiderGiagram\022+\n\rsome"
+      "day_count\030\001 \003(\0132\024.kf.OneDayEventCount\"X\n"
+      "\024TodayAlarmEventCount\022\020\n\010ab_count\030\001 \002(\005\022"
+      "\025\n\rintrude_count\030\002 \002(\005\022\027\n\017blacklist_coun"
+      "t\030\003 \002(\005\"4\n\013PieCharData\022\022\n\ncamera_pos\030\001 \002"
+      "(\t\022\021\n\tcost_time\030\002 \002(\005\"3\n\010PieChart\022\'\n\016pie"
+      "_chart_data\030\001 \003(\0132\017.kf.PieCharData\"r\n\016To"
+      "dayFaceCount\022\022\n\nsnap_count\030\001 \002(\005\022\027\n\017blac"
+      "klist_count\030\002 \002(\005\022\024\n\014served_count\030\003 \002(\005\022"
+      "\035\n\025blacklist_alarm_count\030\004 \002(\005\"+\n\017SnapAr"
+      "eaGiagram\022\030\n\020snap_count_point\030\001 \003(\005\"0\n\004T"
+      "ree\022\016\n\006status\030\001 \002(\005\022\013\n\003oid\030\002 \002(\t\022\013\n\003msg\030"
+      "\003 \002(\t"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 1867);
+      descriptor, 1885);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "face.proto", &protobuf_RegisterTypes);
 }
@@ -1530,6 +1533,7 @@ const int FaceInfoPT::kIdFieldNumber;
 const int FaceInfoPT::kCameraIdFieldNumber;
 const int FaceInfoPT::kCameraPosFieldNumber;
 const int FaceInfoPT::kImgDataFieldNumber;
+const int FaceInfoPT::kSceneIdFieldNumber;
 const int FaceInfoPT::kTimestampFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
@@ -1561,6 +1565,10 @@ FaceInfoPT::FaceInfoPT(const FaceInfoPT& from)
   if (from.has_img_data()) {
     img_data_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.img_data_);
   }
+  scene_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.has_scene_id()) {
+    scene_id_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.scene_id_);
+  }
   timestamp_ = from.timestamp_;
   // @@protoc_insertion_point(copy_constructor:kf.FaceInfoPT)
 }
@@ -1570,6 +1578,7 @@ void FaceInfoPT::SharedCtor() {
   camera_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   camera_pos_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   img_data_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  scene_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   timestamp_ = GOOGLE_LONGLONG(0);
 }
 
@@ -1583,6 +1592,7 @@ void FaceInfoPT::SharedDtor() {
   camera_id_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   camera_pos_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   img_data_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  scene_id_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 
 void FaceInfoPT::SetCachedSize(int size) const {
@@ -1606,7 +1616,7 @@ void FaceInfoPT::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _has_bits_[0];
-  if (cached_has_bits & 15u) {
+  if (cached_has_bits & 31u) {
     if (cached_has_bits & 0x00000001u) {
       id_.ClearNonDefaultToEmptyNoArena();
     }
@@ -1618,6 +1628,9 @@ void FaceInfoPT::Clear() {
     }
     if (cached_has_bits & 0x00000008u) {
       img_data_.ClearNonDefaultToEmptyNoArena();
+    }
+    if (cached_has_bits & 0x00000010u) {
+      scene_id_.ClearNonDefaultToEmptyNoArena();
     }
   }
   timestamp_ = GOOGLE_LONGLONG(0);
@@ -1695,10 +1708,26 @@ bool FaceInfoPT::MergePartialFromCodedStream(
         break;
       }
 
-      // required int64 timestamp = 5;
+      // required string scene_id = 5;
       case 5: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(40u /* 40 & 0xFF */)) {
+            static_cast< ::google::protobuf::uint8>(42u /* 42 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_scene_id()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->scene_id().data(), static_cast<int>(this->scene_id().length()),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "kf.FaceInfoPT.scene_id");
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // required int64 timestamp = 6;
+      case 6: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(48u /* 48 & 0xFF */)) {
           set_has_timestamp();
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
@@ -1772,9 +1801,19 @@ void FaceInfoPT::SerializeWithCachedSizes(
       4, this->img_data(), output);
   }
 
-  // required int64 timestamp = 5;
+  // required string scene_id = 5;
   if (cached_has_bits & 0x00000010u) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt64(5, this->timestamp(), output);
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->scene_id().data(), static_cast<int>(this->scene_id().length()),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "kf.FaceInfoPT.scene_id");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      5, this->scene_id(), output);
+  }
+
+  // required int64 timestamp = 6;
+  if (cached_has_bits & 0x00000020u) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt64(6, this->timestamp(), output);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -1832,9 +1871,20 @@ void FaceInfoPT::SerializeWithCachedSizes(
         4, this->img_data(), target);
   }
 
-  // required int64 timestamp = 5;
+  // required string scene_id = 5;
   if (cached_has_bits & 0x00000010u) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(5, this->timestamp(), target);
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->scene_id().data(), static_cast<int>(this->scene_id().length()),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "kf.FaceInfoPT.scene_id");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        5, this->scene_id(), target);
+  }
+
+  // required int64 timestamp = 6;
+  if (cached_has_bits & 0x00000020u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(6, this->timestamp(), target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -1877,8 +1927,15 @@ size_t FaceInfoPT::RequiredFieldsByteSizeFallback() const {
         this->img_data());
   }
 
+  if (has_scene_id()) {
+    // required string scene_id = 5;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->scene_id());
+  }
+
   if (has_timestamp()) {
-    // required int64 timestamp = 5;
+    // required int64 timestamp = 6;
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::Int64Size(
         this->timestamp());
@@ -1895,7 +1952,7 @@ size_t FaceInfoPT::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         _internal_metadata_.unknown_fields());
   }
-  if (((_has_bits_[0] & 0x0000001f) ^ 0x0000001f) == 0) {  // All required fields are present.
+  if (((_has_bits_[0] & 0x0000003f) ^ 0x0000003f) == 0) {  // All required fields are present.
     // required string id = 1;
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::StringSize(
@@ -1916,7 +1973,12 @@ size_t FaceInfoPT::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormatLite::BytesSize(
         this->img_data());
 
-    // required int64 timestamp = 5;
+    // required string scene_id = 5;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->scene_id());
+
+    // required int64 timestamp = 6;
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::Int64Size(
         this->timestamp());
@@ -1952,7 +2014,7 @@ void FaceInfoPT::MergeFrom(const FaceInfoPT& from) {
   (void) cached_has_bits;
 
   cached_has_bits = from._has_bits_[0];
-  if (cached_has_bits & 31u) {
+  if (cached_has_bits & 63u) {
     if (cached_has_bits & 0x00000001u) {
       set_has_id();
       id_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.id_);
@@ -1970,6 +2032,10 @@ void FaceInfoPT::MergeFrom(const FaceInfoPT& from) {
       img_data_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.img_data_);
     }
     if (cached_has_bits & 0x00000010u) {
+      set_has_scene_id();
+      scene_id_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.scene_id_);
+    }
+    if (cached_has_bits & 0x00000020u) {
       timestamp_ = from.timestamp_;
     }
     _has_bits_[0] |= cached_has_bits;
@@ -1991,7 +2057,7 @@ void FaceInfoPT::CopyFrom(const FaceInfoPT& from) {
 }
 
 bool FaceInfoPT::IsInitialized() const {
-  if ((_has_bits_[0] & 0x0000001f) != 0x0000001f) return false;
+  if ((_has_bits_[0] & 0x0000003f) != 0x0000003f) return false;
   return true;
 }
 
@@ -2008,6 +2074,8 @@ void FaceInfoPT::InternalSwap(FaceInfoPT* other) {
   camera_pos_.Swap(&other->camera_pos_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
   img_data_.Swap(&other->img_data_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
+  scene_id_.Swap(&other->scene_id_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
   swap(timestamp_, other->timestamp_);
   swap(_has_bits_[0], other->_has_bits_[0]);

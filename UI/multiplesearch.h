@@ -5,12 +5,11 @@
 #include "service/restservicei.h"
 QT_FORWARD_DECLARE_CLASS(QLabel)
 QT_FORWARD_DECLARE_CLASS(QDateTimeEdit)
-QT_FORWARD_DECLARE_CLASS(QSpinBox)
 QT_FORWARD_DECLARE_CLASS(QPushButton)
 QT_FORWARD_DECLARE_CLASS(QListWidget)
 QT_FORWARD_DECLARE_CLASS(QComboBox)
 QT_FORWARD_DECLARE_CLASS(QListWidgetItem)
-QT_FORWARD_DECLARE_CLASS(PageIndicator)
+QT_FORWARD_DECLARE_CLASS(QMenu)
 class MultipleSearch : public WidgetI
 {
     Q_OBJECT
@@ -25,21 +24,19 @@ protected:
 private:
     const int itemCount_ = 4;
     QListWidget *imgList_{nullptr},*dataList_{nullptr};
-    QLabel *similarityL_{nullptr},*queryCountL_{nullptr},*positionL_{nullptr},
+    QLabel *positionL_{nullptr},
     *startTimeL_{nullptr},*endTimeL_{nullptr};
-    QSpinBox *similaritySpin_{nullptr};
-    QComboBox *queryCountCobox_{nullptr},*posCombox_{nullptr};
+    QComboBox *posCombox_{nullptr};
     QDateTimeEdit *startTimeEdit_{nullptr},*endTimeEdit_{nullptr};
     QPushButton *searchBtn_{nullptr};
-    PageIndicator *pageIndicator_{nullptr};
+    QMenu *dataMenu_{nullptr};
 
     QImage backImg_;
-    int curTotalCount_ = 0, pageSize = 20;
+    QMap<QString,QString> curCameraMapInfo_;
 
     void getCameraInfo();
 
 private slots:
-    void slotPageNoChanged(int);
     void slotOnCameraInfo(QVector<RestServiceI::CameraInfo>);
     void slotItemClicked(QListWidgetItem *);
     void slotSearchBtnClicked();

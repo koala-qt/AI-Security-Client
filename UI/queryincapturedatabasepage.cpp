@@ -11,7 +11,7 @@
 QueryInCaptureDataBasePage::QueryInCaptureDataBasePage(WidgetManagerI *wm, WidgetI *parent):
     WidgetI(wm,parent)
 {
-    setObjectName(tr("Search in capture database"));
+    setObjectName(tr("Person analysis"));
     tabWidget_ = new QTabWidget;
     semanticPage_ = new SemanticSearchPage(wm);
     searchByImage_ = new FaceSearch(wm);

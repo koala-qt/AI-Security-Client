@@ -28,13 +28,13 @@ private:
 
     QImage backImg_;
     QString curOid_,hostname_;
-    QVariantMap curCameraMap_;
+    QMap<QString,QString> curCameraMap_;
     void getCameraInfo();
 
 private slots:
     void slotImgBtnClicked();
     void slotSearchBtnClicked();
-    void slotOnCameraMap(QVariantMap);
+    void slotOnCameraInfo(QVector<RestServiceI::CameraInfo>);
     void slotTrackingNew(QVector<RestServiceI::TrackingReturnData>);
     void slotTracking(QVector<SearchFace>);
 };

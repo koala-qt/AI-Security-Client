@@ -10,8 +10,11 @@
 #include <QDialog>
 #include <QDebug>
 #include <QTimer>
+#include <QFileDialog>
+#include <QStandardPaths>
 #include <QFile>
 #include <QTreeWidget>
+#include <QMessageBox>
 #include "facesearch.h"
 #include "pageindicator.h"
 #include "waitinglabel.h"
@@ -24,9 +27,8 @@
 CaptureSearch::CaptureSearch(WidgetManagerI *wm, WidgetI *parent):
     WidgetI(wm,parent)
 {
-    setObjectName(tr("抓拍检索"));
-    QHBoxLayout *mainLay = new QHBoxLayout;
-    QVBoxLayout *mainHLay = new QVBoxLayout;
+    setObjectName(tr("Capture face history"));
+    QVBoxLayout *mainLay = new QVBoxLayout;
     QHBoxLayout *hlay = new QHBoxLayout;
     hlay->setSpacing(15);
     m_cameraL = new QLabel(tr("位置"));
@@ -50,28 +52,19 @@ CaptureSearch::CaptureSearch(WidgetManagerI *wm, WidgetI *parent):
     hlay->addWidget(m_endTimeEdit);
     hlay->addWidget(m_searchBtn);
     hlay->setAlignment(Qt::AlignLeft);
-    mainHLay->addLayout(hlay);
+    mainLay->addLayout(hlay);
 
     m_listW = new QListWidget;
-    mainHLay->addWidget(m_listW);
+    mainLay->addWidget(m_listW);
 
     m_pageIndicator = new PageIndicator;
     m_pageIndicator->setPageInfo(0,0);
-    hlay = new QHBoxLayout;
-    hlay->addStretch();
-    hlay->addWidget(m_pageIndicator);
-    hlay->addStretch();
-    mainHLay->addLayout(hlay);
-    mainHLay->setMargin(0);
-    mainLay->addLayout(mainHLay,9);
-
-    attributeTreeW_ = new QTreeWidget;
-    mainLay->addWidget(attributeTreeW_,1);
+    mainLay->addWidget(m_pageIndicator);
     mainLay->setMargin(0);
     setLayout(mainLay);
 
     menu_ = new QMenu(this);
-    menu_->addAction(tr("查看最近抓拍记录"),[&]{
+    menu_->addAction(tr("Search using the image"),[&]{
         FaceSearch *faceDialog = new FaceSearch(widgetManger());
         faceDialog->setAttribute(Qt::WA_DeleteOnClose);
         faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
@@ -83,14 +76,20 @@ CaptureSearch::CaptureSearch(WidgetManagerI *wm, WidgetI *parent):
         faceDialog->setUserStyle(widgetManger()->currentStyle());
         faceDialog->layout()->setMargin(10);
         faceDialog->setFaceImage(m_listW->currentItem()->data(Qt::UserRole + 1).value<QImage>());
-        faceDialog->setOid(m_listW->currentItem()->data(Qt::UserRole + 2).toString());
+//        faceDialog->setOid(m_listW->currentItem()->data(Qt::UserRole + 2).toString());
         faceDialog->setMinimumHeight(700);
         faceDialog->show();
     });
-    menu_->addAction(tr("查看原图"),[&]{
+    menu_->addAction(tr("Scene analysis"),[&]{
         BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
         RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
         WaitingLabel *label = new WaitingLabel(this);
+        connect(serviceI,&RestServiceI::sigError,this,[&,label](const QString str){
+            label->close();
+            delete label;
+            QMessageBox::information(this,objectName(),str);
+            menu_->setEnabled(true);
+        });
         connect(serviceI,&RestServiceI::sigSceneImage,this,[&,label](const QImage img){
             label->close();
             delete label;
@@ -101,6 +100,16 @@ CaptureSearch::CaptureSearch(WidgetManagerI *wm, WidgetI *parent):
         startWorker(worker);
         label->show(500);
         menu_->setEnabled(false);
+    });
+    menu_->addAction(tr("Save face image"),[this]{
+        QString personId = m_listW->currentItem()->data(Qt::UserRole + 2).toString();
+        QString filePath =  QFileDialog::getSaveFileName(this,tr("Save face image"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/" + personId + ".jpg",tr("Images (*.png *.jpg)"));
+        if(filePath.isEmpty()){
+            return;
+        }
+        if(!m_listW->currentItem()->data(Qt::UserRole + 1).value<QImage>().save(filePath)){
+            QMessageBox::information(this,tr("Save face image"),tr("Operation failed!"));
+        }
     });
     m_startTimeEdit->setDisplayFormat("yyyy/MM/dd HH:mm:ss");
     m_endTimeEdit->setDisplayFormat("yyyy/MM/dd HH:mm:ss");
@@ -124,38 +133,6 @@ CaptureSearch::CaptureSearch(WidgetManagerI *wm, WidgetI *parent):
         menu_->show();
     });
 
-    attributeTreeW_->setHeaderLabel(tr("Attribule labels"));
-    attributeTreeW_->headerItem()->setTextAlignment(0,Qt::AlignCenter);
-    QVector<itemData> devicesVec;
-    itemData items;
-    items.name = tr("Eye");
-    items.childrens << itemData{tr("Arched_Eyebrows"),QVector<itemData>()} << itemData{tr("Bushy_Eyebrows"),QVector<itemData>()}
-                    << itemData{tr("Babs_Under_Eyes"),QVector<itemData>()} << itemData{tr("Eyeglasses"),QVector<itemData>()}
-                    << itemData{tr("Narrow_Eyes"),QVector<itemData>()};
-    devicesVec << items;
-    items.childrens.clear();
-    items.name = tr("Hair");
-    items.childrens << itemData{tr("Yellow"),QVector<itemData>()} << itemData{tr("black"),QVector<itemData>()};
-    devicesVec << items;
-    items.childrens.clear();
-    items.name = tr("Lips");
-    items.childrens << itemData{tr("lip"),QVector<itemData>()};
-    devicesVec << items;
-    items.name = tr("Nose");
-    items.childrens.clear();
-    items.childrens << itemData{tr("Big"),QVector<itemData>()} << itemData{tr("Small"),QVector<itemData>()};
-    devicesVec << items;
-    items.name = tr("Chine");
-    items.childrens.clear();
-    items.childrens << itemData{tr("Big"),QVector<itemData>()} << itemData{tr("Small"),QVector<itemData>()};
-    devicesVec << items;
-    items.name = tr("Other");
-    items.childrens.clear();
-    items.childrens << itemData{tr("Big"),QVector<itemData>()} << itemData{tr("Small"),QVector<itemData>()};
-    devicesVec << items;
-    for(auto value : devicesVec){
-        createTreeItem(nullptr,value);
-    }
     getCameraInfo();
 }
 
@@ -305,32 +282,37 @@ void CaptureSearch::getCameraInfo()
 {
     BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
     RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
-    connect(serviceI,SIGNAL(sigCameraInfo(QVector<CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<CameraInfo>)));
+    connect(serviceI,SIGNAL(sigCameraInfo(QVector<RestServiceI::CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<RestServiceI::CameraInfo>)));
     serviceI->getCameraInfo();
     startWorker(worker);
-}
-
-void CaptureSearch::createTreeItem(QTreeWidgetItem *parentItem, CaptureSearch::itemData &items)
-{
-    QTreeWidgetItem *item{nullptr};
-    if(parentItem){
-        item = new QTreeWidgetItem(parentItem, QStringList() << items.name, items.childrens.isEmpty());
-    }else{
-        item = new QTreeWidgetItem(attributeTreeW_, QStringList() << items.name, items.childrens.isEmpty());
-    }
-    for(auto value : items.childrens){
-        createTreeItem(item,value);
-    }
 }
 
 void CaptureSearch::slotOnScenePic(QImage img)
 {
 #if 1
     SceneImageDialog dialog;
+    dialog.setUserStyle(widgetManger()->currentStyle());
     dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
     dialog.setImage(img);
     dialog.setRectLinePen(Qt::yellow);
-    dialog.resize(960,540);
+    connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
+        if(!images.count()){
+            return;
+        }
+        FaceSearch *faceDialog = new FaceSearch(widgetManger());
+        faceDialog->setAttribute(Qt::WA_DeleteOnClose);
+        faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+        faceDialog->setWindowModality(Qt::ApplicationModal);
+        QPalette pal = faceDialog->palette();
+        pal.setColor(QPalette::Background,QColor(112,110,119));
+        faceDialog->setPalette(pal);
+        faceDialog->setAutoFillBackground(true);
+        faceDialog->setUserStyle(widgetManger()->currentStyle());
+        faceDialog->layout()->setMargin(10);
+        faceDialog->setFaceImage(images.first());
+        faceDialog->setMinimumHeight(700);
+        faceDialog->show();
+    });
     dialog.exec();
 #else
     QDialog dialog;
@@ -361,38 +343,49 @@ void CaptureSearch::slotSearchSnapInfo(int page)
     BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
     RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
     WaitingLabel *label = new WaitingLabel(this);
-    label->setAttribute(Qt::WA_DeleteOnClose);
-    connect(serviceI,&RestServiceI::sigSnapHistory,this,[&,label](const PagedSnapFaceHis value){
+    connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
         label->close();
+        delete label;
+        QMessageBox::information(this,objectName(),str);
+        m_searchBtn->setEnabled(true);
+        m_pageIndicator->setEnabled(true);
+    });
+    connect(serviceI,&RestServiceI::sigCaptureSearch,this,[this,label](const RestServiceI::CaptureSearchReturnData value){
+        label->close();
+        delete label;
         slotOnSearch(value);
         m_searchBtn->setEnabled(true);
         m_pageIndicator->setEnabled(true);
     });
-//    serviceI->captureSearch(page, CAPTUREITEMROWCOUTN * CAPTUREITEMCOLCOUTN,curCameraId_,curStartTime_,curEndTime_);
+    RestServiceI::CaptureSearchArgs args;
+    args.page = page;
+    args.pageCount = CAPTUREITEMROWCOUTN * CAPTUREITEMCOLCOUTN;
+    args.position = curCameraId_;
+    args.start = curStartTime_;
+    args.end = curEndTime_;
+    serviceI->captureSearch(args);
     startWorker(worker);
     label->show(500);
     m_searchBtn->setEnabled(false);
     m_pageIndicator->setEnabled(false);
 }
 
-void CaptureSearch::slotOnSearch(PagedSnapFaceHis data)
+void CaptureSearch::slotOnSearch(RestServiceI::CaptureSearchReturnData data)
 {
     m_listW->clear();
     m_pageIndicator->adjustRow();
     if(needUpdatePageInfo_){
-        m_pageIndicator->setPageInfo(data.total_page,data.total_count);
+        m_pageIndicator->setPageInfo(data.totalPage,data.totalCount);
         needUpdatePageInfo_ = false;
     }
     m_listW->setIconSize(iconSize_);
-    foreach (const SnapFaceHis &info, data.snap_face_his) {
-        QListWidgetItem *item = new QListWidgetItem(QString::fromStdString(info.camera_pos) + '\n' + QDateTime::fromMSecsSinceEpoch(info.time).toString("yyyy-MM-dd HH:mm:ss"));
-        QImage img;
-        img.loadFromData(QByteArray::fromStdString(info.faceimg));
+    for (RestServiceI::DataRectureItem &info : data.data) {
+        QListWidgetItem *item = new QListWidgetItem(curCameraMapInfo_.value(info.cameraId).left(20) + '\n' +
+                                                    info.time.toString("yyyy-MM-dd HH:mm:ss"));
         item->setSizeHint(itemSize_);
-        item->setIcon(QPixmap::fromImage(img.scaled(m_listW->iconSize())));
-        item->setData(Qt::UserRole+1,img);
-        item->setData(Qt::UserRole+2,QString::fromStdString(info.oid));
-        item->setData(Qt::UserRole+3,QString::fromStdString(info.cameraid));
+        item->setIcon(QPixmap::fromImage(info.img));
+        item->setData(Qt::UserRole+1,info.img);
+        item->setData(Qt::UserRole+2,info.sceneId);
         item->setTextAlignment(Qt::AlignHCenter);
         m_listW->addItem(item);
     }
@@ -406,5 +399,6 @@ void CaptureSearch::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)
     cameraCombox_->addItem(pix,tr("不限"),"");
     for (auto &info : data) {
         cameraCombox_->addItem(pix,info.cameraPos,info.cameraId);
+        curCameraMapInfo_[info.cameraId] = info.cameraPos;
     }
 }

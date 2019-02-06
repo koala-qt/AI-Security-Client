@@ -1,16 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- <link rel="stylesheet" href="./bootstrap.min.css"> -->
+    <script src="./jquery-3.1.1.min.js"></script>
+    <script src="./jquery.mousewheel.js"></script>
+    <script src="./jquery-ui.min.js"></script>
+	<script src="./qwebchannel.js"></script>
+    <!-- <script src="./bootstrap.min.js"></script> -->
     <title>Document</title>
-    <style>
-      *{
+</head>
+<style>
+    *{
         padding: 0;
         margin: 0;
-      }
-      .haha {
+    }
+    .haha {
         padding: 10px;
         width:223px;
         height:191px;
@@ -18,59 +25,90 @@
         opacity:1;
         border-radius:4px;
         box-sizing: border-box;
-      }
-      .alert-box{
-        width: 1490px;
-        height: 702px;
+    }
+    .alert-box{
+        position: absolute;
+        width: 100%;
+        height: 100%;
         background:rgba(75,75,75,1);
         box-shadow:0px 10px 10px rgba(0,0,0,0.16);
         opacity:1;
         border-radius:4px;
-        padding:10px 20px 20px;
         box-sizing: border-box;
-      }
-      .alert-title{
+    }
+    .alert-title{
+        height: 40px;
+        line-height: 40px;
         color: #CECECE;
-        font-size:16px;
-        padding-bottom: 10px;
-      }
-      .content-box{
+        font-size: 16px;
+        padding-left: 10px;
+    }
+    .content-box{
+        display: flex;
+        /* padding: 0 10px 10px 10px; */
+        top: 40px;
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        /* background: red; */
+    }
+    .left-box {
+        position: relative;
+        border: 1px solid #CECECE;
         overflow: hidden;
-      }
-      .left-box{
-        float: left;
+        flex: 8;
+    }
+    .left-box-content {
+        position: absolute;
+        width: 100%;
         height: 100%;
-      }
-      .right-box{
-       margin-left: 20px;
-      }
-      .scroll-box{
-        overflow-y:scroll;
-        height:640px;
-        width: 290px;
-      }
-      .route-box{
-      }
-      .right-b{
-        margin-left: 10px;
-        font-size:14px;
+        display: flex;
+        justify-content: center;
+        position: relative;
+    }
+    .dialog {
+        position: absolute;
+        display: none;
+        left: 0;
+        background: #fff;
+        top: 0;
+        z-index: 100;
+        width: 200px;
+        height: 200px;
+    }
+    .dialog .title {
+        background-color: rgba(75,75,75,1);
         color: #CECECE;
-      }
-      .right-b p {
-        padding-bottom: 5px;
-      }
-      .txt{
-        overflow: hidden;
-        padding-bottom: 5px;
-      }
-      .line{
-        margin: 0 auto;
-        width:1px;
-        height:114px;
-        margin-top:5px;
-        background: #CECECE;
-      }
-      .scrollbar{overflow-x: hidden;overflow-y: auto;overscroll-behavior: contain;}
+        text-align: center;
+        height: 34px;
+        line-height: 34px;
+    }
+    .dialog .img-div {
+        height: 166px;
+        width: 200px;
+    }
+    .dialog .img-div img {
+        height: 166px;
+        width: 200px;
+    }
+    .left-box-content canvas {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+    .left-box-content img {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+    .right-box{
+        flex: 2;
+        padding-bottom: 10px;
+        flex: 2;
+        min-width: 274px;
+        min-width: 274px;
+    }
+    .scrollbar{overflow-x: hidden;overflow-y: auto;overscroll-behavior: contain;}
       .scrollbar::-webkit-scrollbar {
         position: absolute;
         width: 10px;
@@ -94,149 +132,235 @@
         background:rgba(216,216,216,0.1);
         border-radius: 5px;
       }
-    </style>
-  </head>
-  <body>
-  <div class="alert-box">
-    <div class="alert-title">Tracking</div>
-    <div class="content-box">
-      <div class="left-box"><canvas width="1138" height="640" id="myCanvas" style="background-image:url('./map.png') "></canvas></div>
-      <div class="left-box right-box scroll-box scrollbar">
-        <div class="route-box" id="rote-box">
+    .right-box-b {
+        overflow: hidden;
+        padding-left: 10px;
+        padding-bottom: 5px;
+    }
+    .right-box-b-left {
+        float: left;
+        height: 100%;
+    }
+    .right-box-b-left-img {
+
+    }
+    .right-box-b-left-line {
+        margin: 0 auto;
+        width: 1px;
+        height: 45px;
+        margin-top: 5px;
+        background: #CECECE;
+    }
+    .scroll-box{
+        overflow-y: auto;
+        height:640px;
+        width: 290px;
+    }
+    .route-box{
+    }
+    .right-box-b-right {
+        float: left;
+        margin-left: 10px;
+        font-size:14px;
+        color: #CECECE;
+    }
+    .right-b p {
+        padding-bottom: 5px;
+    }
+    .txt{
+        overflow: hidden;
+        padding-bottom: 5px;
+    }
+</style>
+<body>
+    <div class="alert-box">
+        <div class="alert-title">Tracking</div>
+        <div class="content-box">
+          <div class="left-box">
+            <div class="left-box-content" id="leftBox">
+                    <div class='dialog' id='dialog'>
+                        <div class='title' id="title"></div>
+                        <div class="img-div">
+                            <img src=''/ id="headImg">
+                        </div>
+                    </div>
+                    <img src="./map.png">
+                    <canvas  id="myCanvas">
+                    </canvas>
+            </div>
+          </div>
+          <div class="right-box scrollbar" id="rightBox">
+          </div>
         </div>
-      </div>
     </div>
-  </div>
-  <script src="./qwebchannel.js"></script>
-  <script>
-    //连接qt
+
+</body>
+
+<script>
      if (typeof qt != "undefined") {
        new QWebChannel(qt.webChannelTransport, function(channel){
          window.Bridge = channel.objects.Bridge;
          Bridge.sigTrackingDataChanged.connect(function(arr) { //连接Qt中brideg类的信号并定义执行代码
-           getCameraData(arr)
+			getCameraData(arr)
          });
          Bridge.onInitsized(); //调用Qt内的函数
        });
     } else {
        alert("qt对象获取失败！");
     }
-    //画图
-    var canvas = document.getElementById("myCanvas");
-    var context = document.getElementById("myCanvas").getContext("2d");
-    var offset = 0;
-    var Img = new Image();
-    Img.src="bigCamera.png";
-    function getCameraData(arr) {
-      var box = document.getElementById('rote-box');
-      arr.forEach((item, index) => {
-        box.innerHTML += "<div class='txt'> <div class='left-box'><img src='./small%20camera.png'> <div class='line'></div> </div> <div class='left-box right-b'>"+
-              "<p>"+item.name+"</p><p>"+item.grabTime+"</p>"+
-              "<p>"+item.holdTime+"</p></div></div>"
-      });
-      function Initialization() {
-        let div = document.createElement("div");
-        div.innerHTML = "<div style='text-align: center'>"+arr[0].name+"</div><img src='"+arr[0].personImg+"' style='width:130px;height: 130px;margin:10px 0 0 35px'>";
-        div.className = `haha m0 frist`;
-        div.style.position = "fixed";
-        div.style.left = arr[0].pos.x-60 + "px";
-        div.style.top = arr[0].pos.y+80 + "px";
-        document.body.appendChild(div);
-      }
-      Initialization()
-      var draw = function() {
-        // 设置样式
-        context.clearRect(0, 0, 1000, 1000);
-        context.setLineDash([8, 4]);
-        context.lineDashOffset = offset;
-        context.lineWidth =2;
-        context.strokeStyle = "#4AB6FF";
-        context.moveTo(arr[0].pos.x,arr[0].pos.y);
-        context.drawImage(Img, arr[0].pos.x - 10, arr[0].pos.y - 10, 71, 53);
-        // 连线
-        for(var i =1;i <arr.length;i++){
-          // 绘制图片
-          context.drawImage(Img, arr[i].pos.x - 10, arr[i].pos.y - 10, 71, 53);
-          context.lineTo(arr[i].pos.x,arr[i].pos.y);
-        };
-        context.stroke();
-      };
-      var run = function() {
-        offset -= 0.5;
-        if (offset < -24) {
-          offset = 0;
-        }
-        draw();
-        // 继续绘制
-        requestAnimationFrame(run);
-      };
-      run();
-      // 鼠标在canvas
-      document.onclick = function(e) {
-        let DOMRect = canvas.getBoundingClientRect();
-        let x = e.clientX - DOMRect.left;
-        let y = e.clientY - DOMRect.top;
-        arr.forEach((item, index) => {
-          if (
-                  x <= item.pos.x + 30 &&
-                  x >= item.pos.x &&
-                  y <= item.pos.y + 20 &&
-                  y >= item.pos.y
-          ) {
-            console.log(`m${index}`)
-            if (document.getElementsByClassName(`m${index}`).length) {
-              return;
-            }
-            document.getElementsByClassName("haha").length &&
-            document
-                    .getElementsByClassName("haha")[0]
-                    .parentNode.removeChild(
-                    document.getElementsByClassName("haha")[0]
-            );
-            let div = document.createElement("div");
-            div.innerHTML = "<div style='text-align: center'>"+item.name+"</div><img src='"+item.personImg+"'>";
-            div.className = `haha m${index}`;
-            div.style.position = "fixed";
-            div.style.left = e.clientX-100 + "px";
-            div.style.top = e.clientY+30 + "px";
-            document.body.appendChild(div);
-          }
-        });
-      };
-    }
-		var data = [{
-          pos: {x: 100,y: 10},
-          name: "camera01",
-          holdTime:"10:30:10",
-          grabTime:"2019/01/22 11:33",
-          personImg:"image://https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=4001431513,4128677135&fm=27&gp=0.jpg"
-        },{
-          pos: {x: 120,y: 230},
-          name: "camera01",
-          holdTime:"10:30:10",
-          grabTime:"2019/01/22 11:33",
-          personImg:"image://https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=4001431513,4128677135&fm=27&gp=0.jpg"
-        },{
-          pos: {x: 200,y: 245},
-          name: "camera01",
-          holdTime:"10:30:10",
-          grabTime:"2019/01/22 11:33",
-          personImg:"image://https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=4001431513,4128677135&fm=27&gp=0.jpg"
-        },{
-          pos: {x: 300, y: 333},
-          name: "camera01",
-          holdTime:"10:30:10",
-          grabTime:"2019/01/22 11:33",
-          personImg:"image://https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=4001431513,4128677135&fm=27&gp=0.jpg"
-        },{
-          pos: {x: 467,y: 356},
-          name: "camera01",
-          holdTime:"10:30:10",
-          grabTime:"2019/01/22 11:33",
-          personImg:"image://https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=4001431513,4128677135&fm=27&gp=0.jpg"
-        }]
+var saveArr = []
 
-    //getCameraData(data)
-    </script>
-  </body>
+window.onload = function(){
+    $('#leftBox').draggable()
+}
+let zoomIn = 100
+$('#myCanvas').mousewheel(function (e) {
+    if(e.deltaY < 1 && zoomIn >= 4 ) {
+        zoomIn = zoomIn - 2
+        // $('#leftBox').css("transform", `scale(${zoomIn})`)
+        $('#leftBox').css('width', `${zoomIn}%`)
+        $('#leftBox').css('height', `${zoomIn}%`)
+    } else if (zoomIn < 300) {
+        console.log('up')
+        zoomIn = zoomIn + 5
+        $('#leftBox').css('width', `${zoomIn}%`)
+        $('#leftBox').css('height', `${zoomIn}%`)
+    }
+});
+
+$('#myCanvas').click(function(e) {
+  let canvasWidth = $('#myCanvas').width();
+  let canvasHeight = $('#myCanvas').height();
+  console.log(canvasWidth)
+  console.log(canvasHeight)
+  let isTrue = false
+  saveArr.forEach(item => {
+     let nw = 30 * (canvasWidth / 1139)
+     let nh = 18 * (canvasHeight / 640)
+     let newx = item.pos.x * (canvasWidth / 1139)
+     let newy = item.pos.y * (canvasHeight / 640)
+     if(e.offsetX <= newx + nw &&
+        e.offsetX >= newx - nw &&
+        e.offsetY <= newy + nh &&
+        e.offsetY >= newy - nh) {
+           isTrue = true
+           $("#title").html(item.name)
+           $("#headImg").attr('src', item.personImg)
+           if((canvasWidth - e.offsetX) < 210 && (canvasHeight - e.offsetY) < 210) {
+            $("#dialog").css('left', e.offsetX - 210)
+            $("#dialog").css('top', e.offsetY - 210)
+           } else if((canvasWidth - e.offsetX) > 210 && (canvasHeight - e.offsetY) < 210) {
+            $("#dialog").css('left', e.offsetX)
+            $("#dialog").css('top', e.offsetY - 210)
+           } else if((canvasWidth - e.offsetX) < 210 && (canvasHeight - e.offsetY) > 210) {
+            $("#dialog").css('left', e.offsetX - 210)
+            $("#dialog").css('top', e.offsetY)
+           } else {
+            $("#dialog").css('left', e.offsetX)
+            $("#dialog").css('top', e.offsetY)
+           }
+        }
+  })
+    console.log(isTrue)
+    if(isTrue) {
+        $("#dialog").show()
+    } else {
+        $("#dialog").hide()
+    }
+})
+
+function getCameraData(arr) {
+    saveArr = JSON.parse(JSON.stringify(arr))
+    setRightData(arr)
+    drawBeginCamera(arr)
+}
+
+function drawImage(oGC, self, x, y ) {
+    oGC.drawImage(this,item.pos.x, item.pos.y, 71, 53);
+}
+function drawBeginCamera(arr) {
+  let newarr = JSON.parse(JSON.stringify(arr))
+  let canvasWidth = $('#myCanvas').width();
+  let canvasHeight = $('#myCanvas').height();
+  $('#myCanvas').attr("width",canvasWidth);
+  $('#myCanvas').attr("height",canvasHeight);
+  var oC =document.getElementById('myCanvas');
+  var ctx = oC.getContext('2d');
+  // 加上摄像头   
+  newarr.forEach((item, index) => {
+    item.pos.x = item.pos.x * (canvasWidth / 1139)
+    item.pos.y = item.pos.y * (canvasHeight / 640)
+    var imgObj = new Image();
+    imgObj.src = "bigCamera.png";
+    imgObj.onload = function() {
+      let nw = 60 * (canvasWidth / 1139)
+      let nh = 36 * (canvasHeight / 640)
+    //   let ew = 30 * (canvasWidth / 1139)
+    //   let eh = 18 * (canvasHeight / 640)
+      ctx.drawImage(this, item.pos.x - nw/2, item.pos.y - nh/2, nw, nh); //this即是imgObj,保持图片的原始大小：470*480
+    }
+    if (index === 0) {
+      ctx.strokeStyle = "yellow"
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath()
+      ctx.lineWidth = 2
+      ctx.moveTo(item.pos.x, item.pos.y)
+    } else if(index === newarr.length - 1) {
+      ctx.lineTo(item.pos.x, item.pos.y)
+      ctx.stroke()
+    } else {
+      ctx.lineTo(item.pos.x, item.pos.y)
+    }
+  })
+  // 划线
+
+  console.log(newarr)
+}
+function setRightData(arr) {
+    var box = document.getElementById('rightBox');
+    arr.forEach((item, index) => {
+        var holdTime = formatSeconds(item.holdTime)
+        divHtml = '<div class="right-box-b">'+
+                            '<div class="right-box-b-left">'+
+                                '<img src="./smallCamera.png" class="right-box-b-left-img">'+
+                                '<div class="right-box-b-left-line"></div>'+
+                            '</div>'+
+                            '<div class="right-box-b-right">'+
+                                    '<p>'+item.name+'</p>'+
+                                    '<p>'+item.grabTime+'</p>'+
+                                    '<p>'+holdTime+'</p>'
+                            '</div>'+
+                        '</div>'
+        $("#rightBox").append(divHtml)
+    });
+}
+
+function formatSeconds(value) {
+        var secondTime = parseInt(value);// 秒
+        var minuteTime = 0;// 分
+        var hourTime = 0;// 小时
+        if(secondTime > 60) {//如果秒数大于60，将秒数转换成整数
+            //获取分钟，除以60取整数，得到整数分钟
+            minuteTime = parseInt(secondTime / 60);
+            //获取秒数，秒数取佘，得到整数秒数
+            secondTime = parseInt(secondTime % 60);
+            //如果分钟大于60，将分钟转换成小时
+            if(minuteTime > 60) {
+                //获取小时，获取分钟除以60，得到整数小时
+                hourTime = parseInt(minuteTime / 60);
+                //获取小时后取佘的分，获取分钟除以60取佘的分
+                minuteTime = parseInt(minuteTime % 60);
+            }
+        }
+        var result = " " + parseInt(secondTime) + "s";
+
+        if(minuteTime > 0) {
+            result = " " + parseInt(minuteTime) + "m" + result;
+        }
+        if(hourTime > 0) {
+            result = "" + parseInt(hourTime) + "h" + result;
+        }
+        return result;
+    }
+</script>
 </html>

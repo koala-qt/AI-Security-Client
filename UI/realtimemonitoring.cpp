@@ -23,6 +23,7 @@
 #include "facesearch.h"
 #include "waitinglabel.h"
 #include "videoplayer.h"
+#include "sceneimagedialog.h"
 
 #pragma execution_character_set("utf-8")
 RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
@@ -54,7 +55,7 @@ RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
     m_eventListL->setAlignment(Qt::AlignCenter);
     m_eventListL->setFixedWidth(70);
     QVBoxLayout *vboxLay = new QVBoxLayout;
-    vboxLay->addWidget(m_realPlayM,17);
+    vboxLay->addWidget(m_realPlayM,11);
     hboxLay = new QHBoxLayout;
     hboxLay->addWidget(m_faceListL);
     hboxLay->addWidget(m_faceList);
@@ -101,7 +102,7 @@ RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
 
     numberPersonTimer_ = new QTimer(this);
     faceItemMenu_ = new QMenu(m_faceList);
-    faceItemMenu_->addAction(tr("查看最近抓拍记录"),[&]{
+    faceItemMenu_->addAction(tr("Search using an image"),[&]{
         FaceSearch *faceDialog = new FaceSearch(widgetManger());
         faceDialog->setAttribute(Qt::WA_DeleteOnClose);
         faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
@@ -117,7 +118,7 @@ RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
         faceDialog->setMinimumHeight(700);
         faceDialog->show();
     });
-    faceItemMenu_->addAction(tr("查看场景图"),[&]{
+    faceItemMenu_->addAction(tr("Scene analysis"),[&]{
         BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
         RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
         WaitingLabel *label = new WaitingLabel(this);
@@ -135,7 +136,7 @@ RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
         });
         label->show(800);
         faceItemMenu_->setEnabled(false);
-        serviceI->getScenePic(m_faceList->currentItem()->data(Qt::UserRole + 2).toString());
+        serviceI->getScenePic(m_faceList->currentItem()->data(Qt::UserRole + 3).toString());
         startWorker(worker);
     });
     m_faceList->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -148,7 +149,7 @@ RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
     });
 
     eventItemMenu_ = new QMenu(m_eventList);
-    eventItemMenu_->addAction(tr("查看场景图"),[&]{
+    eventItemMenu_->addAction(tr("Scene analysis"),[&]{
         BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
         RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
         WaitingLabel *label = new WaitingLabel(this);
@@ -643,7 +644,8 @@ void RealtimeMonitoring::slotAddFaceitem(QStringList data, QImage img)
     vboxLay->addWidget(label);
 
     if(data.count() < 2)return;
-    QString oid = data.takeFirst();
+    QString faceId = data.takeFirst();
+    QString sceneId = data.takeLast();
     foreach (QString str, data) {
         label = new QLabel(str);
         QPalette pal = label->palette();
@@ -657,7 +659,8 @@ void RealtimeMonitoring::slotAddFaceitem(QStringList data, QImage img)
 
     QListWidgetItem *item = new QListWidgetItem;
     item->setData(Qt::UserRole + 1,img);
-    item->setData(Qt::UserRole + 2,oid);
+    item->setData(Qt::UserRole + 2,faceId);
+    item->setData(Qt::UserRole + 3,sceneId);
     item->setSizeHint(m_faceItemSize);
     m_faceList->insertItem(0,item);
     m_faceList->setItemWidget(item,itemWidget);
@@ -714,9 +717,9 @@ void RealtimeMonitoring::slotAddEventitem(QStringList data, QImage img)
 
 void RealtimeMonitoring::slotAddDevice(QVector<RestServiceI::CameraInfo> data)
 {
-    QTreeWidgetItem *item = new QTreeWidgetItem(m_treeW,QStringList() << tr("Cameras"));
+    QTreeWidgetItem *item = new QTreeWidgetItem(m_treeW,QStringList() << tr("Cameras"),0);
     for (auto &info : data) {
-        QTreeWidgetItem *camera = new QTreeWidgetItem(item, QStringList() << info.cameraPos);
+        QTreeWidgetItem *camera = new QTreeWidgetItem(item, QStringList() << info.cameraPos,1);
         camera->setData(0,Qt::UserRole + 1, info.cameraId);
         camera->setData(0,Qt::UserRole + 2, info.rtsp);
         camera->setData(0,Qt::UserRole + 3, info.cameraPos);
@@ -745,6 +748,7 @@ void RealtimeMonitoring::slotOnCameraGroup(QVector<RestServiceI::CameraGoup> gro
 
 void RealtimeMonitoring::slotOnScenePic(QImage img)
 {
+#if 0
     QDialog dialog;
     dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
     QLabel *label = new QLabel;
@@ -757,6 +761,32 @@ void RealtimeMonitoring::slotOnScenePic(QImage img)
     label->setPixmap(QPixmap::fromImage(img));
     dialog.setFixedSize(960,540);
     dialog.exec();
+#else
+    SceneImageDialog dialog;
+    dialog.setUserStyle(widgetManger()->currentStyle());
+    dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+    dialog.setImage(img);
+    dialog.setRectLinePen(Qt::yellow);
+    connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
+        if(!images.count()){
+            return;
+        }
+        FaceSearch *faceDialog = new FaceSearch(widgetManger());
+        faceDialog->setAttribute(Qt::WA_DeleteOnClose);
+        faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+        faceDialog->setWindowModality(Qt::ApplicationModal);
+        QPalette pal = faceDialog->palette();
+        pal.setColor(QPalette::Background,QColor(112,110,119));
+        faceDialog->setPalette(pal);
+        faceDialog->setAutoFillBackground(true);
+        faceDialog->setUserStyle(widgetManger()->currentStyle());
+        faceDialog->layout()->setMargin(10);
+        faceDialog->setFaceImage(images.first());
+        faceDialog->setMinimumHeight(700);
+        faceDialog->show();
+    });
+    dialog.exec();
+#endif
 }
 
 void RealtimeMonitoring::slotPersonStayInfoTimeout()
@@ -775,6 +805,7 @@ void RealtimeMonitoring::slotPersonStayInfoTimeout()
 
 void RealtimeMonitoring::slotPersonTotalCountTimeout()
 {
+    noNumbersPersonDataCount_ = 0;
     if(!widgetManger() || !widgetManger()->workerManager()){
         return;
     }
@@ -791,7 +822,6 @@ void RealtimeMonitoring::slotPersonTotalCountTimeout()
         QTimer::singleShot(1000,this,[this]{
             numberPersonTimer_->stop();
             numberPersonTimer_->start(1000);
-            noNumbersPersonDataCount_ = 0;
             slotPersonTotalCountTimeout();
         });
     });

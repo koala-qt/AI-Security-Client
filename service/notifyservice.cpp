@@ -103,8 +103,11 @@ void BLL::NotifyService::on_message(const mosquitto_message *message)
         face_info_pt.ParseFromString(info);
         QImage img;
         img.loadFromData(QByteArray::fromStdString(face_info_pt.img_data()));
-        emit sigGrabedPerson(QStringList() << QString::fromStdString(face_info_pt.id()) << QString::fromStdString(face_info_pt.camera_pos()) << QDateTime::fromMSecsSinceEpoch(face_info_pt.timestamp()).toString("yyyy-MM-dd HH:mm:ss"),img);
-//        qDebug() << QString::fromStdString(face_info_pt.id());
+        emit sigGrabedPerson(QStringList() << QString::fromStdString(face_info_pt.id())
+                             << QString::fromStdString(face_info_pt.camera_pos())
+                             << QDateTime::fromMSecsSinceEpoch(face_info_pt.timestamp()).toString("yyyy-MM-dd HH:mm:ss")
+                             << QString::fromStdString(face_info_pt.scene_id()),
+                             img);
     }else if(!::qstrcmp(message->topic,"face/statis")){
         kf::FaceStatis resInfo;
         std::string info(reinterpret_cast<char*>(message->payload),message->payloadlen);

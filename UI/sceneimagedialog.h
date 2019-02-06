@@ -8,7 +8,6 @@ QT_FORWARD_DECLARE_CLASS(QDialogButtonBox)
 QT_FORWARD_DECLARE_CLASS(QPushButton)
 QT_FORWARD_DECLARE_CLASS(QLabel)
 QT_FORWARD_DECLARE_CLASS(SelectImage)
-QT_FORWARD_DECLARE_CLASS(QMenu)
 class SceneImageDialog : public QDialog
 {
     Q_OBJECT
@@ -31,12 +30,12 @@ private:
     QLabel *spiteL_{nullptr};
     QDialogButtonBox *btnBox_{nullptr};
     QSize itemSizeHint_;
-    QPushButton *searchBtn_{nullptr},*cancelBtn_{nullptr},*sureSelectBtn_{nullptr},*deleSelectBtn_{nullptr};
-    QMenu *menu_{nullptr};
+    QPushButton *searchBtn_{nullptr},*cancelBtn_{nullptr},*sureSelectBtn_{nullptr},*deleSelectBtn_{nullptr},*saveBtn_{nullptr};
     QImage curImage_;
     QString curSceneId_;
 
 private slots:
+    void slotSaveBtnClicked();
     void slotSearchBtnClicked();
     void slotSureBtnClicked();
     void slotDeleteBtnClicke();

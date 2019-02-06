@@ -22,7 +22,7 @@ VideoPlayer::VideoPlayer(QWidget *parent):
 {
     m_canvas = new CanvasWidget;
     m_canvas->setObjectName("canvasW");
-//    m_canvas->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    m_canvas->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     QHBoxLayout *hlay = new QHBoxLayout;
     hlay->addWidget(m_canvas);
     hlay->setMargin(0);
@@ -104,8 +104,8 @@ VideoPlayer::VideoPlayer(QWidget *parent):
         QDialogButtonBox::ButtonRole returnRole = QDialogButtonBox::ButtonRole(setWaringAreaDialog.exec());
         if(returnRole == QDialog::Accepted){
             QVector<QPolygonF> polygons = paintArea->polygons();
-            qreal xPer = videoWidth() / paintArea->width();
-            qreal yPer = videoHeidht() / paintArea->height();
+            qreal xPer = videoWidth() / (qreal)paintArea->width();
+            qreal yPer = videoHeidht() / (qreal)paintArea->height();
             bool isABDoor = radioBtn->isChecked() ? true : false;
             AreaType::type ty = isABDoor ? AreaType::ABDOOR : AreaType::FORBIDDENZONE;
             QVector<QPair<int,QPolygonF>> areas;
