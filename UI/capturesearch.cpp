@@ -270,7 +270,7 @@ void CaptureSearch::resizeEvent(QResizeEvent *event)
 
 bool CaptureSearch::event(QEvent *event)
 {
-    if(event->type() == QEvent::Show){
+    if(event->type() == QEvent::Show  && m_searchBtn->isEnabled()){
         m_endTimeEdit->setDateTime(QDateTime::currentDateTime());
         slotSearchBtnClicked();
         return true;

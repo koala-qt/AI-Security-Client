@@ -454,7 +454,6 @@ void FaceSearch::slotSearchClicked()
     connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
         label->close();
         delete label;
-        oidStr_.clear();
         QMessageBox::information(this,objectName(),str);
         m_searchBtn->setEnabled(true);
         m_pageIndicator->setEnabled(true);
@@ -462,7 +461,6 @@ void FaceSearch::slotSearchClicked()
     connect(serviceI,&RestServiceI::sigSearchByImage,this,[&,label](const QVector<RestServiceI::DataRectureItem> value){
         label->close();
         delete label;
-        oidStr_.clear();
         slotAddRow(value);
         m_searchBtn->setEnabled(true);
         m_pageIndicator->setEnabled(true);
@@ -496,6 +494,7 @@ void FaceSearch::slotImgBtnClicked()
     }else{
         faceImg_ = QImage(filePath);
         m_imgBtn->setIcon(QPixmap::fromImage(faceImg_).scaled(m_imgBtn->iconSize()));
+        oidStr_.clear();
     }
 }
 
@@ -506,12 +505,14 @@ void FaceSearch::slotOnScenePic(QImage img)
     dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
     dialog.setUserStyle(widgetManger()->currentStyle());
     dialog.setImage(img);
-    connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](const QVector<QImage> images){
+    SceneImageDialog *dialogPtr = &dialog;
+    connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this,dialogPtr](const QVector<QImage> images){
         if(images.isEmpty()){
             return;
         }else{
             faceImg_ = images.first();
             m_imgBtn->setIcon(QPixmap::fromImage(faceImg_).scaled(m_imgBtn->iconSize()));
+            dialogPtr->accept();
             slotSearchClicked();
         }
     });

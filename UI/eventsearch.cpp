@@ -324,7 +324,8 @@ void EventSearch::setUserStyle(WidgetManagerI::SkinStyle s)
 }
 
 bool EventSearch::event(QEvent *event)
-{    if(event->type() == QEvent::Show){
+{
+    if(event->type() == QEvent::Show && m_searchBtn->isEnabled()){
         m_endTimeEdit->setDateTime(QDateTime::currentDateTime());
         slotSearchBtnClicked();
         return true;

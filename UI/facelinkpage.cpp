@@ -78,6 +78,7 @@ FaceLinkPage::FaceLinkPage(WidgetManagerI *wm, WidgetI *parent) :
     endTimeEdit_->setDateTime(QDateTime::currentDateTime());
     imgBtn_->setFocusPolicy(Qt::NoFocus);
     levelCombox_->addItems(QStringList() << tr("2") << tr("3") << tr("4") << tr("5") << tr("6"));
+    levelCombox_->setCurrentIndex(1);
 
     connect(searchBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSearchBtnClicked()));
     connect(imgBtn_,SIGNAL(clicked(bool)),this,SLOT(slotImgBtnClicked()));
@@ -120,9 +121,14 @@ void FaceLinkPage::setUserStyle(WidgetManagerI::SkinStyle s)
             "background-color: transparent;"
             "}");
         searchBtn_->setStyleSheet("QPushButton{"
-                                 "color: white;"
-                                 "background-color: rgba(112, 112, 112, 1);"
-                                 "}");
+                                   "background-color: #B4A06C;"
+                                   "color: white;"
+                                   "border-radius: 6px;"
+                                   "font-size:18px;"
+                                   "}"
+                                   "QPushButton:pressed{"
+                                   "padding: 2px;"
+                                   "}");
         maxnumEdit_->setStyleSheet("QLineEdit{"
                                    "color: white;"
                                    "border-radius: 4px;"
@@ -204,7 +210,6 @@ void FaceLinkPage::slotFaceLinkFinished(QString oid)
         waitingL_ = nullptr;
         QMessageBox::information(this,objectName(),str);
         searchBtn_->setEnabled(true);
-        imgOid_.clear();
     });
 #if 0
     connect(serviceI,SIGNAL(sigFaceLinkData(RestServiceI::FaceLinkPointData)),this,SLOT(slotFaceLinkData(RestServiceI::FaceLinkPointData)));
@@ -218,7 +223,6 @@ void FaceLinkPage::slotFaceLinkFinished(QString oid)
 
 void FaceLinkPage::slotFaceLinkTree(QJsonObject jsObj)
 {
-    imgOid_.clear();
     waitingL_->close();
     delete waitingL_;
     waitingL_ = nullptr;
@@ -241,7 +245,6 @@ void FaceLinkPage::slotFaceLinkTree(QJsonObject jsObj)
 
 void FaceLinkPage::slotImgBtnClicked()
 {
-    imgOid_.clear();
     QString filePath = QFileDialog::getOpenFileName(this,tr("add image"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),"*.png *.jpg *.tmp");
     QPixmap pix(filePath);
     if(pix.isNull()){
@@ -250,4 +253,5 @@ void FaceLinkPage::slotImgBtnClicked()
     }
     imgBtn_->setIcon(pix.scaled(imgBtn_->iconSize()));
     imgBtn_->setProperty("pixmap",pix);
+    imgOid_.clear();
 }

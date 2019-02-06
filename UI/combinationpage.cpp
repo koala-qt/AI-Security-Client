@@ -158,7 +158,7 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
             slotOnSceneImg(img);
             bodyDataMenu_->setEnabled(true);
         });
-        serviceI->getScenePic(faceTable_->item(faceTable_->currentRow(),0)->data(Qt::UserRole + 1).toString());
+        serviceI->getScenePic(bodyTable_->item(bodyTable_->currentRow(),1)->data(Qt::UserRole + 1).toString());
         startWorker(worker);
         label->show(500);
         bodyDataMenu_->setEnabled(false);
@@ -176,6 +176,9 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
     imageBtn_->setIcon(pix.scaled(imageBtn_->iconSize()));
     imageBtn_->setProperty("default-pix",pix);
     imageBtn_->setFocusPolicy(Qt::NoFocus);
+    QCursor curSor = cursor();
+    curSor.setShape(Qt::PointingHandCursor);
+    imageBtn_->setCursor(curSor);
     faceDataBackW_->installEventFilter(this);
     bodyDataBackW_->installEventFilter(this);
     conditionBackW_->installEventFilter(this);
@@ -436,21 +439,65 @@ void CombinationPage::setUserStyle(WidgetManagerI::SkinStyle s)
                     "QTableView QTableCornerButton::section{"
                     "background: rgb(0,138,194);"
                     "}"
-                    "QHeaderView{"
-                    "background-color: transparent;"
-                    "}"
-                    "QHeaderView::section{"
-                    "background-color: transparent;"
-                    "color: white;"
-                    "border: none;"
-                    "}"
                     "QTableWidget::Item{"
                     "border-bottom: 1px solid rgb(184,184,184);"
                     "}"
                     "QTableWidget::item:selected{"
-                    "background-color: rgb(0,138,194,102);"
+                    "background-color: rgba(0,138,194,102);"
                     "color: blue;"
+                    "}"
+                    "QScrollBar:vertical{"
+                    "background: transparent;"
+                    "border: 0px solid gray;"
+                    "width: 13px;"
+                    "}"
+                    "QScrollBar::handle:vertical{"
+                    "background: rgba(255,255,255,0.5);"
+                    "border-radius: 5px;"
+                    "}"
+                    "QScrollBar::add-line:vertical{"
+                    "background: transparent;"
+                    "border:0px solid #274168;"
+                    "border-radius: 5px;"
+                    "min-height: 10px;"
+                    "width: 13px;"
+                    "}"
+                    "QScrollBar::sub-line:vertical{"
+                    "background: transparent;"
+                    "border:0px solid #274168;"
+                    "min-height: 10px;"
+                    "width: 13px;"
+                    "}"
+                    "QScrollBar::up-arrow:vertical{"
+                    "subcontrol-origin: margin;"
+                    "height: 0px;"
+                    "border:0 0 0 0;"
+                    "visible:false;"
+                    "}"
+                    "QScrollBar::down-arrow:vertical{"
+                    "subcontrol-origin: margin;"
+                    "height: 0px;"
+                    "visible:false;"
+                    "}"
+                    "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
+                    "background: transparent;"
+                    "border: none;"
+                    "border-radius: 0px;"
                     "}");
+        faceTable_->horizontalHeader()->setStyleSheet("QHeaderView{"
+                                                      "background-color: rgba(0,0,0,100);"
+                                                      "}"
+                                                      "QHeaderView::section{"
+                                                      "background-color: transparent;"
+                                                      "color:white;"
+                                                      "}");
+        faceTable_->verticalHeader()->setStyleSheet("QHeaderView{"
+                                                    "background-color: rgba(0,0,0,100);"
+                                                    "}"
+                                                    "QHeaderView::section{"
+                                                    "background-color: transparent;"
+                                                    "color:white;"
+                                                    "}");
         bodyTable_->setStyleSheet(
                     "QTableView{"
                     "selection-background-color: rgb(235,245,255);"
@@ -460,25 +507,65 @@ void CombinationPage::setUserStyle(WidgetManagerI::SkinStyle s)
                     "QTableView QTableCornerButton::section{"
                     "background: rgb(0,138,194);"
                     "}"
-                    "QHeaderView{"
-                    "background-color: transparent;"
-                    "}"
-                    "QHeaderView::section{"
-                    "background-color: transparent;"
-                    "color: white;"
-                    "border: none;"
-                    "}"
                     "QTableWidget::Item{"
                     "border-bottom: 1px solid rgb(184,184,184);"
                     "}"
                     "QTableWidget::item:selected{"
                     "background-color: rgb(0,138,194,102);"
                     "color: blue;"
+                    "}"
+                    "QScrollBar:vertical{"
+                    "background: transparent;"
+                    "border: 0px solid gray;"
+                    "width: 13px;"
+                    "}"
+                    "QScrollBar::handle:vertical{"
+                    "background: rgba(255,255,255,0.5);"
+                    "border-radius: 5px;"
+                    "}"
+                    "QScrollBar::add-line:vertical{"
+                    "background: transparent;"
+                    "border:0px solid #274168;"
+                    "border-radius: 5px;"
+                    "min-height: 10px;"
+                    "width: 13px;"
+                    "}"
+                    "QScrollBar::sub-line:vertical{"
+                    "background: transparent;"
+                    "border:0px solid #274168;"
+                    "min-height: 10px;"
+                    "width: 13px;"
+                    "}"
+                    "QScrollBar::up-arrow:vertical{"
+                    "subcontrol-origin: margin;"
+                    "height: 0px;"
+                    "border:0 0 0 0;"
+                    "visible:false;"
+                    "}"
+                    "QScrollBar::down-arrow:vertical{"
+                    "subcontrol-origin: margin;"
+                    "height: 0px;"
+                    "visible:false;"
+                    "}"
+                    "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
+                    "background: transparent;"
+                    "border: none;"
+                    "border-radius: 0px;"
                     "}");
-        pal = faceTable_->palette();
-        pal.setColor(QPalette::AlternateBase,QColor(235,245,249));
-        faceTable_->setPalette(pal);
-        bodyTable_->setPalette(pal);
+        bodyTable_->horizontalHeader()->setStyleSheet("QHeaderView{"
+                                                      "background-color: rgba(0,0,0,100);"
+                                                      "}"
+                                                      "QHeaderView::section{"
+                                                      "background-color: transparent;"
+                                                      "color:white;"
+                                                      "}");
+        bodyTable_->verticalHeader()->setStyleSheet("QHeaderView{"
+                                                    "background-color: rgba(0,0,0,100);"
+                                                    "}"
+                                                    "QHeaderView::section{"
+                                                    "background-color: transparent;"
+                                                    "color:white;"
+                                                    "}");
 
         cameraCombox_->setStyleSheet(
                     "QComboBoxListView{"

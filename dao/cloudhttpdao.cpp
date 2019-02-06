@@ -169,7 +169,7 @@ QString DLL::CloudHttpDao::faceLink_(RestServiceI::FaceLinkArgs &args, QString &
                       {"number",args.num},
                       {"objId",args.oid},
                       {"thresh",args.thresh},
-                      {"file",QString::fromLatin1(imgArray.toBase64())}};
+                      {"base64",QString::fromLatin1(imgArray.toBase64(QByteArray::Base64UrlEncoding))}};
     QJsonDocument jsDoc(jsObj);
     QByteArray argsJsonArray = jsDoc.toJson();
     int resCode = send(DLL::POST,urlStr.toStdString(),argsJsonArray.toStdString(),30);
@@ -605,7 +605,7 @@ QString DLL::CloudHttpDao::combinationSearch(RestServiceI::CombinationSearchArgs
             .arg(args.startTime.toString("yyyy-MM-dd HH:mm:ss"))
             .arg(args.endTime.toString("yyyy-MM-dd HH:mm:ss"));
     qDebug() << urlStr;
-    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),30);
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),120);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -675,7 +675,6 @@ QString DLL::CloudHttpDao::multipleSearch(RestServiceI::MultipleSearchArgs &args
             .arg(imgsBase64StrList.join(','))
             .arg(args.cameraId);
 #endif
-    qDebug() << urlStr << args.startT.toMSecsSinceEpoch() << args.endT.toMSecsSinceEpoch();
     int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),30);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));

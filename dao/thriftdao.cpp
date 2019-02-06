@@ -9,7 +9,7 @@ ThriftDao::ThriftDao()
     transport_ = stdcxx::shared_ptr<TBufferedTransport>(new TBufferedTransport(socket));
     stdcxx::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport_));
     tcpsocket->setConnTimeout(1500);
-    //tcpsocket->setRecvTimeout(2000);
+    tcpsocket->setRecvTimeout(2000);
     tcpsocket->setSendTimeout(2000);
     client_ = new FaceServClient(protocol);
 }

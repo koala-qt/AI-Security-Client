@@ -159,13 +159,6 @@ MainPage::MainPage(WidgetManagerI *wm, WidgetI *parent):
     hlay->addWidget(eventCobox_);
     hlay->setContentsMargins(10,10,10,0);
     eventList_ = new QListWidget;
-    // 加载英文翻译后,大小不对
-    QDesktopWidget *desktopWidget = QApplication::desktop();
-    //获取可用桌面大小
-    QRect deskRect = desktopWidget->availableGeometry();
-    eventList_->setFixedWidth(deskRect.width() / 1920 * m_nListWgtWidth);
-    eventList_->setFixedHeight(deskRect.height() / 1040 * m_nListWgtHeight);
-
     eventList_->setViewMode(QListWidget::IconMode);
     eventList_->horizontalScrollBar()->setVisible(false);
     eventList_->verticalScrollBar()->setVisible(false);
@@ -174,16 +167,14 @@ MainPage::MainPage(WidgetManagerI *wm, WidgetI *parent):
     vlay = new QVBoxLayout;
     vlay->addLayout(hlay);
     vlay->addWidget(eventList_);
-    vlay->addStretch();
     vlay->setMargin(0);
     vlay->setSpacing(0);
     eventListBack_ = new QWidget;
     eventListBack_->setLayout(vlay);
     vlay = new QVBoxLayout;
-    //vlay->addStretch(1);
-    vlay->addWidget(eventListBack_,9);
+    vlay->addStretch(1);
+    vlay->addWidget(eventListBack_,11);
     vlay->setMargin(0);
-    vlay->setSpacing(0);
     centerMainLay->addLayout(vlay,340); // 245
     centerMainLay->setSpacing(0);
     m = centerMainLay->contentsMargins();
@@ -667,16 +658,17 @@ void MainPage::slotEventComboxClicked(int index)
         connect(notifyService_,SIGNAL(sigIntruderAlarmScene(QStringList,QImage)),this,SLOT(slotAddImgItem(QStringList,QImage)),Qt::UniqueConnection);
         connect(notifyService_,SIGNAL(sigABDoorAlarmScene(QStringList,QImage)),this,SLOT(slotAddImgItem(QStringList,QImage)),Qt::UniqueConnection);
     }else if(index == 1){
-        notifyService_->disconnect(SIGNAL(sigABDoorAlarmScene(QStringList,QImage)));
-        notifyService_->disconnect(SIGNAL(sigIntruderAlarmScene(QStringList,QImage)));
+
+        disconnect(notifyService_,SIGNAL(sigIntruderAlarmScene(QStringList,QImage)),this,SLOT(slotAddImgItem(QStringList,QImage)));
+        disconnect(notifyService_,SIGNAL(sigABDoorAlarmScene(QStringList,QImage)),this,SLOT(slotAddImgItem(QStringList,QImage)));
         connect(notifyService_,SIGNAL(sigBlackListAlarmScene(QStringList,QImage)),this,SLOT(slotAddImgItem(QStringList,QImage)),Qt::UniqueConnection);
     }else if(index == 2){
-        notifyService_->disconnect(SIGNAL(sigABDoorAlarmScene(QStringList,QImage)));
-        notifyService_->disconnect(SIGNAL(sigBlackListAlarmScene(QStringList,QImage)));
+        disconnect(notifyService_,SIGNAL(sigABDoorAlarmScene(QStringList,QImage)),this,SLOT(slotAddImgItem(QStringList,QImage)));
+        disconnect(notifyService_,SIGNAL(sigBlackListAlarmScene(QStringList,QImage)),this,SLOT(slotAddImgItem(QStringList,QImage)));
         connect(notifyService_,SIGNAL(sigIntruderAlarmScene(QStringList,QImage)),this,SLOT(slotAddImgItem(QStringList,QImage)),Qt::UniqueConnection);
     }else if(index == 3){
-        notifyService_->disconnect(SIGNAL(sigIntruderAlarmScene(QStringList,QImage)));
-        notifyService_->disconnect(SIGNAL(sigBlackListAlarmScene(QStringList,QImage)));
+        disconnect(notifyService_,SIGNAL(sigBlackListAlarmScene(QStringList,QImage)),this,SLOT(slotAddImgItem(QStringList,QImage)));
+        disconnect(notifyService_,SIGNAL(sigIntruderAlarmScene(QStringList,QImage)),this,SLOT(slotAddImgItem(QStringList,QImage)));
         connect(notifyService_,SIGNAL(sigABDoorAlarmScene(QStringList,QImage)),this,SLOT(slotAddImgItem(QStringList,QImage)),Qt::UniqueConnection);
     }
 }
