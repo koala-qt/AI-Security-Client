@@ -7,10 +7,14 @@
 #include <QVBoxLayout>
 #include <QPainter>
 #include <QMessageBox>
+#include <QCursor>
 #include <QFileDialog>
+#include <QMenu>
 #include <QStandardPaths>
 #include "multiplesearch.h"
 #include "waitinglabel.h"
+#include "sceneimagedialog.h"
+#include "facesearch.h"
 #include "service/restservice.h"
 
 MultipleSearch::MultipleSearch(WidgetManagerI *wm, WidgetI *parent):
@@ -28,6 +32,7 @@ MultipleSearch::MultipleSearch(WidgetManagerI *wm, WidgetI *parent):
     posCombox_ = new QComboBox;
     startTimeEdit_ = new QDateTimeEdit;
     endTimeEdit_ = new QDateTimeEdit;
+    dataMenu_ = new QMenu(dataList_);
 
     QHBoxLayout *hlay = new QHBoxLayout;
     hlay->addWidget(imgList_,1);
@@ -46,9 +51,42 @@ MultipleSearch::MultipleSearch(WidgetManagerI *wm, WidgetI *parent):
     mainLay->addWidget(dataList_,7);
     setLayout(mainLay);
 
+    dataMenu_->addAction(tr("Scene analysis"),[this]{
+        SceneImageDialog dialog;
+        dialog.setUserStyle(widgetManger()->currentStyle());
+        dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+        dialog.setImage(dataList_->currentItem()->data(Qt::UserRole).value<QImage>());
+        dialog.setRectLinePen(Qt::yellow);
+        connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
+            if(!images.count()){
+                return;
+            }
+            FaceSearch *faceDialog = new FaceSearch(widgetManger());
+            faceDialog->setAttribute(Qt::WA_DeleteOnClose);
+            faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+            faceDialog->setWindowModality(Qt::ApplicationModal);
+            QPalette pal = faceDialog->palette();
+            pal.setColor(QPalette::Background,QColor(112,110,119));
+            faceDialog->setPalette(pal);
+            faceDialog->setAutoFillBackground(true);
+            faceDialog->setUserStyle(widgetManger()->currentStyle());
+            faceDialog->layout()->setMargin(10);
+            faceDialog->setFaceImage(images.first());
+            faceDialog->setMinimumHeight(700);
+            faceDialog->show();
+        });
+        dialog.exec();
+    });
+    dataList_->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(dataList_,&QListWidget::customContextMenuRequested,this,[this](const QPoint&p){
+        if(!dataList_->itemAt(p))return;
+        dataMenu_->move(QCursor::pos());
+        dataMenu_->show();
+    });
     imgList_->setFlow(QListWidget::LeftToRight);
     dataList_->setFlow(QListWidget::LeftToRight);
     dataList_->setViewMode(QListWidget::IconMode);
+    dataList_->setMovement(QListWidget::Static);
     dataList_->setIconSize(QSize(192,108));
     posCombox_->setMaximumWidth(290);
     posCombox_->setMinimumHeight(44);
@@ -159,6 +197,7 @@ void MultipleSearch::setUserStyle(WidgetManagerI::SkinStyle style)
                                    "}");
         dataList_->setStyleSheet("QListWidget{"
                                  "background-color: transparent;"
+                                 "color: white;"
                                  "}");
         QCursor imgListCursor = imgList_->cursor();
         imgListCursor.setShape(Qt::PointingHandCursor);

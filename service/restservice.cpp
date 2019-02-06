@@ -177,9 +177,10 @@ void BLL::RestService::run()
         }
     }else if(argType == CombinationSearch){
         DLL::CloudHttpDao httpDao;
-        QString qerrorStr = httpDao.combinationSearch(args.second.value<RestServiceI::CombinationSearchArgs>());
+        RestServiceI::CombinationSearchReturenData resData;
+        QString qerrorStr = httpDao.combinationSearch(args.second.value<RestServiceI::CombinationSearchArgs>(),resData);
         if(qerrorStr.isEmpty()){
-//            emit sigCameraGroup(resGroup);
+            emit sigCombinationSearch(resData);
         }else{
             emit sigError(qerrorStr);
         }

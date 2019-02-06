@@ -9,6 +9,7 @@ QT_FORWARD_DECLARE_CLASS(QPushButton)
 QT_FORWARD_DECLARE_CLASS(QListWidget)
 QT_FORWARD_DECLARE_CLASS(QComboBox)
 QT_FORWARD_DECLARE_CLASS(QListWidgetItem)
+QT_FORWARD_DECLARE_CLASS(QMenu)
 class MultipleSearch : public WidgetI
 {
     Q_OBJECT
@@ -28,6 +29,7 @@ private:
     QComboBox *posCombox_{nullptr};
     QDateTimeEdit *startTimeEdit_{nullptr},*endTimeEdit_{nullptr};
     QPushButton *searchBtn_{nullptr};
+    QMenu *dataMenu_{nullptr};
 
     QImage backImg_;
     QMap<QString,QString> curCameraMapInfo_;

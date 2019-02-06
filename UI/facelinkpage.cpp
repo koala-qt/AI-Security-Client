@@ -68,6 +68,7 @@ FaceLinkPage::FaceLinkPage(WidgetManagerI *wm, WidgetI *parent) :
     maxnumEdit_->setMaximumWidth(250);
     maxnumEdit_->setMinimumHeight(44);
     maxnumEdit_->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
+    maxnumEdit_->setText("10");
     startTimeEdit_->setMinimumSize(250,44);
     endTimeEdit_->setMinimumSize(250,44);
     searchBtn_->setMinimumSize(120,44);

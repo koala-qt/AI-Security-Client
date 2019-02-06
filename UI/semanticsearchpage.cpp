@@ -12,6 +12,7 @@
 #include <QSpinBox>
 #include <QDir>
 #include <QMenu>
+#include <QDebug>
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QStandardPaths>
@@ -84,6 +85,10 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
             detailsW->setUserStyle(widgetManger()->currentStyle());
             detailsW->slotSetData(face,body,faceAttr,bodyAttr);
             detailsW->show();
+            QPoint r = dataListW_->mapToGlobal(dataListW_->rect().center());
+            QRect dr = detailsW->rect();
+            dr.moveCenter(r);
+            detailsW->move(dr.topLeft());
             dataMenu_->setEnabled(true);
         });
         serviceI->getPersonDetails(dataListW_->currentItem()->data(Qt::UserRole + 4).toString());

@@ -55,7 +55,7 @@ RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
     m_eventListL->setAlignment(Qt::AlignCenter);
     m_eventListL->setFixedWidth(70);
     QVBoxLayout *vboxLay = new QVBoxLayout;
-    vboxLay->addWidget(m_realPlayM,17);
+    vboxLay->addWidget(m_realPlayM,11);
     hboxLay = new QHBoxLayout;
     hboxLay->addWidget(m_faceListL);
     hboxLay->addWidget(m_faceList);

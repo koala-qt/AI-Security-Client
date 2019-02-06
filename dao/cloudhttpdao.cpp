@@ -587,10 +587,68 @@ QString DLL::CloudHttpDao::searchByImage(RestServiceI::SearchUseImageArgs &args,
     return QString();
 }
 
-QString DLL::CloudHttpDao::combinationSearch(RestServiceI::CombinationSearchArgs &)
+QString DLL::CloudHttpDao::combinationSearch(RestServiceI::CombinationSearchArgs &args,RestServiceI::CombinationSearchReturenData &resData)
 {
+    QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-history");
+    QByteArray imgStr;
+    QBuffer imgBuf(&imgStr);
+    imgBuf.open(QIODevice::WriteOnly);
+    args.img.save(&imgBuf,"jpg");
+    QString base64Str(imgStr.toBase64(QByteArray::Base64UrlEncoding));
+    //直接以人脸图搜索，不启用抓拍ID搜索功能
+    QString postData = QObject::tr("mode=1&number=%1&faceSimilarity=%2&bodySimilarity=%3&base64=%4&cameraId=%5&startTime=%6&finishTime=%7")
+            .arg(args.queryCount)
+            .arg(args.similarity)
+            .arg(args.tradeoff)
+            .arg(base64Str)
+            .arg(args.cameraId)
+            .arg(args.startTime.toString("yyyy-MM-dd HH:mm:ss"))
+            .arg(args.endTime.toString("yyyy-MM-dd HH:mm:ss"));
+    qDebug() << urlStr;
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),30);
+    if(resCode != CURLE_OK){
+        return curl_easy_strerror(CURLcode(resCode));
+    }
 
-    return "Developing";
+    QJsonParseError jsError;
+    QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
+    if(jsError.error != QJsonParseError::NoError){
+        return jsError.errorString();
+    }
+
+    QJsonObject jsObj = jsDoc.object();
+    int status = jsObj.value("status").toInt();
+    if(status != 200){
+        return jsObj.value("message").toString();
+    }
+
+    jsObj = jsObj.value("data").toObject();
+    QJsonArray faceArray = jsObj.value("face").toArray();
+    QJsonArray bodyArray = jsObj.value("body").toArray();
+    std::transform(faceArray.begin(),faceArray.end(),std::back_inserter(resData.faceList),[](QJsonValue jsVal){
+        RestServiceI::DataRectureItem sitem;
+        QJsonObject itemObj = jsVal.toObject();
+        sitem.cameraId = itemObj.value("cameraId").toString();
+        sitem.id = itemObj.value("id").toString();
+        sitem.img.loadFromData(QByteArray::fromBase64(itemObj.value("snapshot").toString().toLatin1()));
+        sitem.sceneId = itemObj.value("sceneId").toString();
+        sitem.time = QDateTime::fromMSecsSinceEpoch(itemObj.value("ts").toVariant().toULongLong());
+        sitem.similarity = itemObj.value("similarity").toDouble();
+        return sitem;
+    });
+    std::transform(bodyArray.begin(),bodyArray.end(),std::back_inserter(resData.bodyList),[](QJsonValue jsVal){
+        RestServiceI::CombinationScoreReturnItem sitem;
+        QJsonObject itemObj = jsVal.toObject();
+        sitem.cameraId = itemObj.value("cameraId").toString();
+        sitem.id = itemObj.value("id").toString();
+        sitem.faceImg.loadFromData(QByteArray::fromBase64(itemObj.value("faceSnapshot").toString().toLatin1()));
+        sitem.bodyImg.loadFromData(QByteArray::fromBase64(itemObj.value("snapshot").toString().toLatin1()));
+        sitem.sceneId = itemObj.value("sceneId").toString();
+        sitem.time = QDateTime::fromMSecsSinceEpoch(itemObj.value("ts").toVariant().toULongLong());
+        sitem.similarity = itemObj.value("similarity").toDouble();
+        return sitem;
+    });
+    return QString();
 }
 
 QString DLL::CloudHttpDao::multipleSearch(RestServiceI::MultipleSearchArgs &args, QVector<RestServiceI::MultipleSearchItem> &resVec)
@@ -604,12 +662,20 @@ QString DLL::CloudHttpDao::multipleSearch(RestServiceI::MultipleSearchArgs &args
         img.save(&imgBuf,"jpg");
         imgsBase64StrList << imgStr.toBase64(QByteArray::Base64UrlEncoding);
     }
+#if 1
     QString postData = QObject::tr("base64s=%1&cameraId=%2&startTime=%3&finishTime=%4")
             .arg(imgsBase64StrList.join(','))
             .arg(args.cameraId)
             .arg(args.startT.toString("yyyy-MM-dd HH:mm:ss"))
             .arg(args.endT.toString("yyyy-MM-dd HH:mm:ss"));
-    qDebug() << urlStr;
+#else
+    imgsBase64StrList.clear();
+    imgsBase64StrList << "5c59232308c163747b3c0905" << "5c59231408c163747b3c052f";
+    QString postData = QObject::tr("base64s=%1&cameraId=%2")
+            .arg(imgsBase64StrList.join(','))
+            .arg(args.cameraId);
+#endif
+    qDebug() << urlStr << args.startT.toMSecsSinceEpoch() << args.endT.toMSecsSinceEpoch();
     int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),30);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));

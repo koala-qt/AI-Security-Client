@@ -22,7 +22,7 @@ VideoPlayer::VideoPlayer(QWidget *parent):
 {
     m_canvas = new CanvasWidget;
     m_canvas->setObjectName("canvasW");
-//    m_canvas->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    m_canvas->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     QHBoxLayout *hlay = new QHBoxLayout;
     hlay->addWidget(m_canvas);
     hlay->setMargin(0);

@@ -119,12 +119,8 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
 
     menu_ = new QMenu(this);
     menu_->addAction(objectName(),[&]{
-        QLabel *curLab = dynamic_cast<QLabel *>(m_tableW->cellWidget(m_tableW->currentRow(), 0));
-        if (curLab)
-        {
-            setFaceImage(curLab->pixmap()->toImage());
-            setOid(m_tableW->item(m_tableW->currentRow(),1)->text());
-        }
+        setFaceImage(m_tableW->item(m_tableW->currentRow(),0)->data(Qt::UserRole).value<QImage>());
+        setOid(m_tableW->item(m_tableW->currentRow(),1)->text());
     });
     menu_->addAction(tr("Scene analysis"),[&]{
         BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
@@ -146,6 +142,16 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
         startWorker(worker);
         label->show(500);
         menu_->setEnabled(false);
+    });
+    menu_->addAction(tr("Save face image"),[this]{
+        QString personId = m_tableW->item(m_tableW->currentRow(),1)->text();
+        QString filePath =  QFileDialog::getSaveFileName(this,tr("Save face image"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/" + personId + ".jpg",tr("Images (*.png *.jpg)"));
+        if(filePath.isEmpty()){
+            return;
+        }
+        if(!m_tableW->item(m_tableW->currentRow(),0)->data(Qt::UserRole).value<QImage>().save(filePath)){
+            QMessageBox::information(this,tr("Save face image"),tr("Operation failed!"));
+        }
     });
     m_tableW->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(m_tableW,&QTableWidget::customContextMenuRequested,this,[&](QPoint p){
@@ -369,11 +375,9 @@ void FaceSearch::slotAddRow(QVector<RestServiceI::DataRectureItem> info)
     for(const RestServiceI::DataRectureItem &itemData : info){
         m_tableW->insertRow(m_tableW->rowCount());
         QTableWidgetItem *item = new QTableWidgetItem;
+        item->setIcon(QPixmap::fromImage(itemData.img));
+        item->setData(Qt::UserRole,itemData.img);
         m_tableW->setItem(m_tableW->rowCount() - 1,0,item);
-        QLabel *label = new QLabel;
-        label->setScaledContents(true);
-        label->setPixmap(QPixmap::fromImage(itemData.img));
-        m_tableW->setCellWidget(m_tableW->rowCount() - 1,0,label);
 
         item = new QTableWidgetItem;
         item->setText(itemData.id);

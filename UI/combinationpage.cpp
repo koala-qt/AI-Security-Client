@@ -12,10 +12,14 @@
 #include <QEvent>
 #include <QFileDialog>
 #include <QStandardPaths>
+#include <QCursor>
+#include <QMenu>
 #include <QPainter>
 #include <QMessageBox>
 #include "combinationpage.h"
+#include "sceneimagedialog.h"
 #include "waitinglabel.h"
+#include "facesearch.h"
 #include "service/restservice.h"
 
 CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
@@ -43,6 +47,8 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
     faceDataBackW_ = new QWidget;
     bodyDataBackW_ = new QWidget;
     conditionBackW_ = new QWidget;
+    faceDataMenu_ = new QMenu(faceTable_);
+    bodyDataMenu_ = new QMenu(bodyTable_);
 
     QVBoxLayout *mainLay = new QVBoxLayout;
     QGridLayout *gridLay = new QGridLayout;
@@ -78,6 +84,91 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
     mainLay->setMargin(0);
     setLayout(mainLay);
 
+    faceDataMenu_->addAction(tr("Save face image"),[this]{
+        QString personId = faceTable_->item(faceTable_->currentRow(),0)->data(Qt::UserRole + 1).toString();
+        QString filePath =  QFileDialog::getSaveFileName(this,tr("Save face image"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/" + personId + ".jpg",tr("Images (*.png *.jpg)"));
+        if(filePath.isEmpty()){
+            return;
+        }
+        if(!faceTable_->item(faceTable_->currentRow(),0)->data(Qt::UserRole).value<QImage>().save(filePath)){
+            QMessageBox::information(this,tr("Save face image"),tr("Operation failed!"));
+        }
+    });
+    faceDataMenu_->addAction(tr("Scene analysis"),[this]{
+        BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
+        RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+        WaitingLabel *label = new WaitingLabel(this);
+        connect(serviceI,&RestServiceI::sigError,this,[&,label](const QString str){
+            label->close();
+            delete label;
+            QMessageBox::information(this,objectName(),str);
+            faceDataMenu_->setEnabled(true);
+        });
+        connect(serviceI,&RestServiceI::sigSceneImage,this,[&,label](const QImage img){
+            label->close();
+            delete label;
+            slotOnSceneImg(img);
+            faceDataMenu_->setEnabled(true);
+        });
+        serviceI->getScenePic(faceTable_->item(faceTable_->currentRow(),0)->data(Qt::UserRole + 1).toString());
+        startWorker(worker);
+        label->show(500);
+        faceDataMenu_->setEnabled(false);
+    });
+    faceTable_->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(faceTable_,&QTableWidget::customContextMenuRequested,this,[this](const QPoint &p){
+        if(!faceTable_->itemAt(p))return;
+        faceDataMenu_->move(QCursor::pos());
+        faceDataMenu_->show();
+    });
+
+    bodyDataMenu_->addAction(tr("Save face image"),[this]{
+        QString personId = bodyTable_->item(bodyTable_->currentRow(),0)->data(Qt::UserRole + 1).toString();
+        QString filePath =  QFileDialog::getSaveFileName(this,tr("Save face image"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/" + personId + ".jpg",tr("Images (*.png *.jpg)"));
+        if(filePath.isEmpty()){
+            return;
+        }
+        if(!bodyTable_->item(bodyTable_->currentRow(),0)->data(Qt::UserRole).value<QImage>().save(filePath)){
+            QMessageBox::information(this,tr("Save face image"),tr("Operation failed!"));
+        }
+    });
+    bodyDataMenu_->addAction(tr("Save body image"),[this]{
+        QString personId = bodyTable_->item(bodyTable_->currentRow(),1)->data(Qt::UserRole + 1).toString();
+        QString filePath =  QFileDialog::getSaveFileName(this,tr("Save face image"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/" + personId + ".jpg",tr("Images (*.png *.jpg)"));
+        if(filePath.isEmpty()){
+            return;
+        }
+        if(!bodyTable_->item(bodyTable_->currentRow(),1)->data(Qt::UserRole).value<QImage>().save(filePath)){
+            QMessageBox::information(this,tr("Save face image"),tr("Operation failed!"));
+        }
+    });
+    bodyDataMenu_->addAction(tr("Scene analysis"),[this]{
+        BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
+        RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+        WaitingLabel *label = new WaitingLabel(this);
+        connect(serviceI,&RestServiceI::sigError,this,[&,label](const QString str){
+            label->close();
+            delete label;
+            QMessageBox::information(this,objectName(),str);
+            bodyDataMenu_->setEnabled(true);
+        });
+        connect(serviceI,&RestServiceI::sigSceneImage,this,[&,label](const QImage img){
+            label->close();
+            delete label;
+            slotOnSceneImg(img);
+            bodyDataMenu_->setEnabled(true);
+        });
+        serviceI->getScenePic(faceTable_->item(faceTable_->currentRow(),0)->data(Qt::UserRole + 1).toString());
+        startWorker(worker);
+        label->show(500);
+        bodyDataMenu_->setEnabled(false);
+    });
+    bodyTable_->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(bodyTable_,&QTableWidget::customContextMenuRequested,this,[this](const QPoint &p){
+        if(!bodyTable_->itemAt(p))return;
+        bodyDataMenu_->move(QCursor::pos());
+        bodyDataMenu_->show();
+    });
     QPixmap pix("images/person-face-back.png");
     imageBtn_->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
     imageBtn_->setFixedSize(92,92);
@@ -91,11 +182,13 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
     similaritySpin_->setMinimumSize(120,44);
     similaritySpin_->setSuffix("%");
     similaritySpin_->setValue(50);
+    similaritySpin_->setRange(0,100);
     queryCountCombox_->setMinimumHeight(44);
     queryCountCombox_->setMaximumWidth(250);
     quanzhongSpin_->setMinimumHeight(44);
     quanzhongSpin_->setSuffix("%");
     quanzhongSpin_->setValue(40);
+    quanzhongSpin_->setRange(0,100);
     cameraCombox_->setMinimumHeight(44);
     cameraCombox_->setMaximumWidth(250);
     startTimeEdit_->setMinimumHeight(44);
@@ -124,6 +217,7 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
     faceTable_->horizontalHeader()->setSectionResizeMode(0,QHeaderView::Fixed);
     faceTable_->setHorizontalHeaderLabels(QStringList() << tr("Face")  << tr("Position") << tr("Similarity") << tr("Time"));
     faceTable_->horizontalHeader()->setSortIndicatorShown(true);
+    faceTable_->setShowGrid(false);
 
     bodyTable_->setIconSize(QSize(112,112));
     bodyTable_->setFocusPolicy(Qt::NoFocus);
@@ -137,6 +231,7 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
     bodyTable_->horizontalHeader()->setSectionResizeMode(1,QHeaderView::Fixed);
     bodyTable_->setHorizontalHeaderLabels(QStringList() << tr("Face") << tr("Body") << tr("Position") << tr("Similarity") << tr("Time"));
     bodyTable_->horizontalHeader()->setSortIndicatorShown(true);
+    bodyTable_->setShowGrid(false);
 
     connect(faceTable_->horizontalHeader(),SIGNAL(sectionClicked(int)),this,SLOT(slotFaceTabelSectionClicked(int)));
     connect(bodyTable_->horizontalHeader(),SIGNAL(sectionClicked(int)),this,SLOT(slotBodyTabelSectionClicked(int)));
@@ -217,6 +312,8 @@ void CombinationPage::slotSearchBtnClicked()
             faceTable_->insertRow(faceTable_->rowCount());
             QTableWidgetItem *item = new QTableWidgetItem;
             item->setIcon(QPixmap::fromImage(itemData.img));
+            item->setData(Qt::UserRole,itemData.img);
+            item->setData(Qt::UserRole + 1,itemData.sceneId);
             faceTable_->setItem(faceTable_->rowCount() - 1,0,item);
 
             item = new QTableWidgetItem;
@@ -240,10 +337,15 @@ void CombinationPage::slotSearchBtnClicked()
             bodyTable_->insertRow(bodyTable_->rowCount());
             QTableWidgetItem *item = new QTableWidgetItem;
             item->setIcon(QPixmap::fromImage(itemData.faceImg));
+            item->setData(Qt::UserRole,itemData.faceImg);
+            item->setData(Qt::UserRole + 1,itemData.sceneId);
             bodyTable_->setItem(bodyTable_->rowCount() - 1,0,item);
 
             item = new QTableWidgetItem;
+            item->setSizeHint(QSize(bodyTable_->iconSize().width() >> 1, bodyTable_->iconSize().height()));
             item->setIcon(QPixmap::fromImage(itemData.bodyImg));
+            item->setData(Qt::UserRole,itemData.bodyImg);
+            item->setData(Qt::UserRole + 1,itemData.sceneId);
             bodyTable_->setItem(bodyTable_->rowCount() - 1,1,item);
 
             item = new QTableWidgetItem;
@@ -259,7 +361,7 @@ void CombinationPage::slotSearchBtnClicked()
             item = new QTableWidgetItem;
             item->setText(itemData.time.toString("yyyy-MM-dd HH:mm:ss"));
             item->setTextAlignment(Qt::AlignCenter);
-            bodyTable_->setItem(bodyTable_->rowCount() - 1,5,item);
+            bodyTable_->setItem(bodyTable_->rowCount() - 1,4,item);
         }
 
         searchBtn_->setEnabled(true);
@@ -289,6 +391,34 @@ void CombinationPage::slotImageBtnClicked()
         imageBtn_->setProperty("pixmap",pix);
     }
 }
+
+void CombinationPage::slotOnSceneImg(QImage img)
+{
+    SceneImageDialog dialog;
+    dialog.setUserStyle(widgetManger()->currentStyle());
+    dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+    dialog.setImage(img);
+    dialog.setRectLinePen(Qt::yellow);
+    connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
+        if(!images.count()){
+            return;
+        }
+        FaceSearch *faceDialog = new FaceSearch(widgetManger());
+        faceDialog->setAttribute(Qt::WA_DeleteOnClose);
+        faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+        faceDialog->setWindowModality(Qt::ApplicationModal);
+        QPalette pal = faceDialog->palette();
+        pal.setColor(QPalette::Background,QColor(112,110,119));
+        faceDialog->setPalette(pal);
+        faceDialog->setAutoFillBackground(true);
+        faceDialog->setUserStyle(widgetManger()->currentStyle());
+        faceDialog->layout()->setMargin(10);
+        faceDialog->setFaceImage(images.first());
+        faceDialog->setMinimumHeight(700);
+        faceDialog->show();
+    });
+    dialog.exec();
+}
 void CombinationPage::setUserStyle(WidgetManagerI::SkinStyle s)
 {
     QPalette pal;
@@ -301,12 +431,16 @@ void CombinationPage::setUserStyle(WidgetManagerI::SkinStyle s)
                     "QTableView{"
                     "selection-background-color: rgb(235,245,255);"
                     "background-color: transparent;"
+                    "color: white;"
                     "}"
                     "QTableView QTableCornerButton::section{"
                     "background: rgb(0,138,194);"
                     "}"
+                    "QHeaderView{"
+                    "background-color: transparent;"
+                    "}"
                     "QHeaderView::section{"
-                    "background-color: rgb(28,143,227);"
+                    "background-color: transparent;"
                     "color: white;"
                     "border: none;"
                     "}"
@@ -321,12 +455,16 @@ void CombinationPage::setUserStyle(WidgetManagerI::SkinStyle s)
                     "QTableView{"
                     "selection-background-color: rgb(235,245,255);"
                     "background-color: transparent;"
+                    "color: white;"
                     "}"
                     "QTableView QTableCornerButton::section{"
                     "background: rgb(0,138,194);"
                     "}"
+                    "QHeaderView{"
+                    "background-color: transparent;"
+                    "}"
                     "QHeaderView::section{"
-                    "background-color: rgb(28,143,227);"
+                    "background-color: transparent;"
                     "color: white;"
                     "border: none;"
                     "}"

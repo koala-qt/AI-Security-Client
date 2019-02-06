@@ -79,7 +79,7 @@ SceneImageDialog::SceneImageDialog(QWidget *parent, Qt::WindowFlags f):
     connect(sureSelectBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSureBtnClicked()));
     connect(deleSelectBtn_,SIGNAL(clicked(bool)),this,SLOT(slotDeleteBtnClicke()));
     connect(searchBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSearchBtnClicked()));
-    connect(cancelBtn_,SIGNAL(clicked(bool)),btnBox_,SIGNAL(rejected()));
+    connect(cancelBtn_,SIGNAL(clicked(bool)),this,SLOT(reject()));
     connect(saveBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSaveBtnClicked()));
 }
 

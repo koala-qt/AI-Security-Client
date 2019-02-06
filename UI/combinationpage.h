@@ -34,6 +34,7 @@ private:
     QComboBox *cameraCombox_{nullptr},*queryCountCombox_{nullptr};
     QPushButton *searchBtn_{nullptr},*imageBtn_{nullptr};
     QTableWidget *faceTable_{nullptr},*bodyTable_{nullptr};
+    QMenu *faceDataMenu_{nullptr},*bodyDataMenu_{nullptr};
 
     QMap<QString,QString> curCameraMapInfo_;
     bool faceTableOrder_ = false,bodyTableOrder_ = false;
@@ -46,6 +47,7 @@ private slots:
     void slotOnCameraInfo(QVector<RestServiceI::CameraInfo>);
     void slotSearchBtnClicked();
     void slotImageBtnClicked();
+    void slotOnSceneImg(QImage);
 };
 
 #endif // COMBINATIONPAGE_H
