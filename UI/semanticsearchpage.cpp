@@ -236,15 +236,14 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
     QSize s = attributTreeW_->headerItem()->sizeHint(0);
     attributTreeW_->headerItem()->setSizeHint(0,QSize(s.width(),30));
     posCombox_->setMinimumHeight(44);
-    posCombox_->setMaximumWidth(390);
     startTimeEdit_->setMinimumHeight(44);
-    startTimeEdit_->setMinimumWidth(250);
+    startTimeEdit_->setMinimumWidth(190);
     startTimeEdit_->setDisplayFormat("yyyy-MM-dd HH:mm:ss");
     startTimeEdit_->setDateTime(QDateTime::currentDateTime().addDays(-1));
     endTimeEdit_->setMinimumHeight(44);
     endTimeEdit_->setDisplayFormat("yyyy-MM-dd HH:mm:ss");
     endTimeEdit_->setDateTime(QDateTime::currentDateTime());
-    endTimeEdit_->setMinimumWidth(250);
+    endTimeEdit_->setMinimumWidth(190);
     searchBtn_->setMinimumSize(120,44);
     pageIndicator_->setPageInfo(0,0);
 
