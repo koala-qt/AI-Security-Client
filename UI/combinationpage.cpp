@@ -104,13 +104,13 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
             QMessageBox::information(this,objectName(),str);
             faceDataMenu_->setEnabled(true);
         });
-        connect(serviceI,&RestServiceI::sigSceneImage,this,[&,label](const QImage img){
+        connect(serviceI,&RestServiceI::sigSceneInfo,this,[&,label](const RestServiceI::SceneInfo sinfo){
             label->close();
             delete label;
-            slotOnSceneImg(img);
+            slotOnSceneInfo(sinfo);
             faceDataMenu_->setEnabled(true);
         });
-        serviceI->getScenePic(faceTable_->item(faceTable_->currentRow(),0)->data(Qt::UserRole + 1).toString());
+        serviceI->getSceneInfo(faceTable_->item(faceTable_->currentRow(),0)->data(Qt::UserRole + 1).toString());
         startWorker(worker);
         label->show(500);
         faceDataMenu_->setEnabled(false);
@@ -152,13 +152,13 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
             QMessageBox::information(this,objectName(),str);
             bodyDataMenu_->setEnabled(true);
         });
-        connect(serviceI,&RestServiceI::sigSceneImage,this,[&,label](const QImage img){
+        connect(serviceI,&RestServiceI::sigSceneInfo,this,[&,label](const RestServiceI::SceneInfo sinfo){
             label->close();
             delete label;
-            slotOnSceneImg(img);
+            slotOnSceneInfo(sinfo);
             bodyDataMenu_->setEnabled(true);
         });
-        serviceI->getScenePic(bodyTable_->item(bodyTable_->currentRow(),1)->data(Qt::UserRole + 1).toString());
+        serviceI->getSceneInfo(bodyTable_->item(bodyTable_->currentRow(),1)->data(Qt::UserRole + 1).toString());
         startWorker(worker);
         label->show(500);
         bodyDataMenu_->setEnabled(false);
@@ -395,12 +395,12 @@ void CombinationPage::slotImageBtnClicked()
     }
 }
 
-void CombinationPage::slotOnSceneImg(QImage img)
+void CombinationPage::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
 {
     SceneImageDialog dialog;
     dialog.setUserStyle(widgetManger()->currentStyle());
     dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
-    dialog.setImage(img);
+    dialog.setSceneInfo(sinfo);
     dialog.setRectLinePen(Qt::yellow);
     connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
         if(!images.count()){

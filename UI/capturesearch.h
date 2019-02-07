@@ -41,7 +41,7 @@ private:
     void getCameraInfo();
 
 private slots:
-    void slotOnScenePic(QImage);
+    void slotOnSceneInfo(RestServiceI::SceneInfo sinfo);
     void slotSearchBtnClicked();
     void slotSearchSnapInfo(int page);
     void slotOnSearch(RestServiceI::CaptureSearchReturnData);

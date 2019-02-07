@@ -52,30 +52,48 @@ MultipleSearch::MultipleSearch(WidgetManagerI *wm, WidgetI *parent):
     setLayout(mainLay);
 
     dataMenu_->addAction(tr("Scene analysis"),[this]{
-        SceneImageDialog dialog;
-        dialog.setUserStyle(widgetManger()->currentStyle());
-        dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
-        dialog.setImage(dataList_->currentItem()->data(Qt::UserRole).value<QImage>());
-        dialog.setRectLinePen(Qt::yellow);
-        connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
-            if(!images.count()){
-                return;
-            }
-            FaceSearch *faceDialog = new FaceSearch(widgetManger());
-            faceDialog->setAttribute(Qt::WA_DeleteOnClose);
-            faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
-            faceDialog->setWindowModality(Qt::ApplicationModal);
-            QPalette pal = faceDialog->palette();
-            pal.setColor(QPalette::Background,QColor(112,110,119));
-            faceDialog->setPalette(pal);
-            faceDialog->setAutoFillBackground(true);
-            faceDialog->setUserStyle(widgetManger()->currentStyle());
-            faceDialog->layout()->setMargin(10);
-            faceDialog->setFaceImage(images.first());
-            faceDialog->setMinimumHeight(700);
-            faceDialog->show();
+        BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
+        RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+        WaitingLabel *label = new WaitingLabel(this);
+        connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
+            label->close();
+            delete label;
+            QMessageBox::information(this,tr("Scene analysis"),str);
+            dataMenu_->setEnabled(true);
         });
-        dialog.exec();
+        connect(serviceI,&RestServiceI::sigSceneInfo,this,[&,label](const RestServiceI::SceneInfo sinfo){
+            label->close();
+            delete label;
+            SceneImageDialog dialog;
+            dialog.setUserStyle(widgetManger()->currentStyle());
+            dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+            dialog.setSceneInfo(sinfo);
+            dialog.setRectLinePen(Qt::yellow);
+            connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
+                if(!images.count()){
+                    return;
+                }
+                FaceSearch *faceDialog = new FaceSearch(widgetManger());
+                faceDialog->setAttribute(Qt::WA_DeleteOnClose);
+                faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+                faceDialog->setWindowModality(Qt::ApplicationModal);
+                QPalette pal = faceDialog->palette();
+                pal.setColor(QPalette::Background,QColor(112,110,119));
+                faceDialog->setPalette(pal);
+                faceDialog->setAutoFillBackground(true);
+                faceDialog->setUserStyle(widgetManger()->currentStyle());
+                faceDialog->layout()->setMargin(10);
+                faceDialog->setFaceImage(images.first());
+                faceDialog->setMinimumHeight(700);
+                faceDialog->show();
+            });
+            dialog.exec();
+            dataMenu_->setEnabled(true);
+        });
+        serviceI->getSceneInfo(dataList_->currentItem()->data(Qt::UserRole).toString());
+        startWorker(worker);
+        label->show(500);
+        dataMenu_->setEnabled(false);
     });
     dataList_->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(dataList_,&QListWidget::customContextMenuRequested,this,[this](const QPoint&p){
@@ -287,7 +305,7 @@ void MultipleSearch::slotSearchBtnClicked()
             QListWidgetItem *item = new QListWidgetItem;
             item->setIcon(QPixmap::fromImage(itemInfo.img).scaled(dataList_->iconSize()));
             item->setText(curCameraMapInfo_.value(itemInfo.cameraId).left(18) + "\n" + itemInfo.time.toString("yyyy-MM-dd HH:mm:ss"));
-            item->setData(Qt::UserRole,itemInfo.img);
+            item->setData(Qt::UserRole,itemInfo.sceneId);
             dataList_->addItem(item);
         }
         searchBtn_->setEnabled(true);

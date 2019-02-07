@@ -21,12 +21,13 @@ public:
     WorkerType workerType() const override;
     void login(const LoginParameter &args) override;
     void combinationSearch(CombinationSearchArgs &) override;
-    void getScenePic(const QString old) override;
+    void getSceneInfo(const QString old) override;
     void faceTracking(FaceTrackingArgs) override;
     void searchAbDoorTime(SearchABDoorTimeArg &) override;
     void multipleSearch(MultipleSearchArgs &) override;
     void getPersonDetails(QString &) override;
     void getAlarmScenePic(const QString oid) override;
+    void getImageByUrl(QString &) override;
     void getFaceLinkTree(QString &) override;
     void getPersonStayTotalCount(PersonsStayArgs &) override;
     void getAverageTime(AveragePersonTimeArgs &) override;

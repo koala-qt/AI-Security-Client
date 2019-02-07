@@ -25,6 +25,7 @@ TreeCharts::TreeCharts(QWidget *parent)
 
 void TreeCharts::updateData(QJsonObject &jsObj)
 {
+    qDebug() << jsObj;
     webBridge_->updateData(jsObj);
 }
 

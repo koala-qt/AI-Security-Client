@@ -286,7 +286,9 @@ MainPage::MainPage(WidgetManagerI *wm, WidgetI *parent):
             SceneImageDialog dialog;
             dialog.setUserStyle(widgetManger()->currentStyle());
             dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
-            dialog.setImage(eventList_->currentItem()->data(Qt::UserRole + 1).value<QImage>());
+            RestServiceI::SceneInfo sinfo;
+            sinfo.image = eventList_->currentItem()->data(Qt::UserRole + 1).value<QImage>();
+            dialog.setSceneInfo(sinfo);
             dialog.setRectLinePen(Qt::yellow);
             connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
                 if(!images.count()){

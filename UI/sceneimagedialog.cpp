@@ -16,21 +16,34 @@
 #include "sceneimagedialog.h"
 #include "facesearch.h"
 #include "components/SelectImage/selectimage.h"
+#include "components/RectsImage/rectsimage.h"
 
 SceneImageDialog::SceneImageDialog(QWidget *parent, Qt::WindowFlags f):
     QDialog(parent,f)
 {
     QVBoxLayout *mainLay = new QVBoxLayout;
+#ifdef USERECTIMAGE
+    rectesImgArea_ = new RectsImage;
+#else
     selectAreaW_ = new SelectImage;
+#endif
     spiteL_ = new QLabel;
     listW_ = new QListWidget;
     btnBox_ = new QDialogButtonBox;
     sureSelectBtn_ = new QPushButton(tr("ok"));
     deleSelectBtn_ = new QPushButton(tr("delete all"));
     operateAreaW_ = new QWidget;
+#ifdef USERECTIMAGE
+    saveBtn_ = new QPushButton(tr("Save scene"),rectesImgArea_);
+#else
     saveBtn_ = new QPushButton(tr("Save scene"),selectAreaW_);
+#endif
     QVBoxLayout *vlay = new QVBoxLayout;
+#ifdef USERECTIMAGE
+    vlay->addWidget(rectesImgArea_);
+#else
     vlay->addWidget(selectAreaW_);
+#endif
     QHBoxLayout *hlay = new QHBoxLayout;
     hlay->addWidget(sureSelectBtn_);
     hlay->addWidget(deleSelectBtn_);
@@ -81,25 +94,31 @@ SceneImageDialog::SceneImageDialog(QWidget *parent, Qt::WindowFlags f):
     connect(searchBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSearchBtnClicked()));
     connect(cancelBtn_,SIGNAL(clicked(bool)),this,SLOT(reject()));
     connect(saveBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSaveBtnClicked()));
+#ifdef USERECTIMAGE
+    sureSelectBtn_->hide();
+    connect(rectesImgArea_,SIGNAL(sigClickedImage(QImage)),this,SLOT(slotOnClickedImage(QImage)));
+#endif
 }
 
-void SceneImageDialog::setImage(QImage img)
+void SceneImageDialog::setSceneInfo(const RestServiceI::SceneInfo &sinfo)
 {
-    selectAreaW_->setBackImage(img);
-}
-
-void SceneImageDialog::setImage(QImage img, QString sceneId)
-{
-    selectAreaW_->setBackImage(img);
-    curImage_ = img;
-    curSceneId_ = sceneId;
+#ifdef USERECTIMAGE
+    curScenInfo_ = sinfo;
+    rectesImgArea_->setInfos(curScenInfo_.image,sinfo.faceRectVec);
+#else
+    selectAreaW_->setBackImage(sinfo.image);
+#endif
 }
 
 void SceneImageDialog::setRectLinePen(QColor c)
 {
+#ifdef USERECTIMAGE
+
+#else
     QPalette pal = selectAreaW_->palette();
     pal.setColor(QPalette::Foreground,c);
     selectAreaW_->setPalette(pal);
+#endif
 }
 
 void SceneImageDialog::setUserStyle(int styleArg)
@@ -175,9 +194,9 @@ void SceneImageDialog::setUserStyle(int styleArg)
 
 void SceneImageDialog::slotSaveBtnClicked()
 {
-    QString filePath =  QFileDialog::getSaveFileName(this,tr("Save face image"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),tr("Images (*.png *.jpg)"));
+    QString filePath =  QFileDialog::getSaveFileName(this,tr("Save face image"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/" + curScenInfo_.sceneId + ".jpg",tr("Images (*.png *.jpg)"));
     if(filePath.isEmpty())return;
-    if(!curImage_.save(filePath)){
+    if(!curScenInfo_.image.save(filePath)){
         QMessageBox::information(this,tr("Save face image"),tr("Operation failed!"));
     }
 }
@@ -189,6 +208,8 @@ void SceneImageDialog::slotSearchBtnClicked()
 
 void SceneImageDialog::slotSureBtnClicked()
 {
+#ifdef USERECTIMAGE
+#else
     listW_->clear();
     selectedImages_ = selectAreaW_->selectedImages();
     for(QImage &img : selectedImages_){
@@ -200,9 +221,28 @@ void SceneImageDialog::slotSureBtnClicked()
         listW_->addItem(item);
     }
     selectAreaW_->clearImages();
+#endif
 }
 
 void SceneImageDialog::slotDeleteBtnClicke()
 {
+#ifdef USERECTIMAGE
+    listW_->clear();
+    selectedImages_.clear();
+#else
     selectAreaW_->clearImages();
+#endif
 }
+
+#ifdef USERECTIMAGE
+void SceneImageDialog::slotOnClickedImage(QImage img)
+{
+    QListWidgetItem *item = new QListWidgetItem;
+    item->setData(Qt::UserRole,QPixmap::fromImage(img));
+    item->setSizeHint(itemSizeHint_);
+    item->setIcon(QPixmap::fromImage(img.scaled(listW_->iconSize())));
+    item->setTextAlignment(Qt::AlignCenter);
+    listW_->addItem(item);
+    selectedImages_ << img;
+}
+#endif

@@ -106,13 +106,13 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
             QMessageBox::information(this,tr("Scene"),str);
             dataMenu_->setEnabled(true);
         });
-        connect(serviceI,&RestServiceI::sigSceneImage,this,[this,label](const QImage img){
+        connect(serviceI,&RestServiceI::sigSceneInfo,this,[this,label](const RestServiceI::SceneInfo sinfo){
             label->close();
             delete label;
             SceneImageDialog dialog;
             dialog.setUserStyle(widgetManger()->currentStyle());
             dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
-            dialog.setImage(img,dataListW_->currentItem()->data(Qt::UserRole + 5).toString());
+            dialog.setSceneInfo(sinfo);
             dialog.setRectLinePen(Qt::yellow);
             connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
                 if(!images.count()){
@@ -135,7 +135,8 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
             dialog.exec();
             dataMenu_->setEnabled(true);
         });
-        serviceI->getScenePic(dataListW_->currentItem()->data(Qt::UserRole + 5).toString());
+        serviceI->getSceneInfo(dataListW_->currentItem()->data(Qt::UserRole + 5).toString());
+        serviceI->getImageByUrl(QString("http://192.168.100.65:8080/api/v2/external/monitor-detail/download-image?collection=snap_scene&fieldName=snapshot&objId=5c5bd55a08c163777a3d4806"));
         startWorker(worker);
         label->show(500);
         dataMenu_->setEnabled(false);

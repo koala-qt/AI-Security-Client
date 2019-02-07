@@ -33,7 +33,6 @@ MainWindow::MainWindow(WidgetManagerI *wm, WidgetI *parent)
     topWgt_ = new QWidget;
     m_centerW = new QStackedWidget;
     m_topList = new QListWidget;
-    m_topList->setFixedHeight(60);
     m_topList->setFocusPolicy(Qt::NoFocus);
     m_topList->setFlow(QListWidget::LeftToRight);
 
@@ -50,7 +49,6 @@ MainWindow::MainWindow(WidgetManagerI *wm, WidgetI *parent)
         QListWidgetItem *item = new QListWidgetItem;
         item->setText(m_centerW->widget(i)->objectName());
         item->setTextAlignment(Qt::AlignCenter);
-        item->setSizeHint(QSize(220,m_topList->height() - 2 * m_topList->frameWidth()));
         m_topList->addItem(item);
     }
 
@@ -59,11 +57,11 @@ MainWindow::MainWindow(WidgetManagerI *wm, WidgetI *parent)
     hlay->addWidget(m_topList);
     hlay->setSpacing(15);
     hlay->setContentsMargins(15, 0, 0, 0);
-    topWgt_->setMaximumHeight(60);
     topWgt_->setLayout(hlay);
-    mainLay->addWidget(topWgt_);
+    topWgt_->setMaximumHeight(60);
+    mainLay->addWidget(topWgt_,1);
     mainLay->addWidget(topBorderLine_);
-    mainLay->addWidget(m_centerW);
+    mainLay->addWidget(m_centerW,16);
     mainLay->setMargin(0);
     mainLay->setSpacing(0);
     setLayout(mainLay);
@@ -112,13 +110,20 @@ void MainWindow::setUserStyle(WidgetManagerI::SkinStyle s)
     }
 }
 
-#ifdef FULLTOP
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event)
+#ifdef FULLTOP
     for(int i = 0; i < m_topList->count(); i++){
         QListWidgetItem *item = m_topList->item(i);
         item->setSizeHint(QSize((m_topList->width() - m_topList->frameWidth() * 2) / m_topList->count(),m_topList->height() - m_topList->frameWidth() * 2));
     }
-}
+#else
+    int tabLength = m_topList->width() - 390;
+    int tabWidth = tabLength / m_topList->count();
+    for(int i = 0; i < m_topList->count(); i++){
+        QListWidgetItem *item = m_topList->item(i);
+        item->setSizeHint(QSize(tabWidth,m_topList->height() - 2 * m_topList->frameWidth()));
+    }
 #endif
+}

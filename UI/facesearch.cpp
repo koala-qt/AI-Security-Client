@@ -132,13 +132,13 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
             QMessageBox::information(this,tr("Scene"),str);
             menu_->setEnabled(true);
         });
-        connect(serviceI,&RestServiceI::sigSceneImage,this,[&,label](const QImage img){
+        connect(serviceI,&RestServiceI::sigSceneInfo,this,[&,label](const RestServiceI::SceneInfo sinfo){
             label->close();
             delete label;
-            slotOnScenePic(img);
+            slotOnSceneInfo(sinfo);
             menu_->setEnabled(true);
         });
-        serviceI->getScenePic(m_tableW->item(m_tableW->currentRow(),1)->data(Qt::UserRole).toString());
+        serviceI->getSceneInfo(m_tableW->item(m_tableW->currentRow(),1)->data(Qt::UserRole).toString());
         startWorker(worker);
         label->show(500);
         menu_->setEnabled(false);
@@ -498,13 +498,13 @@ void FaceSearch::slotImgBtnClicked()
     }
 }
 
-void FaceSearch::slotOnScenePic(QImage img)
+void FaceSearch::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
 {
 #if 1
     SceneImageDialog dialog;
     dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
     dialog.setUserStyle(widgetManger()->currentStyle());
-    dialog.setImage(img);
+    dialog.setSceneInfo(sinfo);
     SceneImageDialog *dialogPtr = &dialog;
     connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this,dialogPtr](const QVector<QImage> images){
         if(images.isEmpty()){

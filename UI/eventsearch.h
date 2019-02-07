@@ -44,7 +44,7 @@ private slots:
     void slotSearchBtnClicked();
     void slotAlarmHistory(PagedAlarmHis);
     void slotSearchPageAlarmHistory(int page);
-    void slotOnSceneImage(QImage);
+    void slotOnSceneInfo(RestServiceI::SceneInfo);
 };
 
 #endif // EVENTSEARCH_H

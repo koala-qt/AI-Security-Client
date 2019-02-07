@@ -90,13 +90,13 @@ CaptureSearch::CaptureSearch(WidgetManagerI *wm, WidgetI *parent):
             QMessageBox::information(this,objectName(),str);
             menu_->setEnabled(true);
         });
-        connect(serviceI,&RestServiceI::sigSceneImage,this,[&,label](const QImage img){
+        connect(serviceI,&RestServiceI::sigSceneInfo,this,[&,label](const RestServiceI::SceneInfo sinfo){
             label->close();
             delete label;
-            slotOnScenePic(img);
+            slotOnSceneInfo(sinfo);
             menu_->setEnabled(true);
         });
-        serviceI->getScenePic(m_listW->currentItem()->data(Qt::UserRole + 2).toString());
+        serviceI->getSceneInfo(m_listW->currentItem()->data(Qt::UserRole + 2).toString());
         startWorker(worker);
         label->show(500);
         menu_->setEnabled(false);
@@ -287,13 +287,13 @@ void CaptureSearch::getCameraInfo()
     startWorker(worker);
 }
 
-void CaptureSearch::slotOnScenePic(QImage img)
+void CaptureSearch::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
 {
 #if 1
     SceneImageDialog dialog;
     dialog.setUserStyle(widgetManger()->currentStyle());
     dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
-    dialog.setImage(img);
+    dialog.setSceneInfo(sinfo);
     dialog.setRectLinePen(Qt::yellow);
     connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
         if(!images.count()){

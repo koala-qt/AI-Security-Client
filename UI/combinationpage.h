@@ -47,7 +47,7 @@ private slots:
     void slotOnCameraInfo(QVector<RestServiceI::CameraInfo>);
     void slotSearchBtnClicked();
     void slotImageBtnClicked();
-    void slotOnSceneImg(QImage);
+    void slotOnSceneInfo(RestServiceI::SceneInfo sinfo);
 };
 
 #endif // COMBINATIONPAGE_H

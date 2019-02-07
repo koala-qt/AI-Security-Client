@@ -95,15 +95,15 @@ RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
             QMessageBox::information(this,tr("Scene"),str);
             faceItemMenu_->setEnabled(true);
         });
-        connect(serviceI,&RestServiceI::sigSceneImage,this,[&,label](const QImage img){
+        connect(serviceI,&RestServiceI::sigSceneInfo,this,[&,label](const RestServiceI::SceneInfo sinfo){
             label->close();
             delete label;
-            slotOnScenePic(img);
+            slotOnSceneInfo(sinfo);
             faceItemMenu_->setEnabled(true);
         });
         label->show(800);
         faceItemMenu_->setEnabled(false);
-        serviceI->getScenePic(m_faceList->currentItem()->data(Qt::UserRole + 3).toString());
+        serviceI->getSceneInfo(m_faceList->currentItem()->data(Qt::UserRole + 3).toString());
         startWorker(worker);
     });
     m_faceList->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -117,7 +117,9 @@ RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
 
     eventItemMenu_ = new QMenu(eventList_);
     eventItemMenu_->addAction(tr("Scene analysis"),[&]{
-        slotOnScenePic(eventList_->currentItem()->data(Qt::UserRole + 1).value<QImage>());
+        RestServiceI::SceneInfo sinfo;
+        sinfo.image = eventList_->currentItem()->data(Qt::UserRole + 1).value<QImage>();
+        slotOnSceneInfo(sinfo);
     });
     eventList_->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(eventList_,&QListWidget::customContextMenuRequested,this,[&](const QPoint &p){
@@ -570,12 +572,12 @@ void RealtimeMonitoring::slotOnCameraGroup(QVector<RestServiceI::CameraGoup> gro
     }
 }
 
-void RealtimeMonitoring::slotOnScenePic(QImage img)
+void RealtimeMonitoring::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
 {
     SceneImageDialog dialog;
     dialog.setUserStyle(widgetManger()->currentStyle());
     dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
-    dialog.setImage(img);
+    dialog.setSceneInfo(sinfo);
     dialog.setRectLinePen(Qt::yellow);
     connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
         if(!images.count()){

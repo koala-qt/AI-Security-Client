@@ -214,7 +214,8 @@ void TrackingPage::slotTrackingNew(QVector<RestServiceI::TrackingReturnData> dat
         TrackingWebView::TrackingPoint pointData;
         pointData.name = curCameraMap_.value(value.cameraId);
         pointData.grabTime = value.timeIn.toString("yyyy-MM-dd HH:mm:ss");
-        pointData.holdTime.setNum((value.timeOut.toMSecsSinceEpoch() - value.timeIn.toMSecsSinceEpoch())/1000);
+        int holdTime = (value.timeOut.toMSecsSinceEpoch() - value.timeIn.toMSecsSinceEpoch())/1000;
+        pointData.holdTime.setNum(holdTime < 1 ? 1 : holdTime);
         pointData.personImgUr = hostname_ + "graph/node/picture/" + value.objId;
         qDebug() << pointData.personImgUr;
         return pointData;

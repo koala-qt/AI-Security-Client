@@ -22,12 +22,13 @@ public:
         PersonDetailes,
         GenerateFaceLink,
         GetFaceLinkTreeData,
+        GetImaeByUrl,
         SearchFaceLinkPoint,
         SearchABDoorTime,
         MultipleSearch,
         GetCameraDevice,
         CaptureSearch,
-        GetScenePic,
+        GetSceneInfo,
         GetAlarmScene,
         GetStatis,
         AddStatis,
@@ -82,6 +83,12 @@ public:
         QString cameraId;
         QString cameraPos;
         QString rtsp;
+    };
+    struct SceneInfo
+    {
+        QString sceneId;
+        QVector<QPair<QRect,QImage>> faceRectVec;
+        QImage image;
     };
     struct SearchABDoorTimeArg
     {
@@ -185,6 +192,7 @@ public:
     struct MultipleSearchItem
     {
         QString cameraId;
+        QString sceneId;
         QDateTime time;
         QImage img;
     };
@@ -233,9 +241,10 @@ public:
         qRegisterMetaType<CombinationSearchReturenData>("CombinationSearchReturenData");
         qRegisterMetaType<RestServiceI::CaptureSearchReturnData>("RestServiceI::CaptureSearchReturnData");
         qRegisterMetaType<QVector<RestServiceI::MultipleSearchItem>>("QVector<RestServiceI::MultipleSearchItem>");
+        qRegisterMetaType<RestServiceI::SceneInfo>("RestServiceI::SceneInfo");
     }
     virtual void login(const LoginParameter &) = 0;
-    virtual void getScenePic(const QString old) = 0;
+    virtual void getSceneInfo(const QString old) = 0;
     virtual void faceTracking(FaceTrackingArgs) = 0;
     virtual void getPersonDetails(QString &) = 0;
     virtual void combinationSearch(CombinationSearchArgs &) = 0;
@@ -245,6 +254,7 @@ public:
     virtual void getTop(const int id) = 0;
     virtual void getPersonStayTotalCount(PersonsStayArgs &) = 0;
     virtual void getAverageTime(AveragePersonTimeArgs &) = 0;
+    virtual void getImageByUrl(QString &) = 0;
     virtual void generateFaceLink(FaceLinkArgs) = 0;
     virtual void getFaceLinkPoint(QString &) = 0;
     virtual void getFaceLinkTree(QString &) = 0;
@@ -270,7 +280,8 @@ signals:
     void sigError(QString);
     void sigWaringAreas(QVector<QPair<int,QPolygonF>>);
     void sigFaceLinkData(RestServiceI::FaceLinkPointData);
-    void sigSceneImage(QImage);
+    void sigSceneInfo(RestServiceI::SceneInfo);
+    void sigDownloadImage(QImage);
     void sigStatisInfo(QVector<StatisTask>);
     void sigFaceInfo(QStringList,QImage);
     void sigCameraGroup(QVector<RestServiceI::CameraGoup>);

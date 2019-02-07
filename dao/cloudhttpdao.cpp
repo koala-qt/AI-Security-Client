@@ -5,13 +5,14 @@
 #include <QSettings>
 #include <QUrl>
 #include <QBuffer>
+#include <QRect>
 #include <QDebug>
 #include "cloudhttpdao.h"
 
 DLL::CloudHttpDao::CloudHttpDao()
 {
     std::vector<std::string> headers;
-//    headers.emplace_back("Content-Type:application/json;charset=UTF-8");
+    headers.emplace_back("Accept-Language: en-US,en;q=0.9");
     headers.emplace_back("User-Agent:Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36");
     headers.emplace_back("Expect:");
     setheader(headers);
@@ -296,7 +297,7 @@ QString DLL::CloudHttpDao::tracking(RestServiceI::FaceTrackingArgs &args,QVector
         pdata.timeOut = QDateTime::fromMSecsSinceEpoch(dataObj.value("tsOut").toVariant().toULongLong());
         resVec << pdata;
     }
-#else
+#else 1
     QVector<RestServiceI::TrackingReturnData> allData;
     for(auto &jsVal : jsArray){
         QJsonObject  dataObj = jsVal.toObject();
@@ -417,9 +418,13 @@ QString DLL::CloudHttpDao::getPersonDetailes(QString &objId, QImage &face, QImag
     return QString();
 }
 
-QString DLL::CloudHttpDao::getScenePic(QString &scenId, QImage &img)
+QString DLL::CloudHttpDao::getSceneInfo(QString &scenId, RestServiceI::SceneInfo &sceneInfo)
 {
-    QString urlStr = host_ + QObject::tr("api/v2/external/monitor-detail/query/picture?pictureType=snap-scene&objId=%1").arg(scenId);
+    QStringList requiredFileds;
+    requiredFileds << "face_bbox" << "face_id" << "snapshot";
+    QString urlStr = host_ + QObject::tr("api/v2/external/monitor-detail/find-document?collection=snap_scene&requiredFields=%1&objId=%2")
+            .arg(requiredFileds.join(','))
+            .arg(scenId);
     int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),10);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
@@ -436,7 +441,44 @@ QString DLL::CloudHttpDao::getScenePic(QString &scenId, QImage &img)
     if(status != 200){
         return jsObj.value("message").toString();
     }
-    img.loadFromData(QByteArray::fromBase64(jsObj.value("data").toObject().value("base64").toString().toLatin1()));
+
+    jsObj = jsObj.value("data").toObject();
+    if(host_.isEmpty())return "host is empty";
+    QString imgUrl = host_;
+    imgUrl.remove(imgUrl.count() - 1, 1);
+    imgUrl += jsObj.value("url").toString();
+    getImageByUrl(imgUrl,sceneInfo.image);
+    if(sceneInfo.image.isNull()){
+        return "No SceneImage";
+    }
+    QVariantMap faceBoxMap = jsObj.value("faceBoxMapping").toObject().toVariantMap();
+    QStringList mapKeys = faceBoxMap.keys();
+    for(const QString &faceId : mapKeys){
+        QVariantList pointsList = faceBoxMap.value(faceId).toList();
+        if(pointsList.count() < 4)continue;
+        qreal xPer = 0.5,yPer = 0.5;
+        int x = pointsList.first().toInt() * xPer;
+        int y = pointsList.at(1).toInt() * yPer;
+        int rWidth = pointsList.at(2).toInt() * xPer;
+        int rHeight = pointsList.at(3).toInt() * yPer;
+
+        QImage faceImg;
+        QString faceImgUrl = host_ + "api/v2/external/monitor-detail/download-image?collection=snap_face&fieldName=snapshot&objId=" + faceId;
+        getImageByUrl(faceImgUrl,faceImg);
+        sceneInfo.faceRectVec << qMakePair(QRect(x,y,rWidth,rHeight),faceImg);
+    }
+    sceneInfo.sceneId = scenId;
+    return QString();
+}
+
+QString DLL::CloudHttpDao::getImageByUrl(QString &url, QImage &image)
+{
+    int resCode = send(DLL::GET,url.toStdString(),std::string(),10);
+    if(resCode != CURLE_OK){
+        return curl_easy_strerror(CURLcode(resCode));
+    }
+
+    image.loadFromData(QByteArray::fromStdString(responseData()));
     return QString();
 }
 
@@ -555,7 +597,7 @@ QString DLL::CloudHttpDao::searchByImage(RestServiceI::SearchUseImageArgs &args,
             .arg(args.startT.toString("yyyy-MM-dd HH:mm:ss"))
             .arg(args.endT.toString("yyyy-MM-dd HH:mm:ss"));
     qDebug() << urlStr;
-    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),30);
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),60);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }

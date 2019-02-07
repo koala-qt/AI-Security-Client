@@ -39,9 +39,9 @@ void BLL::RestService::combinationSearch(RestServiceI::CombinationSearchArgs &ar
     pushBackTask(CombinationSearch,QVariant::fromValue(args));
 }
 
-void BLL::RestService::getScenePic(const QString old)
+void BLL::RestService::getSceneInfo(const QString old)
 {
-    pushBackTask(GetScenePic,QVariant::fromValue(old));
+    pushBackTask(GetSceneInfo,QVariant::fromValue(old));
 }
 
 void BLL::RestService::faceTracking(RestServiceI::FaceTrackingArgs args)
@@ -67,6 +67,10 @@ void BLL::RestService::getPersonDetails(QString &objId)
 void BLL::RestService::getAlarmScenePic(const QString oid)
 {
     pushBackTask(GetAlarmScene,QVariant::fromValue(oid));
+}
+
+void BLL::RestService::getImageByUrl(QString &url){
+    pushBackTask(GetImaeByUrl,QVariant::fromValue(url));
 }
 
 void BLL::RestService::getFaceLinkTree(QString &objectID)
@@ -269,15 +273,15 @@ void BLL::RestService::run()
         }else{
             emit sigError(qerrorStr);
         }
-    }else if(argType == GetScenePic){
+    }else if(argType == GetSceneInfo){
 #ifdef NEWSTRCUTER
         DLL::CloudHttpDao httpDao;
-        QImage img;
-        QString qerrorStr = httpDao.getScenePic(args.second.toString(),img);
+        RestServiceI::SceneInfo sceneInfo;
+        QString qerrorStr = httpDao.getSceneInfo(args.second.toString(),sceneInfo);
         if(qerrorStr.isEmpty()){
-            emit sigSceneImage(img);
+            emit sigSceneInfo(sceneInfo);
         }else{
-            sigError(qerrorStr);
+            emit sigError(qerrorStr);
         }
 #else
         std::string imgStr = thriftDaoObj.getScenePic(args.second.toString().toStdString(),errorStr);
@@ -289,6 +293,15 @@ void BLL::RestService::run()
             emit sigError(QString::fromStdString(errorStr));
         }
 #endif
+    }else if(argType == GetImaeByUrl){
+        DLL::CloudHttpDao httpDao;
+        QImage img;
+        QString qerrorStr = httpDao.getImageByUrl(args.second.toString(),img);
+        if(qerrorStr.isEmpty()){
+            emit sigDownloadImage(img);
+        }else{
+            sigError(qerrorStr);
+        }
     }else if(argType == GetStatis){
         std::vector<StatisTask> resVec = thriftDaoObj.getStatisInfo(errorStr);
         if(errorStr.empty()){
@@ -366,7 +379,7 @@ void BLL::RestService::run()
         if(errorStr.empty()){
             QImage img;
             img.loadFromData(QByteArray::fromStdString(resPic));
-            emit sigSceneImage(img);
+            emit sigDownloadImage(img);
         }else{
             emit sigError(QString::fromStdString(errorStr));
         }

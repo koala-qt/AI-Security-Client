@@ -59,7 +59,7 @@ private slots:
     void slotOnAbDoorEvent(QStringList,QImage);
     void slotAddDevice(QVector<RestServiceI::CameraInfo>);
     void slotOnCameraGroup(QVector<RestServiceI::CameraGoup>);
-    void slotOnScenePic(QImage);
+    void slotOnSceneInfo(RestServiceI::SceneInfo sinfo);
 };
 
 #endif // REALTIMEMONITORING_H

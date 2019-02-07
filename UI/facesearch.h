@@ -49,7 +49,7 @@ private slots:
     void slotSectionClicked(int);
     void slotSearchClicked();
     void slotImgBtnClicked();
-    void slotOnScenePic(QImage);
+    void slotOnSceneInfo(RestServiceI::SceneInfo sinfo);
 };
 
 #endif // FACESEARCH_H

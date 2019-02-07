@@ -18,9 +18,7 @@ public:
     void setUserStyle(WidgetManagerI::SkinStyle s) override;
 
 protected:
-#ifdef FULLTOP
     void resizeEvent(QResizeEvent *event) override;
-#endif
 
 private:
     QListWidget *m_topList{nullptr};

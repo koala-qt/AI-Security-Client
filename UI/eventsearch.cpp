@@ -81,10 +81,18 @@ EventSearch::EventSearch(WidgetManagerI *wm, WidgetI *parent):
         BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
         RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
         WaitingLabel *label = new WaitingLabel(this);
-        connect(serviceI,&RestServiceI::sigSceneImage,this,[&,label](const QImage img){
+        connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
             label->close();
             delete label;
-            slotOnSceneImage(img);
+            QMessageBox::information(this,tr("Scene analysis"),str);
+            menu_->setEnabled(true);
+        });
+        connect(serviceI,&RestServiceI::sigDownloadImage,this,[&,label](const QImage img){
+            label->close();
+            delete label;
+            RestServiceI::SceneInfo sinfo;
+            sinfo.image = img;
+            slotOnSceneInfo(sinfo);
             menu_->setEnabled(true);
         });
         serviceI->getAlarmScenePic(m_tableW->item(m_tableW->currentRow(),1)->text());
@@ -374,7 +382,7 @@ void EventSearch::slotSearchPageAlarmHistory(int page)
     m_pageindicator->setEnabled(false);
 }
 
-void EventSearch::slotOnSceneImage(QImage img)
+void EventSearch::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
 {
 #if 0
     QDialog dialog;
@@ -392,7 +400,7 @@ void EventSearch::slotOnSceneImage(QImage img)
     SceneImageDialog dialog;
     dialog.setUserStyle(widgetManger()->currentStyle());
     dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
-    dialog.setImage(img);
+    dialog.setSceneInfo(sinfo);
     dialog.setRectLinePen(Qt::yellow);
     connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
         if(!images.count()){
