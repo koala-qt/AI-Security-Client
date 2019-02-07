@@ -197,9 +197,11 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
     startTimeEdit_->setMinimumHeight(44);
     startTimeEdit_->setDisplayFormat("yyyy/MM/dd HH:mm:ss");
     startTimeEdit_->setDateTime(QDateTime::currentDateTime().addDays(-1));
+    startTimeEdit_->setMinimumWidth(180);
     endTimeEdit_->setMinimumHeight(44);
     endTimeEdit_->setDisplayFormat("yyyy/MM/dd HH:mm:ss");
     endTimeEdit_->setDateTime(QDateTime::currentDateTime());
+    endTimeEdit_->setMinimumWidth(180);
     searchBtn_->setMinimumSize(120,44);
     searchBtn_->setFocusPolicy(Qt::NoFocus);
     QVector<QPair<QString,int>> itemVec{qMakePair(tr("20"),20),
@@ -437,7 +439,7 @@ void CombinationPage::setUserStyle(WidgetManagerI::SkinStyle s)
                     "color: white;"
                     "}"
                     "QTableView QTableCornerButton::section{"
-                    "background: rgb(0,138,194);"
+                    "background: rgba(0,0,0,100);"
                     "}"
                     "QTableWidget::Item{"
                     "border-bottom: 1px solid rgb(184,184,184);"
@@ -505,7 +507,7 @@ void CombinationPage::setUserStyle(WidgetManagerI::SkinStyle s)
                     "color: white;"
                     "}"
                     "QTableView QTableCornerButton::section{"
-                    "background: rgb(0,138,194);"
+                    "background: rgba(0,0,0,100);"
                     "}"
                     "QTableWidget::Item{"
                     "border-bottom: 1px solid rgb(184,184,184);"
