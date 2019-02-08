@@ -15,6 +15,7 @@
 #include <QFile>
 #include <QTreeWidget>
 #include <QMessageBox>
+#include <QFontMetrics>
 #include "facesearch.h"
 #include "pageindicator.h"
 #include "waitinglabel.h"
@@ -150,6 +151,10 @@ void CaptureSearch::setUserStyle(WidgetManagerI::SkinStyle style)
         m_startTimeL->setFont(f);
         m_endTimeL->setFont(f);
 
+        f = m_listW->font();
+        f.setPixelSize(11);
+        m_listW->setFont(f);
+
         pal = m_cameraL->palette();
         pal.setColor(QPalette::Foreground,Qt::white);
         m_cameraL->setPalette(pal);
@@ -206,7 +211,6 @@ void CaptureSearch::setUserStyle(WidgetManagerI::SkinStyle style)
         pal.setColor(QPalette::Base,Qt::transparent);
         pal.setColor(QPalette::Text,Qt::white);
         m_listW->setPalette(pal);
-        m_listW->setStyleSheet("border:1px solid rgb(206,206,206);");
         m_listW->verticalScrollBar()->setStyleSheet("QScrollBar:vertical{"
                                                     "background: transparent;"
                                                     "border: none;"
@@ -378,9 +382,16 @@ void CaptureSearch::slotOnSearch(RestServiceI::CaptureSearchReturnData data)
         m_pageIndicator->setPageInfo(data.totalPage,data.totalCount);
         needUpdatePageInfo_ = false;
     }
-    m_listW->setIconSize(iconSize_);
+    QFontMetrics fs(m_listW->font());
+    int textwidth = itemSize_.width() / (fs.height() >> 1);
     for (RestServiceI::DataRectureItem &info : data.data) {
-        QListWidgetItem *item = new QListWidgetItem(curCameraMapInfo_.value(info.cameraId).left(20) + '\n' +
+        QString cameraPosStr = curCameraMapInfo_.value(info.cameraId);
+        if(fs.width(cameraPosStr) >  itemSize_.width()){
+            cameraPosStr = cameraPosStr.left(textwidth);
+            cameraPosStr.remove(cameraPosStr.count() - 4, 3);
+            cameraPosStr.append("...");
+        }
+        QListWidgetItem *item = new QListWidgetItem(cameraPosStr + '\n' +
                                                     info.time.toString("yyyy-MM-dd HH:mm:ss"));
         item->setSizeHint(itemSize_);
         item->setIcon(QPixmap::fromImage(info.img));

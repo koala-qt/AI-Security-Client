@@ -39,9 +39,9 @@ MainWindow::MainWindow(WidgetManagerI *wm, WidgetI *parent)
 //    m_centerW->addWidget(new MainPage(wm));
     m_centerW->addWidget(new RealtimeMonitoring(wm));
     m_centerW->addWidget(new EventSearch(wm));
+    m_centerW->addWidget(new TargetSearch(wm));
     m_centerW->addWidget(new TrackingPage(wm));
     m_centerW->addWidget(new FaceLinkPage(wm));
-    m_centerW->addWidget(new TargetSearch(wm));
     m_centerW->addWidget(new MultipleSearch(wm));
 //    m_centerW->addWidget(new VideoPlayback(wm));
 

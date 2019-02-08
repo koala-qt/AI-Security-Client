@@ -72,7 +72,7 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
     similarSpin_->setRange(0,100);
     similarSpin_->setSuffix("%");
     similarSpin_->setMinimumHeight(40);
-    similarSpin_->setMinimumWidth(200);
+    similarSpin_->setMinimumWidth(150);
     similarSpin_->setValue(50);
     startTimeL_ = new QLabel(tr("开始时间"));
     startTimeEdit_ = new QDateTimeEdit;
@@ -97,7 +97,7 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
     gridLay->addWidget(startTimeEdit_,1,1,1,1);
     gridLay->addWidget(endTimeL_,1,2,1,1);
     gridLay->addWidget(endTimeEdit_,1,3,1,1);
-    gridLay->addWidget(m_searchBtn,1,5,1,1);
+    gridLay->addWidget(m_searchBtn,1,3,1,1);
     gridLay->setContentsMargins(10,5,0,0);
     gridLay->setHorizontalSpacing(15);
     gridLay->setVerticalSpacing(0);
@@ -231,7 +231,7 @@ void FaceSearch::setUserStyle(WidgetManagerI::SkinStyle s)
                     "selection-background-color: rgba(206,206,206,40);"
                     "}"
                     "QTableView QTableCornerButton::section{"
-                    "background: rgba(206,206,206,40);"
+                    "background: rgba(206,206,206,20);"
                     "}"
                     "QHeaderView{"
                     "background-color: rgba(206,206,206,20);"

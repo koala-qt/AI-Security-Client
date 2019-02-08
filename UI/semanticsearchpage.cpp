@@ -197,7 +197,6 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
     });
     dataListW_->setFocusPolicy(Qt::NoFocus);
     dataListW_->setMovement(QListWidget::Static);
-    dataListW_->setIconSize(QSize(112,112));
     dataListW_->setResizeMode(QListWidget::Adjust);
     dataListW_->setViewMode(QListWidget::IconMode);
     centeVSplieL_->setFixedWidth(1);
@@ -356,6 +355,7 @@ void SemanticSearchPage::setUserStyle(WidgetManagerI::SkinStyle s)
                                    "}");
         dataListW_->setStyleSheet("QListWidget{"
                                   "background: transparent;"
+                                  "font: 11px;"
                                   "color: white;"
                                   "}");
         dataListW_->verticalScrollBar()->setStyleSheet(
@@ -465,6 +465,25 @@ void SemanticSearchPage::setUserStyle(WidgetManagerI::SkinStyle s)
     pageIndicator_->setUserStyle();
 }
 
+void SemanticSearchPage::resizeEvent(QResizeEvent *event)
+{
+    int w = (dataListW_->width() - style()->pixelMetric(QStyle::PM_ScrollBarSliderMin) - dataListW_->frameWidth() * 2 - (dataCols_ + 1) * dataListW_->spacing()) / dataCols_;
+    int h = (dataListW_->height() - style()->pixelMetric(QStyle::PM_ScrollBarSliderMin)  - dataListW_->frameWidth() * 2 - (dataRows_ + 1) * dataListW_->spacing()) / dataRows_;
+    itemSize_.setWidth(w);
+    itemSize_.setHeight(h);
+
+    QFontMetrics fm = dataListW_->fontMetrics();
+    iconSize_.setWidth(itemSize_.width() - 4);
+    iconSize_.setHeight(itemSize_.height() - fm.height() * 2 - 5);
+    dataListW_->setIconSize(iconSize_);
+    for(int i = 0; i < dataListW_->count(); i++){
+        QListWidgetItem *item = dataListW_->item(i);
+        item->setSizeHint(itemSize_);
+        item->setIcon(QPixmap::fromImage(item->data(Qt::UserRole + 1).value<QImage>().scaled(dataListW_->iconSize())));
+    }
+    return WidgetI::resizeEvent(event);
+}
+
 void SemanticSearchPage::getCameraInfo()
 {
     BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
@@ -498,16 +517,24 @@ void SemanticSearchPage::slotSemanticSearch(int page)
         std::transform(returnData.records.begin(),returnData.records.end(),std::back_inserter(dataListVec),[this](RestServiceI::DataRectureItem &nodeV){
             return std::make_tuple(nodeV.img,nodeV.id,nodeV.cameraId,cameraMapInfo_.value(nodeV.cameraId),nodeV.time,nodeV.personId,nodeV.sceneId);
         });
+        QFontMetrics fs(dataListW_->font());
+        int textwidth = itemSize_.width() / (fs.height() >> 1);
         for (RestServiceI::DataRectureItem &info : returnData.records) {
-            QString posText = cameraMapInfo_.value(info.cameraId);
-            QListWidgetItem *item = new QListWidgetItem(posText.left(16) + '\n' + info.time.toString("yyyy-MM-dd HH:mm:ss"));
+            QString cameraPosStr = cameraMapInfo_.value(info.cameraId);
+            if(fs.width(cameraPosStr) >  itemSize_.width()){
+                cameraPosStr = cameraPosStr.left(textwidth);
+                cameraPosStr.remove(cameraPosStr.count() - 4, 3);
+                cameraPosStr.append("...");
+            }
+            QListWidgetItem *item = new QListWidgetItem(cameraPosStr + '\n' + info.time.toString("yyyy-MM-dd HH:mm:ss"));
+            item->setSizeHint(itemSize_);
             item->setIcon(QPixmap::fromImage(info.img));
             item->setData(Qt::UserRole+1,info.img);
             item->setData(Qt::UserRole+2,info.id);
             item->setData(Qt::UserRole+3,info.cameraId);
             item->setData(Qt::UserRole+4,info.personId);
             item->setData(Qt::UserRole+5,info.sceneId);
-            item->setToolTip(posText);
+            item->setToolTip(cameraMapInfo_.value(info.cameraId));
             item->setTextAlignment(Qt::AlignHCenter);
             dataListW_->addItem(item);
         }
@@ -520,7 +547,7 @@ void SemanticSearchPage::slotSemanticSearch(int page)
     args.startT = curStartTime_;
     args.endT = curEndTime_;
     args.pageNo = page;
-    args.pageSize = 40;
+    args.pageSize = dataRows_ * dataCols_;
     args.faceAttributList = curfaceAttrList_;
     serviceI->semanticSearch(args);
     startWorker(worker);

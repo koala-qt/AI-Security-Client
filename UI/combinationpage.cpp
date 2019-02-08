@@ -291,7 +291,7 @@ void CombinationPage::slotBodyTabelSectionClicked(int index)
 void CombinationPage::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)
 {
     cameraCombox_->clear();
-    cameraCombox_->addItem(tr("Unlimited"),"");
+//    cameraCombox_->addItem(tr("Unlimited"),"");
     for (auto &info : data) {
         cameraCombox_->addItem(info.cameraPos,info.cameraId);
         curCameraMapInfo_[info.cameraId] = info.cameraPos;

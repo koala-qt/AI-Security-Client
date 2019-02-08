@@ -155,7 +155,7 @@ VideoPlayer::VideoPlayer(QWidget *parent):
     });
     connect(qApp,&QApplication::lastWindowClosed,this,[this]{
         workerM_ = nullptr;
-    });
+    },Qt::DirectConnection);
 }
 
 void VideoPlayer::setWorkerManager(BLL::WorkerManager *wm)

@@ -21,6 +21,9 @@ public:
     SemanticSearchPage(WidgetManagerI*wm,WidgetI *parent = nullptr);
     void setUserStyle(WidgetManagerI::SkinStyle s) override;
 
+protected:
+    void resizeEvent(QResizeEvent *event) override;
+
 private:
     typedef struct item_
     {
@@ -42,7 +45,9 @@ private:
     QStringList curfaceAttrList_;
     QDateTime curStartTime_,curEndTime_;
     bool needUpdatePageInfo_ = true;
-    const int pageCount_ = 40;
+    const int dataRows_ = 5;
+    const int dataCols_ = 10;
+    QSize itemSize_,iconSize_;
     QMap<QString,QString> cameraMapInfo_;
 
     void getCameraInfo();

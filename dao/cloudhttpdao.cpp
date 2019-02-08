@@ -740,6 +740,7 @@ QString DLL::CloudHttpDao::multipleSearch(RestServiceI::MultipleSearchArgs &args
         sitem.cameraId = itemObj.value("cameraId").toString();
         sitem.img.loadFromData(QByteArray::fromBase64(itemObj.value("snapshot").toString().toLatin1()));
         sitem.time = QDateTime::fromMSecsSinceEpoch(itemObj.value("ts").toVariant().toULongLong());
+        sitem.sceneId = itemObj.value("id").toString();
         return sitem;
     });
     return QString();
