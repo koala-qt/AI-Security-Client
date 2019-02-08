@@ -50,6 +50,7 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
     cameraCombox_->setIconSize(QSize(1,30));
     cameraCombox_->setFocusPolicy(Qt::NoFocus);
     cameraCombox_->setFixedHeight(40);
+    cameraCombox_->setMaximumWidth(160);
     recordCountL_ = new QLabel(tr("查询条数"));
     recordCountL_->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     topCombox_ = new QComboBox;
