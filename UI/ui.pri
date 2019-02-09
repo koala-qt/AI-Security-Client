@@ -44,7 +44,9 @@ HEADERS += \
     $$PWD/queryincapturedatabasepage.h \
     $$PWD/targetsearch.h \
     $$PWD/combinationpage.h \
-    $$PWD/semanticsearchpage.h
+    $$PWD/semanticsearchpage.h \
+    $$PWD/informationdialog.h \
+    $$PWD/nodatatip.h
 
 SOURCES += \
     $$PWD/koalawidgetmanager.cpp \
@@ -89,4 +91,6 @@ SOURCES += \
     $$PWD/queryincapturedatabasepage.cpp \
     $$PWD/targetsearch.cpp \
     $$PWD/combinationpage.cpp \
-    $$PWD/semanticsearchpage.cpp
+    $$PWD/semanticsearchpage.cpp \
+    $$PWD/informationdialog.cpp \
+    $$PWD/nodatatip.cpp

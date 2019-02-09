@@ -15,6 +15,7 @@
 #include "components/PaintAera/paintarea.h"
 #include "canvaswidget.h"
 #include "videoplayer.h"
+#include "informationdialog.h"
 
 #pragma execution_character_set("utf-8")
 VideoPlayer::VideoPlayer(QWidget *parent):
@@ -31,7 +32,9 @@ VideoPlayer::VideoPlayer(QWidget *parent):
     menu_ = new QMenu(this);
     menu_->addAction(tr("设置警戒区"),this,[&]{
         if(playState() != Playing){
-            QMessageBox::information(this,tr("设置警戒区"),tr("需要在视频播放情况下设置"));
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(1);
+            infoDialog.showMessage("Video stream not working");
             return;
         }
         QDialog setWaringAreaDialog(this);
@@ -123,7 +126,9 @@ VideoPlayer::VideoPlayer(QWidget *parent):
                 if(s){
                     slotSetPolygons(areas);
                 }else{
-                    QMessageBox::information(this,tr("设置警戒区"),tr("设置失败"));
+                    InformationDialog infoDialog(this);
+                    infoDialog.setUserStyle(1);
+                    infoDialog.showMessage("Setting failed");
                 }
             });
             serI->setWaringArea(m_deviceId,areas);

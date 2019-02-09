@@ -12,11 +12,14 @@
 #include <QStandardPaths>
 #include <QMessageBox>
 #include <QDebug>
+#include <QTimer>
 #include "facelinkpage.h"
 #include "treecharts.h"
 #include "service/restservice.h"
 #include "service/notifyservicei.h"
 #include "waitinglabel.h"
+#include "informationdialog.h"
+#include "nodatatip.h"
 
 #pragma execution_character_set("utf-8")
 FaceLinkPage::FaceLinkPage(WidgetManagerI *wm, WidgetI *parent) :
@@ -163,9 +166,6 @@ void FaceLinkPage::paintEvent(QPaintEvent *event)
 
 void FaceLinkPage::slotSearchBtnClicked()
 {
-    if(waitingL_){
-        return;
-    }
 #if 0
     NotifyServiceI *notifyServiceI_ = dynamic_cast<NotifyServiceI*>(getWoker("NotifyService"));
     notifyServiceI_->disconnect(SIGNAL(sigFaceLinkDataFinished(QString)));
@@ -181,13 +181,13 @@ void FaceLinkPage::slotSearchBtnClicked()
     args.oid = imgOid_;
     args.startT = startTimeEdit_->dateTime();
     args.thresh = 0.6;
-    waitingL_ = new WaitingLabel(this);
 #if 1
     connect(serviceI,&RestServiceI::sigError,this,[this](QString str){
-        waitingL_->close();
-        delete waitingL_;
-        waitingL_ = nullptr;
-        QMessageBox::information(this,objectName(),str);
+        dataView_->stopWaiting();
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(widgetManger()->currentStyle());
+        infoDialog.showMessage(str);
+        infoDialog.exec();
         searchBtn_->setEnabled(true);
     });
     connect(serviceI,SIGNAL(sigFaceLinkFinished(QString)),this,SLOT(slotFaceLinkFinished(QString)));
@@ -195,7 +195,11 @@ void FaceLinkPage::slotSearchBtnClicked()
 #endif
     serviceI->generateFaceLink(args);
     startWorker(worker);
-    waitingL_->show(500);
+    QTimer::singleShot(500,this,[this]{
+        if(!searchBtn_->isEnabled()){
+            dataView_->startWaiting();
+        }
+    });
     searchBtn_->setEnabled(false);
 }
 
@@ -205,10 +209,11 @@ void FaceLinkPage::slotFaceLinkFinished(QString oid)
     BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
     RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
     connect(serviceI,&RestServiceI::sigError,this,[this](QString str){
-        waitingL_->close();
-        delete waitingL_;
-        waitingL_ = nullptr;
-        QMessageBox::information(this,objectName(),str);
+        dataView_->stopWaiting();
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(widgetManger()->currentStyle());
+        infoDialog.showMessage(str);
+        infoDialog.exec();
         searchBtn_->setEnabled(true);
     });
 #if 0
@@ -223,12 +228,13 @@ void FaceLinkPage::slotFaceLinkFinished(QString oid)
 
 void FaceLinkPage::slotFaceLinkTree(QJsonObject jsObj)
 {
-    waitingL_->close();
-    delete waitingL_;
-    waitingL_ = nullptr;
+    dataView_->stopWaiting();
     searchBtn_->setEnabled(true);
     if(jsObj.isEmpty()){
-        QMessageBox::information(this,objectName(),tr("No matched result !"));
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(widgetManger()->currentStyle());
+        infoDialog.showMessage("No matched result !");
+        infoDialog.exec();
         return;
     }
 #if 0
@@ -249,6 +255,7 @@ void FaceLinkPage::slotImgBtnClicked()
     QPixmap pix(filePath);
     if(pix.isNull()){
         imgBtn_->setIcon(imgBtn_->property("default-pix").value<QPixmap>());
+        imgBtn_->setProperty("pixmap",QPixmap());
         return;
     }
     imgBtn_->setIcon(pix.scaled(imgBtn_->iconSize()));

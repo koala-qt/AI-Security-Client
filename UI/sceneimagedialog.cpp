@@ -17,6 +17,7 @@
 #include "facesearch.h"
 #include "components/SelectImage/selectimage.h"
 #include "components/RectsImage/rectsimage.h"
+#include "informationdialog.h"
 
 SceneImageDialog::SceneImageDialog(QWidget *parent, Qt::WindowFlags f):
     QDialog(parent,f)
@@ -197,7 +198,9 @@ void SceneImageDialog::slotSaveBtnClicked()
     QString filePath =  QFileDialog::getSaveFileName(this,tr("Save face image"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/" + curScenInfo_.sceneId + ".jpg",tr("Images (*.png *.jpg)"));
     if(filePath.isEmpty())return;
     if(!curScenInfo_.image.save(filePath)){
-        QMessageBox::information(this,tr("Save face image"),tr("Operation failed!"));
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(1);
+        infoDialog.showMessage("Operation failed!");
     }
 }
 

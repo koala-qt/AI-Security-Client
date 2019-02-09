@@ -29,6 +29,16 @@ void TreeCharts::updateData(QJsonObject &jsObj)
     webBridge_->updateData(jsObj);
 }
 
+void TreeCharts::startWaiting()
+{
+    webBridge_->startWaiting();
+}
+
+void TreeCharts::stopWaiting()
+{
+    webBridge_->stopWaiting();
+}
+
 void TreeBridge::updateData(QJsonObject &jsObj)
 {
     if(isInitsized_){
@@ -36,6 +46,16 @@ void TreeBridge::updateData(QJsonObject &jsObj)
     }else{
         curJsobj_ = jsObj;
     }
+}
+
+void TreeBridge::startWaiting()
+{
+    emit sigStartWaiting();
+}
+
+void TreeBridge::stopWaiting()
+{
+    emit sigStopWaiting();
 }
 
 bool TreeBridge::isInited()

@@ -23,6 +23,8 @@
 #include "capturesearch.h"
 #include "sceneimagedialog.h"
 #include "components/SelectImage/selectimage.h"
+#include "informationdialog.h"
+#include "nodatatip.h"
 
 #pragma execution_character_set("utf-8")
 CaptureSearch::CaptureSearch(WidgetManagerI *wm, WidgetI *parent):
@@ -88,7 +90,10 @@ CaptureSearch::CaptureSearch(WidgetManagerI *wm, WidgetI *parent):
         connect(serviceI,&RestServiceI::sigError,this,[&,label](const QString str){
             label->close();
             delete label;
-            QMessageBox::information(this,objectName(),str);
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.showMessage(str);
+            infoDialog.exec();
             menu_->setEnabled(true);
         });
         connect(serviceI,&RestServiceI::sigSceneInfo,this,[&,label](const RestServiceI::SceneInfo sinfo){
@@ -109,7 +114,10 @@ CaptureSearch::CaptureSearch(WidgetManagerI *wm, WidgetI *parent):
             return;
         }
         if(!m_listW->currentItem()->data(Qt::UserRole + 1).value<QImage>().save(filePath)){
-            QMessageBox::information(this,tr("Save face image"),tr("Operation failed!"));
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.showMessage("Operation failed!");
+            infoDialog.exec();
         }
     });
     m_startTimeEdit->setDisplayFormat("yyyy/MM/dd HH:mm:ss");
@@ -133,6 +141,7 @@ CaptureSearch::CaptureSearch(WidgetManagerI *wm, WidgetI *parent):
         menu_->move(QCursor::pos());
         menu_->show();
     });
+    noDataW_ = new NoDataTip(m_listW);
 
     getCameraInfo();
 }
@@ -248,8 +257,15 @@ void CaptureSearch::setUserStyle(WidgetManagerI::SkinStyle style)
                                                     "QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal{"
                                                     "background: none;"
                                                     "}");
+        menu_->setStyleSheet("QMenu{"
+                                 "background-color: rgb(75,75,75);"
+                                 "}"
+                                 "QMenu::item:selected{"
+                                 "background-color: rgba(255,255,255,0.4);"
+                                 "}");
 
         m_pageIndicator->setUserStyle();
+        noDataW_->setUserStyle(style);
     }
 }
 
@@ -269,6 +285,7 @@ void CaptureSearch::resizeEvent(QResizeEvent *event)
         item->setSizeHint(itemSize_);
         item->setIcon(QPixmap::fromImage(item->data(Qt::UserRole + 1).value<QImage>().scaled(m_listW->iconSize())));
     }
+
     return WidgetI::resizeEvent(event);
 }
 
@@ -350,13 +367,18 @@ void CaptureSearch::slotSearchSnapInfo(int page)
     connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
         label->close();
         delete label;
-        QMessageBox::information(this,objectName(),str);
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(widgetManger()->currentStyle());
+        infoDialog.showMessage(str);
+        infoDialog.exec();
         m_searchBtn->setEnabled(true);
         m_pageIndicator->setEnabled(true);
+        noDataW_->show();
     });
     connect(serviceI,&RestServiceI::sigCaptureSearch,this,[this,label](const RestServiceI::CaptureSearchReturnData value){
         label->close();
         delete label;
+        m_listW->clear();
         slotOnSearch(value);
         m_searchBtn->setEnabled(true);
         m_pageIndicator->setEnabled(true);
@@ -372,15 +394,19 @@ void CaptureSearch::slotSearchSnapInfo(int page)
     label->show(500);
     m_searchBtn->setEnabled(false);
     m_pageIndicator->setEnabled(false);
+    noDataW_->hide();
+    m_listW->clear();
 }
 
 void CaptureSearch::slotOnSearch(RestServiceI::CaptureSearchReturnData data)
 {
-    m_listW->clear();
     m_pageIndicator->adjustRow();
     if(needUpdatePageInfo_){
         m_pageIndicator->setPageInfo(data.totalPage,data.totalCount);
         needUpdatePageInfo_ = false;
+    }
+    if(data.data.isEmpty()){
+        noDataW_->show();
     }
     QFontMetrics fs(m_listW->font());
     int textwidth = itemSize_.width() / (fs.height() >> 1);

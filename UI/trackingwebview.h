@@ -9,9 +9,13 @@ class TrackingBridge : public QObject
 public:
     TrackingBridge(QObject *parent = nullptr): QObject(parent){}
     void updateData(QJsonArray &);
+    void startWaiting();
+    void stopWaiting();
 
 signals:
     void sigTrackingDataChanged(QJsonArray);
+    void sigMovieingStart();
+    void sigMovieStop();
 
 public slots:
     void onInitsized();
@@ -28,6 +32,7 @@ public:
     struct TrackingPoint{
         int xpos;
         int ypos;
+        int cameraId;
         QString name;
         QString holdTime;
         QString grabTime;
@@ -35,6 +40,8 @@ public:
     };
     TrackingWebView(QWidget *parent = Q_NULLPTR);
     QSize sizeHint() const override;
+    void startWaiting();
+    void stopWaiting();
     void updateTracking(QVector<TrackingPoint> &data);
 
 private:

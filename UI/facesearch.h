@@ -13,6 +13,7 @@ QT_FORWARD_DECLARE_CLASS(QDateTimeEdit)
 QT_FORWARD_DECLARE_CLASS(QComboBox)
 QT_FORWARD_DECLARE_CLASS(QSpinBox)
 QT_FORWARD_DECLARE_CLASS(QMenu)
+QT_FORWARD_DECLARE_CLASS(NoDataTip)
 
 class FaceSearch : public WidgetI
 {
@@ -41,6 +42,7 @@ private:
     QImage faceImg_;
     PageIndicator *m_pageIndicator{nullptr};
     QMap<QString,QString> cameraMap_;
+    NoDataTip *noDataW_{nullptr};
 
     void getCameraInfo();
 

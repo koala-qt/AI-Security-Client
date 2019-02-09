@@ -14,6 +14,7 @@ QT_FORWARD_DECLARE_CLASS(QDateTimeEdit)
 QT_FORWARD_DECLARE_CLASS(QPushButton)
 QT_FORWARD_DECLARE_CLASS(PageIndicator)
 QT_FORWARD_DECLARE_CLASS(QMenu)
+QT_FORWARD_DECLARE_CLASS(NoDataTip)
 class SemanticSearchPage : public WidgetI
 {
     Q_OBJECT
@@ -23,6 +24,7 @@ public:
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
+    bool event(QEvent *event) override;
 
 private:
     typedef struct item_
@@ -49,6 +51,7 @@ private:
     const int dataCols_ = 10;
     QSize itemSize_,iconSize_;
     QMap<QString,QString> cameraMapInfo_;
+    NoDataTip *noDataW_{nullptr};
 
     void getCameraInfo();
     QStringList checkedAttrbute(QTreeWidgetItem*);

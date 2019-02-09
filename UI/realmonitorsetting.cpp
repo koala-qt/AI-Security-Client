@@ -13,6 +13,7 @@
 #include "realmonitorsetting.h"
 #include "buttondelegate.h"
 #include "service/restservice.h"
+#include "informationdialog.h"
 
 #pragma execution_character_set("utf-8")
 RealMonitorSetting::RealMonitorSetting(BLL::WorkerManager *wm, QWidget *parent, Qt::WindowFlags f):
@@ -300,7 +301,10 @@ void RealMonitorSetting::slotAddStatis(bool s)
         item->setText(tr("删除"));
         timeCostTable_->setItem(0,2,item);
     }else{
-        QMessageBox::information(this,tr("添加路径"),tr("添加失败"));
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(1);
+        infoDialog.showMessage(tr("Add path failed"));
+        infoDialog.exec();
     }
 }
 
@@ -309,7 +313,10 @@ void RealMonitorSetting::slotRemoveStatis(bool s)
     if(s){
         timeCostTable_->removeRow(curRmRow_);
     }else{
-        QMessageBox::information(this,tr("删除路径"),tr("删除失败"));
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(1);
+        infoDialog.showMessage(tr("Deleted path failed"));
+        infoDialog.exec();
     }
 }
 

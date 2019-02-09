@@ -161,7 +161,7 @@ QString DLL::CloudHttpDao::faceLink_(RestServiceI::FaceLinkArgs &args, QString &
     QByteArray imgArray;
     QBuffer imgBuf(&imgArray);
     imgBuf.open(QIODevice::WriteOnly);
-    args.faceImg.save(&imgBuf,"PNG");
+    args.faceImg.save(&imgBuf,"jpg");
     QString urlStr = host_ + QObject::tr("api/v2/external/monitor-detail/person-link");
     qDebug() << urlStr;
     QJsonObject jsObj{{"startTime",args.startT.toString("yyyy-MM-dd HH:mm:ss")},
@@ -262,14 +262,12 @@ QString DLL::CloudHttpDao::tracking(RestServiceI::FaceTrackingArgs &args,QVector
     QByteArray imgArray;
     QBuffer imgBuf(&imgArray);
     imgBuf.open(QIODevice::WriteOnly);
-    args.faceImg.save(&imgBuf,"PNG");
+    args.faceImg.save(&imgBuf,"jpg");
     QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/trajectory-tracking");
     QString postData = QObject::tr("base64=%1&objId=%2&similarity=%3&startTime=%4&finishTime=%5&property=false")
-            .arg(QString(imgArray),args.oid)
+            .arg(QString(imgArray.toBase64(QByteArray::Base64UrlEncoding)),args.oid)
             .arg(args.thresh)
             .arg(args.startT.toString("yyyy-MM-dd HH:mm:ss"),args.endT.toString("yyyy-MM-dd HH:mm:ss"));
-    qDebug() << urlStr;
-    qDebug() << postData;
     int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),15);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
@@ -491,8 +489,6 @@ QString DLL::CloudHttpDao::captureSearch(RestServiceI::CaptureSearchArgs &args, 
             .arg(args.end.toString("yyyy-MM-dd HH:mm:ss"))
             .arg(args.page)
             .arg(args.pageCount);
-    qDebug() << urlStr;
-    qDebug() << postData;
     int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),5);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <!-- <link rel="stylesheet" href="./bootstrap.min.css"> -->
+  
     <script src="./jquery-3.1.1.min.js"></script>
     <script src="./jquery.mousewheel.js"></script>
     <script src="./jquery-ui.min.js"></script>
@@ -16,6 +17,21 @@
     *{
         padding: 0;
         margin: 0;
+    }
+    .loadingGif{
+        margin: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    }
+    .loading{
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 998;
+       background: rgba(0, 0, 0, 0.66);
+        vertical-align: middle;
+        display: none;
     }
     .haha {
         padding: 10px;
@@ -171,12 +187,33 @@
         overflow: hidden;
         padding-bottom: 5px;
     }
+    .haveData{
+        display: none
+    }
+    .noData{
+        text-align: center;
+        color: white;
+        position: absolute;
+        top: 40%;
+        left: 40%;
+    }
+    .noData span{
+        display: block;
+    }
+    .noData img{
+
+    }
 </style>
 <body>
     <div class="alert-box">
-        <div class="alert-title">Tracking</div>
+            <div id='loading' class="loading">
+                    <img src="./img/Rolling-1s-80px.gif" alt="" class="loadingGif">
+                   
+                </div>
+        <div id="haveData" class="haveData"> <div class="alert-title">Tracking</div>
         <div class="content-box">
           <div class="left-box">
+              
             <div class="left-box-content" id="leftBox">
                     <div class='dialog' id='dialog'>
                         <div class='title' id="title"></div>
@@ -191,7 +228,12 @@
           </div>
           <div class="right-box scrollbar" id="rightBox">
           </div>
-        </div>
+        </div></div>
+       <div class="noData" id="noData">
+            <img src="./img/组 320.png" alt="" >
+            <span>No results found</span>
+            <span>Please adjust the conditions to re-query</span>
+       </div>
     </div>
 
 </body>
@@ -203,6 +245,12 @@
          Bridge.sigTrackingDataChanged.connect(function(arr) { //连接Qt中brideg类的信号并定义执行代码
 			getCameraData(arr)
          });
+		Bridge.sigMovieingStart.connect(function() { //连接Qt中brideg类的信号并定义执行代码sigMovieStop
+			startLoading()
+         });
+		Bridge.sigMovieStop.connect(function() { //连接Qt中brideg类的信号并定义执行代码
+			endLoading()
+         });
          Bridge.onInitsized(); //调用Qt内的函数
        });
     } else {
@@ -212,6 +260,7 @@ var saveArr = []
 
 window.onload = function(){
     $('#leftBox').draggable()
+   
 }
 let zoomIn = 100
 $('#myCanvas').mousewheel(function (e) {
@@ -268,9 +317,31 @@ $('#myCanvas').click(function(e) {
         $("#dialog").hide()
     }
 })
-
+function startLoading(){ //loading gif 显示方法
+    $('#loading').show()
+}
+function endLoading(){ //loading gif 隐藏方法
+    $('#loading').hide()
+}
+function showData(){
+    $('#noData').hide()
+    $('#haveData').show()
+}
+function noData(){
+    $('#noData').show()
+    $('#haveData').hide()
+}
 function getCameraData(arr) {
+    
     saveArr = JSON.parse(JSON.stringify(arr))
+    if(saveArr.length<1){
+        hideData()
+    }
+    else{
+        endLoading()
+        showData()
+
+    }
     setRightData(arr)
     drawBeginCamera(arr)
 }

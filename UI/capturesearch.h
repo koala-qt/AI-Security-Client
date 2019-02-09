@@ -11,6 +11,7 @@ QT_FORWARD_DECLARE_CLASS(PageIndicator)
 QT_FORWARD_DECLARE_CLASS(QListWidget)
 QT_FORWARD_DECLARE_CLASS(QComboBox)
 QT_FORWARD_DECLARE_CLASS(QMenu)
+QT_FORWARD_DECLARE_CLASS(NoDataTip)
 #define CAPTUREITEMROWCOUTN 6
 #define CAPTUREITEMCOLCOUTN 14
 class CaptureSearch : public WidgetI
@@ -35,6 +36,7 @@ private:
     bool needUpdatePageInfo_ = false;
     QMenu *menu_{nullptr};
 
+    NoDataTip *noDataW_{nullptr};
     QString curCameraId_;
     QDateTime curStartTime_,curEndTime_;
     QMap<QString,QString> curCameraMapInfo_;

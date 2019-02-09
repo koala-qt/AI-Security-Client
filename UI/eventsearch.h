@@ -12,6 +12,7 @@ QT_FORWARD_DECLARE_CLASS(QPushButton)
 QT_FORWARD_DECLARE_CLASS(PageIndicator)
 QT_FORWARD_DECLARE_CLASS(QComboBox)
 QT_FORWARD_DECLARE_CLASS(QMenu)
+QT_FORWARD_DECLARE_CLASS(NoDataTip)
 class EventSearch : public WidgetI
 {
     Q_OBJECT
@@ -36,6 +37,7 @@ private:
     bool needUpdatePageInfo_ = true;
     QMap<QString,QString> waryingTypeMap_;
     QImage backImg_;
+    NoDataTip *noDataTipW_{nullptr};
 
     void getCameraInfo();
 

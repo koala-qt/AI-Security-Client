@@ -15,6 +15,7 @@ QT_FORWARD_DECLARE_CLASS(QPushButton)
 QT_FORWARD_DECLARE_CLASS(PageIndicator)
 QT_FORWARD_DECLARE_CLASS(QMenu)
 QT_FORWARD_DECLARE_CLASS(QTableWidget)
+QT_FORWARD_DECLARE_CLASS(NoDataTip)
 class CombinationPage : public WidgetI
 {
     Q_OBJECT
@@ -38,6 +39,7 @@ private:
 
     QMap<QString,QString> curCameraMapInfo_;
     bool faceTableOrder_ = false,bodyTableOrder_ = false;
+    NoDataTip *noFaceDataW_{nullptr},*noBodyDataW_{nullptr};
 
     void getCameraInfo();
 

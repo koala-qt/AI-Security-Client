@@ -20,10 +20,6 @@ public:
     void setUserStyle(WidgetManagerI::SkinStyle s) override;
     void setFaceLinkOidAndImg(QString, QPixmap pix);
 
-signals:
-
-public slots:
-
 protected:
     void paintEvent(QPaintEvent *event) override;
 
@@ -37,7 +33,6 @@ private:
 
     QImage backImg_;
     QString imgOid_;
-    WaitingLabel *waitingL_{nullptr};
 
 private slots:
     void slotSearchBtnClicked();

@@ -18,6 +18,8 @@
 #include "service/restservice.h"
 #include "sceneimagedialog.h"
 #include "facesearch.h"
+#include "informationdialog.h"
+#include "nodatatip.h"
 
 #pragma execution_character_set("utf-8")
 EventSearch::EventSearch(WidgetManagerI *wm, WidgetI *parent):
@@ -84,7 +86,10 @@ EventSearch::EventSearch(WidgetManagerI *wm, WidgetI *parent):
         connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
             label->close();
             delete label;
-            QMessageBox::information(this,tr("Scene analysis"),str);
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.showMessage(str);
+            infoDialog.exec();
             menu_->setEnabled(true);
         });
         connect(serviceI,&RestServiceI::sigDownloadImage,this,[&,label](const QImage img){
@@ -129,6 +134,7 @@ EventSearch::EventSearch(WidgetManagerI *wm, WidgetI *parent):
         m_waringTyleCombox->addItem(pix,pairValue.second,pairValue.first);
         waryingTypeMap_.insert(pairValue.first,pairValue.second);
     }
+    noDataTipW_ = new NoDataTip(m_tableW);
     getCameraInfo();
 }
 
@@ -327,7 +333,14 @@ void EventSearch::setUserStyle(WidgetManagerI::SkinStyle s)
                     "QComboBox::drop-down{"
                     "subcontrol-position: center right;border-image: url(images/dropdown2.png);width:11px;height:8px;subcontrol-origin: padding;margin-right:5px;"
                     "}");
+        menu_->setStyleSheet("QMenu{"
+                             "background-color: rgb(75,75,75);"
+                             "}"
+                             "QMenu::item:selected{"
+                             "background-color: rgba(255,255,255,0.4);"
+                             "}");
         m_pageindicator->setUserStyle();
+        noDataTipW_->setUserStyle(s);
     }
 }
 
@@ -365,9 +378,13 @@ void EventSearch::slotSearchPageAlarmHistory(int page)
     label->setAttribute(Qt::WA_DeleteOnClose);
     connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
         label->close();
-        QMessageBox::information(this,objectName(),str);
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(widgetManger()->currentStyle());
+        infoDialog.showMessage(str);
+        infoDialog.exec();
         m_searchBtn->setEnabled(true);
         m_pageindicator->setEnabled(true);
+        noDataTipW_->hide();
     });
     connect(serviceI,&RestServiceI::sigAlarmHistory,this,[this,label](const PagedAlarmHis value){
         label->close();
@@ -380,6 +397,8 @@ void EventSearch::slotSearchPageAlarmHistory(int page)
     label->show(500);
     m_searchBtn->setEnabled(false);
     m_pageindicator->setEnabled(false);
+    noDataTipW_->hide();
+    m_tableW->model()->removeRows(0,m_tableW->rowCount());
 }
 
 void EventSearch::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
@@ -448,7 +467,6 @@ void EventSearch::slotSearchBtnClicked()
 
 void EventSearch::slotAlarmHistory(PagedAlarmHis data)
 {
-    m_tableW->model()->removeRows(0,m_tableW->rowCount());
     m_pageindicator->adjustRow();
     if(needUpdatePageInfo_){
         m_pageindicator->setPageInfo(data.total_page,data.total_count);
@@ -484,5 +502,8 @@ void EventSearch::slotAlarmHistory(PagedAlarmHis data)
         item->setText(QDateTime::fromMSecsSinceEpoch(itemData.time).toString("yyyy-MM-dd HH:mm:ss"));
         item->setTextAlignment(Qt::AlignCenter);
         m_tableW->setItem(m_tableW->rowCount() - 1,4,item);
+    }
+    if(data.alarm_his.empty()){
+        noDataTipW_->show();
     }
 }

@@ -21,6 +21,8 @@
 #include "waitinglabel.h"
 #include "facesearch.h"
 #include "service/restservice.h"
+#include "informationdialog.h"
+#include "nodatatip.h"
 
 CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
     WidgetI(wm,parent)
@@ -91,7 +93,10 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
             return;
         }
         if(!faceTable_->item(faceTable_->currentRow(),0)->data(Qt::UserRole).value<QImage>().save(filePath)){
-            QMessageBox::information(this,tr("Save face image"),tr("Operation failed!"));
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.showMessage("Operation failed!");
+            infoDialog.exec();
         }
     });
     faceDataMenu_->addAction(tr("Scene analysis"),[this]{
@@ -101,7 +106,10 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
         connect(serviceI,&RestServiceI::sigError,this,[&,label](const QString str){
             label->close();
             delete label;
-            QMessageBox::information(this,objectName(),str);
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.showMessage(str);
+            infoDialog.exec();
             faceDataMenu_->setEnabled(true);
         });
         connect(serviceI,&RestServiceI::sigSceneInfo,this,[&,label](const RestServiceI::SceneInfo sinfo){
@@ -129,7 +137,10 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
             return;
         }
         if(!bodyTable_->item(bodyTable_->currentRow(),0)->data(Qt::UserRole).value<QImage>().save(filePath)){
-            QMessageBox::information(this,tr("Save face image"),tr("Operation failed!"));
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.showMessage("Operation failed!");
+            infoDialog.exec();
         }
     });
     bodyDataMenu_->addAction(tr("Save body image"),[this]{
@@ -139,7 +150,10 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
             return;
         }
         if(!bodyTable_->item(bodyTable_->currentRow(),1)->data(Qt::UserRole).value<QImage>().save(filePath)){
-            QMessageBox::information(this,tr("Save face image"),tr("Operation failed!"));
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.showMessage("Operation failed!");
+            infoDialog.exec();
         }
     });
     bodyDataMenu_->addAction(tr("Scene analysis"),[this]{
@@ -149,7 +163,10 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
         connect(serviceI,&RestServiceI::sigError,this,[&,label](const QString str){
             label->close();
             delete label;
-            QMessageBox::information(this,objectName(),str);
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.showMessage(str);
+            infoDialog.exec();
             bodyDataMenu_->setEnabled(true);
         });
         connect(serviceI,&RestServiceI::sigSceneInfo,this,[&,label](const RestServiceI::SceneInfo sinfo){
@@ -184,13 +201,13 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
     conditionBackW_->installEventFilter(this);
     similaritySpin_->setMinimumSize(120,44);
     similaritySpin_->setSuffix("%");
-    similaritySpin_->setValue(50);
+    similaritySpin_->setValue(30);
     similaritySpin_->setRange(0,100);
     queryCountCombox_->setMinimumHeight(44);
     queryCountCombox_->setMaximumWidth(250);
     quanzhongSpin_->setMinimumHeight(44);
     quanzhongSpin_->setSuffix("%");
-    quanzhongSpin_->setValue(40);
+    quanzhongSpin_->setValue(10);
     quanzhongSpin_->setRange(0,100);
     cameraCombox_->setMinimumHeight(44);
     cameraCombox_->setMaximumWidth(250);
@@ -237,6 +254,8 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
     bodyTable_->setHorizontalHeaderLabels(QStringList() << tr("Face") << tr("Body") << tr("Position") << tr("Similarity") << tr("Time"));
     bodyTable_->horizontalHeader()->setSortIndicatorShown(true);
     bodyTable_->setShowGrid(false);
+    noFaceDataW_ = new NoDataTip(faceTable_);
+    noBodyDataW_ = new NoDataTip(bodyTable_);
 
     connect(faceTable_->horizontalHeader(),SIGNAL(sectionClicked(int)),this,SLOT(slotFaceTabelSectionClicked(int)));
     connect(bodyTable_->horizontalHeader(),SIGNAL(sectionClicked(int)),this,SLOT(slotBodyTabelSectionClicked(int)));
@@ -306,13 +325,17 @@ void CombinationPage::slotSearchBtnClicked()
     connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
         label->close();
         delete label;
-        QMessageBox::information(this,objectName(),str);
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(widgetManger()->currentStyle());
+        infoDialog.showMessage(str);
+        infoDialog.exec();
         searchBtn_->setEnabled(true);
+        noFaceDataW_->show();
+        noBodyDataW_->show();
     });
     connect(serviceI,&RestServiceI::sigCombinationSearch,this,[this,label](RestServiceI::CombinationSearchReturenData returnData){
         label->close();
         delete label;
-        faceTable_->model()->removeRows(0,faceTable_->rowCount());
         for(const RestServiceI::DataRectureItem &itemData : returnData.faceList){
             faceTable_->insertRow(faceTable_->rowCount());
             QTableWidgetItem *item = new QTableWidgetItem;
@@ -337,7 +360,6 @@ void CombinationPage::slotSearchBtnClicked()
             faceTable_->setItem(faceTable_->rowCount() - 1,3,item);
         }
 
-        bodyTable_->model()->removeRows(0,bodyTable_->rowCount());
         for(const RestServiceI::CombinationScoreReturnItem &itemData : returnData.bodyList){
             bodyTable_->insertRow(bodyTable_->rowCount());
             QTableWidgetItem *item = new QTableWidgetItem;
@@ -370,6 +392,12 @@ void CombinationPage::slotSearchBtnClicked()
         }
 
         searchBtn_->setEnabled(true);
+        if(returnData.faceList.isEmpty()){
+            noFaceDataW_->show();
+        }
+        if(returnData.bodyList.isEmpty()){
+            noBodyDataW_->show();
+        }
     });
     RestServiceI::CombinationSearchArgs args;
     args.cameraId = cameraCombox_->currentData().toString();
@@ -383,6 +411,10 @@ void CombinationPage::slotSearchBtnClicked()
     startWorker(worker);
     label->show(500);
     searchBtn_->setEnabled(false);
+    noFaceDataW_->hide();
+    noBodyDataW_->hide();
+    faceTable_->model()->removeRows(0,faceTable_->rowCount());
+    bodyTable_->model()->removeRows(0,bodyTable_->rowCount());
 }
 
 void CombinationPage::slotImageBtnClicked()
@@ -390,6 +422,7 @@ void CombinationPage::slotImageBtnClicked()
     QString filePath = QFileDialog::getOpenFileName(this,tr("添加图片"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),"*.png *.jpg *.tmp");
     if(filePath.isEmpty()){
         imageBtn_->setIcon(imageBtn_->property("default-pix").value<QPixmap>().scaled(imageBtn_->iconSize()));
+        imageBtn_->setProperty("pixmap",QPixmap());
     }else{
         QPixmap pix(filePath);
         imageBtn_->setIcon(pix.scaled(imageBtn_->iconSize()));
@@ -751,5 +784,19 @@ void CombinationPage::setUserStyle(WidgetManagerI::SkinStyle s)
         imageBtn_->setStyleSheet("QPushButton{"
                                  "background-color: transparent;"
                                  "}");
+        faceDataMenu_->setStyleSheet("QMenu{"
+                                 "background-color: rgb(75,75,75);"
+                                 "}"
+                                 "QMenu::item:selected{"
+                                 "background-color: rgba(255,255,255,0.4);"
+                                 "}");
+        bodyDataMenu_->setStyleSheet("QMenu{"
+                                 "background-color: rgb(75,75,75);"
+                                 "}"
+                                 "QMenu::item:selected{"
+                                 "background-color: rgba(255,255,255,0.4);"
+                                 "}");
+        noFaceDataW_->setUserStyle(s);
+        noBodyDataW_->setUserStyle(s);
     }
 }

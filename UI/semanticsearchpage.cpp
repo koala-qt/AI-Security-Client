@@ -10,6 +10,7 @@
 #include <QScrollBar>
 #include <QHeaderView>
 #include <QSpinBox>
+#include <QEvent>
 #include <QDir>
 #include <QMenu>
 #include <QDebug>
@@ -25,6 +26,8 @@
 #include "portrait.h"
 #include "facesearch.h"
 #include "service/restservice.h"
+#include "informationdialog.h"
+#include "nodatatip.h"
 
 SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
     WidgetI(wm,parent)
@@ -72,7 +75,9 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
         connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
             label->close();
             delete label;
-            QMessageBox::information(this,tr("Details"),str);
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.showMessage(str);
             dataMenu_->setEnabled(true);
         });
         connect(serviceI,&RestServiceI::sigPeronsDetails,this,[this,label](QImage face,QImage body,QStringList faceAttr,QStringList bodyAttr){
@@ -103,7 +108,9 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
         connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
             label->close();
             delete label;
-            QMessageBox::information(this,tr("Scene"),str);
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.showMessage(str);
             dataMenu_->setEnabled(true);
         });
         connect(serviceI,&RestServiceI::sigSceneInfo,this,[this,label](const RestServiceI::SceneInfo sinfo){
@@ -186,7 +193,9 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
             return;
         }
         if(!dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>().save(filePath)){
-            QMessageBox::information(this,tr("Save face image"),tr("Operation failed!"));
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.showMessage("Operation failed!");
         }
     });
     dataListW_->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -246,6 +255,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
     endTimeEdit_->setMinimumWidth(160);
     searchBtn_->setMinimumSize(120,44);
     pageIndicator_->setPageInfo(0,0);
+    noDataW_ = new NoDataTip(dataListW_);
 
     connect(pageIndicator_,SIGNAL(sigPageClicked(int)),this,SLOT(slotSemanticSearch(int)));
     connect(searchBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSearchBtnClicked()));
@@ -461,6 +471,7 @@ void SemanticSearchPage::setUserStyle(WidgetManagerI::SkinStyle s)
                                          "border:none;"
                                          "background-color: transparent;"
                                          "}");
+        noDataW_->setUserStyle(s);
     }
     pageIndicator_->setUserStyle();
 }
@@ -484,6 +495,16 @@ void SemanticSearchPage::resizeEvent(QResizeEvent *event)
     return WidgetI::resizeEvent(event);
 }
 
+bool SemanticSearchPage::event(QEvent *event)
+{
+    if(event->type() == QEvent::Show  && searchBtn_->isEnabled()){
+        endTimeEdit_->setDateTime(QDateTime::currentDateTime());
+        slotSearchBtnClicked();
+        return true;
+    }
+    return WidgetI::event(event);
+}
+
 void SemanticSearchPage::getCameraInfo()
 {
     BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
@@ -501,18 +522,24 @@ void SemanticSearchPage::slotSemanticSearch(int page)
     label->setAttribute(Qt::WA_DeleteOnClose);
     connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
         label->close();
-        QMessageBox::information(this,objectName(),str);
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(widgetManger()->currentStyle());
+        infoDialog.showMessage(str);
         pageIndicator_->setEnabled(true);
         searchBtn_->setEnabled(true);
+        noDataW_->show();
     });
     connect(serviceI,&RestServiceI::sigSemanticSearch,this,[this,label](RestServiceI::SemanticReturnData &returnData){
         label->close();
-        dataListW_->clear();
         pageIndicator_->adjustRow();
         if(needUpdatePageInfo_){
             pageIndicator_->setPageInfo(returnData.totalPage,returnData.toatal);
             needUpdatePageInfo_ = false;
         }
+        if(returnData.toatal == 0){
+            noDataW_->show();
+        }
+        dataListW_->clear();
         QVector<std::tuple<QImage, QString, QString, QString, QDateTime,QString,QString> > dataListVec;
         std::transform(returnData.records.begin(),returnData.records.end(),std::back_inserter(dataListVec),[this](RestServiceI::DataRectureItem &nodeV){
             return std::make_tuple(nodeV.img,nodeV.id,nodeV.cameraId,cameraMapInfo_.value(nodeV.cameraId),nodeV.time,nodeV.personId,nodeV.sceneId);
@@ -554,6 +581,8 @@ void SemanticSearchPage::slotSemanticSearch(int page)
     label->show(500);
     pageIndicator_->setEnabled(false);
     searchBtn_->setEnabled(false);
+    noDataW_->hide();
+    dataListW_->clear();
 }
 
 QStringList SemanticSearchPage::checkedAttrbute(QTreeWidgetItem *item)

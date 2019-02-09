@@ -9,10 +9,12 @@
 #include <QSettings>
 #include <QFileDialog>
 #include <QStandardPaths>
+#include <QTimer>
 #include "trackingpage.h"
 #include "trackingwebview.h"
 #include "service/restservice.h"
 #include "waitinglabel.h"
+#include "informationdialog.h"
 
 TrackingPage::TrackingPage(WidgetManagerI *wm, WidgetI *parent):
     WidgetI(wm,parent)
@@ -123,6 +125,15 @@ void TrackingPage::setUserStyle(WidgetManagerI::SkinStyle s)
                                  "width: 16px;"
                                  "border-image: url(images/under.png) 1;"
                                  "}");
+        searchBtn_->setStyleSheet("QPushButton{"
+                                   "background-color: #B4A06C;"
+                                   "color: white;"
+                                   "border-radius: 6px;"
+                                   "font-size:18px;"
+                                   "}"
+                                   "QPushButton:pressed{"
+                                   "padding: 2px;"
+                                   "}");
     }
 }
 
@@ -155,10 +166,12 @@ void TrackingPage::slotImgBtnClicked()
     QPixmap pix(filePath);
     if(pix.isNull()){
         imgBtn_->setIcon(imgBtn_->property("default-pix").value<QPixmap>());
+        imgBtn_->setProperty("pixmap",QPixmap());
         return;
     }
     imgBtn_->setIcon(pix.scaled(imgBtn_->iconSize()));
     imgBtn_->setProperty("pixmap",pix);
+    curOid_.clear();
 }
 
 void TrackingPage::slotSearchBtnClicked()
@@ -167,16 +180,16 @@ void TrackingPage::slotSearchBtnClicked()
     RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
     RestServiceI::FaceTrackingArgs args;
     args.oid = curOid_;
-//    args.faceImg = imgBtn_->property("pixmap").value<QPixmap>().toImage();
-    args.faceImg = QImage();
+    args.faceImg = imgBtn_->property("pixmap").value<QPixmap>().toImage();
     args.startT = startTimeEdit_->dateTime();
     args.endT = endTimeEdit_->dateTime();
     args.thresh = threshSpin_->value() / qreal(100);
-    WaitingLabel *label = new WaitingLabel(this);
-    connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
-        label->close();
-        delete label;
-        QMessageBox::information(this,objectName(),str);
+    connect(serviceI,&RestServiceI::sigError,this,[this](QString str){
+        dataView_->stopWaiting();
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(widgetManger()->currentStyle());
+        infoDialog.showMessage(str);
+        infoDialog.exec();
         searchBtn_->setEnabled(true);
     });
 #if 0
@@ -187,17 +200,19 @@ void TrackingPage::slotSearchBtnClicked()
         searchBtn_->setEnabled(true);
     });
 #else
-    connect(serviceI,&RestServiceI::sigTrackingNew,this,[this,label](const QVector<RestServiceI::TrackingReturnData> data){
-        label->close();
-        delete label;
+    connect(serviceI,&RestServiceI::sigTrackingNew,this,[this](const QVector<RestServiceI::TrackingReturnData> data){
         slotTrackingNew(data);
         searchBtn_->setEnabled(true);
     });
 #endif
     serviceI->faceTracking(args);
     startWorker(worker);
-    curOid_.clear();
-    label->show(500);
+    searchBtn_->setEnabled(false);
+    QTimer::singleShot(500,this,[this]{
+        if(!searchBtn_->isEnabled()){
+            dataView_->startWaiting();
+        }
+    });
 }
 
 void TrackingPage::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)
@@ -212,17 +227,15 @@ void TrackingPage::slotTrackingNew(QVector<RestServiceI::TrackingReturnData> dat
     QVector<TrackingWebView::TrackingPoint> trackingVec;
     std::transform(data.begin(),data.end(),std::back_inserter(trackingVec),[this](const RestServiceI::TrackingReturnData &value){
         TrackingWebView::TrackingPoint pointData;
+        pointData.cameraId = value.cameraId.toInt();
         pointData.name = curCameraMap_.value(value.cameraId);
         pointData.grabTime = value.timeIn.toString("yyyy-MM-dd HH:mm:ss");
         int holdTime = (value.timeOut.toMSecsSinceEpoch() - value.timeIn.toMSecsSinceEpoch())/1000;
         pointData.holdTime.setNum(holdTime < 1 ? 1 : holdTime);
         pointData.personImgUr = hostname_ + "graph/node/picture/" + value.objId;
-        qDebug() << pointData.personImgUr;
         return pointData;
     });
-    if(!trackingVec.isEmpty()){
-        dataView_->updateTracking(trackingVec);
-    }
+    dataView_->updateTracking(trackingVec);
 }
 
 void TrackingPage::slotTracking(QVector<SearchFace> data)

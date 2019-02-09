@@ -11,11 +11,14 @@
 #include <QFileDialog>
 #include <QMenu>
 #include <QStandardPaths>
+#include <QEvent>
 #include "multiplesearch.h"
 #include "waitinglabel.h"
 #include "sceneimagedialog.h"
 #include "facesearch.h"
 #include "service/restservice.h"
+#include "informationdialog.h"
+#include "nodatatip.h"
 
 MultipleSearch::MultipleSearch(WidgetManagerI *wm, WidgetI *parent):
     WidgetI(wm,parent)
@@ -58,7 +61,10 @@ MultipleSearch::MultipleSearch(WidgetManagerI *wm, WidgetI *parent):
         connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
             label->close();
             delete label;
-            QMessageBox::information(this,tr("Scene analysis"),str);
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.showMessage(str);
+            infoDialog.exec();
             dataMenu_->setEnabled(true);
         });
         connect(serviceI,&RestServiceI::sigSceneInfo,this,[&,label](const RestServiceI::SceneInfo sinfo){
@@ -116,6 +122,8 @@ MultipleSearch::MultipleSearch(WidgetManagerI *wm, WidgetI *parent):
 
     connect(imgList_,SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(slotItemClicked(QListWidgetItem*)));
     connect(searchBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSearchBtnClicked()));
+    noDataW_ = new NoDataTip(dataList_);
+
     getCameraInfo();
 }
 
@@ -220,6 +228,8 @@ void MultipleSearch::setUserStyle(WidgetManagerI::SkinStyle style)
         QCursor imgListCursor = imgList_->cursor();
         imgListCursor.setShape(Qt::PointingHandCursor);
         imgList_->setCursor(imgListCursor);
+
+        noDataW_->setUserStyle(style);
     }
 }
 
@@ -292,14 +302,18 @@ void MultipleSearch::slotSearchBtnClicked()
     connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
         label->close();
         delete label;
-        QMessageBox::information(this,objectName(),str);
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(widgetManger()->currentStyle());
+        infoDialog.showMessage(str);
+        infoDialog.exec();
         searchBtn_->setEnabled(true);
+        noDataW_->show();
     });
     connect(serviceI,&RestServiceI::sigMultipleSearch,this,[this,label](QVector<RestServiceI::MultipleSearchItem> data){
         label->close();
         delete label;
         if(data.isEmpty()){
-            QMessageBox::information(this,objectName(),tr("No matched result !"));
+            noDataW_->show();
         }
         for(auto &itemInfo : data){
             QListWidgetItem *item = new QListWidgetItem;
@@ -323,4 +337,6 @@ void MultipleSearch::slotSearchBtnClicked()
     startWorker(worker);
     label->show(500);
     searchBtn_->setEnabled(false);
+    noDataW_->hide();
+    dataList_->clear();
 }

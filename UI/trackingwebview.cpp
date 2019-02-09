@@ -35,9 +35,13 @@ void TrackingWebView::updateTracking(QVector<TrackingWebView::TrackingPoint> &da
     std::mt19937 gen(device());
     std::uniform_int_distribution<int> disx(0,1139 - 71);
     std::uniform_int_distribution<int> disy(0,640 - 35);
+    QMap<int,QPoint> posMap;
     for(const TrackingWebView::TrackingPoint &value : data){
         QJsonObject jsObj;
-        jsObj["pos"] = QJsonObject{{"x",disx(gen)},{"y",disy(gen)}};
+        if(!posMap.contains(value.cameraId)){
+            posMap.insert(value.cameraId,QPoint(disx(gen),disy(gen)));
+        }
+        jsObj["pos"] = QJsonObject{{"x",posMap.value(value.cameraId).x()},{"y",posMap.value(value.cameraId).y()}};
         jsObj["name"] = value.name;
         jsObj["holdTime"] = value.holdTime;
         jsObj["grabTime"] = value.grabTime;
@@ -54,6 +58,16 @@ void TrackingBridge::updateData(QJsonArray &jsArray)
     }else{
         curJsonArray_ = jsArray;
     }
+}
+
+void TrackingBridge::startWaiting()
+{
+    emit sigMovieingStart();
+}
+
+void TrackingBridge::stopWaiting()
+{
+    emit sigMovieStop();
 }
 
 void TrackingBridge::onInitsized()
@@ -77,4 +91,14 @@ void TrackingBridge::onInitsized()
         emit sigTrackingDataChanged(curJsonArray_);
     }
     isInitsized_ = true;
+}
+
+void TrackingWebView::startWaiting()
+{
+    webBridge_->startWaiting();
+}
+
+void TrackingWebView::stopWaiting()
+{
+    webBridge_->stopWaiting();
 }

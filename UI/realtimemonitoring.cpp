@@ -24,6 +24,7 @@
 #include "waitinglabel.h"
 #include "videoplayer.h"
 #include "sceneimagedialog.h"
+#include "informationdialog.h"
 
 #pragma execution_character_set("utf-8")
 RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
@@ -92,7 +93,10 @@ RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
         connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
             label->close();
             delete label;
-            QMessageBox::information(this,tr("Scene"),str);
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.showMessage(str);
+            infoDialog.exec();
             faceItemMenu_->setEnabled(true);
         });
         connect(serviceI,&RestServiceI::sigSceneInfo,this,[&,label](const RestServiceI::SceneInfo sinfo){
@@ -317,6 +321,18 @@ void RealtimeMonitoring::setUserStyle(WidgetManagerI::SkinStyle s)
                     "border: none;"
                     "border-radius: 0px;"
                     "}");
+        faceItemMenu_->setStyleSheet("QMenu{"
+                                 "background-color: rgb(75,75,75);"
+                                 "}"
+                                 "QMenu::item:selected{"
+                                 "background-color: rgba(255,255,255,0.4);"
+                                 "}");
+        eventItemMenu_->setStyleSheet("QMenu{"
+                                 "background-color: rgb(75,75,75);"
+                                 "}"
+                                 "QMenu::item:selected{"
+                                 "background-color: rgba(255,255,255,0.4);"
+                                 "}");
 
         m_settingBtn->setFlat(true);
         pal = m_settingBtn->palette();
@@ -457,7 +473,10 @@ void RealtimeMonitoring::slotTreeItemDoubleClicked(QTreeWidgetItem *item, int co
         return;
     }
     if(!m_realPlayM->focusPlayer()){
-        QMessageBox::information(this,tr("播放视频"),tr("请先选中一个窗口"));
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(widgetManger()->currentStyle());
+        infoDialog.showMessage("Please selecte a window");
+        infoDialog.exec();
         return;
     }
 

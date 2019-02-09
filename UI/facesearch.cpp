@@ -22,6 +22,8 @@
 #include "waitinglabel.h"
 #include "sceneimagedialog.h"
 #include "service/restservice.h"
+#include "informationdialog.h"
+#include "nodatatip.h"
 
 #pragma execution_character_set("utf-8")
 FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
@@ -73,7 +75,7 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
     similarSpin_->setSuffix("%");
     similarSpin_->setMinimumHeight(40);
     similarSpin_->setMinimumWidth(150);
-    similarSpin_->setValue(50);
+    similarSpin_->setValue(30);
     startTimeL_ = new QLabel(tr("开始时间"));
     startTimeEdit_ = new QDateTimeEdit;
     startTimeEdit_->setMinimumSize(160,40);
@@ -130,7 +132,10 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
         connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
             label->close();
             delete label;
-            QMessageBox::information(this,tr("Scene"),str);
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.showMessage(str);
+            infoDialog.exec();
             menu_->setEnabled(true);
         });
         connect(serviceI,&RestServiceI::sigSceneInfo,this,[&,label](const RestServiceI::SceneInfo sinfo){
@@ -151,7 +156,10 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
             return;
         }
         if(!m_tableW->item(m_tableW->currentRow(),0)->data(Qt::UserRole).value<QImage>().save(filePath)){
-            QMessageBox::information(this,tr("Save face image"),tr("Operation failed!"));
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.showMessage("Operation failed!");
+            infoDialog.exec();
         }
     });
     m_tableW->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -175,6 +183,8 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
     m_tableW->horizontalHeader()->setSectionResizeMode(0,QHeaderView::Fixed);
     m_tableW->setHorizontalHeaderLabels(QStringList() << tr("人脸") << tr("ID号") << tr("位置") << tr("相似度") << tr("时间"));
     m_tableW->horizontalHeader()->setSortIndicatorShown(true);
+    noDataW_ = new NoDataTip(m_tableW);
+
     getCameraInfo();
 }
 
@@ -367,12 +377,15 @@ void FaceSearch::setUserStyle(WidgetManagerI::SkinStyle s)
                                  "width: 16px;"
                                  "border-image: url(images/under.png) 1;"
                                  "}");
+        noDataW_->setUserStyle(s);
     }
 }
 
 void FaceSearch::slotAddRow(QVector<RestServiceI::DataRectureItem> info)
 {
-    m_tableW->model()->removeRows(0,m_tableW->rowCount());
+    if(info.isEmpty()){
+        noDataW_->show();
+    }
     for(const RestServiceI::DataRectureItem &itemData : info){
         m_tableW->insertRow(m_tableW->rowCount());
         QTableWidgetItem *item = new QTableWidgetItem;
@@ -446,18 +459,19 @@ void FaceSearch::slotSectionClicked(int index)
 
 void FaceSearch::slotSearchClicked()
 {
-    if(faceImg_.isNull() && oidStr_.isEmpty()){
-        return;
-    }
     BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
     RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
-    WaitingLabel *label = new WaitingLabel(this);
+    WaitingLabel *label = new WaitingLabel(m_tableW);
     connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
         label->close();
         delete label;
-        QMessageBox::information(this,objectName(),str);
+        InformationDialog infoDialog(m_tableW);
+        infoDialog.setUserStyle(widgetManger()->currentStyle());
+        infoDialog.showMessage(str);
+        infoDialog.exec();
         m_searchBtn->setEnabled(true);
         m_pageIndicator->setEnabled(true);
+        noDataW_->show();
     });
     connect(serviceI,&RestServiceI::sigSearchByImage,this,[&,label](const QVector<RestServiceI::DataRectureItem> value){
         label->close();
@@ -466,7 +480,7 @@ void FaceSearch::slotSearchClicked()
         m_searchBtn->setEnabled(true);
         m_pageIndicator->setEnabled(true);
         if(value.isEmpty()){
-            QMessageBox::information(this,objectName(),tr("No matched result!"));
+            noDataW_->show();
             return;
         }
     });
@@ -484,6 +498,8 @@ void FaceSearch::slotSearchClicked()
     label->show(500);
     m_searchBtn->setEnabled(false);
     m_pageIndicator->setEnabled(false);
+    noDataW_->hide();
+    m_tableW->model()->removeRows(0,m_tableW->rowCount());
 }
 
 void FaceSearch::slotImgBtnClicked()
@@ -491,7 +507,7 @@ void FaceSearch::slotImgBtnClicked()
     QString filePath = QFileDialog::getOpenFileName(this,tr("添加图片"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),"*.png *.jpg *.tmp");
     if(filePath.isEmpty()){
         m_imgBtn->setIcon(m_imgBtn->property("default-pix").value<QPixmap>().scaled(m_imgBtn->iconSize()));
-
+        qSwap(QImage(),faceImg_);
     }else{
         faceImg_ = QImage(filePath);
         m_imgBtn->setIcon(QPixmap::fromImage(faceImg_).scaled(m_imgBtn->iconSize()));

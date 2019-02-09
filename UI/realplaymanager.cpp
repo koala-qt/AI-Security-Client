@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QDebug>
+#include "informationdialog.h"
 
 RealPlayManager::RealPlayManager(WidgetManagerI *wm, WidgetI *parent):
     WidgetI(wm,parent)
@@ -155,12 +156,18 @@ void RealPlayManager::playByFocus(QString url, QString id, QString name)
 {
     VideoPlayer *w {nullptr};
     if(! (w = dynamic_cast<VideoPlayer*>(m_focusFrame->widget()))){
-        QMessageBox::information(this,tr("Play"),tr("Please select a window first"));
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(widgetManger()->currentStyle());
+        infoDialog.showMessage(tr("Please select a window first"));
+        infoDialog.exec();
         return;
     }
 
     if(m_videoMap.contains(id)){
-        QMessageBox::information(this,tr("Play"),tr("Already in the play window"));
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(widgetManger()->currentStyle());
+        infoDialog.showMessage(tr("Already in the play window"));
+        infoDialog.exec();
         return;
     }
 
