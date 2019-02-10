@@ -159,14 +159,26 @@ void SceneImageDialog::setUserStyle(int styleArg)
                                   "background-color: rgb(180,160,108);"
                                   "}");
         sureSelectBtn_->setStyleSheet("QPushButton{"
+                                      "color: white;"
                                       "background-color: rgb(100,100,100);"
+                                      "}"
+                                      "QPushButton:pressed{"
+                                      "background-color: rgba(255,0,0,100);"
                                       "}");
         deleSelectBtn_->setStyleSheet("QPushButton{"
+                                      "color: white;"
                                       "background-color: rgb(100,100,100);"
+                                      "}"
+                                      "QPushButton:pressed{"
+                                      "background-color: rgba(255,0,0,100);"
                                       "}");
         saveBtn_->setStyleSheet("QPushButton{"
-                                      "background-color: rgb(100,100,100);"
-                                      "}");
+                                "color: white;"
+                                "background-color: rgb(100,100,100);"
+                                "}"
+                                "QPushButton:pressed{"
+                                "background-color: rgba(255,0,0,100);"
+                                "}");
 
         pal = listW_->palette();
         pal.setColor(QPalette::Base,Qt::transparent);

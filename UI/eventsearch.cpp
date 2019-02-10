@@ -169,6 +169,7 @@ void EventSearch::setUserStyle(WidgetManagerI::SkinStyle s)
                                    "}"
                                    "QPushButton:pressed{"
                                    "padding: 2px;"
+                                   "background-color: rgba(255,0,0,100);"
                                    "}");
         m_tableW->setStyleSheet(
                     "QTableView{"

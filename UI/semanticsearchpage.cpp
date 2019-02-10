@@ -75,7 +75,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
         connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
             label->close();
             delete label;
-            InformationDialog infoDialog(this);
+            InformationDialog infoDialog(dataListW_);
             infoDialog.setUserStyle(widgetManger()->currentStyle());
             infoDialog.showMessage(str);
             dataMenu_->setEnabled(true);
@@ -108,7 +108,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
         connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
             label->close();
             delete label;
-            InformationDialog infoDialog(this);
+            InformationDialog infoDialog(dataListW_);
             infoDialog.setUserStyle(widgetManger()->currentStyle());
             infoDialog.showMessage(str);
             dataMenu_->setEnabled(true);
@@ -116,7 +116,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
         connect(serviceI,&RestServiceI::sigSceneInfo,this,[this,label](const RestServiceI::SceneInfo sinfo){
             label->close();
             delete label;
-            SceneImageDialog dialog;
+            SceneImageDialog dialog(dataListW_);
             dialog.setUserStyle(widgetManger()->currentStyle());
             dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
             dialog.setSceneInfo(sinfo);
@@ -355,14 +355,15 @@ void SemanticSearchPage::setUserStyle(WidgetManagerI::SkinStyle s)
             "background-color: transparent;"
             "}");
         searchBtn_->setStyleSheet("QPushButton{"
-                                   "background-color: #B4A06C;"
-                                   "color: white;"
-                                   "border-radius: 6px;"
-                                   "font-size:18px;"
-                                   "}"
-                                   "QPushButton:pressed{"
-                                   "padding: 2px;"
-                                   "}");
+                                  "background-color: #B4A06C;"
+                                  "color: white;"
+                                  "border-radius: 6px;"
+                                  "font-size:18px;"
+                                  "}"
+                                  "QPushButton:pressed{"
+                                  "padding: 2px;"
+                                  "background-color: rgba(255,0,0,100);"
+                                  "}");
         dataListW_->setStyleSheet("QListWidget{"
                                   "background: transparent;"
                                   "font: 11px;"

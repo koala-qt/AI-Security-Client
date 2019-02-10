@@ -246,9 +246,11 @@
 			getCameraData(arr)
          });
 		Bridge.sigMovieingStart.connect(function() { //连接Qt中brideg类的信号并定义执行代码sigMovieStop
+		console.log("ffffffffffffff")
 			startLoading()
          });
 		Bridge.sigMovieStop.connect(function() { //连接Qt中brideg类的信号并定义执行代码
+		console.log("ssssssssss")
 			endLoading()
          });
          Bridge.onInitsized(); //调用Qt内的函数

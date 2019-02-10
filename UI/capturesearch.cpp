@@ -214,6 +214,7 @@ void CaptureSearch::setUserStyle(WidgetManagerI::SkinStyle style)
                                    "}"
                                    "QPushButton:pressed{"
                                    "padding: 2px;"
+                                   "background-color: rgba(255,0,0,100);"
                                    "}");
 
         pal = m_listW->palette();

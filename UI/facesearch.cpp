@@ -68,7 +68,7 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
     for(const QPair<QString,int> &value : itemVec){
         topCombox_->addItem(pix,value.first,value.second);
     }
-    similarL_ = new QLabel(tr("最低相似度"));
+    similarL_ = new QLabel(tr("Threshold"));
     similarL_->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     similarSpin_ = new QSpinBox;
     similarSpin_->setRange(0,100);
@@ -76,6 +76,7 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
     similarSpin_->setMinimumHeight(40);
     similarSpin_->setMinimumWidth(150);
     similarSpin_->setValue(30);
+    similarSpin_->setSingleStep(5);
     startTimeL_ = new QLabel(tr("开始时间"));
     startTimeEdit_ = new QDateTimeEdit;
     startTimeEdit_->setMinimumSize(160,40);
@@ -99,7 +100,7 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
     gridLay->addWidget(startTimeEdit_,1,1,1,1);
     gridLay->addWidget(endTimeL_,1,2,1,1);
     gridLay->addWidget(endTimeEdit_,1,3,1,1);
-    gridLay->addWidget(m_searchBtn,1,3,1,1);
+    gridLay->addWidget(m_searchBtn,1,4,1,1);
     gridLay->setContentsMargins(10,5,0,0);
     gridLay->setHorizontalSpacing(15);
     gridLay->setVerticalSpacing(0);
@@ -301,6 +302,7 @@ void FaceSearch::setUserStyle(WidgetManagerI::SkinStyle s)
                                    "}"
                                    "QPushButton:pressed{"
                                    "padding: 1px;"
+                                   "background-color: rgba(255,0,0,100);"
                                    "}");
         cameraCombox_->setStyleSheet(
                     "QComboBoxListView{"

@@ -124,14 +124,15 @@ void FaceLinkPage::setUserStyle(WidgetManagerI::SkinStyle s)
             "background-color: transparent;"
             "}");
         searchBtn_->setStyleSheet("QPushButton{"
-                                   "background-color: #B4A06C;"
-                                   "color: white;"
-                                   "border-radius: 6px;"
-                                   "font-size:18px;"
-                                   "}"
-                                   "QPushButton:pressed{"
-                                   "padding: 2px;"
-                                   "}");
+                                  "background-color: #B4A06C;"
+                                  "color: white;"
+                                  "border-radius: 6px;"
+                                  "font-size:18px;"
+                                  "}"
+                                  "QPushButton:pressed{"
+                                  "padding: 2px;"
+                                  "background-color: rgba(255,0,0,100);"
+                                  "}");
         maxnumEdit_->setStyleSheet("QLineEdit{"
                                    "color: white;"
                                    "border-radius: 4px;"

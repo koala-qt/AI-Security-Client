@@ -62,6 +62,9 @@ void InformationDialog::setUserStyle(int styleIndex)
         closeBtn_->setStyleSheet("QPushButton{"
                                  "color: rgba(0,0,0,100);"
                                  "background-color: transparent;"
+                                 "}"
+                                 "QPushButton:pressed{"
+                                 "background-color: rgba(255,0,0,100);"
                                  "}");
         textL_->setStyleSheet("QLabel{"
                               "color: black;"
@@ -71,6 +74,9 @@ void InformationDialog::setUserStyle(int styleIndex)
                               "color: white;"
                               "background-color: rgba(255,0,0,150);"
                               "radius: 8px;"
+                              "}"
+                              "QPushButton:pressed{"
+                              "background-color: rgba(255,0,0,100);"
                               "}");
     }
 }

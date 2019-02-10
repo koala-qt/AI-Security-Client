@@ -719,14 +719,15 @@ void CombinationPage::setUserStyle(WidgetManagerI::SkinStyle s)
                     "border-radius: 0px;"
                     "}");
         searchBtn_->setStyleSheet("QPushButton{"
-                                   "background-color: #B4A06C;"
-                                   "color: white;"
-                                   "border-radius: 6px;"
-                                   "font-size:18px;"
-                                   "}"
-                                   "QPushButton:pressed{"
-                                   "padding: 2px;"
-                                   "}");
+                                  "background-color: #B4A06C;"
+                                  "color: white;"
+                                  "border-radius: 6px;"
+                                  "font-size:18px;"
+                                  "}"
+                                  "QPushButton:pressed{"
+                                  "padding: 2px;"
+                                  "background-color: rgba(255,0,0,100);"
+                                  "}");
         similaritySpin_->setStyleSheet("QSpinBox{"
                                  "padding-right: 15px;"
                                  "border-width: 3;"
