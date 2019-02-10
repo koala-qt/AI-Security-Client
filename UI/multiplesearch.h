@@ -11,6 +11,7 @@ QT_FORWARD_DECLARE_CLASS(QComboBox)
 QT_FORWARD_DECLARE_CLASS(QListWidgetItem)
 QT_FORWARD_DECLARE_CLASS(QMenu)
 QT_FORWARD_DECLARE_CLASS(NoDataTip)
+//#define MULTIPSEARCHUSEMOVESIZE
 class MultipleSearch : public WidgetI
 {
     Q_OBJECT
@@ -19,7 +20,9 @@ public:
     void setUserStyle(WidgetManagerI::SkinStyle style) override;
 
 protected:
+#ifdef MULTIPSEARCHUSEMOVESIZE
     void resizeEvent(QResizeEvent *event) override;
+#endif
 
 private:
     const int itemCount_ = 4;

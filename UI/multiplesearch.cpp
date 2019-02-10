@@ -37,8 +37,13 @@ MultipleSearch::MultipleSearch(WidgetManagerI *wm, WidgetI *parent):
     dataMenu_ = new QMenu(dataList_);
 
     QHBoxLayout *hlay = new QHBoxLayout;
+#ifdef MULTIPSEARCHUSEMOVESIZE
     hlay->addWidget(imgList_,1);
     hlay->addStretch(4);
+#else
+    hlay->addWidget(imgList_);
+    hlay->addStretch();
+#endif
     mainLay->addLayout(hlay,1);
     QGridLayout *gridLay = new QGridLayout;
     gridLay->addWidget(positionL_,0,0,1,1);
@@ -118,6 +123,19 @@ MultipleSearch::MultipleSearch(WidgetManagerI *wm, WidgetI *parent):
     endTimeEdit_->setMinimumSize(250,44);
     endTimeEdit_->setDateTime(QDateTime::currentDateTime());
     searchBtn_->setMinimumSize(120,44);
+#ifndef MULTIPSEARCHUSEMOVESIZE
+    imgList_->setIconSize(QSize(140,140));
+    int listWidth = imgList_->iconSize().width() * itemCount_ + (itemCount_ + 1 )* imgList_->spacing() + imgList_->frameWidth() * 2;
+    int listHeight = imgList_->iconSize().height() + imgList_->frameWidth() * 2 + imgList_->spacing() * 2;
+    imgList_->setFixedSize(listWidth,listHeight);
+    for(int i = 0; i < itemCount_; i++){
+        QListWidgetItem *item = new QListWidgetItem;
+        item->setSizeHint(imgList_->iconSize());
+        item->setIcon(QPixmap("images/person-face-back.png").scaled(imgList_->iconSize()));
+        item->setData(Qt::UserRole,false);
+        imgList_->addItem(item);
+    }
+#endif
 
     connect(imgList_,SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(slotItemClicked(QListWidgetItem*)));
     connect(searchBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSearchBtnClicked()));
@@ -233,6 +251,7 @@ void MultipleSearch::setUserStyle(WidgetManagerI::SkinStyle style)
     }
 }
 
+#ifdef MULTIPSEARCHUSEMOVESIZE
 void MultipleSearch::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event)
@@ -254,6 +273,7 @@ void MultipleSearch::resizeEvent(QResizeEvent *event)
         }
     }
 }
+#endif
 
 void MultipleSearch::getCameraInfo()
 {
