@@ -75,7 +75,7 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
     similarSpin_->setSuffix("%");
     similarSpin_->setMinimumHeight(40);
     similarSpin_->setMinimumWidth(150);
-    similarSpin_->setValue(30);
+    similarSpin_->setValue(40);
     similarSpin_->setSingleStep(5);
     startTimeL_ = new QLabel(tr("开始时间"));
     startTimeEdit_ = new QDateTimeEdit;

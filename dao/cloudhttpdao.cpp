@@ -307,7 +307,7 @@ QString DLL::CloudHttpDao::tracking(RestServiceI::FaceTrackingArgs &args,QVector
         pdata.timeOut = QDateTime::fromMSecsSinceEpoch(dataObj.value("tsOut").toVariant().toULongLong());
         allData << pdata;
     }
-    if(allData.isEmpty())return QString();
+    if(allData.isEmpty())return "no points";
     QVector<QVector<RestServiceI::TrackingReturnData>> rightDataVec;
     rightDataVec << (QVector<RestServiceI::TrackingReturnData>() << allData.first());
     for(int i = 1; i < allData.count(); i++){
