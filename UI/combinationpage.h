@@ -24,6 +24,7 @@ public:
     void setUserStyle(WidgetManagerI::SkinStyle s) override;
 
 protected:
+    bool event(QEvent *event) override;
     bool eventFilter(QObject *watched, QEvent *event) override;
 
 private:

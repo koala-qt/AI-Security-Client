@@ -20,6 +20,7 @@ public:
     void setUserStyle(WidgetManagerI::SkinStyle style) override;
 
 protected:
+    bool event(QEvent *event) override;
 #ifdef MULTIPSEARCHUSEMOVESIZE
     void resizeEvent(QResizeEvent *event) override;
 #endif

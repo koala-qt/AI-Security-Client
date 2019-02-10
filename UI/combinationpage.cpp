@@ -801,3 +801,12 @@ void CombinationPage::setUserStyle(WidgetManagerI::SkinStyle s)
         noBodyDataW_->setUserStyle(s);
     }
 }
+
+bool CombinationPage::event(QEvent *event)
+{
+    if(event->type() == QEvent::Show){
+        endTimeEdit_->setDateTime(QDateTime::currentDateTime());
+        return true;
+    }
+    return WidgetI::event(event);
+}

@@ -251,6 +251,15 @@ void MultipleSearch::setUserStyle(WidgetManagerI::SkinStyle style)
     }
 }
 
+bool MultipleSearch::event(QEvent *event)
+{
+    if(event->type() == QEvent::Show){
+        endTimeEdit_->setDateTime(QDateTime::currentDateTime());
+        return true;
+    }
+    return WidgetI::event(event);
+}
+
 #ifdef MULTIPSEARCHUSEMOVESIZE
 void MultipleSearch::resizeEvent(QResizeEvent *event)
 {
