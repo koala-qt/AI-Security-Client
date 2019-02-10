@@ -34,6 +34,7 @@ InformationDialog::InformationDialog(QWidget *parent, Qt::WindowFlags f):
     closeBtn_->setMaximumWidth(40);
     closeBtn_->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     textL_->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    textL_->setWordWrap(true);
     okBtn_->setMinimumSize(100,30);
     okBtn_->setDefault(true);
     okBtn_->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);

@@ -143,7 +143,6 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
             dataMenu_->setEnabled(true);
         });
         serviceI->getSceneInfo(dataListW_->currentItem()->data(Qt::UserRole + 5).toString());
-        serviceI->getImageByUrl(QString("http://192.168.100.65:8080/api/v2/external/monitor-detail/download-image?collection=snap_scene&fieldName=snapshot&objId=5c5bd55a08c163777a3d4806"));
         startWorker(worker);
         label->show(500);
         dataMenu_->setEnabled(false);
