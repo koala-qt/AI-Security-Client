@@ -15,8 +15,7 @@
 #include "UI/realtimemonitoring.h"
 #include "UI/eventsearch.h"
 #include "UI/multiplesearch.h"
-#include "UI/facelinkpage.h"
-#include "UI/trackingpage.h"
+#include "UI/dateanalysis.h"
 #include <QDebug>
 
 #pragma execution_character_set("utf-8")
@@ -40,9 +39,7 @@ MainWindow::MainWindow(WidgetManagerI *wm, WidgetI *parent)
     m_centerW->addWidget(new RealtimeMonitoring(wm));
     m_centerW->addWidget(new EventSearch(wm));
     m_centerW->addWidget(new TargetSearch(wm));
-    m_centerW->addWidget(new TrackingPage(wm));
-    m_centerW->addWidget(new FaceLinkPage(wm));
-    m_centerW->addWidget(new MultipleSearch(wm));
+    m_centerW->addWidget(new DateAnalysis(wm));
 //    m_centerW->addWidget(new VideoPlayback(wm));
 
     for(int i = 0; i < m_centerW->count(); i++){

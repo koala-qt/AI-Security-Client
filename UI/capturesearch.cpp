@@ -15,6 +15,7 @@
 #include <QFile>
 #include <QTreeWidget>
 #include <QMessageBox>
+#include <QSettings>
 #include <QFontMetrics>
 #include "facesearch.h"
 #include "pageindicator.h"
@@ -63,7 +64,6 @@ CaptureSearch::CaptureSearch(WidgetManagerI *wm, WidgetI *parent):
     m_pageIndicator = new PageIndicator;
     m_pageIndicator->setPageInfo(0,0);
     mainLay->addWidget(m_pageIndicator);
-    mainLay->setMargin(0);
     setLayout(mainLay);
 
     menu_ = new QMenu(this);
@@ -143,6 +143,9 @@ CaptureSearch::CaptureSearch(WidgetManagerI *wm, WidgetI *parent):
     });
     noDataW_ = new NoDataTip(m_listW);
 
+    QSettings config("config.ini",QSettings::IniFormat);
+    dataRows_ = config.value("App/CaptureRows").toInt();
+    dataCols_ = config.value("App/CaptureCols").toInt();
     getCameraInfo();
 }
 
@@ -207,15 +210,15 @@ void CaptureSearch::setUserStyle(WidgetManagerI::SkinStyle style)
                                        "}");
 
         m_searchBtn->setStyleSheet("QPushButton{"
-                                   "background-color: #B4A06C;"
-                                   "color: white;"
-                                   "border-radius: 6px;"
-                                   "font-size:18px;"
-                                   "}"
-                                   "QPushButton:pressed{"
-                                   "padding: 2px;"
-                                   "background-color: rgba(255,0,0,100);"
-                                   "}");
+                                  "background-color: #B4A06C;"
+                                  "color: white;"
+                                  "border-radius: 6px;"
+                                  "font-size:18px;"
+                                  "}"
+                                  "QPushButton:pressed{"
+                                  "padding: 2px;"
+                                  "background-color: rgba(255,0,0,100);"
+                                  "}");
 
         pal = m_listW->palette();
         pal.setColor(QPalette::Base,Qt::transparent);
@@ -272,8 +275,8 @@ void CaptureSearch::setUserStyle(WidgetManagerI::SkinStyle style)
 
 void CaptureSearch::resizeEvent(QResizeEvent *event)
 {
-    int w = (m_listW->width() - style()->pixelMetric(QStyle::PM_ScrollBarSliderMin) - m_listW->frameWidth() * 2 - (CAPTUREITEMCOLCOUTN + 1) * m_listW->spacing()) / CAPTUREITEMCOLCOUTN;
-    int h = (m_listW->height() - style()->pixelMetric(QStyle::PM_ScrollBarSliderMin)  - m_listW->frameWidth() * 2 - (CAPTUREITEMROWCOUTN + 1) * m_listW->spacing()) / CAPTUREITEMROWCOUTN;
+    int w = (m_listW->width() - style()->pixelMetric(QStyle::PM_ScrollBarSliderMin) - m_listW->frameWidth() * 2 - (dataCols_ + 1) * m_listW->spacing()) / dataCols_;
+    int h = (m_listW->height() - style()->pixelMetric(QStyle::PM_ScrollBarSliderMin)  - m_listW->frameWidth() * 2 - (dataRows_ + 1) * m_listW->spacing()) / dataRows_;
     itemSize_.setWidth(w);
     itemSize_.setHeight(h);
 
@@ -386,7 +389,7 @@ void CaptureSearch::slotSearchSnapInfo(int page)
     });
     RestServiceI::CaptureSearchArgs args;
     args.page = page;
-    args.pageCount = CAPTUREITEMROWCOUTN * CAPTUREITEMCOLCOUTN;
+    args.pageCount = dataRows_ * dataCols_;
     args.position = curCameraId_;
     args.start = curStartTime_;
     args.end = curEndTime_;

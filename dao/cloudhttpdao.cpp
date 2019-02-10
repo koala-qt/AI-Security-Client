@@ -741,3 +741,49 @@ QString DLL::CloudHttpDao::multipleSearch(RestServiceI::MultipleSearchArgs &args
     });
     return QString();
 }
+
+QString DLL::CloudHttpDao::getFaceLinkDataColl(RestServiceI::FaceLinkDataCollArgs &args,RestServiceI::FaceLinkDataCollReturn &resDatas)
+{
+    QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-person-inlink");
+    QString postData = QObject::tr("cameraId=%1&startTime=%2&finishTime=%3&pageNo=%4&pageSize=%5")
+            .arg(args.cameraId)
+            .arg(args.startT.toString("yyyy-MM-dd HH:mm:ss"))
+            .arg(args.endT.toString("yyyy-MM-dd HH:mm:ss"))
+            .arg(args.pageNo)
+            .arg(args.pageSize);
+    qDebug() << urlStr;
+    qDebug() << postData;
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),5);
+    if(resCode != CURLE_OK){
+        return curl_easy_strerror(CURLcode(resCode));
+    }
+
+    QJsonParseError jsError;
+    QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
+    if(jsError.error != QJsonParseError::NoError){
+        return jsError.errorString();
+    }
+
+    QJsonObject jsObj = jsDoc.object();
+    int status = jsObj.value("status").toInt();
+    if(status != 200){
+        return jsObj.value("message").toString();
+    }
+    resDatas.toatal = jsObj.value("total").toInt();
+    resDatas.totalPage = jsObj.value("pageNumber").toInt();
+    QJsonArray jsArray = jsObj.value("data").toArray();
+    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(resDatas.records),[](const QJsonValue &jsValue){
+        RestServiceI::DataRectureItem item;
+        QJsonObject itemObj = jsValue.toObject();
+        item.cameraId = itemObj.value("cameraId").toString();
+        item.id = itemObj.value("id").toString();
+        item.sceneId = itemObj.value("sceneId").toString();
+        item.time = QDateTime::fromMSecsSinceEpoch(itemObj.value("ts").toVariant().toULongLong());
+        QImage img;
+        img.loadFromData(QByteArray::fromBase64(itemObj.value("snapshot").toString().toLatin1()));
+        item.img = img;
+        item.personId = itemObj.value("personId").toString();
+        return item;
+    });
+    return QString();
+}

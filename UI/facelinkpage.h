@@ -20,9 +20,6 @@ public:
     void setUserStyle(WidgetManagerI::SkinStyle s) override;
     void setFaceLinkOidAndImg(QString, QPixmap pix);
 
-protected:
-    void paintEvent(QPaintEvent *event) override;
-
 private:
     QComboBox *levelCombox_{nullptr};
     QPushButton *imgBtn_{nullptr},*searchBtn_{nullptr};
@@ -30,8 +27,8 @@ private:
     QDateTimeEdit *startTimeEdit_{nullptr},*endTimeEdit_{nullptr};
     QLineEdit *maxnumEdit_{nullptr};
     TreeCharts *dataView_{nullptr};
+    WaitingLabel *waitingL_{nullptr};
 
-    QImage backImg_;
     QString imgOid_;
 
 private slots:

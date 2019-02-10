@@ -22,6 +22,7 @@ public:
     void login(const LoginParameter &args) override;
     void combinationSearch(CombinationSearchArgs &) override;
     void getSceneInfo(const QString old) override;
+    void getFaceLinkDataColl(FaceLinkDataCollArgs &args) override;
     void faceTracking(FaceTrackingArgs) override;
     void searchAbDoorTime(SearchABDoorTimeArg &) override;
     void multipleSearch(MultipleSearchArgs &) override;

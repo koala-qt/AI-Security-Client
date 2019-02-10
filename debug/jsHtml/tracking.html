@@ -243,15 +243,12 @@
        new QWebChannel(qt.webChannelTransport, function(channel){
          window.Bridge = channel.objects.Bridge;
          Bridge.sigTrackingDataChanged.connect(function(arr) { //连接Qt中brideg类的信号并定义执行代码
-			console.log(JSON.stringify(arr))
 			getCameraData(arr)
          });
 		Bridge.sigMovieingStart.connect(function() { //连接Qt中brideg类的信号并定义执行代码sigMovieStop
-			console.log("ffffffffffffff")
 			startLoading()
          });
 		Bridge.sigMovieStop.connect(function() { //连接Qt中brideg类的信号并定义执行代码
-			console.log("ssssssssss")
 			endLoading()
          });
          Bridge.onInitsized(); //调用Qt内的函数
@@ -335,10 +332,13 @@ function noData(){
     $('#haveData').hide()
 }
 function getCameraData(arr) {
-    
+    saveArr.forEach(item=>{
+        // $("#headImg").removeAttr('src')
+        $('#dialog').hide()
+    })
     saveArr = JSON.parse(JSON.stringify(arr))
     if(saveArr.length<1){
-        noData()
+        hideData()
     }
     else{
         endLoading()
@@ -391,7 +391,7 @@ function drawBeginCamera(arr) {
   console.log(newarr)
 }
 function setRightData(arr) {
-	$("#rightBox").empty()
+    $("#rightBox").empty();
     var box = document.getElementById('rightBox');
     arr.forEach((item, index) => {
         var holdTime = formatSeconds(item.holdTime)
@@ -407,7 +407,7 @@ function setRightData(arr) {
                             '</div>'+
                         '</div>'
         $("#rightBox").append(divHtml)
-    });
+    }); 
 }
 
 function formatSeconds(value) {

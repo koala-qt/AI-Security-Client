@@ -25,6 +25,7 @@ public:
     QString searchByImage(RestServiceI::SearchUseImageArgs &, QVector<RestServiceI::DataRectureItem> &resVec);
     QString combinationSearch(RestServiceI::CombinationSearchArgs &, RestServiceI::CombinationSearchReturenData &resData);
     QString multipleSearch(RestServiceI::MultipleSearchArgs &,QVector<RestServiceI::MultipleSearchItem> &);
+    QString getFaceLinkDataColl(RestServiceI::FaceLinkDataCollArgs &args, RestServiceI::FaceLinkDataCollReturn &resDatas);
 
 private:
     QString host_;

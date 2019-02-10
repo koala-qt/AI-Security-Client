@@ -407,7 +407,9 @@ void FaceSearch::slotAddRow(QVector<RestServiceI::DataRectureItem> info)
         m_tableW->setItem(m_tableW->rowCount() - 1,2,item);
 
         item = new QTableWidgetItem;
-        item->setText(QString::number(itemData.similarity));
+        QString similarityStr;
+        similarityStr.setNum(itemData.similarity * 100,'g',4);
+        item->setText(similarityStr + '%');
         item->setTextAlignment(Qt::AlignCenter);
         m_tableW->setItem(m_tableW->rowCount() - 1,3,item);
 

@@ -12,8 +12,6 @@ QT_FORWARD_DECLARE_CLASS(QListWidget)
 QT_FORWARD_DECLARE_CLASS(QComboBox)
 QT_FORWARD_DECLARE_CLASS(QMenu)
 QT_FORWARD_DECLARE_CLASS(NoDataTip)
-#define CAPTUREITEMROWCOUTN 6
-#define CAPTUREITEMCOLCOUTN 14
 class CaptureSearch : public WidgetI
 {
     Q_OBJECT
@@ -32,6 +30,7 @@ private:
     QPushButton *m_searchBtn{nullptr};
     PageIndicator *m_pageIndicator{nullptr};
     QListWidget *m_listW{nullptr};
+    int dataRows_,dataCols_;
     QSize itemSize_,iconSize_;
     bool needUpdatePageInfo_ = false;
     QMenu *menu_{nullptr};

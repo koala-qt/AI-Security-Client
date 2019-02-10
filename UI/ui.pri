@@ -46,7 +46,9 @@ HEADERS += \
     $$PWD/combinationpage.h \
     $$PWD/semanticsearchpage.h \
     $$PWD/informationdialog.h \
-    $$PWD/nodatatip.h
+    $$PWD/nodatatip.h \
+    $$PWD/dateanalysis.h \
+    $$PWD/facelinktable.h
 
 SOURCES += \
     $$PWD/koalawidgetmanager.cpp \
@@ -93,4 +95,6 @@ SOURCES += \
     $$PWD/combinationpage.cpp \
     $$PWD/semanticsearchpage.cpp \
     $$PWD/informationdialog.cpp \
-    $$PWD/nodatatip.cpp
+    $$PWD/nodatatip.cpp \
+    $$PWD/dateanalysis.cpp \
+    $$PWD/facelinktable.cpp

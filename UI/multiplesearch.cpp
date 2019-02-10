@@ -24,7 +24,6 @@ MultipleSearch::MultipleSearch(WidgetManagerI *wm, WidgetI *parent):
     WidgetI(wm,parent)
 {
     setObjectName(tr("Multiple search"));
-    backImg_.load("images/Mask.png");
     QVBoxLayout *mainLay = new QVBoxLayout;
     imgList_ = new QListWidget;
     dataList_ = new QListWidget;
@@ -254,13 +253,6 @@ void MultipleSearch::resizeEvent(QResizeEvent *event)
             imgList_->addItem(item);
         }
     }
-}
-
-void MultipleSearch::paintEvent(QPaintEvent *event)
-{
-    Q_UNUSED(event)
-    QPainter p(this);
-    p.drawImage(rect(),backImg_);
 }
 
 void MultipleSearch::getCameraInfo()

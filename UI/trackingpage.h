@@ -16,9 +16,6 @@ public:
     void setUserStyle(WidgetManagerI::SkinStyle s) override;
     void setImgageOid(QImage,QString);
 
-protected:
-    void paintEvent(QPaintEvent *event) override;
-
 private:
     QLabel *threshL_{nullptr},*startTimeL_{nullptr},*endTimeL_{nullptr};
     QPushButton *imgBtn_{nullptr},*searchBtn_{nullptr};
@@ -26,7 +23,6 @@ private:
     QDateTimeEdit *startTimeEdit_,*endTimeEdit_{nullptr};
     TrackingWebView *dataView_{nullptr};
 
-    QImage backImg_;
     QString curOid_,hostname_;
     QMap<QString,QString> curCameraMap_;
     void getCameraInfo();

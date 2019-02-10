@@ -20,7 +20,6 @@ TrackingPage::TrackingPage(WidgetManagerI *wm, WidgetI *parent):
     WidgetI(wm,parent)
 {
     setObjectName(tr("Tracking"));
-    backImg_.load("images/Mask.png");
     imgBtn_ = new QPushButton;
     searchBtn_ = new QPushButton(tr("Search"));
     startTimeL_ = new QLabel(tr("Starting time"));
@@ -147,12 +146,6 @@ void TrackingPage::setImgageOid(QImage img, QString oid)
     QPixmap pix = QPixmap::fromImage(img.scaled(imgBtn_->iconSize()));
     imgBtn_->setIcon(pix);
     imgBtn_->setProperty("pixmap",pix);
-}
-
-void TrackingPage::paintEvent(QPaintEvent *event)
-{
-    QPainter p(this);
-    p.drawImage(rect(),backImg_);
 }
 
 void TrackingPage::getCameraInfo()

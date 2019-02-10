@@ -20,7 +20,6 @@ public:
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
-    void paintEvent(QPaintEvent *event) override;
 
 private:
     const int itemCount_ = 4;
@@ -33,7 +32,6 @@ private:
     QMenu *dataMenu_{nullptr};
 
     NoDataTip *noDataW_{nullptr};
-    QImage backImg_;
     QMap<QString,QString> curCameraMapInfo_;
 
     void getCameraInfo();

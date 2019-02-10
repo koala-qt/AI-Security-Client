@@ -1,57 +1,44 @@
-#include <QTreeWidget>
 #include <QHBoxLayout>
-#include <QStackedWidget>
+#include <QEvent>
+#include <QTreeWidget>
 #include <QPainter>
 #include <QScrollBar>
 #include <QHeaderView>
-#include <QEvent>
-#include "semanticsearchpage.h"
-#include "targetsearch.h"
-#include "capturesearch.h"
-#include "facesearch.h"
-#include "combinationpage.h"
-#include "multiplesearch.h"
+#include <QStackedWidget>
+#include <QTabWidget>
+#include "dateanalysis.h"
+#include "trackingpage.h"
+#include "facelinktable.h"
+#include "facelinkpage.h"
 
-TargetSearch::TargetSearch(WidgetManagerI *wm, WidgetI *parent):
+DateAnalysis::DateAnalysis(WidgetManagerI *wm, WidgetI *parent):
     WidgetI(wm,parent)
 {
-    setObjectName(tr("Target search"));
+    setObjectName(tr("Date analysis"));
     backImg_.load("images/Mask.png");
     treeW_ = new QTreeWidget;
     stackedW_ = new QStackedWidget;
-    capturePage_ = new CaptureSearch(wm);
-    semanticSearPage_ = new SemanticSearchPage(wm);
-    faceSearchPage_ = new FaceSearch(wm);
-    combinationPage_ = new CombinationPage(wm);
-    multiPleSearchPage_ = new MultipleSearch(wm);
     QHBoxLayout *mainLay = new QHBoxLayout;
-    mainLay->addWidget(treeW_,33);
-    mainLay->addWidget(stackedW_,155);
-    mainLay->setContentsMargins(20,30,20,25);
-    mainLay->setSpacing(20);
+    mainLay->addWidget(treeW_,327);
+    mainLay->addWidget(stackedW_,1890);
     setLayout(mainLay);
 
-    stackedW_->addWidget(capturePage_);
-    stackedW_->addWidget(semanticSearPage_);
-    stackedW_->addWidget(faceSearchPage_);
-    stackedW_->addWidget(combinationPage_);
-    stackedW_->addWidget(multiPleSearchPage_);
-    capturePage_->installEventFilter(this);
-    semanticSearPage_->installEventFilter(this);
-    faceSearchPage_->installEventFilter(this);
-    multiPleSearchPage_->installEventFilter(this);
+    trackingW_ = new TrackingPage(wm);
+    tabWidgetW_ = new QTabWidget;
+    faceLinkTable_ = new FacelinkTable(wm);
+    faceLinkPage_ = new FaceLinkPage(wm);
+    tabWidgetW_->addTab(faceLinkTable_,faceLinkTable_->objectName());
+    tabWidgetW_->addTab(faceLinkPage_,faceLinkPage_->objectName());
+    stackedW_->addWidget(trackingW_);
+    stackedW_->addWidget(tabWidgetW_);
+    stackedW_->installEventFilter(this);
     QVector<itemData> devicesVec;
     itemData items;
-    items.name = capturePage_->objectName();
+    items.name = trackingW_->objectName();
     items.value = 0;
     devicesVec << items;
-    items.name = semanticSearPage_->objectName();
+    items.name = faceLinkTable_->objectName();
     items.value = 1;
-    devicesVec << items;
-    items.name = tr("Image search");
-    items.value = 2;
-    items.childrens << itemData{"Face search",2,QVector<itemData>()} << itemData{"Combination search",3,QVector<itemData>()}
-                    << itemData{"Multiple search",4,QVector<itemData>()};
     devicesVec << items;
     for(auto value : devicesVec){
         createTreeItem(treeW_,nullptr,value);
@@ -64,9 +51,8 @@ TargetSearch::TargetSearch(WidgetManagerI *wm, WidgetI *parent):
     treeW_->setCurrentItem(treeW_->topLevelItem(0));
 }
 
-void TargetSearch::setUserStyle(WidgetManagerI::SkinStyle s)
+void DateAnalysis::setUserStyle(WidgetManagerI::SkinStyle s)
 {
-    QPalette pal;
     if(WidgetManagerI::Danyahei == s){
         treeW_->setStyleSheet("QTreeView{"
                                "border:none;"
@@ -123,17 +109,52 @@ void TargetSearch::setUserStyle(WidgetManagerI::SkinStyle s)
                                          "border:none;"
                                          "background-color: transparent;"
                                          "}");
+        tabWidgetW_->setStyleSheet("QTabBar{"
+                                  "border: 0px;"
+                                  "background: transparent;"
+                                  "}"
+                                  "QTabWidget::tab-bar"
+                                  "{"
+                                  "background-color: red;"
+                                  "subcontrol-position: left;"
+                                  "}"
+                                  "QTabBar::tab{"
+                                  "min-width: 120px;"
+                                  "min-height: 40px;"
+                                  "color: white;"
+                                  "background: transparent;"
+                                  "}"
+                                  "QTabBar::tab:selected{"
+                                  "background: rgba(255,255,255,0.3);"
+                                  "border: none;"
+                                  "}"
+                                  "QTabWidget::pane{"
+                                  "border-top: 1px solid rgba(255,255,255,0.4);"
+                                  "background: transparent;"
+                                  "}");
     }
 }
 
-void TargetSearch::paintEvent(QPaintEvent *event)
+bool DateAnalysis::eventFilter(QObject *watched, QEvent *event)
+{
+    if(qobject_cast<QWidget*>(watched) == stackedW_ && event->type() == QEvent::Paint){
+        QPainter p(stackedW_);
+        p.setPen(Qt::NoPen);
+        p.setBrush(QColor(0,0,0,50));
+        p.drawRoundedRect(stackedW_->rect().adjusted(0,0,-p.pen().width(),-p.pen().width()),4,4);
+    }
+
+    return WidgetI::eventFilter(watched,event);
+}
+
+void DateAnalysis::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event)
     QPainter p(this);
     p.drawImage(rect(),backImg_);
 }
 
-void TargetSearch::createTreeItem(QTreeWidget *treeW, QTreeWidgetItem *parentItem, TargetSearch::itemData &items)
+void DateAnalysis::createTreeItem(QTreeWidget *treeW, QTreeWidgetItem *parentItem, DateAnalysis::itemData &items)
 {
     QTreeWidgetItem *item{nullptr};
     if(parentItem){
@@ -150,24 +171,11 @@ void TargetSearch::createTreeItem(QTreeWidget *treeW, QTreeWidgetItem *parentIte
     }
 }
 
-void TargetSearch::slotTreeWidgetItemClicked(QTreeWidgetItem *item, int column)
+void DateAnalysis::slotTreeWidgetItemClicked(QTreeWidgetItem *item, int column)
 {
-    if(column != 0){
+    if(column != 0 || !item->type()){
         return;
     }
 
     stackedW_->setCurrentIndex(item->data(0,Qt::UserRole).toInt());
-}
-
-bool TargetSearch::eventFilter(QObject *watched, QEvent *event)
-{
-    QWidget *watchedWid = qobject_cast<QWidget*>(watched);
-    if((watchedWid == capturePage_ || watchedWid == semanticSearPage_ || watchedWid == faceSearchPage_ || watchedWid == multiPleSearchPage_) && event->type() == QEvent::Paint){
-        QPainter p(watchedWid);
-        p.setPen(Qt::NoPen);
-        p.setBrush(QColor(0,0,0,50));
-        p.drawRoundedRect(stackedW_->rect().adjusted(0,0,-p.pen().width(),-p.pen().width()),4,4);
-    }
-
-    return WidgetI::eventFilter(watched,event);
 }

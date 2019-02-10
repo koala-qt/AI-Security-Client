@@ -25,8 +25,7 @@
 FaceLinkPage::FaceLinkPage(WidgetManagerI *wm, WidgetI *parent) :
   WidgetI(wm,parent)
 {
-    setObjectName(tr("Face Link"));
-    backImg_.load("images/Mask.png");
+    setObjectName(tr("Upload"));
     levelCombox_ = new QComboBox;
     imgBtn_ = new QPushButton;
     searchBtn_ = new QPushButton(tr("search"));
@@ -80,8 +79,7 @@ FaceLinkPage::FaceLinkPage(WidgetManagerI *wm, WidgetI *parent) :
     startTimeEdit_->setDateTime(QDateTime::currentDateTime().addDays(-1));
     endTimeEdit_->setDateTime(QDateTime::currentDateTime());
     imgBtn_->setFocusPolicy(Qt::NoFocus);
-    levelCombox_->addItems(QStringList() << tr("2") << tr("3") << tr("4") << tr("5") << tr("6"));
-    levelCombox_->setCurrentIndex(1);
+    levelCombox_->addItems(QStringList() << tr("1") << tr("2") << tr("3") << tr("4") << tr("5") << tr("6"));
 
     connect(searchBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSearchBtnClicked()));
     connect(imgBtn_,SIGNAL(clicked(bool)),this,SLOT(slotImgBtnClicked()));
@@ -158,13 +156,6 @@ void FaceLinkPage::setFaceLinkOidAndImg(QString oid,QPixmap pix)
     imgBtn_->setProperty("pixmap",pix);
 }
 
-void FaceLinkPage::paintEvent(QPaintEvent *event)
-{
-    Q_UNUSED(event)
-    QPainter p(this);
-    p.drawImage(rect(),backImg_);
-}
-
 void FaceLinkPage::slotSearchBtnClicked()
 {
 #if 0
@@ -183,7 +174,11 @@ void FaceLinkPage::slotSearchBtnClicked()
     args.startT = startTimeEdit_->dateTime();
     args.thresh = 0.6;
 #if 1
+    waitingL_ = new WaitingLabel(dataView_);
     connect(serviceI,&RestServiceI::sigError,this,[this](QString str){
+        waitingL_->close();
+        delete waitingL_;
+        waitingL_ = nullptr;
         dataView_->stopWaiting();
         InformationDialog infoDialog(this);
         infoDialog.setUserStyle(widgetManger()->currentStyle());
@@ -196,11 +191,7 @@ void FaceLinkPage::slotSearchBtnClicked()
 #endif
     serviceI->generateFaceLink(args);
     startWorker(worker);
-    QTimer::singleShot(500,this,[this]{
-        if(!searchBtn_->isEnabled()){
-            dataView_->startWaiting();
-        }
-    });
+    waitingL_->show(500);
     searchBtn_->setEnabled(false);
 }
 
@@ -210,6 +201,9 @@ void FaceLinkPage::slotFaceLinkFinished(QString oid)
     BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
     RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
     connect(serviceI,&RestServiceI::sigError,this,[this](QString str){
+        waitingL_->close();
+        delete waitingL_;
+        waitingL_ = nullptr;
         dataView_->stopWaiting();
         InformationDialog infoDialog(this);
         infoDialog.setUserStyle(widgetManger()->currentStyle());
@@ -229,7 +223,9 @@ void FaceLinkPage::slotFaceLinkFinished(QString oid)
 
 void FaceLinkPage::slotFaceLinkTree(QJsonObject jsObj)
 {
-    dataView_->stopWaiting();
+    waitingL_->close();
+    delete waitingL_;
+    waitingL_ = nullptr;
     searchBtn_->setEnabled(true);
     if(jsObj.isEmpty()){
         InformationDialog infoDialog(this);

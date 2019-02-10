@@ -2,7 +2,6 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QGridLayout>
-#include <QTreeWidget>
 #include <QListWidget>
 #include <QDateTimeEdit>
 #include <QPushButton>
@@ -16,10 +15,9 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QFileDialog>
-#include <QPainter>
-#include <QStandardPaths>
 #include <QSettings>
-#include "semanticsearchpage.h"
+#include <QStandardPaths>
+#include "facelinktable.h"
 #include "pageindicator.h"
 #include "waitinglabel.h"
 #include "sceneimagedialog.h"
@@ -31,10 +29,10 @@
 #include "informationdialog.h"
 #include "nodatatip.h"
 
-SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
+FacelinkTable::FacelinkTable(WidgetManagerI *wm, WidgetI *parent):
     WidgetI(wm,parent)
 {
-    setObjectName(tr("Semantic search"));
+    setObjectName(tr("Face link"));
     posL_ = new QLabel(tr("Position"));
     posCombox_ = new QComboBox;
     startTimeL_ = new QLabel(tr("Starting time"));
@@ -42,13 +40,11 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
     endTimeL_ = new QLabel(tr("Ending time"));
     endTimeEdit_ = new QDateTimeEdit;
     searchBtn_ = new QPushButton(tr("Search"));
-    attributTreeW_ = new QTreeWidget;
     dataListW_ = new QListWidget;
-    centeVSplieL_ = new QLabel;
     pageIndicator_ = new PageIndicator;
     dataMenu_ = new QMenu(dataListW_);
 
-    QVBoxLayout *vlay = new QVBoxLayout;
+    QVBoxLayout *mainLay = new QVBoxLayout;
     QGridLayout *topGridLay = new QGridLayout;
     topGridLay->addWidget(posL_,0,0,1,1);
     topGridLay->addWidget(posCombox_,0,1,1,1);
@@ -60,16 +56,11 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
     topGridLay->setAlignment(Qt::AlignLeft);
     topGridLay->setSpacing(25);
     topGridLay->setMargin(0);
-    vlay->addLayout(topGridLay);
-    vlay->addWidget(dataListW_);
-    vlay->addWidget(pageIndicator_);
-    QHBoxLayout *mainLay = new QHBoxLayout;
-    mainLay->addLayout(vlay);
-    mainLay->addWidget(centeVSplieL_);
-    mainLay->addWidget(attributTreeW_);
+    mainLay->addLayout(topGridLay);
+    mainLay->addWidget(dataListW_);
+    mainLay->addWidget(pageIndicator_);
     setLayout(mainLay);
-
-    attributTreeW_->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Preferred);
+#if 0
     dataMenu_->addAction(tr("Details"),[this]{
         BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
         RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
@@ -167,10 +158,6 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
     });
     dataMenu_->addAction(tr("Tracking"),[this]{
         TrackingPage *view = new TrackingPage(widgetManger());
-        QPalette pal = view->palette();
-        pal.setColor(QPalette::Background,QColor(77,63,60));
-        view->setPalette(pal);
-        view->setAutoFillBackground(true);
         view->setUserStyle(widgetManger()->currentStyle());
         view->setAttribute(Qt::WA_DeleteOnClose);
         view->setWindowFlags(Qt::Window | Qt::Dialog);
@@ -180,9 +167,13 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
                            dataListW_->currentItem()->data(Qt::UserRole + 4).toString());
         view->show();
     });
-#if 0
+#endif
     dataMenu_->addAction(tr("Face link"),[this]{
         FaceLinkPage *faceLinkP = new FaceLinkPage(widgetManger(),this);
+        QPalette pal = faceLinkP->palette();
+        pal.setColor(QPalette::Background,QColor(100,100,100));
+        faceLinkP->setPalette(pal);
+        faceLinkP->setAutoFillBackground(true);
         faceLinkP->setUserStyle(widgetManger()->currentStyle());
         faceLinkP->setAttribute(Qt::WA_DeleteOnClose);
         faceLinkP->setWindowFlags(Qt::Window | Qt::Dialog);
@@ -192,7 +183,6 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
         faceLinkP->resize(1200,900);
         faceLinkP->show();
     });
-#endif
     dataMenu_->addAction(tr("Save face image"),[this]{
         QString personId = dataListW_->currentItem()->data(Qt::UserRole + 4).toString();
         QString filePath =  QFileDialog::getSaveFileName(this,tr("Save face image"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/" + personId + ".jpg",tr("Images (*.png *.jpg)"));
@@ -215,41 +205,6 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
     dataListW_->setMovement(QListWidget::Static);
     dataListW_->setResizeMode(QListWidget::Adjust);
     dataListW_->setViewMode(QListWidget::IconMode);
-    centeVSplieL_->setFixedWidth(1);
-    QVector<itemData> devicesVec;
-    itemData items;
-    items.name = tr("faceAttribute");
-    items.value = 0;
-    items.childrens << itemData{tr("5_o_Clock_Shadow "),0,QVector<itemData>()} << itemData{tr("Arched_Eyebrows"),0,QVector<itemData>()}
-                    << itemData{tr("Attractive"),0,QVector<itemData>()} << itemData{tr("Bags_Under_Eyes"),0,QVector<itemData>()}
-                    << itemData{tr("Bald"),0,QVector<itemData>()} << itemData{tr("Bangs"),0,QVector<itemData>()}
-                    << itemData{tr("Big_Lips"),0,QVector<itemData>()} << itemData{tr("Big_Nose"),0,QVector<itemData>()}
-                    << itemData{tr("Black_Hair"),0,QVector<itemData>()} << itemData{tr("Blond_Hair"),0,QVector<itemData>()}
-                    << itemData{tr("Blurry"),0,QVector<itemData>()} << itemData{tr("Brown_Hair"),0,QVector<itemData>()}
-                    << itemData{tr("Bushy_Eyebrows"),0,QVector<itemData>()} << itemData{tr("Chubby"),0,QVector<itemData>()}
-                    << itemData{tr("Double_Chin"),0,QVector<itemData>()} << itemData{tr("Eyeglasses"),0,QVector<itemData>()}
-                    << itemData{tr("Goatee"),0,QVector<itemData>()} << itemData{tr("Gray_Hair"),0,QVector<itemData>()}
-                    << itemData{tr("Heavy_Makeup"),0,QVector<itemData>()} << itemData{tr("High_Cheekbones"),0,QVector<itemData>()}
-                    << itemData{tr("Male/Female"),0,QVector<itemData>()} << itemData{tr("Mouth_Slightly_Open"),0,QVector<itemData>()}
-                    << itemData{tr("Mustache"),0,QVector<itemData>()} << itemData{tr("Narrow_Eyes"),0,QVector<itemData>()}
-                    << itemData{tr("No_Beard"),0,QVector<itemData>()} << itemData{tr("Oval_Face"),0,QVector<itemData>()}
-                    << itemData{tr("Pale_Skin"),0,QVector<itemData>()} << itemData{tr("Pointy_Nose"),0,QVector<itemData>()}
-                    << itemData{tr("Receding_Hairline"),0,QVector<itemData>()} << itemData{tr("Rosy_Cheeks"),0,QVector<itemData>()}
-                    << itemData{tr("Sideburns"),0,QVector<itemData>()} << itemData{tr("Smiling"),0,QVector<itemData>()}
-                    << itemData{tr("Straight_Hair"),0,QVector<itemData>()} << itemData{tr("Wavy_Hair"),0,QVector<itemData>()}
-                    << itemData{tr("Wearing_Earrings"),0,QVector<itemData>()} << itemData{tr("Wearing_Hat"),0,QVector<itemData>()}
-                    << itemData{tr("Wearing_Lipstick"),0,QVector<itemData>()} << itemData{tr("Young"),0,QVector<itemData>()};
-    devicesVec << items;
-    for(auto value : devicesVec){
-        createTreeItem(attributTreeW_,nullptr,value);
-    }
-    attributTreeW_->expandItem(attributTreeW_->topLevelItem(0));
-    attributTreeW_->setHeaderLabel(tr("Attribule labels"));
-    attributTreeW_->headerItem()->setTextAlignment(0,Qt::AlignCenter);
-    attributTreeW_->header()->setStretchLastSection(true);
-    attributTreeW_->header()->setIconSize(QSize(50,50));
-    QSize s = attributTreeW_->headerItem()->sizeHint(0);
-    attributTreeW_->headerItem()->setSizeHint(0,QSize(s.width(),30));
     posCombox_->setMinimumHeight(44);
     posCombox_->setMaximumWidth(160);
     startTimeEdit_->setMinimumHeight(44);
@@ -268,12 +223,12 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
     connect(searchBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSearchBtnClicked()));
 
     QSettings config("config.ini",QSettings::IniFormat);
-    dataRows_ = config.value("App/SemanticRows").toInt();
-    dataCols_ = config.value("App/SemanticCols").toInt();
+    dataRows_ = config.value("App/FaceLinkCollRows").toInt();
+    dataCols_ = config.value("App/FaceLinkCollCols").toInt();
     getCameraInfo();
 }
 
-void SemanticSearchPage::setUserStyle(WidgetManagerI::SkinStyle s)
+void FacelinkTable::setUserStyle(WidgetManagerI::SkinStyle s)
 {
     if(WidgetManagerI::Danyahei == s){
         posL_->setStyleSheet("QLabel{"
@@ -418,76 +373,18 @@ void SemanticSearchPage::setUserStyle(WidgetManagerI::SkinStyle s)
                                                     "border: none;"
                                                     "border-radius: 0px;"
                                                     "}");
-        centeVSplieL_->setStyleSheet("QLabel{"
-                                     "background-color: rgba(255,255,255,0.4);"
-                                     "}");
         dataMenu_->setStyleSheet("QMenu{"
                                  "background-color: rgb(75,75,75);"
                                  "}"
                                  "QMenu::item:selected{"
                                  "background-color: rgba(255,255,255,0.4);"
                                  "}");
-        attributTreeW_->setStyleSheet("QTreeView{"
-                               "border:none;"
-                               "font-size: 16px;"
-                               "color: #CECECE;"
-                               "border-radius: 10px;"
-                               "background-color: transparent;}");
-        attributTreeW_->verticalScrollBar()->setStyleSheet(
-                                                    "QScrollBar:vertical{"
-                                                    "background: transparent;"
-                                                    "border-radius: 10px;"
-                                                    "border: none;"
-                                                    "width: 13px;"
-                                                    "}"
-                                                    "QScrollBar::handle:vertical{"
-                                                    "background: rgba(255,255,255,0.5);"
-                                                    "border-radius: 5px;"
-                                                    "}"
-                                                    "QScrollBar::add-line:vertical{"
-                                                    "background: transparent;"
-                                                    "border:0px solid #274168;"
-                                                    "border-radius: 5px;"
-                                                    "min-height: 10px;"
-                                                    "width: 13px;"
-                                                    "}"
-                                                    "QScrollBar::sub-line:vertical{"
-                                                    "background: transparent;"
-                                                    "border:0px solid #274168;"
-                                                    "min-height: 10px;"
-                                                    "width: 13px;"
-                                                    "}"
-                                                    "QScrollBar::up-arrow:vertical{"
-                                                    "subcontrol-origin: margin;"
-                                                    "height: 0px;"
-                                                    "border:0 0 0 0;"
-                                                    "visible:false;"
-                                                    "}"
-                                                    "QScrollBar::down-arrow:vertical{"
-                                                    "subcontrol-origin: margin;"
-                                                    "height: 0px;"
-                                                    "visible:false;"
-                                                    "}"
-                                                    "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
-                                                    "background: transparent;"
-                                                    "border-radius: 10px;"
-                                                    "}");
-        attributTreeW_->header()->setStyleSheet("QHeaderView{"
-                                         "background-color: transparent;"
-                                         "border-radius:10px;"
-                                         "}"
-                                         "QHeaderView::section{"
-                                         "color: #CECECE;"
-                                         "font-size:16px;"
-                                         "border:none;"
-                                         "background-color: transparent;"
-                                         "}");
         noDataW_->setUserStyle(s);
     }
     pageIndicator_->setUserStyle();
 }
 
-void SemanticSearchPage::resizeEvent(QResizeEvent *event)
+void FacelinkTable::resizeEvent(QResizeEvent *event)
 {
     int w = (dataListW_->width() - style()->pixelMetric(QStyle::PM_ScrollBarSliderMin) - dataListW_->frameWidth() * 2 - (dataCols_ + 1) * dataListW_->spacing()) / dataCols_;
     int h = (dataListW_->height() - style()->pixelMetric(QStyle::PM_ScrollBarSliderMin)  - dataListW_->frameWidth() * 2 - (dataRows_ + 1) * dataListW_->spacing()) / dataRows_;
@@ -506,7 +403,7 @@ void SemanticSearchPage::resizeEvent(QResizeEvent *event)
     return WidgetI::resizeEvent(event);
 }
 
-bool SemanticSearchPage::event(QEvent *event)
+bool FacelinkTable::event(QEvent *event)
 {
     if(event->type() == QEvent::Show  && searchBtn_->isEnabled()){
         endTimeEdit_->setDateTime(QDateTime::currentDateTime());
@@ -516,7 +413,7 @@ bool SemanticSearchPage::event(QEvent *event)
     return WidgetI::event(event);
 }
 
-void SemanticSearchPage::getCameraInfo()
+void FacelinkTable::getCameraInfo()
 {
     BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
     RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
@@ -525,14 +422,14 @@ void SemanticSearchPage::getCameraInfo()
     startWorker(worker);
 }
 
-void SemanticSearchPage::slotSemanticSearch(int page)
+void FacelinkTable::slotSemanticSearch(int page)
 {
     BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
     RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
     WaitingLabel *label = new WaitingLabel(this);
-    label->setAttribute(Qt::WA_DeleteOnClose);
     connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
         label->close();
+        delete label;
         InformationDialog infoDialog(this);
         infoDialog.setUserStyle(widgetManger()->currentStyle());
         infoDialog.showMessage(str);
@@ -540,8 +437,9 @@ void SemanticSearchPage::slotSemanticSearch(int page)
         searchBtn_->setEnabled(true);
         noDataW_->show();
     });
-    connect(serviceI,&RestServiceI::sigSemanticSearch,this,[this,label](RestServiceI::SemanticReturnData &returnData){
+    connect(serviceI,&RestServiceI::sigFaceLinkDataColl,this,[this,label](RestServiceI::FaceLinkDataCollReturn &returnData){
         label->close();
+        delete label;
         pageIndicator_->adjustRow();
         if(needUpdatePageInfo_){
             pageIndicator_->setPageInfo(returnData.totalPage,returnData.toatal);
@@ -579,15 +477,13 @@ void SemanticSearchPage::slotSemanticSearch(int page)
         pageIndicator_->setEnabled(true);
         searchBtn_->setEnabled(true);
     });
-    RestServiceI::SemanticSearchArgs args;
+    RestServiceI::FaceLinkDataCollArgs args;
     args.cameraId = curCameraId_;
-    args.mode = 0;
     args.startT = curStartTime_;
     args.endT = curEndTime_;
     args.pageNo = page;
     args.pageSize = dataRows_ * dataCols_;
-    args.faceAttributList = curfaceAttrList_;
-    serviceI->semanticSearch(args);
+    serviceI->getFaceLinkDataColl(args);
     startWorker(worker);
     label->show(500);
     pageIndicator_->setEnabled(false);
@@ -596,23 +492,8 @@ void SemanticSearchPage::slotSemanticSearch(int page)
     dataListW_->clear();
 }
 
-QStringList SemanticSearchPage::checkedAttrbute(QTreeWidgetItem *item)
+void FacelinkTable::slotSearchBtnClicked()
 {
-    QStringList attrbuteList;
-    QTreeWidgetItemIterator it(item);
-    while (*it) {
-        if ((*it)->type() && (*it)->checkState(0) == Qt::Checked){
-            attrbuteList << (*it)->text(0);
-        }
-        ++it;
-    }
-    return attrbuteList;
-}
-
-void SemanticSearchPage::slotSearchBtnClicked()
-{
-    curfaceAttrList_.clear();
-    curfaceAttrList_ = checkedAttrbute(attributTreeW_->topLevelItem(0));
     curCameraId_ = posCombox_->currentData().toString();
     curStartTime_ = startTimeEdit_->dateTime();
     curEndTime_ = endTimeEdit_->dateTime();
@@ -620,28 +501,12 @@ void SemanticSearchPage::slotSearchBtnClicked()
     slotSemanticSearch(1);
 }
 
-void SemanticSearchPage::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)
+void FacelinkTable::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)
 {
     posCombox_->clear();
     posCombox_->addItem(tr("Unlimited"),"");
     for (auto &info : data) {
         posCombox_->addItem(info.cameraPos,info.cameraId);
         cameraMapInfo_[info.cameraId] = info.cameraPos;
-    }
-}
-
-void SemanticSearchPage::createTreeItem(QTreeWidget *treeW, QTreeWidgetItem *parentItem, SemanticSearchPage::itemData &items)
-{
-    QTreeWidgetItem *item{nullptr};
-    if(parentItem){
-        item = new QTreeWidgetItem(parentItem, QStringList() << items.name, items.childrens.isEmpty());
-    }else{
-        item = new QTreeWidgetItem(treeW, QStringList() << items.name, items.childrens.isEmpty());
-    }
-    if(item->type()){
-        item->setCheckState(0,Qt::Unchecked);
-    }
-    for(auto value : items.childrens){
-        createTreeItem(treeW,item,value);
     }
 }

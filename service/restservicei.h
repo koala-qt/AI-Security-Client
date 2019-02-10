@@ -22,6 +22,7 @@ public:
         PersonDetailes,
         GenerateFaceLink,
         GetFaceLinkTreeData,
+        FaceLinkDataColl,
         GetImaeByUrl,
         SearchFaceLinkPoint,
         SearchABDoorTime,
@@ -224,6 +225,20 @@ public:
         int totalCount;
         QVector<DataRectureItem> data;
     };
+    struct FaceLinkDataCollArgs
+    {
+        int pageNo;
+        int pageSize;
+        QString cameraId;
+        QDateTime startT;
+        QDateTime endT;
+    };
+    struct FaceLinkDataCollReturn
+    {
+        int toatal;
+        int totalPage;
+        QVector<DataRectureItem> records;
+    };
     RestServiceI(QObject *parent = nullptr):QObject(parent){
         qRegisterMetaType<QVector<RestServiceI::CameraInfo>>("QVector<RestServiceI::CameraInfo>");
         qRegisterMetaType<PagedSnapFaceHis>("PagedSnapFaceHis");
@@ -242,10 +257,12 @@ public:
         qRegisterMetaType<RestServiceI::CaptureSearchReturnData>("RestServiceI::CaptureSearchReturnData");
         qRegisterMetaType<QVector<RestServiceI::MultipleSearchItem>>("QVector<RestServiceI::MultipleSearchItem>");
         qRegisterMetaType<RestServiceI::SceneInfo>("RestServiceI::SceneInfo");
+        qRegisterMetaType<RestServiceI::FaceLinkDataCollReturn>("RestServiceI::FaceLinkDataCollReturn");
     }
     virtual void login(const LoginParameter &) = 0;
     virtual void getSceneInfo(const QString old) = 0;
     virtual void faceTracking(FaceTrackingArgs) = 0;
+    virtual void getFaceLinkDataColl(FaceLinkDataCollArgs &args) = 0;
     virtual void getPersonDetails(QString &) = 0;
     virtual void combinationSearch(CombinationSearchArgs &) = 0;
     virtual void searchAbDoorTime(SearchABDoorTimeArg &) = 0;
@@ -296,6 +313,7 @@ signals:
     void sigTrackingNew(QVector<TrackingReturnData>);
     void sigCombinationSearch(CombinationSearchReturenData);
     void sigMultipleSearch(QVector<RestServiceI::MultipleSearchItem>);
+    void sigFaceLinkDataColl(RestServiceI::FaceLinkDataCollReturn);
 };
 
 Q_DECLARE_METATYPE(RestServiceI::LoginParameter)
@@ -309,4 +327,5 @@ Q_DECLARE_METATYPE(RestServiceI::MultipleSearchArgs)
 Q_DECLARE_METATYPE(RestServiceI::SearchABDoorTimeArg)
 Q_DECLARE_METATYPE(RestServiceI::CombinationSearchArgs)
 Q_DECLARE_METATYPE(RestServiceI::CaptureSearchArgs)
+Q_DECLARE_METATYPE(RestServiceI::FaceLinkDataCollArgs)
 #endif // RESTSERVICEI_H

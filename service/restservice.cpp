@@ -44,6 +44,11 @@ void BLL::RestService::getSceneInfo(const QString old)
     pushBackTask(GetSceneInfo,QVariant::fromValue(old));
 }
 
+void BLL::RestService::getFaceLinkDataColl(RestServiceI::FaceLinkDataCollArgs &args)
+{
+    pushBackTask(FaceLinkDataColl,QVariant::fromValue(args));
+}
+
 void BLL::RestService::faceTracking(RestServiceI::FaceTrackingArgs args)
 {
     pushBackTask(FaceTracking,QVariant::fromValue(args));
@@ -264,6 +269,15 @@ void BLL::RestService::run()
             emit sigError(QString::fromStdString(errorStr));
         }
 #endif
+    }else if(argType == FaceLinkDataColl){
+        DLL::CloudHttpDao httpDao;
+        RestServiceI::FaceLinkDataCollReturn resData;
+        QString qerrorStr = httpDao.getFaceLinkDataColl(args.second.value<FaceLinkDataCollArgs>(),resData);
+        if(qerrorStr.isEmpty()){
+            emit sigFaceLinkDataColl(resData);
+        }else{
+            emit sigError(qerrorStr);
+        }
     }else if(argType == CaptureSearch){
         DLL::CloudHttpDao httpDao;
         RestServiceI::CaptureSearchReturnData resdatas;
