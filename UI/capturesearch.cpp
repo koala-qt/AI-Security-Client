@@ -424,6 +424,7 @@ void CaptureSearch::slotOnSearch(RestServiceI::CaptureSearchReturnData data)
         item->setIcon(QPixmap::fromImage(info.img));
         item->setData(Qt::UserRole+1,info.img);
         item->setData(Qt::UserRole+2,info.sceneId);
+        item->setToolTip(curCameraMapInfo_.value(info.cameraId));
         item->setTextAlignment(Qt::AlignHCenter);
         m_listW->addItem(item);
     }
