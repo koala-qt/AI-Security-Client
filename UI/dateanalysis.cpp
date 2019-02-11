@@ -14,7 +14,7 @@
 DateAnalysis::DateAnalysis(WidgetManagerI *wm, WidgetI *parent):
     WidgetI(wm,parent)
 {
-    setObjectName(tr("Date analysis"));
+    setObjectName(tr("Data analysis"));
     backImg_.load("images/Mask.png");
     treeW_ = new QTreeWidget;
     stackedW_ = new QStackedWidget;
