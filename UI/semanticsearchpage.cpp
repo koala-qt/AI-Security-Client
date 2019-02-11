@@ -168,7 +168,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
     dataMenu_->addAction(tr("Tracking"),[this]{
         TrackingPage *view = new TrackingPage(widgetManger());
         QPalette pal = view->palette();
-        pal.setColor(QPalette::Background,QColor(77,63,60));
+        pal.setColor(QPalette::Background,QColor(100,100,100));
         view->setPalette(pal);
         view->setAutoFillBackground(true);
         view->setUserStyle(widgetManger()->currentStyle());

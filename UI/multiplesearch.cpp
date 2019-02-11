@@ -307,12 +307,13 @@ void MultipleSearch::slotItemClicked(QListWidgetItem *item)
 {
     QString filePath = QFileDialog::getOpenFileName(this,tr("添加图片"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),"*.png *.jpg *.tmp");
     QPixmap pix(filePath);
+    bool isValid = true;
     if(pix.isNull()){
-        item->setData(Qt::UserRole,false);
-        return;
+        pix = QPixmap("images/person-face-back.png");
+        isValid = false;
     }
-    item->setIcon(pix);
-    item->setData(Qt::UserRole,true);
+    item->setIcon(pix.scaled(imgList_->iconSize()));
+    item->setData(Qt::UserRole,isValid);
     item->setData(Qt::UserRole + 1, pix.toImage());
 }
 

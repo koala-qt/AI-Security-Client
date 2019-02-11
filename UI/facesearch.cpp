@@ -175,6 +175,7 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
     m_pageIndicator->setPageInfo(0,0);
     m_tableW->setIconSize(QSize(112,112));
     m_tableW->setFocusPolicy(Qt::NoFocus);
+    m_tableW->setEditTriggers(QTableView::NoEditTriggers);
     m_tableW->horizontalHeader()->setHighlightSections(false);
     m_tableW->horizontalHeader()->setDefaultSectionSize(112);
     m_tableW->verticalHeader()->setDefaultSectionSize(112);
