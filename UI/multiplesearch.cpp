@@ -243,6 +243,12 @@ void MultipleSearch::setUserStyle(WidgetManagerI::SkinStyle style)
                                  "background-color: transparent;"
                                  "color: white;"
                                  "}");
+        dataMenu_->setStyleSheet("QMenu{"
+                                 "background-color: rgb(75,75,75);"
+                                 "}"
+                                 "QMenu::item:selected{"
+                                 "background-color: rgba(255,255,255,0.4);"
+                                 "}");
         QCursor imgListCursor = imgList_->cursor();
         imgListCursor.setShape(Qt::PointingHandCursor);
         imgList_->setCursor(imgListCursor);

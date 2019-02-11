@@ -123,9 +123,6 @@ void RealMonitorSetting::setUserStyle(WidgetManagerI::SkinStyle s)
     QPalette pal;
     QFont f;
     if(s == WidgetManagerI::Danyahei){
-        f = font();
-        f.setFamily("Arial");
-        setFont(f);
         pal = palette();
         pal.setColor(QPalette::Background,QColor(112,110,119));
         setPalette(pal);

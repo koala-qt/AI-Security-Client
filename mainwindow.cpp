@@ -8,6 +8,7 @@
 #include <QApplication>
 #include <QPainter>
 #include <QLinearGradient>
+#include <QFontMetrics>
 #include <QDesktopWidget>
 #include "UI/mainpage.h"
 #include "UI/targetsearch.h"
@@ -27,6 +28,8 @@ MainWindow::MainWindow(WidgetManagerI *wm, WidgetI *parent)
     logoLabel_->setPixmap(QPixmap("images/appLogo.png"));
 //    logoLabel_->setScaledContents(true);
     topBorderLine_ = new QLabel;
+    appNameL_ = new QLabel(qApp->applicationName());
+    appNameL_->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     topBorderLine_->hide();
     topBorderLine_->setFixedHeight(2);
     topWgt_ = new QWidget;
@@ -50,12 +53,14 @@ MainWindow::MainWindow(WidgetManagerI *wm, WidgetI *parent)
     }
 
     QHBoxLayout *hlay = new QHBoxLayout;
-    hlay->addWidget(logoLabel_);
-    hlay->addWidget(m_topList);
+    hlay->addWidget(logoLabel_,1);
+    hlay->addWidget(appNameL_,1);
+    hlay->addStretch(1);
+    hlay->addWidget(m_topList,10);
     hlay->setSpacing(15);
     hlay->setContentsMargins(15, 0, 0, 0);
     topWgt_->setLayout(hlay);
-    topWgt_->setMaximumHeight(60);
+    topWgt_->setMaximumHeight(80);
     mainLay->addWidget(topWgt_,1);
     mainLay->addWidget(topBorderLine_);
     mainLay->addWidget(m_centerW,16);
@@ -64,6 +69,21 @@ MainWindow::MainWindow(WidgetManagerI *wm, WidgetI *parent)
     setLayout(mainLay);
     m_topList->setCurrentRow(0);
     connect(m_topList,SIGNAL(currentRowChanged(int)),m_centerW,SLOT(setCurrentIndex(int)));
+
+
+    QFont f = font();
+    f.setFamily("Arial"); //DINCond-Bold、PingFang SC Regular、微软雅黑 Microsoft YaHei UI
+    setFont(f);
+
+    f = m_topList->font();
+    f.setFamily(font().family());
+    f.setPixelSize(25);
+    m_topList->setFont(f);
+
+    f = appNameL_->font();
+    f.setBold(true);
+    f.setPixelSize(28);
+    appNameL_->setFont(f);
 }
 
 MainWindow::~MainWindow()
@@ -73,16 +93,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::setUserStyle(WidgetManagerI::SkinStyle s)
 {
-    QFont f;
     QPalette pal;
     if(s == WidgetManagerI::Danyahei){
-        f = font();
-        f.setFamily("微软雅黑"); //DINCond-Bold、PingFang SC Regular、微软雅黑
-        setFont(f);
-
-        topWgt_->setStyleSheet("QWidget{"
-                               "background-color: rgb(59,71,79);"
-                               "}");
+        pal = topWgt_->palette();
+        pal.setColor(QPalette::Background,QColor(59,71,79));
+        topWgt_->setPalette(pal);
+        topWgt_->setAutoFillBackground(true);
 
         pal = topBorderLine_->palette();
         topBorderLine_->setLineWidth(topBorderLine_->height());
@@ -90,9 +106,10 @@ void MainWindow::setUserStyle(WidgetManagerI::SkinStyle s)
         pal.setColor(QPalette::Foreground,QColor(8,66,131));
         topBorderLine_->setPalette(pal);
 
-        f = m_topList->font();
-        f.setPixelSize(20);
-        m_topList->setFont(f);
+        pal = appNameL_->palette();
+        pal.setColor(QPalette::Foreground,QColor(255,255,255,150));
+        setPalette(pal);
+
         m_topList->setFrameStyle(QFrame::NoFrame);
         m_topList->setStyleSheet("QListWidget{"
                                  "background-color: transparent;"
@@ -116,11 +133,18 @@ void MainWindow::resizeEvent(QResizeEvent *event)
         item->setSizeHint(QSize((m_topList->width() - m_topList->frameWidth() * 2) / m_topList->count(),m_topList->height() - m_topList->frameWidth() * 2));
     }
 #else
-    int tabLength = m_topList->width() - 390;
-    int tabWidth = tabLength / m_topList->count();
+    QFontMetrics fs(m_topList->font());
+    int maxTabWidth = 0;
     for(int i = 0; i < m_topList->count(); i++){
         QListWidgetItem *item = m_topList->item(i);
-        item->setSizeHint(QSize(tabWidth,m_topList->height() - 2 * m_topList->frameWidth()));
+        int itemWidth = fs.width(item->text());
+        if(itemWidth > maxTabWidth){
+            maxTabWidth = itemWidth;
+        }
+    }
+    for(int i = 0; i < m_topList->count(); i++){
+        QListWidgetItem *item = m_topList->item(i);
+        item->setSizeHint(QSize(maxTabWidth + 10,m_topList->height() - 2 * m_topList->frameWidth() - 2 * m_topList->spacing()));
     }
 #endif
 }

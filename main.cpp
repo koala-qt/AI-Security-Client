@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     installTranslators();
 
     a.setAttribute(Qt::AA_ShareOpenGLContexts);
-    a.setApplicationName(QObject::tr("四川省公安边防总队智慧机场"));
+    a.setApplicationName(QObject::tr("Intelligent Security Surveillance System"));
 
     BLL::WorkerManager *wm = new BLL::BaseWorkerManager(QThreadPool::globalInstance());
     KoalaWidgetManager *widgetM = new KoalaWidgetManager;

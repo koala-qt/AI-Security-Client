@@ -24,7 +24,7 @@ private:
     QListWidget *m_topList{nullptr};
     QWidget *topWgt_{nullptr};
     QStackedWidget *m_centerW{nullptr};
-    QLabel *logoLabel_{nullptr},*topBorderLine_{nullptr};
+    QLabel *logoLabel_{nullptr},*topBorderLine_{nullptr},*appNameL_{nullptr};
 };
 
 #endif // MAINWINDOW_H

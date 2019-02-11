@@ -34,6 +34,12 @@ void RealPlayManager::setUserStyle(WidgetManagerI::SkinStyle s)
         pal = m_focusFrame->palette();
         pal.setColor(QPalette::Foreground,QColor(189,56,57));
         m_focusFrame->setPalette(pal);
+
+        for(int i = 0; i < m_mainLay->count(); i++){
+            QFont f = m_mainLay->itemAt(i)->widget()->font();
+            f.setFamily(font().family());
+            m_mainLay->itemAt(i)->widget()->setFont(f);
+        }
         break;
     default:
         break;

@@ -182,7 +182,6 @@ void TrackingPage::slotSearchBtnClicked()
     args.endT = endTimeEdit_->dateTime();
     args.thresh = threshSpin_->value() / qreal(100);
     connect(serviceI,&RestServiceI::sigError,this,[this](QString str){
-        dataView_->stopWaiting();
         dataView_->updateTracking(QVector<TrackingWebView::TrackingPoint>());
         InformationDialog infoDialog(this);
         infoDialog.setUserStyle(widgetManger()->currentStyle());

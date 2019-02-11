@@ -60,7 +60,13 @@ Portrait::Portrait(WidgetManagerI *wm, WidgetI *parent):
 void Portrait::setUserStyle(WidgetManagerI::SkinStyle s)
 {
     QPalette pal;
+    QFont f;
     if(WidgetManagerI::Danyahei == s){
+        if(parentWidget()){
+            f = font();
+            f.setFamily(parentWidget()->font().family());
+            setFont(f);
+        }
         pal = palette();
         pal.setColor(QPalette::Background,QColor("#4B4B4B"));
         setPalette(pal);
@@ -99,8 +105,11 @@ void Portrait::slotSetData(QImage face, QImage body, QStringList attributeList, 
                             "background:rgba(255,255,255,0.1);"
                             "color: white;"
                             "border: 1px solid rgba(255,255,255,1);"
-                            "border-radius: 10px;"
+                            "border-radius: 2px;"
                             "}");
+        QFont f = attL->font();
+        f.setFamily(font().family());
+        setFont(f);
         flowLayFace_->addWidget(attL);
     }
     while (QLayoutItem *item = flowLayBody_->takeAt(0)) {
@@ -112,8 +121,11 @@ void Portrait::slotSetData(QImage face, QImage body, QStringList attributeList, 
                             "background:rgba(255,255,255,0.1);"
                             "color: white;"
                             "border: 1px solid rgba(255,255,255,1);"
-                            "border-radius: 10px;"
+                            "border-radius: 2px;"
                             "}");
+        QFont f = attL->font();
+        f.setFamily(font().family());
+        setFont(f);
         flowLayBody_->addWidget(attL);
     }
 }

@@ -243,6 +243,7 @@
        new QWebChannel(qt.webChannelTransport, function(channel){
          window.Bridge = channel.objects.Bridge;
          Bridge.sigTrackingDataChanged.connect(function(arr) { //连接Qt中brideg类的信号并定义执行代码
+			//console.log(JSON.stringify(arr))
 			getCameraData(arr)
          });
 		Bridge.sigMovieingStart.connect(function() { //连接Qt中brideg类的信号并定义执行代码sigMovieStop
@@ -338,7 +339,8 @@ function getCameraData(arr) {
     })
     saveArr = JSON.parse(JSON.stringify(arr))
     if(saveArr.length<1){
-        hideData()
+        noData()
+		endLoading()
     }
     else{
         endLoading()
@@ -388,7 +390,7 @@ function drawBeginCamera(arr) {
   })
   // 划线
 
-  console.log(newarr)
+  //console.log(newarr)
 }
 function setRightData(arr) {
     $("#rightBox").empty();

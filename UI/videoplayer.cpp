@@ -47,6 +47,7 @@ VideoPlayer::VideoPlayer(QWidget *parent):
         okBtn->setStyleSheet("QPushButton{"
                              "color: white;"
                              "background-color: rgb(59,69,78);"
+                             "font-family: Arial;"
                              "}"
                              "QPushButton:pressed{"
                              "background-color: rgb(49,54,57);"
@@ -55,6 +56,7 @@ VideoPlayer::VideoPlayer(QWidget *parent):
         cancelBtn->setStyleSheet("QPushButton{"
                              "color: white;"
                              "background-color: rgb(59,69,78);"
+                             "font-family: Arial;"
                              "}"
                              "QPushButton:pressed{"
                              "background-color: rgb(49,54,57);"
@@ -63,7 +65,10 @@ VideoPlayer::VideoPlayer(QWidget *parent):
         PaintArea *paintArea = new PaintArea;
         QHBoxLayout *hlay = new QHBoxLayout;
         QGroupBox *groupBox = new QGroupBox;
-        QRadioButton *radioBtn = new QRadioButton(tr("普通门报警"));
+        QRadioButton *radioBtn = new QRadioButton(tr("Intruder alarm"));
+        QFont f = radioBtn->font();
+        f.setFamily("Arial");
+        radioBtn->setFont(f);
         pal = radioBtn->palette();
         pal.setColor(QPalette::Foreground,Qt::white);
         radioBtn->setPalette(pal);
@@ -78,6 +83,9 @@ VideoPlayer::VideoPlayer(QWidget *parent):
         });
         hlay->addWidget(radioBtn);
         radioBtn = new QRadioButton(tr("AB门报警"));
+        f = radioBtn->font();
+        f.setFamily("Arial");
+        radioBtn->setFont(f);
         pal = radioBtn->palette();
         pal.setColor(QPalette::Foreground,Qt::white);
         radioBtn->setPalette(pal);
@@ -137,6 +145,12 @@ VideoPlayer::VideoPlayer(QWidget *parent):
             qDebug() << "rejected";
         }
     });
+    menu_->setStyleSheet("QMenu{"
+                             "background-color: rgb(75,75,75);"
+                             "}"
+                             "QMenu::item:selected{"
+                             "background-color: rgba(255,255,255,0.4);"
+                             "}");
     setContextMenuPolicy(Qt::CustomContextMenu);
 
     connect(this,SIGNAL(sigVideoStart(int,int)),this,SLOT(slotOnStarted(int,int)));
