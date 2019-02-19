@@ -585,12 +585,12 @@ void FaceSearch::slotSearchClicked()
 
 void FaceSearch::slotImgBtnClicked()
 {
-    QString filePath = QFileDialog::getOpenFileName(this,tr("添加图片"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),"*.png *.jpg *.tmp");
-    if(filePath.isEmpty()){
+    QString filePath = QFileDialog::getOpenFileName(this,tr("添加图片"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),tr("Images (*.png *.xpm *.jpg)"));
+    faceImg_ = QImage(filePath);
+    if(filePath.isEmpty() || faceImg_.isNull()){
         m_imgBtn->setIcon(m_imgBtn->property("default-pix").value<QPixmap>().scaled(m_imgBtn->iconSize()));
         qSwap(QImage(),faceImg_);
     }else{
-        faceImg_ = QImage(filePath);
         m_imgBtn->setIcon(QPixmap::fromImage(faceImg_).scaled(m_imgBtn->iconSize()));
         oidStr_.clear();
     }

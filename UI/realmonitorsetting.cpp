@@ -95,6 +95,15 @@ RealMonitorSetting::RealMonitorSetting(BLL::WorkerManager *wm, QWidget *parent, 
     }
 
     getCameraInfo();
+
+//    timeCostL_->hide();
+//    startLocationL_->hide();
+//    startLocationCombox_->hide();
+//    arrorL_->hide();
+//    endLocationL_->hide();
+//    endLocationCombox_->hide();
+//    addStatisBtn_->hide();
+//    timeCostTable_->hide();
 }
 
 void RealMonitorSetting::setScreenIndex(int screenCount)

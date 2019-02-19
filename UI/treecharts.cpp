@@ -21,11 +21,11 @@ TreeCharts::TreeCharts(QWidget *parent)
     load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/calendar-charts.html"));
 #endif
     page()->setBackgroundColor(QColor(66,66,66,50));
+    setContextMenuPolicy(Qt::NoContextMenu);
 }
 
 void TreeCharts::updateData(QJsonObject &jsObj)
 {
-    qDebug() << jsObj;
     webBridge_->updateData(jsObj);
 }
 

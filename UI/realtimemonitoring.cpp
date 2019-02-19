@@ -164,6 +164,7 @@ RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
     notifyServiceI_ = dynamic_cast<NotifyServiceI*>(getWoker("NotifyService"));
     connect(notifyServiceI_,SIGNAL(sigGrabedPerson(QStringList,QImage)),this,SLOT(slotAddFaceitem(QStringList,QImage)));
     connect(m_treeW,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),this,SLOT(slotTreeItemDoubleClicked(QTreeWidgetItem*,int)));
+    m_settingBtn->hide();
 
     updateCamera();
     slotEventComboxIndexChanged(0);
@@ -526,7 +527,7 @@ void RealtimeMonitoring::slotAddFaceitem(QStringList data, QImage img)
     m_faceList->setItemWidget(item,itemWidget);
 }
 
-void RealtimeMonitoring::slotOnIntruderEvent(QStringList, QImage img)
+void RealtimeMonitoring::slotOnIntruderEvent(QStringList infoList, QImage img)
 {
     if(eventList_->count() >= EVENTITEMCOUNT){
         delete eventList_->takeItem(EVENTITEMCOUNT - 1);

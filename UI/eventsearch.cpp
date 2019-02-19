@@ -97,6 +97,7 @@ EventSearch::EventSearch(WidgetManagerI *wm, WidgetI *parent):
             delete label;
             RestServiceI::SceneInfo sinfo;
             sinfo.image = img;
+            sinfo.sceneId = m_tableW->item(m_tableW->currentRow(),1)->text();
             slotOnSceneInfo(sinfo);
             menu_->setEnabled(true);
         });
@@ -129,7 +130,7 @@ EventSearch::EventSearch(WidgetManagerI *wm, WidgetI *parent):
     pix.fill(Qt::transparent);
     QVector<QPair<QString,QString>>  waringType;
     waringType << qMakePair(tr(""),tr("不限")) << qMakePair(tr("intruder"),tr("闯入报警")) << qMakePair(tr("blacklistface"),tr("黑名单报警"))
-               << qMakePair(tr("abdoor"),tr("AB门报警"));
+               << qMakePair(tr("abdoor"),tr("AB-Door events"));
     for(const QPair<QString,QString> &pairValue : waringType) {
         m_waringTyleCombox->addItem(pix,pairValue.second,pairValue.first);
         waryingTypeMap_.insert(pairValue.first,pairValue.second);

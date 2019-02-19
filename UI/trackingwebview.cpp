@@ -21,6 +21,7 @@ TrackingWebView::TrackingWebView(QWidget *parent):
     load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/calendar-charts.html"));
 #endif
     page()->setBackgroundColor(Qt::transparent);
+    setContextMenuPolicy(Qt::NoContextMenu);
 }
 
 QSize TrackingWebView::sizeHint() const
