@@ -17,7 +17,7 @@ TrackingWebView::TrackingWebView(QWidget *parent):
     channel->registerObject("Bridge", qobject_cast<QObject*>(webBridge_));
     page()->setWebChannel(channel);
 #ifndef Test
-    load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/demo01.html"));
+    load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/tracking.html"));
 #else
     load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/calendar-charts.html"));
 #endif
