@@ -74,9 +74,17 @@
                 z-index: 100;
             }
             .show-dialog-two .kuang {
+                position: relative;
                 border: 2px solid #ccc;
+                height: 544px;
             }
             .show-dialog-two img {
+                z-index: 10;
+                width: 960px;
+                height: 540px;
+            }
+            .show-dialog-two canvas {
+                z-index: 100;
                 width: 960px;
                 height: 540px;
             }
@@ -126,8 +134,7 @@
             }
         </style>
     </head>
-    <body style="background-color:transparent;">
-        
+    <body style="background: transparent">
         <div id="mengceng">
             <div class="meng-ceng" >
                 <div class="bg-meng-ceng" id="bgmc"></div>
@@ -136,8 +143,8 @@
                     <!-- 放大场景 -->
                     <div id="showDialogTwo">
                         <div class="show-dialog-two">
-                            <div class="kuang">
-                                    <img id="showBigScene" src="">
+                            <div class="kuang" id="kuang">
+                                    <!-- <canvas id="sceneCanvas" width="960" height="540"></canvas> -->
                             </div>
                         </div>
                     </div>
@@ -154,11 +161,6 @@
                     </div>
                     <!-- 场景图片 -->
                     <div class="dialog-img" id="dialogImg">
-                        <!-- <div class="img-div">
-                            <img onclick="bigScene(this)" src="data:image/jpeg;base64,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">
-                            <div class="tro">P3-98 MAIN ENTRANCE RIGHT</div>
-                            <div class="tro">2018-01-09 13:23:25</div>
-                        </div> -->
                     </div>
                     
                 </div>
@@ -178,15 +180,21 @@
 			new QWebChannel(qt.webChannelTransport, function(channel){
 				window.Bridge = channel.objects.Bridge;
 					Bridge.sigDataChanged.connect(function(dataObj) { //连接Qt中brideg类的信号并定义执行代码
-					console.log(JSON.stringify(dataObj))
+					//console.log(JSON.stringify(dataObj))
 					getData(dataObj)
 				});
 				Bridge.onInitsized(); //调用Qt内的函数
 			});
 		}
+        //    window.onload = function() {
+        //        var demoJson =  {"children":[{"children":[{"children":[],"id":162,"intimacy":"1","objId":"5c65074865f1e109ca59f5ed","scenes":"5c6506c565f1e109ca59ead0","symbol":"image://http://192.168.100.65:18081/graph/node/picture/5c65074865f1e109ca59f5ed","symbolSize":[60,60]},{"children":[],"id":36,"intimacy":"1","objId":"5c5c762b08c16393d61acfc8","scenes":"5c5c761c08c16393d61ace9f","symbol":"image://http://192.168.100.65:18081/graph/node/picture/5c5c762b08c16393d61acfc8","symbolSize":[60,60]},{"children":[],"id":47,"intimacy":"1","objId":"5c683c1a65f1e1554066aa4f","scenes":"5c681eb565f1e15540662332","symbol":"image://http://192.168.100.65:18081/graph/node/picture/5c683c1a65f1e1554066aa4f","symbolSize":[60,60]},{"children":[],"id":37,"intimacy":"1","objId":"5c6893ec65f1e155406bae41","scenes":"5c6893b665f1e155406bad67","symbol":"image://http://192.168.100.65:18081/graph/node/picture/5c6893ec65f1e155406bae41","symbolSize":[60,60]}],"id":34,"intimacy":"1","objId":"5c6a6c6965f1e178c45bed9e","scenes":"5c6a6b0165f1e178c45bc1bf","symbol":"image://http://192.168.100.65:18081/graph/node/picture/5c6a6c6965f1e178c45bed9e","symbolSize":[60,60]},{"children":[{"children":[],"id":88,"intimacy":"1","objId":"5c6a56ef65f1e178c4597227","scenes":"5c6a520b65f1e178c458ed7a","symbol":"image://http://192.168.100.65:18081/graph/node/picture/5c6a56ef65f1e178c4597227","symbolSize":[60,60]}],"id":9,"intimacy":"1","objId":"5c6a6bf365f1e178c45be06d","scenes":"5c6a6b0165f1e178c45bc1bf","symbol":"image://http://192.168.100.65:18081/graph/node/picture/5c6a6bf365f1e178c45be06d","symbolSize":[60,60]}],"id":8,"objId":"5c6a6b7565f1e178c45bd1c6","symbol":"image://http://192.168.100.65:18081/graph/node/picture/5c6a6b7565f1e178c45bd1c6","symbolSize":[60,60]}
+        //        getData(demoJson)
+        //    }
             // 以上是初始化数据
             let images = {}
             let locIp = ''
+            let sourceId = ''
+            let targetId = ''
             var demoJson = {
                 "results": [{
                     "data": [{
@@ -202,16 +210,16 @@
             }
             
             function changeData(node) {
-				var snapscenes =[];
-				if(node.scenes){
-					snapscenes = node.scenes.split(',')
-				}
                 images[node.objId] = node.symbol.split('image://')[1]
+                let scene = ''
+                if(node.hasOwnProperty('scenes')) {
+                    scene = node.scenes.split(',')
+                }
                 demoJson.results[0]['data'][0]['graph']['nodes'].push({
                     'id': node.id,
                     'labels': [node.objId],
                     "properties": {
-                        "scene": snapscenes,
+                        "scene": scene,
                         "headImg": node.symbol.split('image://')[1]
                     }
                 })
@@ -242,6 +250,17 @@
                 locIp = `http://${ip}:${host}`
             }
             function getData(data) {
+                demoJson = {
+                    "results": [{
+                    "data": [{
+                        "graph": {
+                        "nodes": [],
+                        "relationships": []
+                        }
+                    }]
+                    }],
+                    "errors": []
+                }
                 changeData(data)
                 getIp(data.symbol)
                 init()
@@ -272,6 +291,8 @@
                         $("#mengceng").animate({opacity:'1.0'});
                         $("#sourceImg").attr('src', relationship.source.properties.headImg)
                         $("#targetImg").attr('src', relationship.target.properties.headImg)
+                        sourceId = relationship.source.labels[0]
+                        targetId = relationship.target.labels[0]
                         $('#dialogImg').html('')
                         relationship.target.properties.scene.forEach(item => {
                             $.ajax({
@@ -282,22 +303,38 @@
                                 type: "GET",
                                 dataType: 'json',
                                 success: function(data) {
-                                 var finishTime = getLocalTime(data.data.finishTime)
-                                  var html = '<div class="img-div">'+
-                                                '<img onclick="bigScene(this)" src='+"data:image/png;base64,"+data.data.base64+'>'+
-                                                '<div class="tro">'+data.data.cameraId+'</div>'+
-                                                '<div class="tro">'+finishTime+'</div>'+
-                                             '</div>'
-                                  $('#dialogImg').append(html)
+                                    let image = new Image(); 
+                                    image.src = `data:image/png;base64,${data.data.base64}`
+                                    image.crossOrigin = 'Anonymous'; 
+                                    // 4.在image的onload方法中得到像素值 
+                                    image.onload = function(){
+                                        let image = new Image(); 
+                                        image.src = `data:image/png;base64,${data.data.base64}`
+                                        image.crossOrigin = 'Anonymous'; 
+                                        // 4.在image的onload方法中得到像素值 
+                                        image.onload = function(){
+                                        //   console.log(this.width)
+                                        //   console.log(this.height)
+                                          var finishTime = getLocalTime(data.data.finishTime)
+                                          var html = '<div class="img-div">'+
+                                                        "<img onclick='bigScene(this,\""+item+"\",\""+this.width+"\",\""+this.height+"\")' src='data:image/png;base64,"+data.data.base64+"'>"+
+                                                        '<div class="tro">'+data.data.cameraId+'</div>'+
+                                                        '<div class="tro">'+finishTime+'</div>'+
+                                                     '</div>'
+                                          $('#dialogImg').append(html)
+                                        }
+                                    }
                                 }
                             });
+                           
+
                         })
                         
                     },
                     zoomFit: true
                 });
             }
-            function getLocalTime(nS) {    
+            function getLocalTime(nS) {
                 // debugger 
                 var date = new Date(parseInt(nS));
                 Y = date.getFullYear() + '-';
@@ -308,12 +345,59 @@
                 s = date.getSeconds(); 
                 return(Y+M+D+' '+h+m+s);     
             }
-            function bigScene(v) {
-                $("#showDialogTwo").show()
-                $("#showBigScene").attr('src', $(v).attr('src'))
+            // 获取canvas
+            // let sceneCanvas = document.getElementById("sceneCanvas");
+            // let ctx = sceneCanvas.getContext("2d");
+            let sceneCanvas = '';
+            let ctx = '';
+            function faceBox(v, objId, w, h, id, color) {
+                let newW = w * 2
+                let newH = h * 2
+                $.ajax({
+                    url: `${locIp}/api/v2/external/monitor-detail/query/face/box?PersionId=${id}&sceneId=${objId}`,
+                    data: {
+                    },
+                    type: "GET",
+                    dataType: 'json',
+                    success: function(data) {
+                        $("#showDialogTwo").show()
+                        if(!data.hasOwnProperty('data')) return;
+                        let box = data.data.bbox
+                        let wb = 960 / newW;
+                        let hb = 540 / newH;
+                        console.log(color)
+                        ctx.beginPath() //注意此处
+                        ctx.strokeStyle = color;//设置线条颜色
+                        ctx.lineWidth = 2;
+                        ctx.moveTo(wb * box[0],hb * box[1]);
+                        ctx.lineTo(wb * (box[0] + box[2]),hb * box[1]);
+                        ctx.lineTo(wb * (box[0] + box[2]),hb * (box[1] + box[3]));
+                        ctx.lineTo(wb * box[0],hb * (box[1] + box[3]));
+                        ctx.lineTo(wb * box[0],hb * box[1]);
+                        ctx.stroke();
+                        ctx.closePath()
+                    }
+                })
+            }
+            function bigScene(v, objId, w, h) {
+                // 图片的宽和高
+                let html = '<canvas id="sceneCanvas" width="960" height="540"></canvas>'
+                // $("#showDialogTwo").show()
+                $("#kuang").append(html)
+                sceneCanvas = document.getElementById("sceneCanvas");
+                ctx = sceneCanvas.getContext("2d");
+                let imgs = new Image();
+                imgs.src = $(v).attr('src');
+                ctx.drawImage(imgs, 0, 0, 960, 540);
+                faceBox(v, objId, w, h, sourceId, '#f54545')
+                faceBox(v, objId, w, h, targetId, '#5fa207')
+                
             }
             $(".show-dialog-two").click(function() {
+                $("#kuang").empty()
+                ctx.clearRect(0, 0, 960, 540);
                 $("#showDialogTwo").hide()
+               
             })
             $("#bgmc").click(function() {
                 $("#mengceng").hide()

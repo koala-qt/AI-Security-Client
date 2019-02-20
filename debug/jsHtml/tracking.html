@@ -243,7 +243,7 @@
        new QWebChannel(qt.webChannelTransport, function(channel){
          window.Bridge = channel.objects.Bridge;
          Bridge.sigTrackingDataChanged.connect(function(arr) { //连接Qt中brideg类的信号并定义执行代码
-			//console.log(JSON.stringify(arr))
+			console.log(JSON.stringify(arr))
 			getCameraData(arr)
          });
 		Bridge.sigMovieingStart.connect(function() { //连接Qt中brideg类的信号并定义执行代码sigMovieStop

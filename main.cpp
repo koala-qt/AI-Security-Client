@@ -9,6 +9,7 @@
 #include "UI/koalawidgetmanager.h"
 #include "service/notifyservice.h"
 #include "UI/logindialog.h"
+#include "UI/realtimemonitoring.h"
 
 #pragma execution_character_set("utf-8")
 
@@ -60,8 +61,8 @@ int main(int argc, char *argv[])
 
     MainWindow w(widgetM);
     w.setWindowFlag(Qt::FramelessWindowHint);
-    w.showMaximized();
     widgetM->notifyUserStyle(WidgetManagerI::Danyahei);
+    w.showMaximized();
 
     QDir dir("font");
     if (dir.exists()){

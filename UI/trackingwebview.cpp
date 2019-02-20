@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QWebEnginePage>
 #include <QApplication>
+#include <QNetworkProxyFactory>
 #include "trackingwebview.h"
 
 TrackingWebView::TrackingWebView(QWidget *parent):
@@ -16,12 +17,13 @@ TrackingWebView::TrackingWebView(QWidget *parent):
     channel->registerObject("Bridge", qobject_cast<QObject*>(webBridge_));
     page()->setWebChannel(channel);
 #ifndef Test
-    load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/tracking.html"));
+    load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/demo01.html"));
 #else
     load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/calendar-charts.html"));
 #endif
     page()->setBackgroundColor(Qt::transparent);
     setContextMenuPolicy(Qt::NoContextMenu);
+    QNetworkProxyFactory::setUseSystemConfiguration(false);
 }
 
 QSize TrackingWebView::sizeHint() const
