@@ -4,6 +4,7 @@
 #include "servicei.h"
 #include "restserviceconcureent.h"
 #include "notifybymqtt.h"
+#include "notifybywebsocket.h"
 class ServiceFactory : public ServiceFactoryI
 {
 public:
@@ -28,6 +29,9 @@ public:
             break;
         case Kafka:
 
+            break;
+        case WebSocket:
+            return new NotifyByWebSocket;
             break;
         default:
             break;

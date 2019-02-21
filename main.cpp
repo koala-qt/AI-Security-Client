@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     WidgetManagerI *widgetM = new KoalaWidgetManager;
     widgetM->setdefaultStyle(WidgetManagerI::Danyahei);
     ServiceFactoryI *facetory = new ServiceFactory;
-    NotifyServiceI *notifySerI = facetory->makeNotifyServiceI();
+    NotifyServiceI *notifySerI = facetory->makeNotifyServiceI(ServiceFactoryI::WebSocket);
     a.setProperty("NotifyServiceI",reinterpret_cast<unsigned long long>(notifySerI));
     a.setProperty("ServiceFactoryI",reinterpret_cast<unsigned long long>(facetory));
 
@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    QObject::connect(&a,&QApplication::lastWindowClosed,&a,[notifySerI]{
+    QObject::connect(&a,&QApplication::aboutToQuit,&a,[notifySerI]{
         notifySerI->requestInterruption();
         notifySerI->quit();
         notifySerI->wait();

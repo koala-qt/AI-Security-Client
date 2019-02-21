@@ -21,7 +21,8 @@ public:
     };
     enum NotifyInterfaceType{
         Mqtt,
-        Kafka
+        Kafka,
+        WebSocket
     };
     virtual RestServiceI* makeRestServiceI(RestInterfaceType s = HTTPREST) = 0;
     virtual NotifyServiceI* makeNotifyServiceI(NotifyInterfaceType s = Mqtt) = 0;

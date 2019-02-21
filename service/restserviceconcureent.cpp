@@ -24,7 +24,7 @@ RestConcurrent::~RestConcurrent()
 void RestConcurrent::combinationSearch(CombinationSearchArgs &args)
 {
     CombinationSearchReturenData *resData = new CombinationSearchReturenData;
-    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>;
+    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>(this);
     connect(fwatcher,&QFutureWatcher<QString>::finished,this,[this,resData,fwatcher]{
         if(fwatcher->result().isEmpty()){
             emit sigCombinationSearch(*resData);
@@ -33,7 +33,6 @@ void RestConcurrent::combinationSearch(CombinationSearchArgs &args)
         }
         delete resData;
     });
-    connect(fwatcher,SIGNAL(finished()),fwatcher,SLOT(deleteLater()));
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
     fwatcher->setFuture(QtConcurrent::run(&curlRest_,&DLL::CloudHttpDao::combinationSearch,args,resData));
 }
@@ -41,7 +40,7 @@ void RestConcurrent::combinationSearch(CombinationSearchArgs &args)
 void RestConcurrent::getSceneInfo(const QString old)
 {
     SceneInfo *sceneInfo = new SceneInfo;
-    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>;
+    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>(this);
     connect(fwatcher,&QFutureWatcher<QString>::finished,this,[this,sceneInfo,fwatcher]{
         if(fwatcher->result().isEmpty()){
             emit sigSceneInfo(*sceneInfo);
@@ -50,7 +49,6 @@ void RestConcurrent::getSceneInfo(const QString old)
         }
         delete sceneInfo;
     });
-    connect(fwatcher,SIGNAL(finished()),fwatcher,SLOT(deleteLater()));
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
     fwatcher->setFuture(QtConcurrent::run(&curlRest_,&DLL::CloudHttpDao::getSceneInfo,old,sceneInfo));
 }
@@ -58,7 +56,7 @@ void RestConcurrent::getSceneInfo(const QString old)
 void RestConcurrent::getFaceLinkDataColl(FaceLinkDataCollArgs &args)
 {
     FaceLinkDataCollReturn *resData = new FaceLinkDataCollReturn;
-    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>;
+    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>(this);
     connect(fwatcher,&QFutureWatcher<QString>::finished,this,[this,resData,fwatcher]{
         if(fwatcher->result().isEmpty()){
             emit sigFaceLinkDataColl(*resData);
@@ -67,7 +65,6 @@ void RestConcurrent::getFaceLinkDataColl(FaceLinkDataCollArgs &args)
         }
         delete resData;
     });
-    connect(fwatcher,SIGNAL(finished()),fwatcher,SLOT(deleteLater()));
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
     fwatcher->setFuture(QtConcurrent::run(&curlRest_,&DLL::CloudHttpDao::getFaceLinkDataColl,args,resData));
 }
@@ -75,7 +72,7 @@ void RestConcurrent::getFaceLinkDataColl(FaceLinkDataCollArgs &args)
 void RestConcurrent::faceTracking(FaceTrackingArgs args)
 {
     QVector<TrackingReturnData> *resVec = new QVector<TrackingReturnData>();
-    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>;
+    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>(this);
     connect(fwatcher,&QFutureWatcher<QString>::finished,this,[this,resVec,fwatcher]{
         if(fwatcher->result().isEmpty()){
             emit sigTrackingNew(*resVec);
@@ -84,7 +81,6 @@ void RestConcurrent::faceTracking(FaceTrackingArgs args)
         }
         delete resVec;
     });
-    connect(fwatcher,SIGNAL(finished()),fwatcher,SLOT(deleteLater()));
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
     fwatcher->setFuture(QtConcurrent::run(&curlRest_,&DLL::CloudHttpDao::tracking,args,resVec));
 }
@@ -92,7 +88,7 @@ void RestConcurrent::faceTracking(FaceTrackingArgs args)
 void RestConcurrent::multipleSearch(MultipleSearchArgs &args)
 {
     QVector<MultipleSearchItem> *resData = new QVector<MultipleSearchItem>();
-    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>;
+    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>(this);
     connect(fwatcher,&QFutureWatcher<QString>::finished,this,[this,resData,fwatcher]{
         if(fwatcher->result().isEmpty()){
             emit sigMultipleSearch(*resData);
@@ -101,7 +97,6 @@ void RestConcurrent::multipleSearch(MultipleSearchArgs &args)
         }
         delete resData;
     });
-    connect(fwatcher,SIGNAL(finished()),fwatcher,SLOT(deleteLater()));
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
     fwatcher->setFuture(QtConcurrent::run(&curlRest_,&DLL::CloudHttpDao::multipleSearch,args,resData));
 }
@@ -110,7 +105,7 @@ void RestConcurrent::getPersonDetails(QString &objId)
 {
     QImage *face = new QImage, *body = new QImage;
     QStringList *attrsface = new QStringList, *attrsbody = new QStringList;
-    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>;
+    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>(this);
     connect(fwatcher,&QFutureWatcher<QString>::finished,this,[=]{
         if(fwatcher->result().isEmpty()){
             emit sigPeronsDetails(*face,*body,*attrsface,*attrsbody);
@@ -122,7 +117,6 @@ void RestConcurrent::getPersonDetails(QString &objId)
         delete attrsface;
         delete attrsbody;
     });
-    connect(fwatcher,SIGNAL(finished()),fwatcher,SLOT(deleteLater()));
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
     fwatcher->setFuture(QtConcurrent::run(&curlRest_,&DLL::CloudHttpDao::getPersonDetailes,objId,face,body,attrsface,attrsbody));
 }
@@ -130,7 +124,7 @@ void RestConcurrent::getPersonDetails(QString &objId)
 void RestConcurrent::getAlarmScenePic(const QString oid)
 {
     std::string *errorStr = new std::string;
-    QFutureWatcher<std::string> *fwatcher = new QFutureWatcher<std::string>;
+    QFutureWatcher<std::string> *fwatcher = new QFutureWatcher<std::string>(this);
     connect(fwatcher,&QFutureWatcher<std::string>::finished,this,[this,errorStr,fwatcher]{
         if(errorStr->empty()){
             QImage img;
@@ -141,14 +135,13 @@ void RestConcurrent::getAlarmScenePic(const QString oid)
         }
         delete errorStr;
     });
-    connect(fwatcher,SIGNAL(finished()),fwatcher,SLOT(deleteLater()));
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
     fwatcher->setFuture(QtConcurrent::run(&thriftDao_,&ThriftDao::getAlarmScenePic,oid.toStdString(),errorStr));
 }
 
 void RestConcurrent::getImageByUrl(QString &url){
     QImage *img = new QImage;
-    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>;
+    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>(this);
     connect(fwatcher,&QFutureWatcher<QString>::finished,this,[this,img,fwatcher]{
         if(fwatcher->result().isEmpty()){
             emit sigDownloadImage(*img);
@@ -157,7 +150,6 @@ void RestConcurrent::getImageByUrl(QString &url){
         }
         delete img;
     });
-    connect(fwatcher,SIGNAL(finished()),fwatcher,SLOT(deleteLater()));
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
     fwatcher->setFuture(QtConcurrent::run(&curlRest_,&DLL::CloudHttpDao::getImageByUrl,url,img));
 }
@@ -165,14 +157,13 @@ void RestConcurrent::getImageByUrl(QString &url){
 void RestConcurrent::getFaceLinkTree(QString &objectID)
 {
     QJsonObject *jsObj = new QJsonObject;
-    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>;
+    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>(this);
     connect(fwatcher,&QFutureWatcher<QString>::finished,this,[this,jsObj,fwatcher]{
         if(fwatcher->result().isEmpty()){
             emit sigFaceLinkTree(*jsObj);
         }
         delete jsObj;
     });
-    connect(fwatcher,SIGNAL(finished()),fwatcher,SLOT(deleteLater()));
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
     fwatcher->setFuture(QtConcurrent::run(&curlRest_,&DLL::CloudHttpDao::getFaceLinkTree,objectID,jsObj));
 }
@@ -180,14 +171,14 @@ void RestConcurrent::getFaceLinkTree(QString &objectID)
 void RestConcurrent::getCameraInfo()
 {
     QVector<CameraInfo> *cameras = new QVector<CameraInfo>();
-    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>;
+    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>(this);
     connect(fwatcher,&QFutureWatcher<QString>::finished,this,[this,cameras,fwatcher]{
         if(fwatcher->result().isEmpty()){
+            qDebug() << cameras->count() << "---------";
             emit sigCameraInfo(*cameras);
         }
         delete cameras;
     });
-    connect(fwatcher,SIGNAL(finished()),fwatcher,SLOT(deleteLater()));
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
     fwatcher->setFuture(QtConcurrent::run(&curlRest_,&DLL::CloudHttpDao::getCameraInfo,cameras));
 }
@@ -195,7 +186,7 @@ void RestConcurrent::getCameraInfo()
 void RestConcurrent::generateFaceLink(FaceLinkArgs args)
 {
     QString *finishId = new QString;
-    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>;
+    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>(this);
     connect(fwatcher,&QFutureWatcher<QString>::finished,this,[this,finishId,fwatcher]{
         if(fwatcher->result().isEmpty()){
             emit sigFaceLinkFinished(*finishId);
@@ -204,7 +195,6 @@ void RestConcurrent::generateFaceLink(FaceLinkArgs args)
         }
         delete finishId;
     });
-    connect(fwatcher,SIGNAL(finished()),fwatcher,SLOT(deleteLater()));
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
     fwatcher->setFuture(QtConcurrent::run(&curlRest_,&DLL::CloudHttpDao::faceLink_,args,finishId));
 }
@@ -212,7 +202,7 @@ void RestConcurrent::generateFaceLink(FaceLinkArgs args)
 void RestConcurrent::getFaceLinkPoint(QString &faceLinkId)
 {
     FaceLinkPointData *rootPointdata = new FaceLinkPointData;
-    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>;
+    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>(this);
     connect(fwatcher,&QFutureWatcher<QString>::finished,this,[this,rootPointdata,fwatcher]{
         if(fwatcher->result().isEmpty()){
             emit sigFaceLinkData(*rootPointdata);
@@ -221,7 +211,6 @@ void RestConcurrent::getFaceLinkPoint(QString &faceLinkId)
         }
         delete rootPointdata;
     });
-    connect(fwatcher,SIGNAL(finished()),fwatcher,SLOT(deleteLater()));
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
     fwatcher->setFuture(QtConcurrent::run(&curlRest_,&DLL::CloudHttpDao::getFaceLinkPoint,faceLinkId,rootPointdata));
 }
@@ -229,7 +218,7 @@ void RestConcurrent::getFaceLinkPoint(QString &faceLinkId)
 void RestConcurrent::getCameraGroup(QString gropuNo)
 {
     QVector<CameraGoup> *resGroup = new QVector<CameraGoup>();
-    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>;
+    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>(this);
     connect(fwatcher,&QFutureWatcher<QString>::finished,this,[this,resGroup,fwatcher]{
         if(fwatcher->result().isEmpty()){
             emit sigCameraGroup(*resGroup);
@@ -238,7 +227,6 @@ void RestConcurrent::getCameraGroup(QString gropuNo)
         }
         delete resGroup;
     });
-    connect(fwatcher,SIGNAL(finished()),fwatcher,SLOT(deleteLater()));
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
     fwatcher->setFuture(QtConcurrent::run(&curlRest_,&DLL::CloudHttpDao::getGroup,gropuNo,resGroup));
 }
@@ -246,7 +234,7 @@ void RestConcurrent::getCameraGroup(QString gropuNo)
 void RestConcurrent::getCameraDevice(QString groupNo)
 {
     QVector<CameraInfo> *devices = new QVector<CameraInfo>();
-    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>;
+    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>(this);
     connect(fwatcher,&QFutureWatcher<QString>::finished,this,[this,devices,fwatcher]{
         if(fwatcher->result().isEmpty()){
             emit sigCameraInfo(*devices);
@@ -255,7 +243,6 @@ void RestConcurrent::getCameraDevice(QString groupNo)
         }
         delete devices;
     });
-    connect(fwatcher,SIGNAL(finished()),fwatcher,SLOT(deleteLater()));
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
     fwatcher->setFuture(QtConcurrent::run(&curlRest_,&DLL::CloudHttpDao::getDevice,groupNo,devices));
 }
@@ -263,7 +250,7 @@ void RestConcurrent::getCameraDevice(QString groupNo)
 void RestConcurrent::addStatis(const QString startId, const QString endId)
 {
     std::string *errorStr = new std::string;
-    QFutureWatcher<bool> *fwatcher = new QFutureWatcher<bool>;
+    QFutureWatcher<bool> *fwatcher = new QFutureWatcher<bool>(this);
     connect(fwatcher,&QFutureWatcher<bool>::finished,this,[this,errorStr,fwatcher]{
         if(errorStr->empty()){
             emit sigResultState(fwatcher->result());
@@ -272,7 +259,6 @@ void RestConcurrent::addStatis(const QString startId, const QString endId)
         }
         delete errorStr;
     });
-    connect(fwatcher,SIGNAL(finished()),fwatcher,SLOT(deleteLater()));
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
     fwatcher->setFuture(QtConcurrent::run(&thriftDao_,&ThriftDao::addStatis,startId.toStdString(),endId.toStdString(),errorStr));
 }
@@ -280,7 +266,7 @@ void RestConcurrent::addStatis(const QString startId, const QString endId)
 void RestConcurrent::removeStatis(const QString startId, const QString endId)
 {
     std::string *errorStr = new std::string;
-    QFutureWatcher<bool> *fwatcher = new QFutureWatcher<bool>;
+    QFutureWatcher<bool> *fwatcher = new QFutureWatcher<bool>(this);
     connect(fwatcher,&QFutureWatcher<bool>::finished,this,[this,errorStr,fwatcher]{
         if(errorStr->empty()){
             emit sigResultState(fwatcher->result());
@@ -289,7 +275,6 @@ void RestConcurrent::removeStatis(const QString startId, const QString endId)
         }
         delete errorStr;
     });
-    connect(fwatcher,SIGNAL(finished()),fwatcher,SLOT(deleteLater()));
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
     fwatcher->setFuture(QtConcurrent::run(&thriftDao_,&ThriftDao::removeStatis,startId.toStdString(),endId.toStdString(),errorStr));
 }
@@ -297,7 +282,7 @@ void RestConcurrent::removeStatis(const QString startId, const QString endId)
 void RestConcurrent::getStatisInfo()
 {
     std::string *errorStr = new std::string;
-    QFutureWatcher<std::vector<StatisTask>> *fwatcher = new QFutureWatcher<std::vector<StatisTask>>;
+    QFutureWatcher<std::vector<StatisTask>> *fwatcher = new QFutureWatcher<std::vector<StatisTask>>(this);
     connect(fwatcher,&QFutureWatcher<std::vector<StatisTask>>::finished,this,[this,errorStr,fwatcher]{
         if(errorStr->empty()){
             emit sigStatisInfo(QVector<StatisTask>::fromStdVector(fwatcher->result()));
@@ -306,7 +291,6 @@ void RestConcurrent::getStatisInfo()
         }
         delete errorStr;
     });
-    connect(fwatcher,SIGNAL(finished()),fwatcher,SLOT(deleteLater()));
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
     fwatcher->setFuture(QtConcurrent::run(&thriftDao_,&ThriftDao::getStatisInfo,errorStr));
 }
@@ -314,7 +298,7 @@ void RestConcurrent::getStatisInfo()
 void RestConcurrent::captureSearch(CaptureSearchArgs &args)
 {
     CaptureSearchReturnData *resdatas = new CaptureSearchReturnData;
-    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>;
+    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>(this);
     connect(fwatcher,&QFutureWatcher<QString>::finished,this,[this,resdatas,fwatcher]{
         if(fwatcher->result().isEmpty()){
             emit sigCaptureSearch(*resdatas);
@@ -323,7 +307,6 @@ void RestConcurrent::captureSearch(CaptureSearchArgs &args)
         }
         delete resdatas;
     });
-    connect(fwatcher,SIGNAL(finished()),fwatcher,SLOT(deleteLater()));
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
     fwatcher->setFuture(QtConcurrent::run(&curlRest_,&DLL::CloudHttpDao::captureSearch,args,resdatas));
 }
@@ -331,7 +314,7 @@ void RestConcurrent::captureSearch(CaptureSearchArgs &args)
 void RestConcurrent::getWaringArea(const QString cameraId)
 {
     std::string *errorStr = new std::string;
-    QFutureWatcher<Area> *fwatcher = new QFutureWatcher<Area>;
+    QFutureWatcher<Area> *fwatcher = new QFutureWatcher<Area>(this);
     connect(fwatcher,&QFutureWatcher<Area>::finished,this,[this,errorStr,fwatcher]{
         if(errorStr->empty()){
             QVector<QPair<int,QPolygonF>> polygons;
@@ -346,7 +329,6 @@ void RestConcurrent::getWaringArea(const QString cameraId)
         }
         delete errorStr;
     });
-    connect(fwatcher,SIGNAL(finished()),fwatcher,SLOT(deleteLater()));
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
     fwatcher->setFuture(QtConcurrent::run(&thriftDao_,&ThriftDao::getWaringArea,cameraId.toStdString(),errorStr));
 }
@@ -354,7 +336,7 @@ void RestConcurrent::getWaringArea(const QString cameraId)
 void RestConcurrent::searchAlarmHistory(const int page, const int pageCount, const QString &cameraId, const QString &alarmType, const QDateTime &start, const QDateTime &end)
 {
     std::string *errorStr = new std::string;
-    QFutureWatcher<PagedAlarmHis> *fwatcher = new QFutureWatcher<PagedAlarmHis>;
+    QFutureWatcher<PagedAlarmHis> *fwatcher = new QFutureWatcher<PagedAlarmHis>(this);
     connect(fwatcher,&QFutureWatcher<PagedAlarmHis>::finished,this,[this,errorStr,fwatcher]{
         if(errorStr->empty()){
             emit sigAlarmHistory(fwatcher->result());
@@ -363,7 +345,6 @@ void RestConcurrent::searchAlarmHistory(const int page, const int pageCount, con
         }
         delete errorStr;
     });
-    connect(fwatcher,SIGNAL(finished()),fwatcher,SLOT(deleteLater()));
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
     fwatcher->setFuture(QtConcurrent::run([=]()->PagedAlarmHis{
         return thriftDao_.searchAlarmHistory(page,pageCount,cameraId.toStdString(),alarmType.toStdString(),start.toMSecsSinceEpoch(),end.toMSecsSinceEpoch(),errorStr);
@@ -373,7 +354,7 @@ void RestConcurrent::searchAlarmHistory(const int page, const int pageCount, con
 void RestConcurrent::semanticSearch(SemanticSearchArgs &args)
 {
     SemanticReturnData *resDatas = new SemanticReturnData;
-    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>;
+    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>(this);
     connect(fwatcher,&QFutureWatcher<QString>::finished,this,[this,resDatas,fwatcher]{
         if(fwatcher->result().isEmpty()){
             emit sigSemanticSearch(*resDatas);
@@ -382,7 +363,6 @@ void RestConcurrent::semanticSearch(SemanticSearchArgs &args)
         }
         delete resDatas;
     });
-    connect(fwatcher,SIGNAL(finished()),fwatcher,SLOT(deleteLater()));
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
     fwatcher->setFuture(QtConcurrent::run(&curlRest_,&DLL::CloudHttpDao::semanticSearch,args,resDatas));
 }
@@ -390,7 +370,7 @@ void RestConcurrent::semanticSearch(SemanticSearchArgs &args)
 void RestConcurrent::searchByImage(SearchUseImageArgs &args)
 {
     QVector<DataRectureItem> *resVec = new QVector<DataRectureItem>;
-    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>;
+    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>(this);
     connect(fwatcher,&QFutureWatcher<QString>::finished,this,[this,resVec,fwatcher]{
         if(fwatcher->result().isEmpty()){
             emit sigSearchByImage(*resVec);
@@ -399,7 +379,6 @@ void RestConcurrent::searchByImage(SearchUseImageArgs &args)
         }
         delete resVec;
     });
-    connect(fwatcher,SIGNAL(finished()),fwatcher,SLOT(deleteLater()));
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
     fwatcher->setFuture(QtConcurrent::run(&curlRest_,&DLL::CloudHttpDao::searchByImage,args,resVec));
 }
@@ -422,7 +401,7 @@ void RestConcurrent::setWaringArea(const QString cameraId, const QVector<QPair<i
         }
 
         std::string *errorStr = new std::string;
-        QFutureWatcher<bool> *fwatcher = new QFutureWatcher<bool>;
+        QFutureWatcher<bool> *fwatcher = new QFutureWatcher<bool>(this);
         connect(fwatcher,&QFutureWatcher<bool>::finished,this,[this,errorStr,fwatcher]{
             if(errorStr->empty()){
                 emit sigResultState(fwatcher->result());
@@ -431,12 +410,11 @@ void RestConcurrent::setWaringArea(const QString cameraId, const QVector<QPair<i
             }
             delete errorStr;
         });
-        connect(fwatcher,SIGNAL(finished()),fwatcher,SLOT(deleteLater()));
         connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
         fwatcher->setFuture(QtConcurrent::run(&thriftDao_,&ThriftDao::setWaringArea,cameraId.toStdString(),polyPoints.front().first,polyPoints.front().second,errorStr));
     }else{
         std::string *errorStr = new std::string;
-        QFutureWatcher<bool> *fwatcher = new QFutureWatcher<bool>;
+        QFutureWatcher<bool> *fwatcher = new QFutureWatcher<bool>(this);
         connect(fwatcher,&QFutureWatcher<bool>::finished,this,[this,errorStr,fwatcher]{
             if(errorStr->empty()){
                 emit sigResultState(fwatcher->result());
@@ -445,7 +423,6 @@ void RestConcurrent::setWaringArea(const QString cameraId, const QVector<QPair<i
             }
             delete errorStr;
         });
-        connect(fwatcher,SIGNAL(finished()),fwatcher,SLOT(deleteLater()));
         connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
         fwatcher->setFuture(QtConcurrent::run(&thriftDao_,&ThriftDao::setWaringArea,cameraId.toStdString(),AreaType::FORBIDDENZONE,std::vector<Point>(),errorStr));
     }

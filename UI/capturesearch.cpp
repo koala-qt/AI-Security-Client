@@ -328,7 +328,6 @@ void CaptureSearch::resizeEvent(QResizeEvent *event)
         item->setSizeHint(itemSize_);
         item->setIcon(QPixmap::fromImage(item->data(Qt::UserRole + 1).value<QImage>().scaled(m_listW->iconSize())));
     }
-
     return WidgetI::resizeEvent(event);
 }
 
