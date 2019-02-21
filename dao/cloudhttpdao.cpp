@@ -23,7 +23,7 @@ DLL::CloudHttpDao::CloudHttpDao()
 
 }
 
-QString DLL::CloudHttpDao::getCameraInfo(QVector<RestServiceI::CameraInfo> &cameras)
+QString DLL::CloudHttpDao::getCameraInfo(QVector<RestServiceI::CameraInfo> *cameras)
 {
     QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-camera-map");
     int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),5);
@@ -43,7 +43,7 @@ QString DLL::CloudHttpDao::getCameraInfo(QVector<RestServiceI::CameraInfo> &came
         return jsObj.value("message").toString();
     }
     QJsonArray jsArray = jsObj.value("data").toArray();
-    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(cameras),[](QJsonValue jsVal){
+    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(*cameras),[](QJsonValue jsVal){
         RestServiceI::CameraInfo camera;
         QJsonObject cameraObj = jsVal.toObject();
         camera.cameraId = QString::number(cameraObj.value("id").toInt());
@@ -54,7 +54,7 @@ QString DLL::CloudHttpDao::getCameraInfo(QVector<RestServiceI::CameraInfo> &came
     return QString();
 }
 
-QString DLL::CloudHttpDao::getGroup(QString groupNo, QVector<RestServiceI::CameraGoup> &resGroups)
+QString DLL::CloudHttpDao::getGroup(QString groupNo, QVector<RestServiceI::CameraGoup> *resGroups)
 {
     QString urlStr = host_ +  QObject::tr("api/v2/external/device/group/find?groupNo=%1").arg(groupNo);
     int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),5);
@@ -74,7 +74,7 @@ QString DLL::CloudHttpDao::getGroup(QString groupNo, QVector<RestServiceI::Camer
         return jsObj.value("message").toString();
     }
     QJsonArray jsArray = jsObj.value("data").toArray();
-    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(resGroups),[](const QJsonValue &jsVal){
+    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(*resGroups),[](const QJsonValue &jsVal){
         RestServiceI::CameraGoup caGroup;
         QJsonObject caGroupObj = jsVal.toObject();
         caGroup.description = caGroupObj.value("description").toString();
@@ -86,7 +86,7 @@ QString DLL::CloudHttpDao::getGroup(QString groupNo, QVector<RestServiceI::Camer
     return QString();
 }
 
-QString DLL::CloudHttpDao::getDevice(QString groupNo, QVector<RestServiceI::CameraInfo> &devices)
+QString DLL::CloudHttpDao::getDevice(QString groupNo, QVector<RestServiceI::CameraInfo> *devices)
 {
     QString urlStr = host_ + QObject::tr("api/v2/external/device/info/find?type=1&pageSize=10000000&pageNo=1&groupNo=%1").arg(groupNo);
     int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),5);
@@ -106,7 +106,7 @@ QString DLL::CloudHttpDao::getDevice(QString groupNo, QVector<RestServiceI::Came
         return jsObj.value("message").toString();
     }
     QJsonArray jsArray = jsObj.value("data").toArray();
-    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(devices),[](const QJsonValue &jsVal){
+    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(*devices),[](const QJsonValue &jsVal){
         RestServiceI::CameraInfo camera;
         QJsonObject cameraObj = jsVal.toObject();
         QString rtspStr = cameraObj.value("sourceAddress").toString();
@@ -150,7 +150,7 @@ QString DLL::CloudHttpDao::faceLink(RestServiceI::FaceLinkArgs &args)
     return QString();
 }
 
-QString DLL::CloudHttpDao::faceLink_(RestServiceI::FaceLinkArgs &args, QString &finishId)
+QString DLL::CloudHttpDao::faceLink_(RestServiceI::FaceLinkArgs &args, QString *finishId)
 {
     std::vector<std::string> headers;
     headers.emplace_back("Content-Type:application/json;charset=UTF-8");
@@ -189,11 +189,11 @@ QString DLL::CloudHttpDao::faceLink_(RestServiceI::FaceLinkArgs &args, QString &
     if(status != 200){
         return jsObj.value("message").toString();
     }
-    finishId = args.oid;
+    *finishId = args.oid;
     return QString();
 }
 
-QString DLL::CloudHttpDao::getFaceLinkPoint(QString &faceLinkId, RestServiceI::FaceLinkPointData &rootPointData)
+QString DLL::CloudHttpDao::getFaceLinkPoint(QString &faceLinkId, RestServiceI::FaceLinkPointData *rootPointData)
 {
     QString urlStr = host_ + QObject::tr("graph/node/find/name?name=%1").arg(faceLinkId);
     int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),5);
@@ -211,9 +211,9 @@ QString DLL::CloudHttpDao::getFaceLinkPoint(QString &faceLinkId, RestServiceI::F
     QString status = jsObj.value("status").toString();
     QString message = jsObj.value("message").toString();
     QJsonObject rootObj = jsObj.value("data").toObject();
-    rootPointData.id = rootObj.value("id").toInt();
-    rootPointData.name = rootObj.value("name").toString();
-    rootPointData.imgUrl = rootObj.value("image").toString();
+    rootPointData->id = rootObj.value("id").toInt();
+    rootPointData->name = rootObj.value("name").toString();
+    rootPointData->imgUrl = rootObj.value("image").toString();
     QJsonArray childArray = rootObj.value("faceNodePros").toArray();
     QVector<RestServiceI::FaceLinkPointData> childVec;
     std::transform(childArray.begin(),childArray.end(),std::back_inserter(childVec),[](QJsonValue val){
@@ -227,11 +227,11 @@ QString DLL::CloudHttpDao::getFaceLinkPoint(QString &faceLinkId, RestServiceI::F
         pointData.imgUrl = subObj.value("image").toString();
         return pointData;
     });
-    rootPointData.childrenPoint = childVec;
+    rootPointData->childrenPoint = childVec;
     return QString();
 }
 
-QString DLL::CloudHttpDao::getFaceLinkTree(QString &objectId, QJsonObject &treeJson)
+QString DLL::CloudHttpDao::getFaceLinkTree(QString &objectId, QJsonObject *treeJson)
 {
     QString urlStr = host_ + QObject::tr("graph/node/find/hierarchical?objId=%1").arg(objectId);
     int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),5);
@@ -252,12 +252,12 @@ QString DLL::CloudHttpDao::getFaceLinkTree(QString &objectId, QJsonObject &treeJ
     }
     QJsonArray resArray = jsObj.value("data").toArray();
     if(!resArray.isEmpty()){
-        treeJson = resArray.first().toObject();
+        *treeJson = resArray.first().toObject();
     }
     return QString();
 }
 
-QString DLL::CloudHttpDao::tracking(RestServiceI::FaceTrackingArgs &args,QVector<RestServiceI::TrackingReturnData> &resVec)
+QString DLL::CloudHttpDao::tracking(RestServiceI::FaceTrackingArgs &args, QVector<RestServiceI::TrackingReturnData> *resVec)
 {
     QByteArray imgArray;
     QBuffer imgBuf(&imgArray);
@@ -326,7 +326,7 @@ QString DLL::CloudHttpDao::tracking(RestServiceI::FaceTrackingArgs &args,QVector
         RestServiceI::TrackingReturnData rdata = sameIdVec.first();
         rdata.timeIn = QDateTime::fromMSecsSinceEpoch(*minmaxRes.first);
         rdata.timeOut = QDateTime::fromMSecsSinceEpoch(*minmaxRes.second);
-        resVec << rdata;
+        *resVec << rdata;
     }
 #endif
     return QString();
@@ -382,7 +382,7 @@ QString DLL::CloudHttpDao::getPeronAverageTime(RestServiceI::AveragePersonTimeAr
     return QString();
 }
 
-QString DLL::CloudHttpDao::getPersonDetailes(QString &objId, QImage &face, QImage &body, QStringList &attrsface, QStringList &attrsbody)
+QString DLL::CloudHttpDao::getPersonDetailes(QString &objId, QImage *face, QImage *body, QStringList *attrsface, QStringList *attrsbody)
 {
     QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/portrait?objId=%1&threshold=%2").arg(objId).arg(attributeThresold_);
     int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),5);
@@ -403,20 +403,20 @@ QString DLL::CloudHttpDao::getPersonDetailes(QString &objId, QImage &face, QImag
     }
 
     QJsonObject dataJsObj = jsObj.value("data").toObject();
-    face.loadFromData(QByteArray::fromBase64(dataJsObj.value("faceSnap").toString().toLatin1()));
-    body.loadFromData(QByteArray::fromBase64(dataJsObj.value("bodySnap").toString().toLatin1()));
+    face->loadFromData(QByteArray::fromBase64(dataJsObj.value("faceSnap").toString().toLatin1()));
+    body->loadFromData(QByteArray::fromBase64(dataJsObj.value("bodySnap").toString().toLatin1()));
     QJsonArray jsArray = dataJsObj.value("faceAttrs").toArray();
-    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(attrsface),[](QJsonValue jsValue){
+    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(*attrsface),[](QJsonValue jsValue){
         return jsValue.toString();
     });
     jsArray = dataJsObj.value("bodyAttrs").toArray();
-    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(attrsbody),[](QJsonValue jsValue){
+    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(*attrsbody),[](QJsonValue jsValue){
         return jsValue.toString();
     });
     return QString();
 }
 
-QString DLL::CloudHttpDao::getSceneInfo(QString &scenId, RestServiceI::SceneInfo &sceneInfo)
+QString DLL::CloudHttpDao::getSceneInfo(QString &scenId, RestServiceI::SceneInfo *sceneInfo)
 {
     QStringList requiredFileds;
     requiredFileds << "face_bbox" << "face_id" << "snapshot";
@@ -445,8 +445,8 @@ QString DLL::CloudHttpDao::getSceneInfo(QString &scenId, RestServiceI::SceneInfo
     QString imgUrl = host_;
     imgUrl.remove(imgUrl.count() - 1, 1);
     imgUrl += jsObj.value("url").toString();
-    getImageByUrl(imgUrl,sceneInfo.image);
-    if(sceneInfo.image.isNull()){
+    getImageByUrl(imgUrl,&sceneInfo->image);
+    if(sceneInfo->image.isNull()){
         return "No SceneImage";
     }
     QVariantMap faceBoxMap = jsObj.value("faceBoxMapping").toObject().toVariantMap();
@@ -462,25 +462,25 @@ QString DLL::CloudHttpDao::getSceneInfo(QString &scenId, RestServiceI::SceneInfo
 
         QImage faceImg;
         QString faceImgUrl = host_ + "api/v2/external/monitor-detail/download-image?collection=snap_face&fieldName=snapshot&objId=" + faceId;
-        getImageByUrl(faceImgUrl,faceImg);
-        sceneInfo.faceRectVec << qMakePair(QRect(x,y,rWidth,rHeight),faceImg);
+        getImageByUrl(faceImgUrl,&faceImg);
+        sceneInfo->faceRectVec << qMakePair(QRect(x,y,rWidth,rHeight),faceImg);
     }
-    sceneInfo.sceneId = scenId;
+    sceneInfo->sceneId = scenId;
     return QString();
 }
 
-QString DLL::CloudHttpDao::getImageByUrl(QString &url, QImage &image)
+QString DLL::CloudHttpDao::getImageByUrl(QString &url, QImage *image)
 {
     int resCode = send(DLL::GET,url.toStdString(),std::string(),10);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
 
-    image.loadFromData(QByteArray::fromStdString(responseData()));
+    image->loadFromData(QByteArray::fromStdString(responseData()));
     return QString();
 }
 
-QString DLL::CloudHttpDao::captureSearch(RestServiceI::CaptureSearchArgs &args, RestServiceI::CaptureSearchReturnData &resDatas)
+QString DLL::CloudHttpDao::captureSearch(RestServiceI::CaptureSearchArgs &args, RestServiceI::CaptureSearchReturnData *resDatas)
 {
     QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-history");
     QString postData = QObject::tr("mode=2&faceAttrs=&bodyAttrs=&cameraId=%4&startTime=%5&finishTime=%6&pageNo=%7&pageSize=%8&property=true")
@@ -505,10 +505,10 @@ QString DLL::CloudHttpDao::captureSearch(RestServiceI::CaptureSearchArgs &args, 
     if(status != 200){
         return jsObj.value("message").toString();
     }
-    resDatas.totalCount = jsObj.value("total").toInt();
-    resDatas.totalPage = jsObj.value("pageNumber").toInt();
+    resDatas->totalCount = jsObj.value("total").toInt();
+    resDatas->totalPage = jsObj.value("pageNumber").toInt();
     QJsonArray jsArray = jsObj.value("data").toArray();
-    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(resDatas.data),[](const QJsonValue &jsValue){
+    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(resDatas->data),[](const QJsonValue &jsValue){
         RestServiceI::DataRectureItem item;
         QJsonObject itemObj = jsValue.toObject();
         item.cameraId = itemObj.value("cameraId").toString();
@@ -524,7 +524,7 @@ QString DLL::CloudHttpDao::captureSearch(RestServiceI::CaptureSearchArgs &args, 
     return QString();
 }
 
-QString DLL::CloudHttpDao::semanticSearch(RestServiceI::SemanticSearchArgs &args, RestServiceI::SemanticReturnData &resDatas)
+QString DLL::CloudHttpDao::semanticSearch(RestServiceI::SemanticSearchArgs &args, RestServiceI::SemanticReturnData *resDatas)
 {
     QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-history");
     QString postData = QObject::tr("mode=%1&faceAttrs=%2&bodyAttrs=%3&cameraId=%4&startTime=%5&finishTime=%6&pageNo=%7&pageSize=%8&property=true")
@@ -554,10 +554,10 @@ QString DLL::CloudHttpDao::semanticSearch(RestServiceI::SemanticSearchArgs &args
     if(status != 200){
         return jsObj.value("message").toString();
     }
-    resDatas.toatal = jsObj.value("total").toInt();
-    resDatas.totalPage = jsObj.value("pageNumber").toInt();
+    resDatas->toatal = jsObj.value("total").toInt();
+    resDatas->totalPage = jsObj.value("pageNumber").toInt();
     QJsonArray jsArray = jsObj.value("data").toArray();
-    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(resDatas.records),[](const QJsonValue &jsValue){
+    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(resDatas->records),[](const QJsonValue &jsValue){
         RestServiceI::DataRectureItem item;
         QJsonObject itemObj = jsValue.toObject();
         item.cameraId = itemObj.value("cameraId").toString();
@@ -573,7 +573,7 @@ QString DLL::CloudHttpDao::semanticSearch(RestServiceI::SemanticSearchArgs &args
     return QString();
 }
 
-QString DLL::CloudHttpDao::searchByImage(RestServiceI::SearchUseImageArgs &args,QVector<RestServiceI::DataRectureItem> &resVec)
+QString DLL::CloudHttpDao::searchByImage(RestServiceI::SearchUseImageArgs &args, QVector<RestServiceI::DataRectureItem> *resVec)
 {
     QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-history");
     QByteArray imgStr;
@@ -610,7 +610,7 @@ QString DLL::CloudHttpDao::searchByImage(RestServiceI::SearchUseImageArgs &args,
         return jsObj.value("message").toString();
     }
     QJsonArray dataJsArray = jsObj.value("data").toArray();
-    std::transform(dataJsArray.begin(),dataJsArray.end(),std::back_inserter(resVec),[](QJsonValue jsVal){
+    std::transform(dataJsArray.begin(),dataJsArray.end(),std::back_inserter(*resVec),[](QJsonValue jsVal){
         RestServiceI::DataRectureItem sitem;
         QJsonObject itemObj = jsVal.toObject();
         sitem.cameraId = itemObj.value("cameraId").toString();
@@ -625,7 +625,7 @@ QString DLL::CloudHttpDao::searchByImage(RestServiceI::SearchUseImageArgs &args,
     return QString();
 }
 
-QString DLL::CloudHttpDao::combinationSearch(RestServiceI::CombinationSearchArgs &args,RestServiceI::CombinationSearchReturenData &resData)
+QString DLL::CloudHttpDao::combinationSearch(RestServiceI::CombinationSearchArgs &args, RestServiceI::CombinationSearchReturenData *resData)
 {
     QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-history");
     QByteArray imgStr;
@@ -663,7 +663,7 @@ QString DLL::CloudHttpDao::combinationSearch(RestServiceI::CombinationSearchArgs
     jsObj = jsObj.value("data").toObject();
     QJsonArray faceArray = jsObj.value("face").toArray();
     QJsonArray bodyArray = jsObj.value("body").toArray();
-    std::transform(faceArray.begin(),faceArray.end(),std::back_inserter(resData.faceList),[](QJsonValue jsVal){
+    std::transform(faceArray.begin(),faceArray.end(),std::back_inserter(resData->faceList),[](QJsonValue jsVal){
         RestServiceI::DataRectureItem sitem;
         QJsonObject itemObj = jsVal.toObject();
         sitem.cameraId = itemObj.value("cameraId").toString();
@@ -674,7 +674,7 @@ QString DLL::CloudHttpDao::combinationSearch(RestServiceI::CombinationSearchArgs
         sitem.similarity = itemObj.value("similarity").toDouble();
         return sitem;
     });
-    std::transform(bodyArray.begin(),bodyArray.end(),std::back_inserter(resData.bodyList),[](QJsonValue jsVal){
+    std::transform(bodyArray.begin(),bodyArray.end(),std::back_inserter(resData->bodyList),[](QJsonValue jsVal){
         RestServiceI::CombinationScoreReturnItem sitem;
         QJsonObject itemObj = jsVal.toObject();
         sitem.cameraId = itemObj.value("cameraId").toString();
@@ -689,7 +689,7 @@ QString DLL::CloudHttpDao::combinationSearch(RestServiceI::CombinationSearchArgs
     return QString();
 }
 
-QString DLL::CloudHttpDao::multipleSearch(RestServiceI::MultipleSearchArgs &args, QVector<RestServiceI::MultipleSearchItem> &resVec)
+QString DLL::CloudHttpDao::multipleSearch(RestServiceI::MultipleSearchArgs &args, QVector<RestServiceI::MultipleSearchItem> *resVec)
 {
     QString urlStr = host_ +  QObject::tr("/api/v2/external/monitor-detail/multiple-find");
     QStringList imgsBase64StrList;
@@ -730,7 +730,7 @@ QString DLL::CloudHttpDao::multipleSearch(RestServiceI::MultipleSearchArgs &args
         return jsObj.value("message").toString();
     }
     QJsonArray dataJsArray = jsObj.value("data").toArray();
-    std::transform(dataJsArray.begin(),dataJsArray.end(),std::back_inserter(resVec),[](QJsonValue jsVal){
+    std::transform(dataJsArray.begin(),dataJsArray.end(),std::back_inserter(*resVec),[](QJsonValue jsVal){
         RestServiceI::MultipleSearchItem sitem;
         QJsonObject itemObj = jsVal.toObject();
         sitem.cameraId = itemObj.value("cameraId").toString();
@@ -742,7 +742,7 @@ QString DLL::CloudHttpDao::multipleSearch(RestServiceI::MultipleSearchArgs &args
     return QString();
 }
 
-QString DLL::CloudHttpDao::getFaceLinkDataColl(RestServiceI::FaceLinkDataCollArgs &args,RestServiceI::FaceLinkDataCollReturn &resDatas)
+QString DLL::CloudHttpDao::getFaceLinkDataColl(RestServiceI::FaceLinkDataCollArgs &args, RestServiceI::FaceLinkDataCollReturn *resDatas)
 {
     QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-person-inlink");
     QString postData = QObject::tr("cameraId=%1&startTime=%2&finishTime=%3&pageNo=%4&pageSize=%5")
@@ -769,10 +769,10 @@ QString DLL::CloudHttpDao::getFaceLinkDataColl(RestServiceI::FaceLinkDataCollArg
     if(status != 200){
         return jsObj.value("message").toString();
     }
-    resDatas.toatal = jsObj.value("total").toInt();
-    resDatas.totalPage = jsObj.value("pageNumber").toInt();
+    resDatas->toatal = jsObj.value("total").toInt();
+    resDatas->totalPage = jsObj.value("pageNumber").toInt();
     QJsonArray jsArray = jsObj.value("data").toArray();
-    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(resDatas.records),[](const QJsonValue &jsValue){
+    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(resDatas->records),[](const QJsonValue &jsValue){
         RestServiceI::DataRectureItem item;
         QJsonObject itemObj = jsValue.toObject();
         item.cameraId = itemObj.value("cameraId").toString();

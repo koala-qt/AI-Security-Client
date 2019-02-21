@@ -15,21 +15,21 @@ class ThriftDao
 public:
     ThriftDao();
     ~ThriftDao();
-    std::string getScenePic(const std::string old,std::string &errorStr);
-    std::string getAlarmScenePic(const std::string oid,std::string &errorStr);
+    std::string getScenePic(const std::string old,std::string *errorStr);
+    std::string getAlarmScenePic(const std::string oid, string *errorStr);
     void getTop(const int id);
-    bool addStatis(const std::string startId,const std::string endId,std::string &errorStr);
-    bool removeStatis(const std::string startId,const std::string endId,std::string &errorStr);
-    std::vector<StatisTask> getStatisInfo(std::string &errorStr);
+    bool addStatis(const std::string startId, const std::string endId, string *errorStr);
+    bool removeStatis(const std::string startId, const std::string endId, string *errorStr);
+    std::vector<StatisTask> getStatisInfo(string *errorStr);
     PagedSnapFaceHis captureSearch(const int page,const int pageCount, const std::string &position, const unsigned long long startTimespec, const unsigned long long endTimespec,
-                                   std::string &errorStr);
-    bool setWaringArea(const std::string cameraId, AreaType::type t, std::vector<Point> &area, std::string &errorStr);
-    Area getWaringArea(const std::string &cameraId,std::string &errorStr);
-    PagedAlarmHis searchAlarmHistory(const int page,const int pageCount, const std::string &cameraId,const std::string &alarmType
-                                     ,const unsigned long long &startTimestamp,const unsigned long long &endTimestamp,std::string &errorStr);
+                                   std::string *errorStr);
+    bool setWaringArea(const std::string cameraId, AreaType::type t, std::vector<Point> &area, string *errorStr);
+    Area getWaringArea(const std::string &cameraId, string *errorStr);
+    PagedAlarmHis searchAlarmHistory(const int page, const int pageCount, const std::string &cameraId, const std::string &alarmType
+                                     , const unsigned long long &startTimestamp, const unsigned long long &endTimestamp, string *errorStr);
     std::vector<SearchFace> searchSnap(const std::string &img, const std::string &oid, const std::string &cameraId, const int topK, double similarty
-                    , unsigned long long startTimestamp, unsigned long long endTimestamp, std::string &errorStr);
-    std::vector<SearchFace> generateTrackingByFace(std::string &oid,std::string &face_img,float thresh,unsigned long long startTime,unsigned long long endTime,std::string &erroStr);
+                    , unsigned long long startTimestamp, unsigned long long endTimestamp, string *errorStr);
+    std::vector<SearchFace> generateTrackingByFace(std::string &oid, std::string &face_img, float thresh, unsigned long long startTime, unsigned long long endTime, string *erroStr);
 
 private:
     stdcxx::shared_ptr<TTransport> transport_;

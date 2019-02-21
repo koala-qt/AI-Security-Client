@@ -89,7 +89,6 @@ SceneImageDialog::SceneImageDialog(QWidget *parent, Qt::WindowFlags f):
     listW_->setFixedWidth(listWidth);
     spiteL_->setFixedWidth(1);
 
-    widgetM_ = reinterpret_cast<WidgetManagerI*>(qApp->property("WorkerManager").toULongLong());
     connect(sureSelectBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSureBtnClicked()));
     connect(deleSelectBtn_,SIGNAL(clicked(bool)),this,SLOT(slotDeleteBtnClicke()));
     connect(searchBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSearchBtnClicked()));

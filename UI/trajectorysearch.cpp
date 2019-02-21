@@ -42,6 +42,7 @@ TrajectorySearch::TrajectorySearch(WidgetManagerI *wm, WidgetI *parent):
     setLayout(mainLay);
 
     connect(m_searchBtn,SIGNAL(clicked(bool)),this,SLOT(slotSearchBtnClicked()));
+    setUserStyle(userStyle());
 }
 
 void TrajectorySearch::setUserStyle(WidgetManagerI::SkinStyle s)

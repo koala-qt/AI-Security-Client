@@ -15,8 +15,6 @@
 #include <QTimer>
 #include "facelinkpage.h"
 #include "treecharts.h"
-#include "service/restservice.h"
-#include "service/notifyservicei.h"
 #include "waitinglabel.h"
 #include "informationdialog.h"
 #include "nodatatip.h"
@@ -83,6 +81,7 @@ FaceLinkPage::FaceLinkPage(WidgetManagerI *wm, WidgetI *parent) :
 
     connect(searchBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSearchBtnClicked()));
     connect(imgBtn_,SIGNAL(clicked(bool)),this,SLOT(slotImgBtnClicked()));
+    setUserStyle(userStyle());
 }
 
 void FaceLinkPage::setUserStyle(WidgetManagerI::SkinStyle s)
@@ -201,8 +200,8 @@ void FaceLinkPage::slotSearchBtnClicked()
     notifyServiceI_->disconnect(SIGNAL(sigFaceLinkDataFinished(QString)));
     connect(notifyServiceI_,SIGNAL(sigFaceLinkDataFinished(QString)),this,SLOT(slotFaceLinkFinished(QString)));
 #else
-    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     RestServiceI::FaceLinkArgs args;
     args.depth = levelCombox_->currentText().toInt();
     args.endT = endTimeEdit_->dateTime();
@@ -228,7 +227,6 @@ void FaceLinkPage::slotSearchBtnClicked()
 #endif
 #endif
     serviceI->generateFaceLink(args);
-    startWorker(worker);
     waitingL_->show(500);
     searchBtn_->setEnabled(false);
 }
@@ -236,8 +234,8 @@ void FaceLinkPage::slotSearchBtnClicked()
 void FaceLinkPage::slotFaceLinkFinished(QString oid)
 {
     qDebug() << "finished face link oid" << oid;
-    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI,&RestServiceI::sigError,this,[this](QString str){
         waitingL_->close();
         delete waitingL_;
@@ -256,7 +254,6 @@ void FaceLinkPage::slotFaceLinkFinished(QString oid)
     connect(serviceI,SIGNAL(sigFaceLinkTree(QJsonObject)),this,SLOT(slotFaceLinkTree(QJsonObject)));
     serviceI->getFaceLinkTree(oid);
 #endif
-    startWorker(worker);
 }
 
 void FaceLinkPage::slotFaceLinkTree(QJsonObject jsObj)

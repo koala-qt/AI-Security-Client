@@ -14,11 +14,11 @@
 #include <QTimer>
 #include <QPainter>
 #include <QDebug>
+#include <QApplication>
 #include <QScrollBar>
 #include "realtimemonitoring.h"
 #include "realplaymanager.h"
 #include "cornerwidget.h"
-#include "service/restservice.h"
 #include "realmonitorsetting.h"
 #include "facesearch.h"
 #include "waitinglabel.h"
@@ -87,8 +87,8 @@ RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
         faceDialog->show();
     });
     faceItemMenu_->addAction(tr("Scene analysis"),[&]{
-        BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-        RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+        ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+        RestServiceI *serviceI = factoryI->makeRestServiceI();
         WaitingLabel *label = new WaitingLabel(this);
         connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
             label->close();
@@ -108,7 +108,6 @@ RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
         label->show(800);
         faceItemMenu_->setEnabled(false);
         serviceI->getSceneInfo(m_faceList->currentItem()->data(Qt::UserRole + 3).toString());
-        startWorker(worker);
     });
     m_faceList->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(m_faceList,&QListWidget::customContextMenuRequested,this,[&](const QPoint &p){
@@ -143,7 +142,7 @@ RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
     }
 
     connect(m_settingBtn,&QPushButton::clicked,this,[&]{
-        RealMonitorSetting settingDialog(widgetManger()->workerManager(), this, Qt::Dialog | Qt::WindowCloseButtonHint);
+        RealMonitorSetting settingDialog(this, Qt::Dialog | Qt::WindowCloseButtonHint);
         settingDialog.setMinimumWidth(1200);
         settingDialog.setScreenIndex(m_realPlayM->screenCount());
         settingDialog.setUserStyle(widgetManger()->currentStyle());
@@ -161,11 +160,12 @@ RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
     eventList_->setSpacing(10);
     eventList_->setMovement(QListView::Static);
     connect(eventCombox_,SIGNAL(currentIndexChanged(int)),this,SLOT(slotEventComboxIndexChanged(int)));
-    notifyServiceI_ = dynamic_cast<NotifyServiceI*>(getWoker("NotifyService"));
+    notifyServiceI_ = reinterpret_cast<NotifyServiceI*>(qApp->property("NotifyServiceI").toULongLong());
     connect(notifyServiceI_,SIGNAL(sigGrabedPerson(QStringList,QImage)),this,SLOT(slotAddFaceitem(QStringList,QImage)));
     connect(m_treeW,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),this,SLOT(slotTreeItemDoubleClicked(QTreeWidgetItem*,int)));
     m_settingBtn->hide();
 
+    setUserStyle(userStyle());
     updateCamera();
     slotEventComboxIndexChanged(0);
 //    getCameraGroup(nullptr,"1005");
@@ -379,17 +379,16 @@ void RealtimeMonitoring::paintEvent(QPaintEvent *event)
 
 void RealtimeMonitoring::updateCamera()
 {
-    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI,SIGNAL(sigCameraInfo(QVector<RestServiceI::CameraInfo>)),this,SLOT(slotAddDevice(QVector<RestServiceI::CameraInfo>)));
     serviceI->getCameraInfo();
-    startWorker(worker);
 }
 
 void RealtimeMonitoring::getCameraGroup(QTreeWidgetItem* item,QString groupNo)
 {
-    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI,&RestServiceI::sigCameraGroup,this,[item,this](QVector<RestServiceI::CameraGoup> groups){
         foreach (const RestServiceI::CameraGoup &groupV, groups) {
             QTreeWidgetItem *childItem = nullptr;
@@ -408,13 +407,12 @@ void RealtimeMonitoring::getCameraGroup(QTreeWidgetItem* item,QString groupNo)
         }
     });
     serviceI->getCameraGroup(groupNo);
-    startWorker(worker);
 }
 
 void RealtimeMonitoring::getCameraDevice(QTreeWidgetItem *item, QString groupNo)
 {
-    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI,&RestServiceI::sigCameraInfo,this,[this,item](QVector<RestServiceI::CameraInfo> devices){
         for (auto &info : devices) {
             QTreeWidgetItem *camera = new QTreeWidgetItem(item, QStringList() << info.cameraPos,1);
@@ -432,7 +430,6 @@ void RealtimeMonitoring::getCameraDevice(QTreeWidgetItem *item, QString groupNo)
         }
     });
     serviceI->getCameraDevice(groupNo);
-    startWorker(worker);
 }
 
 QString RealtimeMonitoring::findCameraNameById(QString &id)

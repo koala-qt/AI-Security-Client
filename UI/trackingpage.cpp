@@ -9,10 +9,10 @@
 #include <QSettings>
 #include <QFileDialog>
 #include <QStandardPaths>
+#include <QApplication>
 #include <QTimer>
 #include "trackingpage.h"
 #include "trackingwebview.h"
-#include "service/restservice.h"
 #include "waitinglabel.h"
 #include "informationdialog.h"
 
@@ -73,6 +73,8 @@ TrackingPage::TrackingPage(WidgetManagerI *wm, WidgetI *parent):
 
     QSettings configSetting("config.ini",QSettings::IniFormat);
     hostname_ = configSetting.value("CloudHost/host").toString();
+
+    setUserStyle(userStyle());
     getCameraInfo();
 }
 
@@ -150,11 +152,10 @@ void TrackingPage::setImgageOid(QImage img, QString oid)
 
 void TrackingPage::getCameraInfo()
 {
-    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI,SIGNAL(sigCameraInfo(QVector<RestServiceI::CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<RestServiceI::CameraInfo>)));
     serviceI->getCameraInfo();
-    startWorker(worker);
 }
 
 void TrackingPage::slotImgBtnClicked()
@@ -173,8 +174,8 @@ void TrackingPage::slotImgBtnClicked()
 
 void TrackingPage::slotSearchBtnClicked()
 {
-    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     RestServiceI::FaceTrackingArgs args;
     args.oid = curOid_;
     args.faceImg = imgBtn_->property("pixmap").value<QPixmap>().toImage();
@@ -203,7 +204,6 @@ void TrackingPage::slotSearchBtnClicked()
     });
 #endif
     serviceI->faceTracking(args);
-    startWorker(worker);
     searchBtn_->setEnabled(false);
     QTimer::singleShot(500,this,[this]{
         if(!searchBtn_->isEnabled()){

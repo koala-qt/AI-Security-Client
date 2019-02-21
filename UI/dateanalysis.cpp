@@ -49,6 +49,8 @@ DateAnalysis::DateAnalysis(WidgetManagerI *wm, WidgetI *parent):
     treeW_->headerItem()->setText(0,tr(""));
     connect(treeW_,SIGNAL(itemClicked(QTreeWidgetItem*,int)),this,SLOT(slotTreeWidgetItemClicked(QTreeWidgetItem*,int)));
     treeW_->setCurrentItem(treeW_->topLevelItem(0));
+
+    setUserStyle(userStyle());
 }
 
 void DateAnalysis::setUserStyle(WidgetManagerI::SkinStyle s)

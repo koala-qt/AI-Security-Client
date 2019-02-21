@@ -1,11 +1,9 @@
-include (core/core.pri)
-
 HEADERS += \
-    $$PWD/restservice.h \
-    $$PWD/restservicei.h \
-    $$PWD/notifyservicei.h \
-    $$PWD/notifyservice.h
+    $$PWD/servicei.h \
+    $$PWD/restserviceconcureent.h \
+    $$PWD/servicefacetory.h \
+    $$PWD/notifybymqtt.h
 
 SOURCES += \
-    $$PWD/restservice.cpp \
-    $$PWD/notifyservice.cpp
+    $$PWD/restserviceconcureent.cpp \
+    $$PWD/notifybymqtt.cpp

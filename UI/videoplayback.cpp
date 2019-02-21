@@ -9,10 +9,10 @@
 #include <QDebug>
 #include <QToolButton>
 #include <QPainter>
+#include <QApplication>
 #include <QScrollBar>
 #include "videoplayback.h"
 #include "hkplayback.h"
-#include "service/restservice.h"
 
 #pragma execution_character_set("utf-8")
 VideoPlayback::VideoPlayback(WidgetManagerI *wm, WidgetI *parent):
@@ -63,8 +63,9 @@ VideoPlayback::VideoPlayback(WidgetManagerI *wm, WidgetI *parent):
     connect(calendarWidget,SIGNAL(clicked(QDate)),this,SLOT(slotUploadTable(QDate)));
     connect(tableWidget_,SIGNAL(itemDoubleClicked(QTableWidgetItem*)),this,SLOT(slotTableItemDoubleClicked(QTableWidgetItem*)));
 
-//    updateCamera();
-    getCameraGroup(nullptr,"1005");
+    setUserStyle(userStyle());
+    updateCamera();
+//    getCameraGroup(nullptr,"1005");
 }
 
 void VideoPlayback::setUserStyle(WidgetManagerI::SkinStyle s)
@@ -198,17 +199,16 @@ void VideoPlayback::paintEvent(QPaintEvent *event)
 
 void VideoPlayback::updateCamera()
 {
-    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI,SIGNAL(sigCameraInfo(QVector<CameraInfo>)),this,SLOT(slotAddDevice(QVector<CameraInfo>)));
     serviceI->getCameraInfo();
-    startWorker(worker);
 }
 
 void VideoPlayback::getCameraGroup(QTreeWidgetItem *item, QString groupNo)
 {
-    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI,&RestServiceI::sigCameraGroup,this,[item,this](QVector<RestServiceI::CameraGoup> groups){
         foreach (const RestServiceI::CameraGoup &groupV, groups) {
             QTreeWidgetItem *childItem = nullptr;
@@ -227,13 +227,12 @@ void VideoPlayback::getCameraGroup(QTreeWidgetItem *item, QString groupNo)
         }
     });
     serviceI->getCameraGroup(groupNo);
-    startWorker(worker);
 }
 
 void VideoPlayback::getCameraDevice(QTreeWidgetItem *item, QString groupNo)
 {
-    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI,&RestServiceI::sigCameraInfo,this,[this,item](QVector<RestServiceI::CameraInfo> devices){
         for (auto &info : devices) {
             QTreeWidgetItem *camera = new QTreeWidgetItem(item, QStringList() << info.cameraPos,1);
@@ -248,7 +247,6 @@ void VideoPlayback::getCameraDevice(QTreeWidgetItem *item, QString groupNo)
         }
     });
     serviceI->getCameraDevice(groupNo);
-    startWorker(worker);
 }
 
 void VideoPlayback::slotUploadTable(QDate d)

@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui webenginewidgets webchannel charts
+QT       += core gui webenginewidgets webchannel charts concurrent
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

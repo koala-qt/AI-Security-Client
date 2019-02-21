@@ -20,8 +20,7 @@ QT_FORWARD_DECLARE_CLASS(MovieLabel)
 QT_FORWARD_DECLARE_CLASS(CalendarEcharts)
 QT_FORWARD_DECLARE_CLASS(QMenu)
 #include "widgetinterface.h"
-#include "service/notifyservicei.h"
-#include "service/restservicei.h"
+#include "service/servicei.h"
 #define MAINPAGEEVENTITEMCOUNT 7
 //#define USEQCALENDAR
 

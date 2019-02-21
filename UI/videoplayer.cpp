@@ -11,7 +11,7 @@
 #include <QRadioButton>
 #include <QMessageBox>
 #include <QDebug>
-#include "service/restservice.h"
+#include "service/servicei.h"
 #include "components/PaintAera/paintarea.h"
 #include "canvaswidget.h"
 #include "videoplayer.h"
@@ -128,8 +128,8 @@ VideoPlayer::VideoPlayer(QWidget *parent):
                 areas << qMakePair(ty,polygon);
             }
 
-            BLL::Worker *w = new BLL::RestService(workerM_);
-            RestServiceI *serI = dynamic_cast<RestServiceI*>(w);
+            ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+            RestServiceI *serI = factoryI->makeRestServiceI();
             connect(serI,&RestServiceI::sigResultState,this,[&,areas](bool s){
                 if(s){
                     slotSetPolygons(areas);
@@ -140,7 +140,6 @@ VideoPlayer::VideoPlayer(QWidget *parent):
                 }
             });
             serI->setWaringArea(m_deviceId,areas);
-            workerM_->startWorker(w);
         }else if(returnRole == QDialog::Rejected){
             qDebug() << "rejected";
         }
@@ -172,14 +171,6 @@ VideoPlayer::VideoPlayer(QWidget *parent):
         menu_->move(mapToGlobal(p));
         menu_->show();
     });
-    connect(qApp,&QApplication::lastWindowClosed,this,[this]{
-        workerM_ = nullptr;
-    },Qt::DirectConnection);
-}
-
-void VideoPlayer::setWorkerManager(BLL::WorkerManager *wm)
-{
-    workerM_ = wm;
 }
 
 void VideoPlayer::play(QString url, QString decoderFactoryName, QString id, QString name)
@@ -231,16 +222,12 @@ void VideoPlayer::slotSetRects(QVector<QRect> rs)
 
 void VideoPlayer::slotOnStarted(int w, int h)
 {
-    if(!workerM_){
-        return;
-    }
     oldRtsp_.clear();
     reconnectCount_ = 0;
     m_canvas->slotSetPainterCoordinate(w,h);
 
-    BLL::Worker *worker = new BLL::RestService(workerM_);
-    RestServiceI *serI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serI = factoryI->makeRestServiceI();
     connect(serI,SIGNAL(sigWaringAreas(QVector<QPair<int,QPolygonF> >)),this,SLOT(slotSetPolygons(QVector<QPair<int, QPolygonF> >)));
     serI->getWaringArea(m_deviceId);
-    workerM_->startWorker(worker);
 }

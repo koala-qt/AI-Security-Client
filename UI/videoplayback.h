@@ -4,7 +4,7 @@
 #include <QTreeWidgetItem>
 #include <QTableWidgetItem>
 #include "widgetinterface.h"
-#include "service/restservicei.h"
+#include "service/servicei.h"
 QT_FORWARD_DECLARE_CLASS(QTreeWidget)
 QT_FORWARD_DECLARE_CLASS(HKPlayBack)
 QT_FORWARD_DECLARE_CLASS(QCalendarWidget)

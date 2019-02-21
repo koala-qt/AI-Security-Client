@@ -1,101 +1,77 @@
 ﻿#include <QSettings>
-#include <QThread>
-#include <QDateTime>
+#include <QTimer>
 #include <QUuid>
 #include <QDebug>
-#include "notifyservice.h"
-#include "core/workermanagerapi.h"
+#include "notifybymqtt.h"
 #include "dao/face.pb.h"
 
 #pragma execution_character_set("utf-8")
-BLL::NotifyService::NotifyService(BLL::WorkerManager *wm, QObject *parent):
-    NotifyServiceI(parent),
-    BaseWorker(wm)
+NotifyByMqtt::NotifyByMqtt(QObject *parent):
+    NotifyServiceI(parent)
 {
-
+    timer_ = new QTimer(this);
+    QThread::connect(timer_,SIGNAL(timeout()),this,SLOT(slotTimeout()));
 }
 
-BLL::WorkerType BLL::NotifyService::workerType() const
+void NotifyByMqtt::run()
 {
-    return RunForever;
-}
-
-void BLL::NotifyService::initsize()
-{
-    pushBackTask(ConnectMqtt,QVariant());
-}
-
-void BLL::NotifyService::run()
-{
-    int resCode = 0;
-    while (true) {
-        std::pair<int,QVariant> args = getTask(false);
-        int cmdType = args.first;
-        if(cmdType == -1){
-            break;
-        }else if(cmdType == ConnectMqtt){
-            QSettings settins("config.ini",QSettings::IniFormat);
-            int num = settins.beginReadArray("Mqtt/topic");
-            for(int i = 0; i < num; i++){
-                settins.setArrayIndex(i);
-                topticList_ << settins.value("topic").toString();
-            }
-            settins.endArray();
-            QString clientId = QUuid::createUuid().toString();
-            mosqpp::mosquittopp::reinitialise(clientId.toStdString().data(),true);
-            mosqpp::lib_init();
-            int keepalive = 60;
-            mosqpp::mosquittopp::username_pw_set(settins.value("Mqtt/username").toString().toStdString().data(),settins.value("Mqtt/password").toString().toStdString().data());
-            resCode = mosqpp::mosquittopp::connect(settins.value("Mqtt/ip").toString().toStdString().data(),settins.value("Mqtt/port").toInt(),keepalive);
-            if(resCode == MOSQ_ERR_SUCCESS){
-                qDebug() << tr("连接成功");
-            }else{
-                qDebug() << tr("连接错误");
-                emit sigNetWorkError(tr("连接错误"));
-                QThread::sleep(5);
-                reconnectMqtt();
-            }
-        }else if(cmdType == ReconnectMqtt){
-            qDebug() << "reconnect mqtt";
-            reconnect_async();
-            QThread::sleep(5);
+    QSettings settins("config.ini",QSettings::IniFormat);
+    int num = settins.beginReadArray("Mqtt/topic");
+    for(int i = 0; i < num; i++){
+        settins.setArrayIndex(i);
+        topticList_ << settins.value("topic").toString();
+    }
+    settins.endArray();
+    QString clientId = QUuid::createUuid().toString();
+    mosqpp::mosquittopp::reinitialise(clientId.toStdString().data(),true);
+    mosqpp::lib_init();
+    int keepalive = 60;
+    mosqpp::mosquittopp::username_pw_set(settins.value("Mqtt/username").toString().toStdString().data(),settins.value("Mqtt/password").toString().toStdString().data());
+    bool resCode = mosqpp::mosquittopp::connect(settins.value("Mqtt/ip").toString().toStdString().data(),settins.value("Mqtt/port").toInt(),keepalive);
+    if(resCode == MOSQ_ERR_SUCCESS){
+        qDebug() << tr("连接成功") << QThread::currentThreadId();
+    }else{
+        qDebug() << tr("连接错误") << QThread::currentThreadId();
+        emit sigNetWorkError(tr("连接错误"));
+        if(!timer_->isActive()){
+            QMetaObject::invokeMethod(timer_,"start",Q_ARG(int,5000));
         }
+    }
+
+    while (!isInterruptionRequested()) {
         mosqpp::mosquittopp::loop();
-        QThread::msleep(10);
+        QThread::msleep(1);
     }
-
     mosqpp::lib_cleanup();
-    if(getWorkerManager()){
-        getWorkerManager()->removeWorker(this);
+}
+
+void NotifyByMqtt::on_connect(int rc)
+{
+    qDebug() << "mqtt connect" << QThread::currentThreadId();
+    if(timer_->isActive()){
+        QMetaObject::invokeMethod(timer_,"stop");
     }
-}
-
-void BLL::NotifyService::reconnectMqtt()
-{
-    pushBackTask(ReconnectMqtt,QVariant());
-}
-
-void BLL::NotifyService::on_connect(int rc)
-{
     foreach (const QString str, topticList_) {
         int resCode = subscribe(nullptr,str.toStdString().data());
         qDebug() << "mqtt subscribe" << str << "return" << resCode;
     }
 }
 
-void BLL::NotifyService::on_disconnect(int rc)
+void NotifyByMqtt::on_disconnect(int rc)
 {
     qDebug() << "mqtt disconnect";
-    reconnectMqtt();
+    if(!timer_->isActive()){
+        QMetaObject::invokeMethod(timer_,"start",Q_ARG(int,5000));
+    }
 }
 
-void BLL::NotifyService::on_subscribe(int mid, int qos_count, const int *granted_qos)
+void NotifyByMqtt::on_subscribe(int mid, int qos_count, const int *granted_qos)
 {
     qDebug() << "Subscription successed";
     emit sigInitsized();
 }
 
-void BLL::NotifyService::on_message(const mosquitto_message *message)
+void NotifyByMqtt::on_message(const mosquitto_message *message)
 {
     if(!::qstrcmp(message->topic,"topic/test")){
         kf::FaceInfoPT face_info_pt;
@@ -225,4 +201,9 @@ void BLL::NotifyService::on_message(const mosquitto_message *message)
         QString msg = QString::fromStdString(faceLinkPoint.msg());
         emit sigFaceLinkDataFinished(oid);
     }
+}
+
+void NotifyByMqtt::slotTimeout()
+{
+    reconnect_async();
 }

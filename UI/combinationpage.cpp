@@ -15,12 +15,13 @@
 #include <QCursor>
 #include <QMenu>
 #include <QPainter>
+#include <QApplication>
 #include <QMessageBox>
 #include "combinationpage.h"
 #include "sceneimagedialog.h"
 #include "waitinglabel.h"
 #include "facesearch.h"
-#include "service/restservice.h"
+#include "service/restserviceconcureent.h"
 #include "informationdialog.h"
 #include "nodatatip.h"
 
@@ -100,8 +101,8 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
         }
     });
     faceDataMenu_->addAction(tr("Scene analysis"),[this]{
-        BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-        RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+        ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+        RestServiceI *serviceI = factoryI->makeRestServiceI();
         WaitingLabel *label = new WaitingLabel(this);
         connect(serviceI,&RestServiceI::sigError,this,[&,label](const QString str){
             label->close();
@@ -119,7 +120,6 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
             faceDataMenu_->setEnabled(true);
         });
         serviceI->getSceneInfo(faceTable_->item(faceTable_->currentRow(),0)->data(Qt::UserRole + 1).toString());
-        startWorker(worker);
         label->show(500);
         faceDataMenu_->setEnabled(false);
     });
@@ -157,8 +157,8 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
         }
     });
     bodyDataMenu_->addAction(tr("Scene analysis"),[this]{
-        BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-        RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+        ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+        RestServiceI *serviceI = factoryI->makeRestServiceI();
         WaitingLabel *label = new WaitingLabel(this);
         connect(serviceI,&RestServiceI::sigError,this,[&,label](const QString str){
             label->close();
@@ -176,7 +176,6 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
             bodyDataMenu_->setEnabled(true);
         });
         serviceI->getSceneInfo(bodyTable_->item(bodyTable_->currentRow(),1)->data(Qt::UserRole + 1).toString());
-        startWorker(worker);
         label->show(500);
         bodyDataMenu_->setEnabled(false);
     });
@@ -262,6 +261,7 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
     connect(imageBtn_,SIGNAL(clicked(bool)),this,SLOT(slotImageBtnClicked()));
     connect(searchBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSearchBtnClicked()));
 
+    setUserStyle(userStyle());
     getCameraInfo();
 }
 
@@ -280,11 +280,10 @@ bool CombinationPage::eventFilter(QObject *watched, QEvent *event)
 
 void CombinationPage::getCameraInfo()
 {
-    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI,SIGNAL(sigCameraInfo(QVector<RestServiceI::CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<RestServiceI::CameraInfo>)));
     serviceI->getCameraInfo();
-    startWorker(worker);
 }
 
 void CombinationPage::slotFaceTabelSectionClicked(int index)
@@ -319,8 +318,8 @@ void CombinationPage::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)
 
 void CombinationPage::slotSearchBtnClicked()
 {
-    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     WaitingLabel *label = new WaitingLabel(this);
     connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
         label->close();
@@ -408,7 +407,6 @@ void CombinationPage::slotSearchBtnClicked()
     args.similarity = similaritySpin_->value() / (qreal)100;
     args.tradeoff = quanzhongSpin_->value() / (qreal)100;
     serviceI->combinationSearch(args);
-    startWorker(worker);
     label->show(500);
     searchBtn_->setEnabled(false);
     noFaceDataW_->hide();

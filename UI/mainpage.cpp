@@ -31,7 +31,7 @@
 #include "movielabel.h"
 #include "waitinglabel.h"
 #include "calendarecharts.h"
-#include "service/restservice.h"
+#include "service/restserviceconcureent.h"
 #include "sceneimagedialog.h"
 #include "facesearch.h"
 
@@ -317,7 +317,7 @@ MainPage::MainPage(WidgetManagerI *wm, WidgetI *parent):
         listMenu_->show();
     });
 
-    notifyService_ = dynamic_cast<NotifyServiceI*>(getWoker("NotifyService"));
+    notifyService_ = reinterpret_cast<NotifyServiceI*>(qApp->property("NotifyServiceI").toULongLong());
     connect(notifyService_,SIGNAL(sigAreaGarphics(QVector<QPointF>)),this,SLOT(slotAreaGraphics(QVector<QPointF>)));
     connect(notifyService_,SIGNAL(sigAlarmData(int,int,int)),this,SLOT(slotAlarmData(int,int,int)));
     connect(notifyService_,SIGNAL(sigFaceGrab(int,int,int,int)),this,SLOT(slotFaceGrab(int,int,int,int)));
@@ -326,6 +326,8 @@ MainPage::MainPage(WidgetManagerI *wm, WidgetI *parent):
     connect(notifyService_,SIGNAL(sigEventSpider(QVector<QVector<double> >)),this,SLOT(slotSpiderData(QVector<QVector<double> >)));
     connect(eventCobox_,SIGNAL(currentIndexChanged(int)),this,SLOT(slotEventComboxClicked(int)));
     slotEventComboxClicked(0);
+
+    setUserStyle(userStyle());
     getCameraInfo();
 }
 
@@ -819,9 +821,8 @@ void MainPage::slotPieChart(QVector<kf::PieCharData> pieData)
 
 void MainPage::getCameraInfo()
 {
-    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI,SIGNAL(sigCameraInfo(QVector<RestServiceI::CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<RestServiceI::CameraInfo>)));
     serviceI->getCameraInfo();
-    startWorker(worker);
 }

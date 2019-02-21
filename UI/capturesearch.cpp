@@ -17,10 +17,10 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QFontMetrics>
+#include <QApplication>
 #include "facesearch.h"
 #include "pageindicator.h"
 #include "waitinglabel.h"
-#include "service/restservice.h"
 #include "capturesearch.h"
 #include "sceneimagedialog.h"
 #include "components/SelectImage/selectimage.h"
@@ -84,8 +84,8 @@ CaptureSearch::CaptureSearch(WidgetManagerI *wm, WidgetI *parent):
         faceDialog->show();
     });
     menu_->addAction(tr("Scene analysis"),[&]{
-        BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-        RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+        ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+        RestServiceI *serviceI = factoryI->makeRestServiceI();
         WaitingLabel *label = new WaitingLabel(this);
         connect(serviceI,&RestServiceI::sigError,this,[&,label](const QString str){
             label->close();
@@ -103,7 +103,6 @@ CaptureSearch::CaptureSearch(WidgetManagerI *wm, WidgetI *parent):
             menu_->setEnabled(true);
         });
         serviceI->getSceneInfo(m_listW->currentItem()->data(Qt::UserRole + 2).toString());
-        startWorker(worker);
         label->show(500);
         menu_->setEnabled(false);
     });
@@ -146,6 +145,8 @@ CaptureSearch::CaptureSearch(WidgetManagerI *wm, WidgetI *parent):
     QSettings config("config.ini",QSettings::IniFormat);
     dataRows_ = config.value("App/CaptureRows").toInt();
     dataCols_ = config.value("App/CaptureCols").toInt();
+
+    setUserStyle(userStyle());
     getCameraInfo();
 }
 
@@ -343,11 +344,10 @@ bool CaptureSearch::event(QEvent *event)
 
 void CaptureSearch::getCameraInfo()
 {
-    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI,SIGNAL(sigCameraInfo(QVector<RestServiceI::CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<RestServiceI::CameraInfo>)));
     serviceI->getCameraInfo();
-    startWorker(worker);
 }
 
 void CaptureSearch::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
@@ -403,8 +403,8 @@ void CaptureSearch::slotSearchBtnClicked()
 
 void CaptureSearch::slotSearchSnapInfo(int page)
 {
-    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     WaitingLabel *label = new WaitingLabel(this);
     connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
         label->close();
@@ -432,7 +432,6 @@ void CaptureSearch::slotSearchSnapInfo(int page)
     args.start = curStartTime_;
     args.end = curEndTime_;
     serviceI->captureSearch(args);
-    startWorker(worker);
     label->show(500);
     m_searchBtn->setEnabled(false);
     m_pageIndicator->setEnabled(false);

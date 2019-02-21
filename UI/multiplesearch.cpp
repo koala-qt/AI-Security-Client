@@ -11,12 +11,12 @@
 #include <QFileDialog>
 #include <QMenu>
 #include <QStandardPaths>
+#include <QApplication>
 #include <QEvent>
 #include "multiplesearch.h"
 #include "waitinglabel.h"
 #include "sceneimagedialog.h"
 #include "facesearch.h"
-#include "service/restservice.h"
 #include "informationdialog.h"
 #include "nodatatip.h"
 
@@ -59,8 +59,8 @@ MultipleSearch::MultipleSearch(WidgetManagerI *wm, WidgetI *parent):
     setLayout(mainLay);
 
     dataMenu_->addAction(tr("Scene analysis"),[this]{
-        BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-        RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+        ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+        RestServiceI *serviceI = factoryI->makeRestServiceI();
         WaitingLabel *label = new WaitingLabel(this);
         connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
             label->close();
@@ -101,7 +101,6 @@ MultipleSearch::MultipleSearch(WidgetManagerI *wm, WidgetI *parent):
             dataMenu_->setEnabled(true);
         });
         serviceI->getSceneInfo(dataList_->currentItem()->data(Qt::UserRole).toString());
-        startWorker(worker);
         label->show(500);
         dataMenu_->setEnabled(false);
     });
@@ -141,6 +140,7 @@ MultipleSearch::MultipleSearch(WidgetManagerI *wm, WidgetI *parent):
     connect(searchBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSearchBtnClicked()));
     noDataW_ = new NoDataTip(dataList_);
 
+    setUserStyle(userStyle());
     getCameraInfo();
 }
 
@@ -292,11 +292,10 @@ void MultipleSearch::resizeEvent(QResizeEvent *event)
 
 void MultipleSearch::getCameraInfo()
 {
-    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI,SIGNAL(sigCameraInfo(QVector<RestServiceI::CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<RestServiceI::CameraInfo>)));
     serviceI->getCameraInfo();
-    startWorker(worker);
 }
 
 void MultipleSearch::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)
@@ -325,8 +324,8 @@ void MultipleSearch::slotItemClicked(QListWidgetItem *item)
 
 void MultipleSearch::slotSearchBtnClicked()
 {
-    BLL::Worker *worker = new BLL::RestService(widgetManger()->workerManager());
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     WaitingLabel *label = new WaitingLabel(this);
     connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
         label->close();
@@ -363,7 +362,6 @@ void MultipleSearch::slotSearchBtnClicked()
         }
     }
     serviceI->multipleSearch(args);
-    startWorker(worker);
     label->show(500);
     searchBtn_->setEnabled(false);
     noDataW_->hide();

@@ -2,8 +2,6 @@
 #define WIDGETINTERFACE_H
 
 #include <QWidget>
-#include "service/core/workerapi.h"
-#include "service/core/workermanagerapi.h"
 class WidgetI;
 class WidgetManagerI
 {
@@ -18,13 +16,6 @@ public:
     virtual void notifyUserStyle(SkinStyle) = 0;
     virtual void unregisterWidget(WidgetI*) = 0;
     virtual SkinStyle currentStyle() const = 0;
-    virtual inline void setWorkerManager(BLL::WorkerManager *workerM){
-        _workerM = workerM;
-    }
-    virtual inline BLL::WorkerManager* workerManager(){return _workerM;}
-
-private:
-    BLL::WorkerManager *_workerM = nullptr;
 };
 
 class WidgetI : public QWidget
@@ -36,12 +27,6 @@ public:
     }
     ~WidgetI(){widgetManger()->unregisterWidget(this);}
     virtual void setUserStyle(WidgetManagerI::SkinStyle style) = 0;
-    virtual inline BLL::Worker* getWoker(QString name){
-        return _wmager->workerManager()->getWorker(name);
-    }
-    virtual inline void startWorker(BLL::Worker*w, int threadCount = 1){
-        return _wmager->workerManager()->startWorker(w,threadCount);
-    }
     virtual inline WidgetManagerI::SkinStyle userStyle(){
         return _wmager->currentStyle();
     }

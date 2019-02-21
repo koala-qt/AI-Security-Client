@@ -5,12 +5,11 @@
 #include <QDebug>
 #include "cameramapscene.h"
 #include "graphicsarrowitem.h"
-#include "service/restservice.h"
+#include "service/restserviceconcureent.h"
 
 CameraMapScene::CameraMapScene(QObject *parent)
 {
     addPixmap(tr("map.png"));
-    workerM_ = reinterpret_cast<BLL::WorkerManager*>(qApp->property("WorkerManager").toULongLong());
     QVector<CameraMapScene::PointInfo> trackingDataVec;
     trackingDataVec << CameraMapScene::PointInfo{"fsrewr",QDateTime(QDate::currentDate(),QTime(10,10,10))}
                     << CameraMapScene::PointInfo{"fsrewr",QDateTime(QDate::currentDate(),QTime(10,10,10))}

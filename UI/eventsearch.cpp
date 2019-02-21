@@ -12,10 +12,10 @@
 #include <QListView>
 #include <QPainter>
 #include <QFile>
+#include <QApplication>
 #include <QMessageBox>
 #include "pageindicator.h"
 #include "waitinglabel.h"
-#include "service/restservice.h"
 #include "sceneimagedialog.h"
 #include "facesearch.h"
 #include "informationdialog.h"
@@ -80,8 +80,8 @@ EventSearch::EventSearch(WidgetManagerI *wm, WidgetI *parent):
 
     menu_ = new QMenu(this);
     menu_->addAction(tr("查看场景图"),[&]{
-        BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-        RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+        ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+        RestServiceI *serviceI = factoryI->makeRestServiceI();
         WaitingLabel *label = new WaitingLabel(this);
         connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
             label->close();
@@ -102,7 +102,6 @@ EventSearch::EventSearch(WidgetManagerI *wm, WidgetI *parent):
             menu_->setEnabled(true);
         });
         serviceI->getAlarmScenePic(m_tableW->item(m_tableW->currentRow(),1)->text());
-        startWorker(worker);
         label->show(500);
         menu_->setEnabled(false);
     });
@@ -136,6 +135,7 @@ EventSearch::EventSearch(WidgetManagerI *wm, WidgetI *parent):
         waryingTypeMap_.insert(pairValue.first,pairValue.second);
     }
     noDataTipW_ = new NoDataTip(m_tableW);
+    setUserStyle(userStyle());
     getCameraInfo();
 }
 
@@ -403,17 +403,16 @@ void EventSearch::paintEvent(QPaintEvent *event)
 
 void EventSearch::getCameraInfo()
 {
-    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI,SIGNAL(sigCameraInfo(QVector<RestServiceI::CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<RestServiceI::CameraInfo>)));
     serviceI->getCameraInfo();
-    startWorker(worker);
 }
 
 void EventSearch::slotSearchPageAlarmHistory(int page)
 {
-    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     WaitingLabel *label = new WaitingLabel(this);
     label->setAttribute(Qt::WA_DeleteOnClose);
     connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
@@ -433,7 +432,6 @@ void EventSearch::slotSearchPageAlarmHistory(int page)
         m_pageindicator->setEnabled(true);
     });
     serviceI->searchAlarmHistory(page,20,curCameraid_,curWaringType_,curStartDateTime_,curEndDateTime_);
-    startWorker(worker);
     label->show(500);
     m_searchBtn->setEnabled(false);
     m_pageindicator->setEnabled(false);

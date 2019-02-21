@@ -19,6 +19,7 @@
 #include <QPainter>
 #include <QStandardPaths>
 #include <QSettings>
+#include <QApplication>
 #include "semanticsearchpage.h"
 #include "pageindicator.h"
 #include "waitinglabel.h"
@@ -27,7 +28,6 @@
 #include "trackingpage.h"
 #include "portrait.h"
 #include "facesearch.h"
-#include "service/restservice.h"
 #include "informationdialog.h"
 #include "nodatatip.h"
 
@@ -71,8 +71,8 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
 
     attributTreeW_->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Preferred);
     dataMenu_->addAction(tr("Details"),[this]{
-        BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-        RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+        ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+        RestServiceI *serviceI = factoryI->makeRestServiceI();
         WaitingLabel *label = new WaitingLabel(this);
         connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
             label->close();
@@ -99,13 +99,12 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
             dataMenu_->setEnabled(true);
         });
         serviceI->getPersonDetails(dataListW_->currentItem()->data(Qt::UserRole + 4).toString());
-        startWorker(worker);
         label->show(500);
         dataMenu_->setEnabled(false);
     });
     dataMenu_->addAction(tr("Scene analysis"),[this]{
-        BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-        RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+        ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+        RestServiceI *serviceI = factoryI->makeRestServiceI();
         WaitingLabel *label = new WaitingLabel(this);
         connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
             label->close();
@@ -145,7 +144,6 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
             dataMenu_->setEnabled(true);
         });
         serviceI->getSceneInfo(dataListW_->currentItem()->data(Qt::UserRole + 5).toString());
-        startWorker(worker);
         label->show(500);
         dataMenu_->setEnabled(false);
     });
@@ -270,6 +268,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
     QSettings config("config.ini",QSettings::IniFormat);
     dataRows_ = config.value("App/SemanticRows").toInt();
     dataCols_ = config.value("App/SemanticCols").toInt();
+    setUserStyle(userStyle());
     getCameraInfo();
 }
 
@@ -518,18 +517,17 @@ bool SemanticSearchPage::event(QEvent *event)
 
 void SemanticSearchPage::getCameraInfo()
 {
-    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI,SIGNAL(sigCameraInfo(QVector<RestServiceI::CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<RestServiceI::CameraInfo>)));
     serviceI->getCameraInfo();
-    startWorker(worker);
 }
 
 void SemanticSearchPage::slotSemanticSearch(int page)
 {
-    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
-    WaitingLabel *label = new WaitingLabel(this);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
+    WaitingLabel *label = new WaitingLabel(dataListW_);
     label->setAttribute(Qt::WA_DeleteOnClose);
     connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
         label->close();
@@ -588,7 +586,6 @@ void SemanticSearchPage::slotSemanticSearch(int page)
     args.pageSize = dataRows_ * dataCols_;
     args.faceAttributList = curfaceAttrList_;
     serviceI->semanticSearch(args);
-    startWorker(worker);
     label->show(500);
     pageIndicator_->setEnabled(false);
     searchBtn_->setEnabled(false);

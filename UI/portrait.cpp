@@ -55,6 +55,8 @@ Portrait::Portrait(WidgetManagerI *wm, WidgetI *parent):
     faceL_->setScaledContents(true);
     personL_->setScaledContents(true);
     faceAttributeBack->setMinimumWidth(325);
+
+    setUserStyle(userStyle());
 }
 
 void Portrait::setUserStyle(WidgetManagerI::SkinStyle s)

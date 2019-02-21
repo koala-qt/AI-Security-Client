@@ -10,15 +10,14 @@
 #include <QDebug>
 #include <QListView>
 #include <QFile>
+#include <QApplication>
 #include "realmonitorsetting.h"
 #include "buttondelegate.h"
-#include "service/restservice.h"
 #include "informationdialog.h"
 
 #pragma execution_character_set("utf-8")
-RealMonitorSetting::RealMonitorSetting(BLL::WorkerManager *wm, QWidget *parent, Qt::WindowFlags f):
-    QDialog(parent,f),
-    wm_(wm)
+RealMonitorSetting::RealMonitorSetting(QWidget *parent, Qt::WindowFlags f):
+    QDialog(parent,f)
 {
     QVBoxLayout *mainLay = new QVBoxLayout;
     QGridLayout *gridLay = new QGridLayout;
@@ -237,31 +236,28 @@ void RealMonitorSetting::setUserStyle(WidgetManagerI::SkinStyle s)
 
 void RealMonitorSetting::addStatis()
 {
-    BLL::Worker * worker = new BLL::RestService(wm_);
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI,SIGNAL(sigResultState(bool)),this,SLOT(slotAddStatis(bool)));
     serviceI->addStatis(startLocationCombox_->currentData().toString(),endLocationCombox_->currentData().toString());
     curStartLocation_ = startLocationCombox_->currentData().toString();
     curEndLocation_ = endLocationCombox_->currentData().toString();
-    wm_->startWorker(worker);
 }
 
 void RealMonitorSetting::updateStatis()
 {
-    BLL::Worker * worker = new BLL::RestService(wm_);
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI,SIGNAL(sigStatisInfo(QVector<StatisTask>)),this,SLOT(slotSnapInfo(QVector<StatisTask>)));
     serviceI->getStatisInfo();
-    wm_->startWorker(worker);
 }
 
 void RealMonitorSetting::getCameraInfo()
 {
-    BLL::Worker * worker = new BLL::RestService(wm_);
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI,SIGNAL(sigCameraInfo(QVector<RestServiceI::CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<RestServiceI::CameraInfo>)));
     serviceI->getCameraInfo();
-    wm_->startWorker(worker);
 }
 
 QString RealMonitorSetting::findNameById(QString id)
@@ -277,12 +273,11 @@ QString RealMonitorSetting::findNameById(QString id)
 void RealMonitorSetting::slotCellClicked(int row, int col)
 {
     if(col == 2){
-        BLL::Worker * worker = new BLL::RestService(wm_);
-        RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+        ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+        RestServiceI *serviceI = factoryI->makeRestServiceI();
         connect(serviceI,SIGNAL(sigResultState(bool)),this,SLOT(slotRemoveStatis(bool)));
         serviceI->removeStatis(timeCostTable_->item(row,0)->data(Qt::UserRole + 1).toString(),timeCostTable_->item(row,1)->data(Qt::UserRole + 1).toString());
         curRmRow_ = row;
-        wm_->startWorker(worker);
     }
 }
 

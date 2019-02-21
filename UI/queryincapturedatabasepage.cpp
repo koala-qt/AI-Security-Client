@@ -21,6 +21,8 @@ QueryInCaptureDataBasePage::QueryInCaptureDataBasePage(WidgetManagerI *wm, Widge
 
     tabWidget_->addTab(semanticPage_,semanticPage_->objectName());
     tabWidget_->addTab(searchByImage_,searchByImage_->objectName());
+
+    setUserStyle(userStyle());
 }
 
 void QueryInCaptureDataBasePage::setUserStyle(WidgetManagerI::SkinStyle s)

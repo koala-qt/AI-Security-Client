@@ -20,6 +20,7 @@ RealPlayManager::RealPlayManager(WidgetManagerI *wm, WidgetI *parent):
 
     QSettings config("config.ini",QSettings::IniFormat);
     decoderName_ = config.value("VideoScreen/decoder").toString();
+    setUserStyle(userStyle());
 }
 
 RealPlayManager::~RealPlayManager()
@@ -76,7 +77,6 @@ void RealPlayManager::splitScreen(const int rows, const int cols, const int bigF
             m_mainLay->addWidget(realFrameLayStack.pop(), _row, _col,_rowSpan,_colSpan);
         }else{
             VideoPlayer *vp = new VideoPlayer;
-            vp->setWorkerManager(widgetManger()->workerManager());
             m_mainLay->addWidget(vp,_row, _col,_rowSpan,_colSpan);
         }
     }
@@ -87,7 +87,6 @@ void RealPlayManager::splitScreen(const int rows, const int cols, const int bigF
             m_mainLay->addWidget(realFrameLayStack.pop(), _row, _col,_rowSpan,_colSpan);
         }else{
             VideoPlayer *vp = new VideoPlayer;
-            vp->setWorkerManager(widgetManger()->workerManager());
             m_mainLay->addWidget(vp, _row, _col,_rowSpan,_colSpan);
         }
     }
@@ -97,7 +96,6 @@ void RealPlayManager::splitScreen(const int rows, const int cols, const int bigF
         m_mainLay->addWidget(realFrameLayStack.pop(), _row, _col,_rowSpan,_colSpan);
     }else{
         VideoPlayer *vp = new VideoPlayer;
-        vp->setWorkerManager(widgetManger()->workerManager());
         m_mainLay->addWidget(vp,_row, _col,_rowSpan,_colSpan);
     }
 
@@ -110,7 +108,6 @@ void RealPlayManager::splitScreen(const int rows, const int cols, const int bigF
             m_mainLay->addWidget(realFrameLayStack.pop(), _row, _col,_rowSpan,_colSpan);
         }else{
             VideoPlayer *vp = new VideoPlayer;
-            vp->setWorkerManager(widgetManger()->workerManager());
             m_mainLay->addWidget(vp,_row, _col,_rowSpan,_colSpan);
         }
     }
@@ -123,7 +120,6 @@ void RealPlayManager::splitScreen(const int rows, const int cols, const int bigF
             m_mainLay->addWidget(realFrameLayStack.pop(), _row, _col,_rowSpan,_colSpan);
         }else{
             VideoPlayer *vp = new VideoPlayer;
-            vp->setWorkerManager(widgetManger()->workerManager());
             m_mainLay->addWidget(vp,_row, _col,_rowSpan,_colSpan);
         }
     }

@@ -5,8 +5,7 @@
 #include <QImage>
 #include <QTreeWidgetItem>
 #include "widgetinterface.h"
-#include "service/notifyservicei.h"
-#include "service/restservicei.h"
+#include "service/servicei.h"
 QT_FORWARD_DECLARE_CLASS(QTreeWidget)
 QT_FORWARD_DECLARE_CLASS(RealPlayManager)
 QT_FORWARD_DECLARE_CLASS(QLabel)

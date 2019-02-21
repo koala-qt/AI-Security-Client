@@ -84,6 +84,8 @@ MainWindow::MainWindow(WidgetManagerI *wm, WidgetI *parent)
     f.setBold(true);
     f.setPixelSize(28);
     appNameL_->setFont(f);
+
+    setUserStyle(userStyle());
 }
 
 MainWindow::~MainWindow()

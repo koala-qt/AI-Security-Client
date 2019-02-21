@@ -2,8 +2,6 @@
 #define LOGINDIALOG_H
 
 #include <QDialog>
-#include "widgetinterface.h"
-#include "service/restservicei.h"
 QT_FORWARD_DECLARE_CLASS(QLabel)
 QT_FORWARD_DECLARE_CLASS(QLineEdit)
 QT_FORWARD_DECLARE_CLASS(QPushButton)
@@ -15,7 +13,7 @@ class LoginDialog : public QDialog
 public:
     LoginDialog(QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
     ~LoginDialog();
-    void setUserStyle(WidgetManagerI::SkinStyle s);
+    void setUserStyle(int s);
     void autoLoginOnce(int timeDuration = 3000);
 
 protected:
@@ -34,7 +32,6 @@ private:
     QString hkUser_,hkPsw_;
     QPushButton *ptnSurce_{nullptr},*ptnCancell_{nullptr},*ptnMinsized_{nullptr},*ptnClose_{nullptr};
 
-    BLL::WorkerManager *workerM_{nullptr};
     QPoint startPos_;
     bool movieable_ = false;
 

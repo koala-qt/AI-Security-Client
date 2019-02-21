@@ -3,7 +3,7 @@
 
 #include <QDialog>
 #include "widgetinterface.h"
-#include "service/restservicei.h"
+#include "service/servicei.h"
 QT_FORWARD_DECLARE_CLASS(QListWidget)
 QT_FORWARD_DECLARE_CLASS(QDialogButtonBox)
 QT_FORWARD_DECLARE_CLASS(QPushButton)
@@ -25,7 +25,6 @@ signals:
 
 private:
     QVector<QImage> selectedImages_;
-    WidgetManagerI *widgetM_{nullptr};
     QWidget *operateAreaW_{nullptr};
 #ifdef USERECTIMAGE
     RectsImage *rectesImgArea_{nullptr};

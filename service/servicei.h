@@ -1,49 +1,35 @@
-#ifndef RESTSERVICEI_H
-#define RESTSERVICEI_H
+#ifndef SERVICEI_H
+#define SERVICEI_H
 
 #include <QObject>
+#include <QThread>
 #include <QImage>
 #include <QDateTime>
 #include <QJsonObject>
 #include <QVariantMap>
 #include "dao/face_types.h"
+#include "dao/face.pb.h"
 QT_FORWARD_DECLARE_CLASS(QTreeWidgetItem)
+class RestServiceI;
+class NotifyServiceI;
+class ServiceFactoryI
+{
+public:
+    enum RestInterfaceType{
+        HTTPREST,
+        THRIFTREST
+    };
+    enum NotifyInterfaceType{
+        Mqtt,
+        Kafka
+    };
+    virtual RestServiceI* makeRestServiceI(RestInterfaceType s = HTTPREST) = 0;
+    virtual NotifyServiceI* makeNotifyServiceI(NotifyInterfaceType s = Mqtt) = 0;
+};
 class RestServiceI : public QObject
 {
     Q_OBJECT
 public:
-    enum{
-        Login = 1,
-        GetTop,
-        CombinationSearch,
-        GetCameraInfo,
-        GetCameraGroup,
-        FaceTracking,
-        PersonDetailes,
-        GenerateFaceLink,
-        GetFaceLinkTreeData,
-        FaceLinkDataColl,
-        GetImaeByUrl,
-        SearchFaceLinkPoint,
-        SearchABDoorTime,
-        MultipleSearch,
-        GetCameraDevice,
-        CaptureSearch,
-        GetSceneInfo,
-        GetAlarmScene,
-        GetStatis,
-        AddStatis,
-        RemoveStatis,
-        SetWaringArea,
-        GetWaringArea,
-        GetAlarmHistory,
-        GetSnapHistory,
-        GetPersonStayNumber,
-        GetPersonAverageTime,
-
-        SemanticSearch,
-        SearchUseImage
-    };
     struct LoginParameter
     {
         QString ip;
@@ -258,19 +244,17 @@ public:
         qRegisterMetaType<QVector<RestServiceI::MultipleSearchItem>>("QVector<RestServiceI::MultipleSearchItem>");
         qRegisterMetaType<RestServiceI::SceneInfo>("RestServiceI::SceneInfo");
         qRegisterMetaType<RestServiceI::FaceLinkDataCollReturn>("RestServiceI::FaceLinkDataCollReturn");
+        qRegisterMetaType<QVector<QPointF>>("QVector<QPointF>");
+        qRegisterMetaType<QVector<QVector<double> >>("QVector<QVector<double> >");
+        qRegisterMetaType<QVector<kf::PieCharData>>("QVector<kf::PieCharData>");
     }
-    virtual void login(const LoginParameter &) = 0;
     virtual void getSceneInfo(const QString old) = 0;
     virtual void faceTracking(FaceTrackingArgs) = 0;
     virtual void getFaceLinkDataColl(FaceLinkDataCollArgs &args) = 0;
     virtual void getPersonDetails(QString &) = 0;
     virtual void combinationSearch(CombinationSearchArgs &) = 0;
-    virtual void searchAbDoorTime(SearchABDoorTimeArg &) = 0;
     virtual void multipleSearch(MultipleSearchArgs &) = 0;
     virtual void getAlarmScenePic(const QString oid) = 0;
-    virtual void getTop(const int id) = 0;
-    virtual void getPersonStayTotalCount(PersonsStayArgs &) = 0;
-    virtual void getAverageTime(AveragePersonTimeArgs &) = 0;
     virtual void getImageByUrl(QString &) = 0;
     virtual void generateFaceLink(FaceLinkArgs) = 0;
     virtual void getFaceLinkPoint(QString &) = 0;
@@ -316,16 +300,32 @@ signals:
     void sigFaceLinkDataColl(RestServiceI::FaceLinkDataCollReturn);
 };
 
-Q_DECLARE_METATYPE(RestServiceI::LoginParameter)
-Q_DECLARE_METATYPE(RestServiceI::FaceLinkArgs)
-Q_DECLARE_METATYPE(RestServiceI::FaceTrackingArgs)
-Q_DECLARE_METATYPE(RestServiceI::AveragePersonTimeArgs)
-Q_DECLARE_METATYPE(RestServiceI::PersonsStayArgs)
-Q_DECLARE_METATYPE(RestServiceI::SemanticSearchArgs)
-Q_DECLARE_METATYPE(RestServiceI::SearchUseImageArgs)
-Q_DECLARE_METATYPE(RestServiceI::MultipleSearchArgs)
-Q_DECLARE_METATYPE(RestServiceI::SearchABDoorTimeArg)
-Q_DECLARE_METATYPE(RestServiceI::CombinationSearchArgs)
-Q_DECLARE_METATYPE(RestServiceI::CaptureSearchArgs)
-Q_DECLARE_METATYPE(RestServiceI::FaceLinkDataCollArgs)
-#endif // RESTSERVICEI_H
+class NotifyServiceI : public QThread
+{
+    Q_OBJECT
+public:
+    NotifyServiceI(QObject *parent = nullptr) : QThread(parent){
+
+    }
+
+signals:
+    void sigNetWorkError(QString);
+    void sigInitsized();
+    void sigAreaGarphics(QVector<QPointF>);
+    void sigAlarmData(int,int,int);
+    void sigFaceGrab(int,int,int,int);
+    void sigEventStatics(int,int);
+    void sigTotalEvent(int,int);
+    void sigEventSpider(QVector<QVector<double>>);
+    void sigBlackListAlarmScene(QStringList,QImage);
+    void sigBlackListAlarmFace(QStringList,QImage);
+    void sigIntruderAlarmScene(QStringList,QImage);
+    void sigIntruderAlarmFace(QStringList,QImage);
+    void sigTimeCost(QMap<QString,QVariant>);
+    void sigGrabedPerson(QStringList,QImage);
+    void sigPieChart(QVector<kf::PieCharData>);
+    void sigABDoorAlarmScene(QStringList,QImage);
+    void sigABDoorAlarmFace(QStringList,QImage);
+    void sigFaceLinkDataFinished(QString);
+};
+#endif // SERVICEI_H
