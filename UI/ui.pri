@@ -1,9 +1,6 @@
 include (components/components.pri)
 
 HEADERS += \
-    $$PWD/koalawidgetmanager.h \
-    $$PWD/widgetinterface.h \
-    $$PWD/mainpage.h \
     $$PWD/videoplayback.h \
     $$PWD/realtimemonitoring.h \
     $$PWD/realplaymanager.h \
@@ -11,7 +8,6 @@ HEADERS += \
     $$PWD/canvaswidget.h \
     $$PWD/cornerwidget.h \
     $$PWD/facesearch.h \
-    $$PWD/eventsearch.h \
     $$PWD/trajectorysearch.h \
     $$PWD/tabbarstyle.h \
     $$PWD/capturesearch.h \
@@ -24,7 +20,6 @@ HEADERS += \
     $$PWD/timeaxis.h \
     $$PWD/rectnumberwidget.h \
     $$PWD/radarchart.h \
-    $$PWD/eventcalender.h \
     $$PWD/platback.h \
     $$PWD/waitinglabel.h \
     $$PWD/movielabel.h \
@@ -41,18 +36,19 @@ HEADERS += \
     $$PWD/portrait.h \
     $$PWD/flowlayout.h \
     $$PWD/trackingpage.h \
-    $$PWD/queryincapturedatabasepage.h \
     $$PWD/targetsearch.h \
     $$PWD/combinationpage.h \
     $$PWD/semanticsearchpage.h \
     $$PWD/informationdialog.h \
     $$PWD/nodatatip.h \
     $$PWD/dateanalysis.h \
-    $$PWD/facelinktable.h
+    $$PWD/facelinktable.h \
+    $$PWD/videoanalysis.h \
+    $$PWD/widgetinterface.h \
+    $$PWD/portraitsearch.h \
+    $$PWD/eventsearch.h
 
 SOURCES += \
-    $$PWD/koalawidgetmanager.cpp \
-    $$PWD/mainpage.cpp \
     $$PWD/videoplayback.cpp \
     $$PWD/realtimemonitoring.cpp \
     $$PWD/realplaymanager.cpp \
@@ -73,7 +69,6 @@ SOURCES += \
     $$PWD/timeaxis.cpp \
     $$PWD/rectnumberwidget.cpp \
     $$PWD/radarchart.cpp \
-    $$PWD/eventcalender.cpp \
     $$PWD/platback.cpp \
     $$PWD/waitinglabel.cpp \
     $$PWD/movielabel.cpp \
@@ -90,11 +85,12 @@ SOURCES += \
     $$PWD/portrait.cpp \
     $$PWD/flowlayout.cpp \
     $$PWD/trackingpage.cpp \
-    $$PWD/queryincapturedatabasepage.cpp \
     $$PWD/targetsearch.cpp \
     $$PWD/combinationpage.cpp \
     $$PWD/semanticsearchpage.cpp \
     $$PWD/informationdialog.cpp \
     $$PWD/nodatatip.cpp \
     $$PWD/dateanalysis.cpp \
-    $$PWD/facelinktable.cpp
+    $$PWD/facelinktable.cpp \
+    $$PWD/videoanalysis.cpp \
+    $$PWD/portraitsearch.cpp

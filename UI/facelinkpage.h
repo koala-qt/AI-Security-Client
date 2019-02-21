@@ -16,8 +16,8 @@ class FaceLinkPage : public WidgetI
 {
     Q_OBJECT
 public:
-    explicit FaceLinkPage(WidgetManagerI*wm,WidgetI *parent = nullptr);
-    void setUserStyle(WidgetManagerI::SkinStyle s) override;
+    explicit FaceLinkPage(WidgetI *parent = nullptr);
+    void setUserStyle(int s) override;
     void setFaceLinkOidAndImg(QString, QPixmap pix);
 
 private:

@@ -124,7 +124,7 @@ void SceneImageDialog::setRectLinePen(QColor c)
 void SceneImageDialog::setUserStyle(int styleArg)
 {
     QPalette pal;
-    if(styleArg == 1){
+    if(styleArg == 0){
         pal = palette();
         pal.setColor(QPalette::Background,QColor(87,87,87));
         setPalette(pal);

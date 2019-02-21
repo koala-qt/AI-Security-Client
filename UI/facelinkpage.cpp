@@ -20,10 +20,10 @@
 #include "nodatatip.h"
 
 #pragma execution_character_set("utf-8")
-FaceLinkPage::FaceLinkPage(WidgetManagerI *wm, WidgetI *parent) :
-  WidgetI(wm,parent)
+FaceLinkPage::FaceLinkPage( WidgetI *parent) :
+  WidgetI(parent)
 {
-    setObjectName(tr("Upload"));
+    setObjectName(tr("Facelink"));
     levelCombox_ = new QComboBox;
     imgBtn_ = new QPushButton;
     searchBtn_ = new QPushButton(tr("search"));
@@ -84,10 +84,10 @@ FaceLinkPage::FaceLinkPage(WidgetManagerI *wm, WidgetI *parent) :
     setUserStyle(userStyle());
 }
 
-void FaceLinkPage::setUserStyle(WidgetManagerI::SkinStyle s)
+void FaceLinkPage::setUserStyle(int s)
 {
     QPalette pal;
-    if(WidgetManagerI::Danyahei == s){
+    if(0 == s){
         levelCombox_->setStyleSheet(
                     "QComboBoxListView{"
                     "color: #CECECE;"
@@ -218,7 +218,7 @@ void FaceLinkPage::slotSearchBtnClicked()
         waitingL_ = nullptr;
         dataView_->stopWaiting();
         InformationDialog infoDialog(this);
-        infoDialog.setUserStyle(widgetManger()->currentStyle());
+        infoDialog.setUserStyle(userStyle());
         infoDialog.showMessage(str);
         infoDialog.exec();
         searchBtn_->setEnabled(true);
@@ -242,7 +242,7 @@ void FaceLinkPage::slotFaceLinkFinished(QString oid)
         waitingL_ = nullptr;
         dataView_->stopWaiting();
         InformationDialog infoDialog(this);
-        infoDialog.setUserStyle(widgetManger()->currentStyle());
+        infoDialog.setUserStyle(userStyle());
         infoDialog.showMessage(str);
         infoDialog.exec();
         searchBtn_->setEnabled(true);
@@ -264,7 +264,7 @@ void FaceLinkPage::slotFaceLinkTree(QJsonObject jsObj)
     searchBtn_->setEnabled(true);
     if(jsObj.isEmpty()){
         InformationDialog infoDialog(this);
-        infoDialog.setUserStyle(widgetManger()->currentStyle());
+        infoDialog.setUserStyle(userStyle());
         infoDialog.showMessage("No matched result !");
         infoDialog.exec();
         return;

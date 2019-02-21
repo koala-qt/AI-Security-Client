@@ -27,7 +27,7 @@ NoDataTip::NoDataTip(QWidget *parent):
 
 void NoDataTip::setUserStyle(int styleIndex)
 {
-    if(styleIndex == 1){
+    if(styleIndex == 0){
         errorL_->setStyleSheet("QLabel{"
                                "color: white;"
                                "}");
@@ -47,7 +47,7 @@ bool NoDataTip::event(QEvent *event)
     }
     return QWidget::event(event);
 }
-#include <QDebug>
+
 bool NoDataTip::eventFilter(QObject *watched, QEvent *event)
 {
     if(!parentWidget()){

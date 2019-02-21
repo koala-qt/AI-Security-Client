@@ -5,25 +5,31 @@
 #include <QScrollBar>
 #include <QHeaderView>
 #include <QEvent>
-#include "semanticsearchpage.h"
 #include "targetsearch.h"
 #include "capturesearch.h"
 #include "facesearch.h"
 #include "combinationpage.h"
 #include "multiplesearch.h"
+#include "facelinkpage.h"
+#include "trackingpage.h"
+#include "videoanalysis.h"
+#include "portraitsearch.h"
 
-TargetSearch::TargetSearch(WidgetManagerI *wm, WidgetI *parent):
-    WidgetI(wm,parent)
+TargetSearch::TargetSearch( WidgetI *parent):
+    WidgetI(parent)
 {
     setObjectName(tr("Target search"));
     backImg_.load("images/Mask.png");
     treeW_ = new QTreeWidget;
     stackedW_ = new QStackedWidget;
-    capturePage_ = new CaptureSearch(wm);
-    semanticSearPage_ = new SemanticSearchPage(wm);
-    faceSearchPage_ = new FaceSearch(wm);
-    combinationPage_ = new CombinationPage(wm);
-    multiPleSearchPage_ = new MultipleSearch(wm);
+    capturePage_ = new CaptureSearch();
+    faceSearchPage_ = new FaceSearch();
+    combinationPage_ = new CombinationPage();
+    multiPleSearchPage_ = new MultipleSearch();
+    facelinkPage_ = new FaceLinkPage();
+    trackingPage_ = new TrackingPage();
+    videoAnalysisPage_ = new VideoAnalysis();
+    portraitSearchPage_ = new PortraitSearch;
     QHBoxLayout *mainLay = new QHBoxLayout;
     mainLay->addWidget(treeW_,33);
     mainLay->addWidget(stackedW_,155);
@@ -32,31 +38,43 @@ TargetSearch::TargetSearch(WidgetManagerI *wm, WidgetI *parent):
     setLayout(mainLay);
 
     stackedW_->addWidget(capturePage_);
-    stackedW_->addWidget(semanticSearPage_);
     stackedW_->addWidget(faceSearchPage_);
     stackedW_->addWidget(combinationPage_);
     stackedW_->addWidget(multiPleSearchPage_);
+    stackedW_->addWidget(facelinkPage_);
+    stackedW_->addWidget(trackingPage_);
+    stackedW_->addWidget(portraitSearchPage_);
+    stackedW_->addWidget(videoAnalysisPage_);
     capturePage_->installEventFilter(this);
-    semanticSearPage_->installEventFilter(this);
     faceSearchPage_->installEventFilter(this);
     multiPleSearchPage_->installEventFilter(this);
+    facelinkPage_->installEventFilter(this);
+    trackingPage_->installEventFilter(this);
+    portraitSearchPage_->installEventFilter(this);
+    videoAnalysisPage_->installEventFilter(this);
     QVector<itemData> devicesVec;
     itemData items;
-    items.name = capturePage_->objectName();
+    items.name = tr("Capture search");
     items.value = 0;
+    items.childrens << itemData{capturePage_->objectName(),0,QVector<itemData>()} << itemData{"Upload",1,QVector<itemData>()
+                                                                                  << itemData{faceSearchPage_->objectName(),1,QVector<itemData>()}
+                                                                                  << itemData{combinationPage_->objectName(),2,QVector<itemData>()}
+                                                                                  << itemData{multiPleSearchPage_->objectName(),3,QVector<itemData>()}
+                                                                                  << itemData{facelinkPage_->objectName(),4,QVector<itemData>()}
+                                                                                  << itemData{trackingPage_->objectName(),5,QVector<itemData>()}};
     devicesVec << items;
-    items.name = semanticSearPage_->objectName();
-    items.value = 1;
+    items.childrens.clear();
+    items.name = portraitSearchPage_->objectName();
+    items.value = 6;
     devicesVec << items;
-    items.name = tr("Image search");
-    items.value = 2;
-    items.childrens << itemData{"Face search",2,QVector<itemData>()} << itemData{"Combination search",3,QVector<itemData>()}
-                    << itemData{"Multiple search",4,QVector<itemData>()};
+    items.childrens.clear();
+    items.name = videoAnalysisPage_->objectName();
+    items.value = 7;
     devicesVec << items;
     for(auto value : devicesVec){
         createTreeItem(treeW_,nullptr,value);
     }
-    treeW_->expandAll();
+    treeW_->expandItem(treeW_->topLevelItem(0));
     treeW_->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
     treeW_->headerItem()->setSizeHint(0,QSize(-1,45));
     treeW_->headerItem()->setText(0,tr(""));
@@ -66,10 +84,10 @@ TargetSearch::TargetSearch(WidgetManagerI *wm, WidgetI *parent):
     setUserStyle(userStyle());
 }
 
-void TargetSearch::setUserStyle(WidgetManagerI::SkinStyle s)
+void TargetSearch::setUserStyle(int s)
 {
     QPalette pal;
-    if(WidgetManagerI::Danyahei == s){
+    if(0 == s){
         treeW_->setStyleSheet("QTreeView{"
                                "border:none;"
                                "font-size: 16px;"
@@ -164,7 +182,14 @@ void TargetSearch::slotTreeWidgetItemClicked(QTreeWidgetItem *item, int column)
 bool TargetSearch::eventFilter(QObject *watched, QEvent *event)
 {
     QWidget *watchedWid = qobject_cast<QWidget*>(watched);
-    if((watchedWid == capturePage_ || watchedWid == semanticSearPage_ || watchedWid == faceSearchPage_ || watchedWid == multiPleSearchPage_) && event->type() == QEvent::Paint){
+    bool isIn = false;
+    for(int i = 0; i < stackedW_->count(); i++){
+        if(stackedW_->widget(i) == watchedWid){
+            isIn = true;
+            break;
+        }
+    }
+    if(isIn && event->type() == QEvent::Paint){
         QPainter p(watchedWid);
         p.setPen(Qt::NoPen);
         p.setBrush(QColor(0,0,0,50));

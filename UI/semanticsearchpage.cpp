@@ -31,8 +31,8 @@
 #include "informationdialog.h"
 #include "nodatatip.h"
 
-SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
-    WidgetI(wm,parent)
+SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
+    WidgetI(parent)
 {
     setObjectName(tr("Semantic search"));
     posL_ = new QLabel(tr("Position"));
@@ -78,18 +78,18 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
             label->close();
             delete label;
             InformationDialog infoDialog(dataListW_);
-            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.setUserStyle(userStyle());
             infoDialog.showMessage(str);
             dataMenu_->setEnabled(true);
         });
         connect(serviceI,&RestServiceI::sigPeronsDetails,this,[this,label](QImage face,QImage body,QStringList faceAttr,QStringList bodyAttr){
             label->close();
             delete label;
-            Portrait *detailsW = new Portrait(widgetManger(),this);
+            Portrait *detailsW = new Portrait(this);
             detailsW->setAttribute(Qt::WA_DeleteOnClose);
             detailsW->setWindowFlags(Qt::Window | Qt::Dialog);
             detailsW->setWindowModality(Qt::ApplicationModal);
-            detailsW->setUserStyle(widgetManger()->currentStyle());
+            detailsW->setUserStyle(userStyle());
             detailsW->slotSetData(face,body,faceAttr,bodyAttr);
             detailsW->show();
             QPoint r = dataListW_->mapToGlobal(dataListW_->rect().center());
@@ -110,7 +110,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
             label->close();
             delete label;
             InformationDialog infoDialog(dataListW_);
-            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.setUserStyle(userStyle());
             infoDialog.showMessage(str);
             dataMenu_->setEnabled(true);
         });
@@ -118,7 +118,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
             label->close();
             delete label;
             SceneImageDialog dialog(dataListW_);
-            dialog.setUserStyle(widgetManger()->currentStyle());
+            dialog.setUserStyle(userStyle());
             dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
             dialog.setSceneInfo(sinfo);
             dialog.setRectLinePen(Qt::yellow);
@@ -126,7 +126,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
                 if(!images.count()){
                     return;
                 }
-                FaceSearch *faceDialog = new FaceSearch(widgetManger());
+                FaceSearch *faceDialog = new FaceSearch(this);
                 faceDialog->setAttribute(Qt::WA_DeleteOnClose);
                 faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
                 faceDialog->setWindowModality(Qt::ApplicationModal);
@@ -134,7 +134,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
                 pal.setColor(QPalette::Background,QColor(112,110,119));
                 faceDialog->setPalette(pal);
                 faceDialog->setAutoFillBackground(true);
-                faceDialog->setUserStyle(widgetManger()->currentStyle());
+                faceDialog->setUserStyle(userStyle());
                 faceDialog->layout()->setMargin(10);
                 faceDialog->setFaceImage(images.first());
                 faceDialog->setMinimumHeight(700);
@@ -148,7 +148,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
         dataMenu_->setEnabled(false);
     });
     dataMenu_->addAction(tr("Search using the image"),[this]{
-        FaceSearch *faceDialog = new FaceSearch(widgetManger());
+        FaceSearch *faceDialog = new FaceSearch(this);
         faceDialog->setAttribute(Qt::WA_DeleteOnClose);
         faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
         faceDialog->setWindowModality(Qt::ApplicationModal);
@@ -156,7 +156,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
         pal.setColor(QPalette::Background,QColor(112,110,119));
         faceDialog->setPalette(pal);
         faceDialog->setAutoFillBackground(true);
-        faceDialog->setUserStyle(widgetManger()->currentStyle());
+        faceDialog->setUserStyle(userStyle());
         faceDialog->layout()->setMargin(10);
         faceDialog->setFaceImage(dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>());
         faceDialog->setOid(dataListW_->currentItem()->data(Qt::UserRole + 2).toString());
@@ -164,12 +164,12 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
         faceDialog->show();
     });
     dataMenu_->addAction(tr("Tracking"),[this]{
-        TrackingPage *view = new TrackingPage(widgetManger());
+        TrackingPage *view = new TrackingPage(this);
         QPalette pal = view->palette();
         pal.setColor(QPalette::Background,QColor(100,100,100));
         view->setPalette(pal);
         view->setAutoFillBackground(true);
-        view->setUserStyle(widgetManger()->currentStyle());
+        view->setUserStyle(userStyle());
         view->setAttribute(Qt::WA_DeleteOnClose);
         view->setWindowFlags(Qt::Window | Qt::Dialog);
         view->setWindowModality(Qt::ApplicationModal);
@@ -180,8 +180,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
     });
 #if 0
     dataMenu_->addAction(tr("Face link"),[this]{
-        FaceLinkPage *faceLinkP = new FaceLinkPage(widgetManger(),this);
-        faceLinkP->setUserStyle(widgetManger()->currentStyle());
+        FaceLinkPage *faceLinkP = new FaceLinkPage(this faceLinkP->setUserStyle(userStyle());
         faceLinkP->setAttribute(Qt::WA_DeleteOnClose);
         faceLinkP->setWindowFlags(Qt::Window | Qt::Dialog);
         faceLinkP->setWindowModality(Qt::ApplicationModal);
@@ -199,7 +198,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
         }
         if(!dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>().save(filePath)){
             InformationDialog infoDialog(this);
-            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.setUserStyle(userStyle());
             infoDialog.showMessage("Operation failed!");
         }
     });
@@ -272,9 +271,9 @@ SemanticSearchPage::SemanticSearchPage(WidgetManagerI *wm, WidgetI *parent):
     getCameraInfo();
 }
 
-void SemanticSearchPage::setUserStyle(WidgetManagerI::SkinStyle s)
+void SemanticSearchPage::setUserStyle(int s)
 {
-    if(WidgetManagerI::Danyahei == s){
+    if(0 == s){
         posL_->setStyleSheet("QLabel{"
                                 "background-color: transparent;"
                                 "color: rgba(206, 206, 206, 1);"
@@ -532,7 +531,7 @@ void SemanticSearchPage::slotSemanticSearch(int page)
     connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
         label->close();
         InformationDialog infoDialog(this);
-        infoDialog.setUserStyle(widgetManger()->currentStyle());
+        infoDialog.setUserStyle(userStyle());
         infoDialog.showMessage(str);
         pageIndicator_->setEnabled(true);
         searchBtn_->setEnabled(true);

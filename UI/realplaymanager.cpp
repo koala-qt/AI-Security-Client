@@ -10,8 +10,8 @@
 #include <QDebug>
 #include "informationdialog.h"
 
-RealPlayManager::RealPlayManager(WidgetManagerI *wm, WidgetI *parent):
-    WidgetI(wm,parent)
+RealPlayManager::RealPlayManager( WidgetI *parent):
+    WidgetI(parent)
 {
     m_mainLay = new QGridLayout;
     m_mainLay->setMargin(3);
@@ -27,11 +27,11 @@ RealPlayManager::~RealPlayManager()
 {
 }
 
-void RealPlayManager::setUserStyle(WidgetManagerI::SkinStyle s)
+void RealPlayManager::setUserStyle(int s)
 {
     QPalette pal;
     switch (s) {
-    case WidgetManagerI::Danyahei:
+    case 0:
         pal = m_focusFrame->palette();
         pal.setColor(QPalette::Foreground,QColor(189,56,57));
         m_focusFrame->setPalette(pal);
@@ -159,7 +159,7 @@ void RealPlayManager::playByFocus(QString url, QString id, QString name)
     VideoPlayer *w {nullptr};
     if(! (w = dynamic_cast<VideoPlayer*>(m_focusFrame->widget()))){
         InformationDialog infoDialog(this);
-        infoDialog.setUserStyle(widgetManger()->currentStyle());
+        infoDialog.setUserStyle(userStyle());
         infoDialog.showMessage(tr("Please select a window first"));
         infoDialog.exec();
         return;
@@ -167,7 +167,7 @@ void RealPlayManager::playByFocus(QString url, QString id, QString name)
 
     if(m_videoMap.contains(id)){
         InformationDialog infoDialog(this);
-        infoDialog.setUserStyle(widgetManger()->currentStyle());
+        infoDialog.setUserStyle(userStyle());
         infoDialog.showMessage(tr("Already in the play window"));
         infoDialog.exec();
         return;

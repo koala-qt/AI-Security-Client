@@ -86,9 +86,9 @@ void HKPlayBack::startPlay(PlayBackParam &param)
     }
 }
 
-void HKPlayBack::setUserStyle(WidgetManagerI::SkinStyle s)
+void HKPlayBack::setUserStyle(int s)
 {
-    if(WidgetManagerI::Danyahei == s){
+    if(0 == s){
         pauseStyleStr_ = "QPushButton{"
                         "border: 0px;"
                         "image: url(images/symbols-play.png);"

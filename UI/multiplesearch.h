@@ -16,8 +16,8 @@ class MultipleSearch : public WidgetI
 {
     Q_OBJECT
 public:
-    MultipleSearch(WidgetManagerI *wm, WidgetI *parent = nullptr);
-    void setUserStyle(WidgetManagerI::SkinStyle style) override;
+    MultipleSearch( WidgetI *parent = nullptr);
+    void setUserStyle(int style) override;
 
 protected:
     bool event(QEvent *event) override;

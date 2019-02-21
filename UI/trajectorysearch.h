@@ -11,8 +11,8 @@ class TrajectorySearch : public WidgetI
 {
     Q_OBJECT
 public:
-    TrajectorySearch(WidgetManagerI*wm,WidgetI *parent = nullptr);
-    void setUserStyle(WidgetManagerI::SkinStyle s) override;
+    TrajectorySearch(WidgetI *parent = nullptr);
+    void setUserStyle(int s) override;
 
 private:
     BaiduMap *m_mapW{nullptr};

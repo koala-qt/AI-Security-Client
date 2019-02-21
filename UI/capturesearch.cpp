@@ -28,10 +28,10 @@
 #include "nodatatip.h"
 
 #pragma execution_character_set("utf-8")
-CaptureSearch::CaptureSearch(WidgetManagerI *wm, WidgetI *parent):
-    WidgetI(wm,parent)
+CaptureSearch::CaptureSearch(WidgetI *parent):
+    WidgetI(parent)
 {
-    setObjectName(tr("Capture face history"));
+    setObjectName(tr("Capture history"));
     QVBoxLayout *mainLay = new QVBoxLayout;
     QHBoxLayout *hlay = new QHBoxLayout;
     hlay->setSpacing(15);
@@ -68,7 +68,7 @@ CaptureSearch::CaptureSearch(WidgetManagerI *wm, WidgetI *parent):
 
     menu_ = new QMenu(this);
     menu_->addAction(tr("Search using the image"),[&]{
-        FaceSearch *faceDialog = new FaceSearch(widgetManger());
+        FaceSearch *faceDialog = new FaceSearch(this);
         faceDialog->setAttribute(Qt::WA_DeleteOnClose);
         faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
         faceDialog->setWindowModality(Qt::ApplicationModal);
@@ -76,7 +76,7 @@ CaptureSearch::CaptureSearch(WidgetManagerI *wm, WidgetI *parent):
         pal.setColor(QPalette::Background,QColor(112,110,119));
         faceDialog->setPalette(pal);
         faceDialog->setAutoFillBackground(true);
-        faceDialog->setUserStyle(widgetManger()->currentStyle());
+        faceDialog->setUserStyle(userStyle());
         faceDialog->layout()->setMargin(10);
         faceDialog->setFaceImage(m_listW->currentItem()->data(Qt::UserRole + 1).value<QImage>());
 //        faceDialog->setOid(m_listW->currentItem()->data(Qt::UserRole + 2).toString());
@@ -91,7 +91,7 @@ CaptureSearch::CaptureSearch(WidgetManagerI *wm, WidgetI *parent):
             label->close();
             delete label;
             InformationDialog infoDialog(this);
-            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.setUserStyle(userStyle());
             infoDialog.showMessage(str);
             infoDialog.exec();
             menu_->setEnabled(true);
@@ -114,7 +114,7 @@ CaptureSearch::CaptureSearch(WidgetManagerI *wm, WidgetI *parent):
         }
         if(!m_listW->currentItem()->data(Qt::UserRole + 1).value<QImage>().save(filePath)){
             InformationDialog infoDialog(this);
-            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.setUserStyle(userStyle());
             infoDialog.showMessage("Operation failed!");
             infoDialog.exec();
         }
@@ -146,15 +146,15 @@ CaptureSearch::CaptureSearch(WidgetManagerI *wm, WidgetI *parent):
     dataRows_ = config.value("App/CaptureRows").toInt();
     dataCols_ = config.value("App/CaptureCols").toInt();
 
-    setUserStyle(userStyle());
+    setUserStyle();
     getCameraInfo();
 }
 
-void CaptureSearch::setUserStyle(WidgetManagerI::SkinStyle style)
+void CaptureSearch::setUserStyle(int s)
 {
     QFont f;
     QPalette pal;
-    if(style == WidgetManagerI::Danyahei){
+    if(s == 0){
         f = font();
         f.setFamily("Arial");
         setFont(f);
@@ -308,7 +308,7 @@ void CaptureSearch::setUserStyle(WidgetManagerI::SkinStyle style)
                                  "}");
 
         m_pageIndicator->setUserStyle();
-        noDataW_->setUserStyle(style);
+        noDataW_->setUserStyle(s);
     }
 }
 
@@ -353,7 +353,7 @@ void CaptureSearch::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
 {
 #if 1
     SceneImageDialog dialog;
-    dialog.setUserStyle(widgetManger()->currentStyle());
+    dialog.setUserStyle(userStyle());
     dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
     dialog.setSceneInfo(sinfo);
     dialog.setRectLinePen(Qt::yellow);
@@ -361,7 +361,7 @@ void CaptureSearch::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
         if(!images.count()){
             return;
         }
-        FaceSearch *faceDialog = new FaceSearch(widgetManger());
+        FaceSearch *faceDialog = new FaceSearch(this);
         faceDialog->setAttribute(Qt::WA_DeleteOnClose);
         faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
         faceDialog->setWindowModality(Qt::ApplicationModal);
@@ -369,7 +369,7 @@ void CaptureSearch::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
         pal.setColor(QPalette::Background,QColor(112,110,119));
         faceDialog->setPalette(pal);
         faceDialog->setAutoFillBackground(true);
-        faceDialog->setUserStyle(widgetManger()->currentStyle());
+        faceDialog->setUserStyle(userStyle());
         faceDialog->layout()->setMargin(10);
         faceDialog->setFaceImage(images.first());
         faceDialog->setMinimumHeight(700);
@@ -409,7 +409,7 @@ void CaptureSearch::slotSearchSnapInfo(int page)
         label->close();
         delete label;
         InformationDialog infoDialog(this);
-        infoDialog.setUserStyle(widgetManger()->currentStyle());
+        infoDialog.setUserStyle(userStyle());
         infoDialog.showMessage(str);
         infoDialog.exec();
         m_searchBtn->setEnabled(true);

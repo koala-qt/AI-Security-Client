@@ -17,8 +17,8 @@ class EventSearch : public WidgetI
 {
     Q_OBJECT
 public:
-    EventSearch(WidgetManagerI *wm, WidgetI *parent = nullptr);
-    void setUserStyle(WidgetManagerI::SkinStyle s) override;
+    EventSearch(WidgetI *parent = nullptr);
+    void setUserStyle(int s) override;
 
 protected:
     bool event(QEvent *event) override;

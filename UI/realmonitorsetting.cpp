@@ -126,11 +126,11 @@ void RealMonitorSetting::screenSelected(int *rows, int *cols, int *bigRow, int *
     *colSpan = screenCountCombox_->currentData(Qt::UserRole + 6).toInt();
 }
 
-void RealMonitorSetting::setUserStyle(WidgetManagerI::SkinStyle s)
+void RealMonitorSetting::setUserStyle(int s)
 {
     QPalette pal;
     QFont f;
-    if(s == WidgetManagerI::Danyahei){
+    if(s == 0){
         pal = palette();
         pal.setColor(QPalette::Background,QColor(112,110,119));
         setPalette(pal);

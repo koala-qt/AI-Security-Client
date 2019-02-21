@@ -12,13 +12,14 @@ class MainWindow : public WidgetI
     Q_OBJECT
 
 public:
-    MainWindow(WidgetManagerI*wm,WidgetI *parent = nullptr);
+    MainWindow(WidgetI *parent = nullptr);
     ~MainWindow();
 
-    void setUserStyle(WidgetManagerI::SkinStyle s) override;
+    void setUserStyle(int s = 0);
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
 
 private:
     QListWidget *m_topList{nullptr};

@@ -6,7 +6,6 @@
 #include <QTranslator>
 #include "mainwindow.h"
 #include "service/servicefacetory.h"
-#include "UI/koalawidgetmanager.h"
 #include "UI/logindialog.h"
 
 #pragma execution_character_set("utf-8")
@@ -40,10 +39,8 @@ int main(int argc, char *argv[])
     a.setAttribute(Qt::AA_ShareOpenGLContexts);
     a.setApplicationName(QObject::tr("Intelligent Security Surveillance System"));
 
-    WidgetManagerI *widgetM = new KoalaWidgetManager;
-    widgetM->setdefaultStyle(WidgetManagerI::Danyahei);
     ServiceFactoryI *facetory = new ServiceFactory;
-    NotifyServiceI *notifySerI = facetory->makeNotifyServiceI(ServiceFactoryI::WebSocket);
+    NotifyServiceI *notifySerI = facetory->makeNotifyServiceI(ServiceFactoryI::Mqtt);
     a.setProperty("NotifyServiceI",reinterpret_cast<unsigned long long>(notifySerI));
     a.setProperty("ServiceFactoryI",reinterpret_cast<unsigned long long>(facetory));
 
@@ -57,7 +54,7 @@ int main(int argc, char *argv[])
 //        return -1;
 //    }
 
-    MainWindow w(widgetM);
+    MainWindow w;
     w.setWindowFlag(Qt::FramelessWindowHint);
     w.showMaximized();
 

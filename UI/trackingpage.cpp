@@ -16,8 +16,8 @@
 #include "waitinglabel.h"
 #include "informationdialog.h"
 
-TrackingPage::TrackingPage(WidgetManagerI *wm, WidgetI *parent):
-    WidgetI(wm,parent)
+TrackingPage::TrackingPage( WidgetI *parent):
+    WidgetI(parent)
 {
     setObjectName(tr("Tracking"));
     imgBtn_ = new QPushButton;
@@ -78,10 +78,10 @@ TrackingPage::TrackingPage(WidgetManagerI *wm, WidgetI *parent):
     getCameraInfo();
 }
 
-void TrackingPage::setUserStyle(WidgetManagerI::SkinStyle s)
+void TrackingPage::setUserStyle(int s)
 {
     QPalette pal;
-    if(WidgetManagerI::Danyahei == s){
+    if(0 == s){
         imgBtn_->setStyleSheet("QPushButton{"
                                "background-color: transparent;"
                                "}");
@@ -185,7 +185,7 @@ void TrackingPage::slotSearchBtnClicked()
     connect(serviceI,&RestServiceI::sigError,this,[this](QString str){
         dataView_->updateTracking(QVector<TrackingWebView::TrackingPoint>());
         InformationDialog infoDialog(this);
-        infoDialog.setUserStyle(widgetManger()->currentStyle());
+        infoDialog.setUserStyle(userStyle());
         infoDialog.showMessage(str);
         infoDialog.exec();
         searchBtn_->setEnabled(true);

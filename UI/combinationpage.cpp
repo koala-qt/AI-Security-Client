@@ -25,8 +25,8 @@
 #include "informationdialog.h"
 #include "nodatatip.h"
 
-CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
-    WidgetI(wm,parent)
+CombinationPage::CombinationPage( WidgetI *parent):
+    WidgetI(parent)
 {
     setObjectName(tr("Combination search"));
     imageBtn_ = new QPushButton;
@@ -95,7 +95,7 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
         }
         if(!faceTable_->item(faceTable_->currentRow(),0)->data(Qt::UserRole).value<QImage>().save(filePath)){
             InformationDialog infoDialog(this);
-            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.setUserStyle(userStyle());
             infoDialog.showMessage("Operation failed!");
             infoDialog.exec();
         }
@@ -108,7 +108,7 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
             label->close();
             delete label;
             InformationDialog infoDialog(this);
-            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.setUserStyle(userStyle());
             infoDialog.showMessage(str);
             infoDialog.exec();
             faceDataMenu_->setEnabled(true);
@@ -138,7 +138,7 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
         }
         if(!bodyTable_->item(bodyTable_->currentRow(),0)->data(Qt::UserRole).value<QImage>().save(filePath)){
             InformationDialog infoDialog(this);
-            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.setUserStyle(userStyle());
             infoDialog.showMessage("Operation failed!");
             infoDialog.exec();
         }
@@ -151,7 +151,7 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
         }
         if(!bodyTable_->item(bodyTable_->currentRow(),1)->data(Qt::UserRole).value<QImage>().save(filePath)){
             InformationDialog infoDialog(this);
-            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.setUserStyle(userStyle());
             infoDialog.showMessage("Operation failed!");
             infoDialog.exec();
         }
@@ -164,7 +164,7 @@ CombinationPage::CombinationPage(WidgetManagerI *wm, WidgetI *parent):
             label->close();
             delete label;
             InformationDialog infoDialog(this);
-            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.setUserStyle(userStyle());
             infoDialog.showMessage(str);
             infoDialog.exec();
             bodyDataMenu_->setEnabled(true);
@@ -325,7 +325,7 @@ void CombinationPage::slotSearchBtnClicked()
         label->close();
         delete label;
         InformationDialog infoDialog(this);
-        infoDialog.setUserStyle(widgetManger()->currentStyle());
+        infoDialog.setUserStyle(userStyle());
         infoDialog.showMessage(str);
         infoDialog.exec();
         searchBtn_->setEnabled(true);
@@ -431,7 +431,7 @@ void CombinationPage::slotImageBtnClicked()
 void CombinationPage::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
 {
     SceneImageDialog dialog;
-    dialog.setUserStyle(widgetManger()->currentStyle());
+    dialog.setUserStyle(userStyle());
     dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
     dialog.setSceneInfo(sinfo);
     dialog.setRectLinePen(Qt::yellow);
@@ -439,7 +439,7 @@ void CombinationPage::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
         if(!images.count()){
             return;
         }
-        FaceSearch *faceDialog = new FaceSearch(widgetManger());
+        FaceSearch *faceDialog = new FaceSearch(this);
         faceDialog->setAttribute(Qt::WA_DeleteOnClose);
         faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
         faceDialog->setWindowModality(Qt::ApplicationModal);
@@ -447,7 +447,7 @@ void CombinationPage::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
         pal.setColor(QPalette::Background,QColor(112,110,119));
         faceDialog->setPalette(pal);
         faceDialog->setAutoFillBackground(true);
-        faceDialog->setUserStyle(widgetManger()->currentStyle());
+        faceDialog->setUserStyle(userStyle());
         faceDialog->layout()->setMargin(10);
         faceDialog->setFaceImage(images.first());
         faceDialog->setMinimumHeight(700);
@@ -455,10 +455,10 @@ void CombinationPage::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
     });
     dialog.exec();
 }
-void CombinationPage::setUserStyle(WidgetManagerI::SkinStyle s)
+void CombinationPage::setUserStyle(int s)
 {
     QPalette pal;
-    if(WidgetManagerI::Danyahei == s){
+    if(0 == s){
         pal = palette();
         pal.setColor(QPalette::Foreground,Qt::white);
         setPalette(pal);

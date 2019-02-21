@@ -5,8 +5,8 @@
 #include "cornerwidget.h"
 #include "flowlayout.h"
 
-Portrait::Portrait(WidgetManagerI *wm, WidgetI *parent):
-    WidgetI(wm,parent)
+Portrait::Portrait( WidgetI *parent):
+    WidgetI(parent)
 {
     QHBoxLayout *mainLay = new QHBoxLayout;
     personBack_ = new QLabel;
@@ -59,11 +59,11 @@ Portrait::Portrait(WidgetManagerI *wm, WidgetI *parent):
     setUserStyle(userStyle());
 }
 
-void Portrait::setUserStyle(WidgetManagerI::SkinStyle s)
+void Portrait::setUserStyle(int s)
 {
     QPalette pal;
     QFont f;
-    if(WidgetManagerI::Danyahei == s){
+    if(0 == s){
         if(parentWidget()){
             f = font();
             f.setFamily(parentWidget()->font().family());

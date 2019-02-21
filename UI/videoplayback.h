@@ -14,8 +14,8 @@ class VideoPlayback : public WidgetI
 {
     Q_OBJECT
 public:
-    VideoPlayback(WidgetManagerI *wm, WidgetI * parent = nullptr);
-    void setUserStyle(WidgetManagerI::SkinStyle s) override;
+    VideoPlayback( WidgetI * parent = nullptr);
+    void setUserStyle(int s) override;
 
 protected:
     void paintEvent(QPaintEvent *event) override;

@@ -22,8 +22,8 @@
 #include "nodatatip.h"
 
 #pragma execution_character_set("utf-8")
-EventSearch::EventSearch(WidgetManagerI *wm, WidgetI *parent):
-    WidgetI(wm,parent)
+EventSearch::EventSearch( WidgetI *parent):
+    WidgetI(parent)
 {
     setObjectName(tr("事件检索"));
     backImg_.load("images/Mask.png");
@@ -87,7 +87,7 @@ EventSearch::EventSearch(WidgetManagerI *wm, WidgetI *parent):
             label->close();
             delete label;
             InformationDialog infoDialog(this);
-            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.setUserStyle(userStyle());
             infoDialog.showMessage(str);
             infoDialog.exec();
             menu_->setEnabled(true);
@@ -139,11 +139,11 @@ EventSearch::EventSearch(WidgetManagerI *wm, WidgetI *parent):
     getCameraInfo();
 }
 
-void EventSearch::setUserStyle(WidgetManagerI::SkinStyle s)
+void EventSearch::setUserStyle(int s)
 {
     QPalette pal;
     QFont f;
-    if(s == WidgetManagerI::Danyahei){
+    if(s == 0){
         f = font();
         f.setFamily("Arial");
         setFont(f);
@@ -418,7 +418,7 @@ void EventSearch::slotSearchPageAlarmHistory(int page)
     connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
         label->close();
         InformationDialog infoDialog(this);
-        infoDialog.setUserStyle(widgetManger()->currentStyle());
+        infoDialog.setUserStyle(userStyle());
         infoDialog.showMessage(str);
         infoDialog.exec();
         m_searchBtn->setEnabled(true);
@@ -455,7 +455,7 @@ void EventSearch::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
     dialog.exec();
 #else
     SceneImageDialog dialog;
-    dialog.setUserStyle(widgetManger()->currentStyle());
+    dialog.setUserStyle(userStyle());
     dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
     dialog.setSceneInfo(sinfo);
     dialog.setRectLinePen(Qt::yellow);
@@ -463,7 +463,7 @@ void EventSearch::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
         if(!images.count()){
             return;
         }
-        FaceSearch *faceDialog = new FaceSearch(widgetManger());
+        FaceSearch *faceDialog = new FaceSearch(this);
         faceDialog->setAttribute(Qt::WA_DeleteOnClose);
         faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
         faceDialog->setWindowModality(Qt::ApplicationModal);
@@ -471,7 +471,7 @@ void EventSearch::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
         pal.setColor(QPalette::Background,QColor(112,110,119));
         faceDialog->setPalette(pal);
         faceDialog->setAutoFillBackground(true);
-        faceDialog->setUserStyle(widgetManger()->currentStyle());
+        faceDialog->setUserStyle(userStyle());
         faceDialog->layout()->setMargin(10);
         faceDialog->setFaceImage(images.first());
         faceDialog->setMinimumHeight(700);

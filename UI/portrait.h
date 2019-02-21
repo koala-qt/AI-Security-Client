@@ -8,8 +8,8 @@ QT_FORWARD_DECLARE_CLASS(FlowLayout)
 class Portrait : public WidgetI
 {
 public:
-    Portrait(WidgetManagerI *wm, WidgetI *parent = nullptr);
-    void setUserStyle(WidgetManagerI::SkinStyle s) override;
+    Portrait( WidgetI *parent = nullptr);
+    void setUserStyle(int s) override;
 
 public slots:
     void slotSetData(QImage face,QImage body,QStringList faceAttributeList,QStringList bodyAttributeList);

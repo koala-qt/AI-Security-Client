@@ -15,8 +15,8 @@
 #include "hkplayback.h"
 
 #pragma execution_character_set("utf-8")
-VideoPlayback::VideoPlayback(WidgetManagerI *wm, WidgetI *parent):
-    WidgetI(wm,parent)
+VideoPlayback::VideoPlayback( WidgetI *parent):
+    WidgetI(parent)
 {
     setObjectName(tr("视频回放"));
     backImg_.load("images/Mask.png");
@@ -68,11 +68,11 @@ VideoPlayback::VideoPlayback(WidgetManagerI *wm, WidgetI *parent):
 //    getCameraGroup(nullptr,"1005");
 }
 
-void VideoPlayback::setUserStyle(WidgetManagerI::SkinStyle s)
+void VideoPlayback::setUserStyle(int s)
 {
     QPalette pal;
     QFont f;
-    if(s == WidgetManagerI::Danyahei){
+    if(s == 0){
         deviceTree_->header()->setStretchLastSection(true);
         deviceTree_->header()->setIconSize(QSize(50,50));
         QSize s = deviceTree_->headerItem()->sizeHint(0);

@@ -26,8 +26,8 @@
 #include "nodatatip.h"
 
 #pragma execution_character_set("utf-8")
-FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
-    WidgetI(wm,parent)
+FaceSearch::FaceSearch(WidgetI *parent):
+    WidgetI(parent)
 {
     setObjectName(tr("Search using an image"));
     QVBoxLayout *mainLay = new QVBoxLayout;
@@ -134,7 +134,7 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
             label->close();
             delete label;
             InformationDialog infoDialog(this);
-            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.setUserStyle(userStyle());
             infoDialog.showMessage(str);
             infoDialog.exec();
             menu_->setEnabled(true);
@@ -157,7 +157,7 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
         }
         if(!m_tableW->item(m_tableW->currentRow(),0)->data(Qt::UserRole).value<QImage>().save(filePath)){
             InformationDialog infoDialog(this);
-            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.setUserStyle(userStyle());
             infoDialog.showMessage("Operation failed!");
             infoDialog.exec();
         }
@@ -201,11 +201,11 @@ void FaceSearch::setOid(QString s)
     oidStr_ = s;
 }
 
-void FaceSearch::setUserStyle(WidgetManagerI::SkinStyle s)
+void FaceSearch::setUserStyle(int s)
 {
     QPalette pal;
     QFont f;
-    if(s == WidgetManagerI::Danyahei){
+    if(s == 0){
         f = font();
         f.setFamily("Arial");
         setFont(f);
@@ -546,7 +546,7 @@ void FaceSearch::slotSearchClicked()
         label->close();
         delete label;
         InformationDialog infoDialog(m_tableW);
-        infoDialog.setUserStyle(widgetManger()->currentStyle());
+        infoDialog.setUserStyle(userStyle());
         infoDialog.showMessage(str);
         infoDialog.exec();
         m_searchBtn->setEnabled(true);
@@ -599,7 +599,7 @@ void FaceSearch::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
 #if 1
     SceneImageDialog dialog;
     dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
-    dialog.setUserStyle(widgetManger()->currentStyle());
+    dialog.setUserStyle(userStyle());
     dialog.setSceneInfo(sinfo);
     SceneImageDialog *dialogPtr = &dialog;
     connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this,dialogPtr](const QVector<QImage> images){

@@ -13,8 +13,8 @@ class DateAnalysis : public WidgetI
 {
     Q_OBJECT
 public:
-    DateAnalysis(WidgetManagerI *wm, WidgetI *parent = nullptr);
-    void setUserStyle(WidgetManagerI::SkinStyle s) override;
+    DateAnalysis( WidgetI *parent = nullptr);
+    void setUserStyle(int s) override;
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;

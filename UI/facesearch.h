@@ -19,10 +19,10 @@ class FaceSearch : public WidgetI
 {
     Q_OBJECT
 public:
-    FaceSearch(WidgetManagerI *wm, WidgetI *parent = nullptr);
+    FaceSearch(WidgetI *parent = nullptr);
     void setFaceImage(QImage &);
     void setOid(QString);
-    void setUserStyle(WidgetManagerI::SkinStyle s) override;
+    void setUserStyle(int s) override;
 
 public slots:
     void slotAddRow(QVector<RestServiceI::DataRectureItem>);

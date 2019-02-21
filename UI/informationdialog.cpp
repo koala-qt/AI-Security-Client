@@ -55,7 +55,7 @@ void InformationDialog::showMessage(QString str)
 void InformationDialog::setUserStyle(int styleIndex)
 {
     QPalette pal;
-    if(styleIndex == 1){
+    if(styleIndex == 0){
         pal = palette();
         pal.setColor(QPalette::Background,Qt::white);
         setPalette(pal);

@@ -19,8 +19,8 @@ class FacelinkTable : public WidgetI
 {
     Q_OBJECT
 public:
-    FacelinkTable(WidgetManagerI*wm,WidgetI *parent = nullptr);
-    void setUserStyle(WidgetManagerI::SkinStyle s) override;
+    FacelinkTable(WidgetI *parent = nullptr);
+    void setUserStyle(int s) override;
 
 protected:
     void resizeEvent(QResizeEvent *event) override;

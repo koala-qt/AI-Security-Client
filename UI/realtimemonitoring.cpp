@@ -27,8 +27,8 @@
 #include "informationdialog.h"
 
 #pragma execution_character_set("utf-8")
-RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
-    WidgetI(wm,parent)
+RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
+    WidgetI(parent)
 {
     setObjectName(tr("Real-time surveillance"));
     backImg_.load("images/Mask.png");
@@ -45,7 +45,7 @@ RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
     m_treeW->headerItem()->setText(0,tr("设备列表"));
     centerHboxL->addWidget(m_treeW,2);
 
-    m_realPlayM = new RealPlayManager(wm);
+    m_realPlayM = new RealPlayManager();
     m_realPlayM->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     m_faceList = new QListWidget;
     m_faceListL = new QLabel(tr(" Face\n capture")); //人\n脸\n抓\n拍
@@ -71,7 +71,7 @@ RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
 
     faceItemMenu_ = new QMenu(m_faceList);
     faceItemMenu_->addAction(tr("Search using an image"),[&]{
-        FaceSearch *faceDialog = new FaceSearch(widgetManger());
+        FaceSearch *faceDialog = new FaceSearch(this);
         faceDialog->setAttribute(Qt::WA_DeleteOnClose);
         faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
         faceDialog->setWindowModality(Qt::ApplicationModal);
@@ -79,7 +79,7 @@ RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
         pal.setColor(QPalette::Background,QColor(112,110,119));
         faceDialog->setPalette(pal);
         faceDialog->setAutoFillBackground(true);
-        faceDialog->setUserStyle(widgetManger()->currentStyle());
+        faceDialog->setUserStyle(userStyle());
         faceDialog->layout()->setMargin(10);
         faceDialog->setFaceImage(m_faceList->currentItem()->data(Qt::UserRole + 1).value<QImage>());
         faceDialog->setOid(m_faceList->currentItem()->data(Qt::UserRole + 2).toString());
@@ -94,7 +94,7 @@ RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
             label->close();
             delete label;
             InformationDialog infoDialog(this);
-            infoDialog.setUserStyle(widgetManger()->currentStyle());
+            infoDialog.setUserStyle(userStyle());
             infoDialog.showMessage(str);
             infoDialog.exec();
             faceItemMenu_->setEnabled(true);
@@ -145,7 +145,7 @@ RealtimeMonitoring::RealtimeMonitoring(WidgetManagerI *wm, WidgetI *parent):
         RealMonitorSetting settingDialog(this, Qt::Dialog | Qt::WindowCloseButtonHint);
         settingDialog.setMinimumWidth(1200);
         settingDialog.setScreenIndex(m_realPlayM->screenCount());
-        settingDialog.setUserStyle(widgetManger()->currentStyle());
+        settingDialog.setUserStyle(userStyle());
         settingDialog.exec();
         int rows = 0, cols = 0, bigRow = 0, bigCol = 0, bigRowSpan = 0, bigColSpan = 0;
         settingDialog.screenSelected(&rows,&cols,&bigRow,&bigCol,&bigRowSpan,&bigColSpan);
@@ -175,11 +175,11 @@ RealtimeMonitoring::~RealtimeMonitoring()
 {
 }
 
-void RealtimeMonitoring::setUserStyle(WidgetManagerI::SkinStyle s)
+void RealtimeMonitoring::setUserStyle(int s)
 {
     QPalette pal;
     QFont f;
-    if(s == WidgetManagerI::Danyahei){
+    if(s == 0){
         m_treeW->header()->setStretchLastSection(true);
         m_treeW->header()->setIconSize(QSize(50,50));
         QSize s = m_treeW->headerItem()->sizeHint(0);
@@ -472,7 +472,7 @@ void RealtimeMonitoring::slotTreeItemDoubleClicked(QTreeWidgetItem *item, int co
     }
     if(!m_realPlayM->focusPlayer()){
         InformationDialog infoDialog(this);
-        infoDialog.setUserStyle(widgetManger()->currentStyle());
+        infoDialog.setUserStyle(userStyle());
         infoDialog.showMessage("Please selecte a window");
         infoDialog.exec();
         return;
@@ -592,7 +592,7 @@ void RealtimeMonitoring::slotOnCameraGroup(QVector<RestServiceI::CameraGoup> gro
 void RealtimeMonitoring::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
 {
     SceneImageDialog dialog;
-    dialog.setUserStyle(widgetManger()->currentStyle());
+    dialog.setUserStyle(userStyle());
     dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
     dialog.setSceneInfo(sinfo);
     dialog.setRectLinePen(Qt::yellow);
@@ -600,7 +600,7 @@ void RealtimeMonitoring::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
         if(!images.count()){
             return;
         }
-        FaceSearch *faceDialog = new FaceSearch(widgetManger());
+        FaceSearch *faceDialog = new FaceSearch(this);
         faceDialog->setAttribute(Qt::WA_DeleteOnClose);
         faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
         faceDialog->setWindowModality(Qt::ApplicationModal);
@@ -608,7 +608,7 @@ void RealtimeMonitoring::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
         pal.setColor(QPalette::Background,QColor(112,110,119));
         faceDialog->setPalette(pal);
         faceDialog->setAutoFillBackground(true);
-        faceDialog->setUserStyle(widgetManger()->currentStyle());
+        faceDialog->setUserStyle(userStyle());
         faceDialog->layout()->setMargin(10);
         faceDialog->setFaceImage(images.first());
         faceDialog->setMinimumHeight(700);

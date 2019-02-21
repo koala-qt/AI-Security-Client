@@ -11,8 +11,8 @@
 #include "facelinktable.h"
 #include "facelinkpage.h"
 
-DateAnalysis::DateAnalysis(WidgetManagerI *wm, WidgetI *parent):
-    WidgetI(wm,parent)
+DateAnalysis::DateAnalysis( WidgetI *parent):
+    WidgetI(parent)
 {
     setObjectName(tr("Data analysis"));
     backImg_.load("images/Mask.png");
@@ -23,10 +23,10 @@ DateAnalysis::DateAnalysis(WidgetManagerI *wm, WidgetI *parent):
     mainLay->addWidget(stackedW_,1890);
     setLayout(mainLay);
 
-    trackingW_ = new TrackingPage(wm);
+    trackingW_ = new TrackingPage();
     tabWidgetW_ = new QTabWidget;
-    faceLinkTable_ = new FacelinkTable(wm);
-    faceLinkPage_ = new FaceLinkPage(wm);
+    faceLinkTable_ = new FacelinkTable();
+    faceLinkPage_ = new FaceLinkPage();
     tabWidgetW_->addTab(faceLinkTable_,faceLinkTable_->objectName());
     tabWidgetW_->addTab(faceLinkPage_,faceLinkPage_->objectName());
     stackedW_->addWidget(trackingW_);
@@ -53,9 +53,9 @@ DateAnalysis::DateAnalysis(WidgetManagerI *wm, WidgetI *parent):
     setUserStyle(userStyle());
 }
 
-void DateAnalysis::setUserStyle(WidgetManagerI::SkinStyle s)
+void DateAnalysis::setUserStyle(int s)
 {
-    if(WidgetManagerI::Danyahei == s){
+    if(0 == s){
         treeW_->setStyleSheet("QTreeView{"
                                "border:none;"
                                "font-size: 16px;"

@@ -19,8 +19,8 @@ class SemanticSearchPage : public WidgetI
 {
     Q_OBJECT
 public:
-    SemanticSearchPage(WidgetManagerI*wm,WidgetI *parent = nullptr);
-    void setUserStyle(WidgetManagerI::SkinStyle s) override;
+    SemanticSearchPage(WidgetI *parent = nullptr);
+    void setUserStyle(int s) override;
 
 protected:
     void resizeEvent(QResizeEvent *event) override;

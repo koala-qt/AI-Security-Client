@@ -20,8 +20,8 @@ class CombinationPage : public WidgetI
 {
     Q_OBJECT
 public:
-    CombinationPage(WidgetManagerI *wm,WidgetI *parent = nullptr);
-    void setUserStyle(WidgetManagerI::SkinStyle s) override;
+    CombinationPage(WidgetI *parent = nullptr);
+    void setUserStyle(int s) override;
 
 protected:
     bool event(QEvent *event) override;

@@ -15,7 +15,7 @@ public:
     RealMonitorSetting(QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
     void setScreenIndex(int screenCount);
     void screenSelected(int * rows,int * cols,int *bigRow,int *bigCol,int *rowSpan,int *colSpan);
-    void setUserStyle(WidgetManagerI::SkinStyle s);
+    void setUserStyle(int s);
 
 private:
     QLabel *screenCountL_{nullptr},*videoL_{nullptr},*timeCostL_{nullptr},*startLocationL_{nullptr},*endLocationL_{nullptr},*arrorL_{nullptr};

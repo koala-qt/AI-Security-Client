@@ -19,9 +19,9 @@ class RealtimeMonitoring : public WidgetI
 {
     Q_OBJECT
 public:
-    RealtimeMonitoring(WidgetManagerI *wm,WidgetI *parent = nullptr);
+    RealtimeMonitoring(WidgetI *parent = nullptr);
     ~RealtimeMonitoring();
-    void setUserStyle(WidgetManagerI::SkinStyle s) override;
+    void setUserStyle(int s) override;
 
 protected:
     void resizeEvent(QResizeEvent *event) override;

@@ -16,8 +16,8 @@ class CaptureSearch : public WidgetI
 {
     Q_OBJECT
 public:
-    CaptureSearch(WidgetManagerI *wm, WidgetI *parent = nullptr);
-    void setUserStyle(WidgetManagerI::SkinStyle style) override;
+    CaptureSearch(WidgetI *parent = nullptr);
+    void setUserStyle(int s  = 0) override;
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
