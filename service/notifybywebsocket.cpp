@@ -78,9 +78,9 @@ void NotifyEventByWebSocket::onTextMessageReceived(QString message)
         });
         if(!pointVec.isEmpty() && !(pointVec.count() % 2))
         {
-            std::transform(pointVec.begin(),pointVec.end() - 1,pointVec.begin() + 1,std::back_inserter(evData.warnZone),[](int x,int y){
-                return QPointF(qreal(x)/2,qreal(y)/2);
-            });
+            for(int i = 0; i < pointVec.count(); i = i + 2){
+                evData.warnZone << QPointF(qreal(pointVec.at(i)) / 2, qreal(pointVec.at(i + 1)) / 2);
+            }
         }
         RestServiceI *serviceI = serFactory_->makeRestServiceI();
         connect(serviceI,&RestServiceI::sigDownloadImage,this,[this,evData](QImage img){

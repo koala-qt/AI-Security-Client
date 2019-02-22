@@ -140,7 +140,6 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
         });
         label->show(800);
         faceItemMenu_->setEnabled(false);
-        qDebug() << eventList_->currentItem()->data(Qt::UserRole + 1).toString() << "333333333333333";
         serviceI->getSceneInfo(eventList_->currentItem()->data(Qt::UserRole + 1).toString());
     });
     eventList_->setContextMenuPolicy(Qt::CustomContextMenu);
