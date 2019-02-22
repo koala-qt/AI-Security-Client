@@ -10,7 +10,6 @@ HEADERS += \
     $$PWD/facesearch.h \
     $$PWD/trajectorysearch.h \
     $$PWD/tabbarstyle.h \
-    $$PWD/capturesearch.h \
     $$PWD/pageindicator.h \
     $$PWD/baidumap.h \
     $$PWD/hkplayback.h \
@@ -41,12 +40,14 @@ HEADERS += \
     $$PWD/semanticsearchpage.h \
     $$PWD/informationdialog.h \
     $$PWD/nodatatip.h \
-    $$PWD/dateanalysis.h \
     $$PWD/facelinktable.h \
     $$PWD/videoanalysis.h \
     $$PWD/widgetinterface.h \
     $$PWD/portraitsearch.h \
-    $$PWD/eventsearch.h
+    $$PWD/eventsearch.h \
+    $$PWD/reportpage.h \
+    $$PWD/resourcemanagepage.h \
+    $$PWD/hompage.h
 
 SOURCES += \
     $$PWD/videoplayback.cpp \
@@ -59,7 +60,6 @@ SOURCES += \
     $$PWD/eventsearch.cpp \
     $$PWD/trajectorysearch.cpp \
     $$PWD/tabbarstyle.cpp \
-    $$PWD/capturesearch.cpp \
     $$PWD/pageindicator.cpp \
     $$PWD/baidumap.cpp \
     $$PWD/hkplayback.cpp \
@@ -90,7 +90,9 @@ SOURCES += \
     $$PWD/semanticsearchpage.cpp \
     $$PWD/informationdialog.cpp \
     $$PWD/nodatatip.cpp \
-    $$PWD/dateanalysis.cpp \
     $$PWD/facelinktable.cpp \
     $$PWD/videoanalysis.cpp \
-    $$PWD/portraitsearch.cpp
+    $$PWD/portraitsearch.cpp \
+    $$PWD/reportpage.cpp \
+    $$PWD/resourcemanagepage.cpp \
+    $$PWD/hompage.cpp

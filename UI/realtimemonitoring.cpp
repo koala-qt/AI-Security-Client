@@ -120,9 +120,28 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
 
     eventItemMenu_ = new QMenu(eventList_);
     eventItemMenu_->addAction(tr("Scene analysis"),[&]{
-        RestServiceI::SceneInfo sinfo;
-        sinfo.image = eventList_->currentItem()->data(Qt::UserRole + 1).value<QImage>();
-        slotOnSceneInfo(sinfo);
+        ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+        RestServiceI *serviceI = factoryI->makeRestServiceI();
+        WaitingLabel *label = new WaitingLabel(this);
+        connect(serviceI,&RestServiceI::sigSceneInfo,this,[this,label](RestServiceI::SceneInfo sinfo){
+            label->close();
+            delete label;
+            slotOnSceneInfo(sinfo);
+            faceItemMenu_->setEnabled(true);
+        });
+        connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
+            label->close();
+            delete label;
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(userStyle());
+            infoDialog.showMessage(str);
+            infoDialog.exec();
+            faceItemMenu_->setEnabled(true);
+        });
+        label->show(800);
+        faceItemMenu_->setEnabled(false);
+        qDebug() << eventList_->currentItem()->data(Qt::UserRole + 1).toString() << "333333333333333";
+        serviceI->getSceneInfo(eventList_->currentItem()->data(Qt::UserRole + 1).toString());
     });
     eventList_->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(eventList_,&QListWidget::customContextMenuRequested,this,[&](const QPoint &p){
@@ -160,8 +179,9 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
     eventList_->setSpacing(10);
     eventList_->setMovement(QListView::Static);
     connect(eventCombox_,SIGNAL(currentIndexChanged(int)),this,SLOT(slotEventComboxIndexChanged(int)));
-    notifyServiceI_ = reinterpret_cast<NotifyServiceI*>(qApp->property("NotifyServiceI").toULongLong());
-    connect(notifyServiceI_,SIGNAL(sigGrabedPerson(QStringList,QImage)),this,SLOT(slotAddFaceitem(QStringList,QImage)));
+    notifyEventI_ = reinterpret_cast<NotifyEventI*>(qApp->property("NotifyEventI").toULongLong());
+    notifyPersonI_ = reinterpret_cast<NotifyPersonI*>(qApp->property("NotifyPersonI").toULongLong());
+    connect(notifyPersonI_,SIGNAL(sigFaceSnap(NotifyPersonI::FaceSnapEventData)),this,SLOT(slotAddFaceitem(NotifyPersonI::FaceSnapEventData)));
     connect(m_treeW,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),this,SLOT(slotTreeItemDoubleClicked(QTreeWidgetItem*,int)));
     m_settingBtn->hide();
 
@@ -253,7 +273,6 @@ void RealtimeMonitoring::setUserStyle(int s)
         m_faceList->setStyleSheet(".QListWidget{background-color:rgba(83,89,100,40); border-radius:6px;border:none;}");
 //        m_faceList->setMaximumHeight(137);
 
-        eventList_->setFlow(QListWidget::LeftToRight);
         eventList_->setStyleSheet("QListWidget{"
                                    "background-color:rgba(0,0,0,30);"
                                    "border-radius:6px;"
@@ -446,22 +465,17 @@ QString RealtimeMonitoring::findCameraNameById(QString &id)
 
 void RealtimeMonitoring::slotEventComboxIndexChanged(int index)
 {
+    notifyEventI_->disconnect(this);
     if(index == 0){
-        connect(notifyServiceI_,SIGNAL(sigBlackListAlarmScene(QStringList,QImage)),this,SLOT(slotOnBlacklistEvent(QStringList,QImage)),Qt::UniqueConnection);
-        connect(notifyServiceI_,SIGNAL(sigIntruderAlarmScene(QStringList,QImage)),this,SLOT(slotOnIntruderEvent(QStringList,QImage)),Qt::UniqueConnection);
-        connect(notifyServiceI_,SIGNAL(sigABDoorAlarmScene(QStringList,QImage)),this,SLOT(slotOnAbDoorEvent(QStringList,QImage)),Qt::UniqueConnection);
+        connect(notifyEventI_,SIGNAL(sigABDoorEventData(NotifyEventI::ABDoorEventData)),this,SLOT(slotOnAbDoorEvent(NotifyEventI::ABDoorEventData)));
+        connect(notifyEventI_,SIGNAL(sigIntruderEvent(NotifyEventI::IntruderEventData)),this,SLOT(slotOnIntruderEvent(NotifyEventI::IntruderEventData)));
+        connect(notifyEventI_,SIGNAL(sigPersonEventData(NotifyEventI::PersonEventData)),this,SLOT(slotOnPersonEvent(NotifyEventI::PersonEventData)));
     }else if(index == 1){
-        disconnect(notifyServiceI_,SIGNAL(sigIntruderAlarmScene(QStringList,QImage)),this,SLOT(slotOnIntruderEvent(QStringList,QImage)));
-        disconnect(notifyServiceI_,SIGNAL(sigABDoorAlarmScene(QStringList,QImage)),this,SLOT(slotOnAbDoorEvent(QStringList,QImage)));
-        connect(notifyServiceI_,SIGNAL(sigBlackListAlarmScene(QStringList,QImage)),this,SLOT(slotOnBlacklistEvent(QStringList,QImage)),Qt::UniqueConnection);
+        connect(notifyEventI_,SIGNAL(sigPersonEventData(NotifyEventI::PersonEventData)),this,SLOT(slotOnPersonEvent(NotifyEventI::PersonEventData)));
     }else if(index == 2){
-        disconnect(notifyServiceI_,SIGNAL(sigBlackListAlarmScene(QStringList,QImage)),this,SLOT(slotOnBlacklistEvent(QStringList,QImage)));
-        disconnect(notifyServiceI_,SIGNAL(sigABDoorAlarmScene(QStringList,QImage)),this,SLOT(slotOnAbDoorEvent(QStringList,QImage)));
-        connect(notifyServiceI_,SIGNAL(sigIntruderAlarmScene(QStringList,QImage)),this,SLOT(slotOnIntruderEvent(QStringList,QImage)),Qt::UniqueConnection);
+        connect(notifyEventI_,SIGNAL(sigIntruderAlarmScene(QStringList,QImage)),this,SLOT(slotOnIntruderEvent(QStringList,QImage)));
     }else if(index == 3){
-        disconnect(notifyServiceI_,SIGNAL(sigBlackListAlarmScene(QStringList,QImage)),this,SLOT(slotOnBlacklistEvent(QStringList,QImage)));
-        disconnect(notifyServiceI_,SIGNAL(sigIntruderAlarmScene(QStringList,QImage)),this,SLOT(slotOnIntruderEvent(QStringList,QImage)));
-        connect(notifyServiceI_,SIGNAL(sigABDoorAlarmScene(QStringList,QImage)),this,SLOT(slotOnAbDoorEvent(QStringList,QImage)),Qt::UniqueConnection);
+        connect(notifyEventI_,SIGNAL(sigABDoorEventData(NotifyEventI::ABDoorEventData)),this,SLOT(slotOnAbDoorEvent(NotifyEventI::ABDoorEventData)));
     }
 }
 
@@ -486,7 +500,7 @@ void RealtimeMonitoring::slotTreeItemDoubleClicked(QTreeWidgetItem *item, int co
     m_realPlayM->playByFocus(item->data(column,Qt::UserRole + 2).toString(),item->data(column,Qt::UserRole + 1).toString(),item->data(column,Qt::UserRole + 3).toString());
 }
 
-void RealtimeMonitoring::slotAddFaceitem(QStringList data, QImage img)
+void RealtimeMonitoring::slotAddFaceitem(NotifyPersonI::FaceSnapEventData faceEvData)
 {
     if(m_faceList->count() >= FACEITEMCOUNT){
         QListWidgetItem *delItem = m_faceList->takeItem(FACEITEMCOUNT - 1);
@@ -498,64 +512,73 @@ void RealtimeMonitoring::slotAddFaceitem(QStringList data, QImage img)
     QLabel *label = new QLabel;
     label->setScaledContents(true);
     label->setAlignment(Qt::AlignHCenter);
-    label->setPixmap(QPixmap::fromImage(img));
+    label->setPixmap(QPixmap::fromImage(faceEvData.faceImg));
     vboxLay->addWidget(label);
 
-    if(data.count() < 2)return;
-    QString faceId = data.takeFirst();
-    QString sceneId = data.takeLast();
-    foreach (QString str, data) {
-        label = new QLabel(str);
-        QPalette pal = label->palette();
-        pal.setColor(QPalette::Foreground,Qt::white);
-        label->setPalette(pal);
-        label->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
-        label->setStyleSheet(faceItemStyleSheet_);
-        vboxLay->addWidget(label);
-    }
+    label = new QLabel(faceEvData.cameraPos);
+    QPalette pal = label->palette();
+    pal.setColor(QPalette::Foreground,Qt::white);
+    label->setPalette(pal);
+    label->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
+    label->setStyleSheet(faceItemStyleSheet_);
+    vboxLay->addWidget(label);
+
+    label = new QLabel(faceEvData.snapTime.toString("yyyy-MM-dd HH:mm:ss"));
+    pal = label->palette();
+    pal.setColor(QPalette::Foreground,Qt::white);
+    label->setPalette(pal);
+    label->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
+    label->setStyleSheet(faceItemStyleSheet_);
+    vboxLay->addWidget(label);
     itemWidget->setLayout(vboxLay);
 
     QListWidgetItem *item = new QListWidgetItem;
-    item->setData(Qt::UserRole + 1,img);
-    item->setData(Qt::UserRole + 2,faceId);
-    item->setData(Qt::UserRole + 3,sceneId);
+    item->setData(Qt::UserRole + 1,faceEvData.faceImg);
+    item->setData(Qt::UserRole + 2,faceEvData.sceneId);
+    item->setData(Qt::UserRole + 3,faceEvData.sceneId);
     item->setSizeHint(m_faceItemSize);
     m_faceList->insertItem(0,item);
     m_faceList->setItemWidget(item,itemWidget);
 }
 
-void RealtimeMonitoring::slotOnIntruderEvent(QStringList infoList, QImage img)
+void RealtimeMonitoring::slotOnIntruderEvent(NotifyEventI::IntruderEventData evData)
 {
     if(eventList_->count() >= EVENTITEMCOUNT){
         delete eventList_->takeItem(EVENTITEMCOUNT - 1);
     }
     QListWidgetItem *item = new QListWidgetItem;
-    item->setIcon(QPixmap::fromImage(img).scaled(eventItemSize_));
-    item->setData(Qt::UserRole + 1,QVariant::fromValue(img));
+    QPainter p(&evData.sceneImg);
+    p.setBrush(QColor(200,0,0,100));
+    p.drawPolygon(evData.warnZone);
+    item->setIcon(QPixmap::fromImage(evData.sceneImg).scaled(eventItemSize_));
+    item->setData(Qt::UserRole + 1,evData.sceneId);
     item->setSizeHint(eventItemSize_);
     eventList_->insertItem(0,item);
 }
 
-void RealtimeMonitoring::slotOnBlacklistEvent(QStringList, QImage img)
+void RealtimeMonitoring::slotOnPersonEvent(NotifyEventI::PersonEventData evData)
 {
     if(eventList_->count() >= EVENTITEMCOUNT){
         delete eventList_->takeItem(EVENTITEMCOUNT - 1);
     }
     QListWidgetItem *item = new QListWidgetItem;
-    item->setIcon(QPixmap::fromImage(img).scaled(eventItemSize_));
-    item->setData(Qt::UserRole + 1,QVariant::fromValue(img));
+    item->setIcon(QPixmap::fromImage(evData.image).scaled(eventItemSize_));
+    item->setData(Qt::UserRole + 1,evData.sceneId);
     item->setSizeHint(eventItemSize_);
     eventList_->insertItem(0,item);
 }
 
-void RealtimeMonitoring::slotOnAbDoorEvent(QStringList, QImage img)
+void RealtimeMonitoring::slotOnAbDoorEvent(NotifyEventI::ABDoorEventData evData)
 {
     if(eventList_->count() >= EVENTITEMCOUNT){
         delete eventList_->takeItem(EVENTITEMCOUNT - 1);
     }
     QListWidgetItem *item = new QListWidgetItem;
-    item->setIcon(QPixmap::fromImage(img).scaled(eventItemSize_));
-    item->setData(Qt::UserRole + 1,QVariant::fromValue(img));
+    QPainter p(&evData.sceneImg);
+    p.setBrush(QColor(100,0,100,100));
+    p.drawPolygon(evData.warnZone);
+    item->setIcon(QPixmap::fromImage(evData.sceneImg).scaled(eventItemSize_));
+    item->setData(Qt::UserRole + 1,evData.sceneId);
     item->setSizeHint(eventItemSize_);
     eventList_->insertItem(0,item);
 }

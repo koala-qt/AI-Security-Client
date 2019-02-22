@@ -15,8 +15,9 @@
 #include "UI/videoplayback.h"
 #include "UI/realtimemonitoring.h"
 #include "UI/eventsearch.h"
-#include "UI/multiplesearch.h"
-#include "UI/dateanalysis.h"
+#include "UI/reportpage.h"
+#include "UI/resourcemanagepage.h"
+#include "UI/hompage.h"
 #include <QDebug>
 
 #pragma execution_character_set("utf-8")
@@ -30,8 +31,7 @@ MainWindow::MainWindow(WidgetI *parent)
     topBorderLine_ = new QLabel;
     appNameL_ = new QLabel(qApp->applicationName());
     appNameL_->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
-    topBorderLine_->hide();
-    topBorderLine_->setFixedHeight(2);
+    topBorderLine_->setFixedHeight(1);
     topWgt_ = new QWidget;
     m_centerW = new QStackedWidget;
     m_topList = new QListWidget;
@@ -39,12 +39,12 @@ MainWindow::MainWindow(WidgetI *parent)
     m_topList->setFlow(QListWidget::LeftToRight);
     m_topList->setLayoutDirection(Qt::RightToLeft);
 
-//    m_centerW->addWidget(new MainPage(wm));
-//    m_centerW->addWidget(new DateAnalysis(wm));
+    m_centerW->addWidget(new ResourceManagePage());
+    m_centerW->addWidget(new ReportPage());
     m_centerW->addWidget(new TargetSearch());
     m_centerW->addWidget(new EventSearch());
     m_centerW->addWidget(new RealtimeMonitoring());
-//    m_centerW->addWidget(new VideoPlayback(wm));
+    m_centerW->addWidget(new HomPage());
 
     for(int i = 0; i < m_centerW->count(); i++){
         QListWidgetItem *item = new QListWidgetItem;
@@ -67,7 +67,7 @@ MainWindow::MainWindow(WidgetI *parent)
     mainLay->setSpacing(0);
     setLayout(mainLay);
     connect(m_topList,SIGNAL(currentRowChanged(int)),m_centerW,SLOT(setCurrentIndex(int)));
-    m_topList->setCurrentRow(m_topList->count() - 1);
+    m_topList->setCurrentRow(m_topList->count() - 2);
 
 
     QFont f = font();
@@ -104,7 +104,7 @@ void MainWindow::setUserStyle(int s)
         pal = topBorderLine_->palette();
         topBorderLine_->setLineWidth(topBorderLine_->height());
         topBorderLine_->setFrameStyle(QFrame::HLine | QFrame::Plain);
-        pal.setColor(QPalette::Foreground,QColor(8,66,131));
+        pal.setColor(QPalette::Foreground,QColor(59,71,79).darker());
         topBorderLine_->setPalette(pal);
 
         pal = appNameL_->palette();

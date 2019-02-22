@@ -17,6 +17,7 @@ protected:
             QDynamicPropertyChangeEvent *ev = dynamic_cast<QDynamicPropertyChangeEvent*>(event);
             curStyle_ = ev->propertyName().toInt();
             setUserStyle(curStyle_);
+            ev->accept();
         }
         return QWidget::event(event);
     }

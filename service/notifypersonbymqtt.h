@@ -1,14 +1,14 @@
-#ifndef NOTIFYBYMQTT_H
-#define NOTIFYBYMQTT_H
+#ifndef NOTIFYPERSONBYMQTT_H
+#define NOTIFYPERSONBYMQTT_H
 
 #include "servicei.h"
 #include "mosquittopp.h"
 QT_FORWARD_DECLARE_CLASS(QTimer)
-class NotifyByMqtt : public NotifyServiceI,public mosqpp::mosquittopp
+class NotifyPersonByMqtt : public NotifyPersonI,public mosqpp::mosquittopp
 {
     Q_OBJECT
 public:
-    NotifyByMqtt(QObject *parent = nullptr);
+    NotifyPersonByMqtt(QObject *parent = nullptr);
 
 protected:
     void run() override;
@@ -26,4 +26,4 @@ private slots:
     void slotTimeout();
 };
 
-#endif // NOTIFYBYMQTT_H
+#endif // NOTIFYPERSONBYMQTT_H

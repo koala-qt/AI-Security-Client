@@ -33,8 +33,8 @@ private:
         int value;
         QVector<item_> childrens;
     }itemData;
-    QLabel *posL_{nullptr},*startTimeL_{nullptr},*endTimeL_{nullptr};
-    QComboBox *posCombox_{nullptr};
+    QLabel *personTypeL_{nullptr}, *posL_{nullptr},*startTimeL_{nullptr},*endTimeL_{nullptr};
+    QComboBox *personTypeCombox_{nullptr}, *posCombox_{nullptr};
     QDateTimeEdit *startTimeEdit_{nullptr},*endTimeEdit_{nullptr};
     QPushButton *searchBtn_{nullptr};
     PageIndicator *pageIndicator_{nullptr};
@@ -46,11 +46,13 @@ private:
     QString curCameraId_;
     QStringList curfaceAttrList_;
     QDateTime curStartTime_,curEndTime_;
+    int curMode_;
     bool needUpdatePageInfo_ = true;
     int dataRows_;
     int dataCols_;
     QSize itemSize_,iconSize_;
     QMap<QString,QString> cameraMapInfo_;
+    QVector<QPair<QString,QVector<int>>> personTypeVec_;
     NoDataTip *noDataW_{nullptr};
 
     void getCameraInfo();

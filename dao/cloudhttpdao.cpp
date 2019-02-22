@@ -14,6 +14,7 @@ DLL::CloudHttpDao::CloudHttpDao()
     std::vector<std::string> headers;
     headers.emplace_back("Accept-Language: en-US,en;q=0.9");
     headers.emplace_back("User-Agent:Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36");
+    headers.emplace_back("token:7d1e52d3cf0142e19b5901eb1ef91372");
     headers.emplace_back("Expect:");
     setheader(headers);
 
@@ -445,9 +446,9 @@ QString DLL::CloudHttpDao::getSceneInfo(QString &scenId, RestServiceI::SceneInfo
     QString imgUrl = host_;
     imgUrl.remove(imgUrl.count() - 1, 1);
     imgUrl += jsObj.value("url").toString();
-    getImageByUrl(imgUrl,&sceneInfo->image);
-    if(sceneInfo->image.isNull()){
-        return "No SceneImage";
+    QString errorStr = getImageByUrl(imgUrl,&sceneInfo->image);
+    if(!errorStr.isEmpty()){
+        return errorStr;
     }
     QVariantMap faceBoxMap = jsObj.value("faceBoxMapping").toObject().toVariantMap();
     QStringList mapKeys = faceBoxMap.keys();
@@ -462,7 +463,10 @@ QString DLL::CloudHttpDao::getSceneInfo(QString &scenId, RestServiceI::SceneInfo
 
         QImage faceImg;
         QString faceImgUrl = host_ + "api/v2/external/monitor-detail/download-image?collection=snap_face&fieldName=snapshot&objId=" + faceId;
-        getImageByUrl(faceImgUrl,&faceImg);
+        QString errorStr = getImageByUrl(faceImgUrl,&faceImg);
+        if(!errorStr.isEmpty()){
+            return errorStr;
+        }
         sceneInfo->faceRectVec << qMakePair(QRect(x,y,rWidth,rHeight),faceImg);
     }
     sceneInfo->sceneId = scenId;
@@ -471,12 +475,30 @@ QString DLL::CloudHttpDao::getSceneInfo(QString &scenId, RestServiceI::SceneInfo
 
 QString DLL::CloudHttpDao::getImageByUrl(QString &url, QImage *image)
 {
+    std::vector<std::string> headers;
+    headers.emplace_back("Content-Type:application/json;charset=UTF-8");
+    headers.emplace_back("User-Agent:Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36");
+    headers.emplace_back("token:7d1e52d3cf0142e19b5901eb1ef91372");
+    headers.emplace_back("Expect:");
+    setheader(headers);
+
     int resCode = send(DLL::GET,url.toStdString(),std::string(),10);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
 
-    image->loadFromData(QByteArray::fromStdString(responseData()));
+    QJsonParseError jsError;
+    QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
+    if(jsError.error != QJsonParseError::NoError){
+        image->loadFromData(QByteArray::fromStdString(responseData()));
+        return QString();
+    }
+
+    QJsonObject jsObj = jsDoc.object();
+    int status = jsObj.value("status").toInt();
+    if(status != 200){
+        return jsObj.value("message").toString();
+    }
     return QString();
 }
 

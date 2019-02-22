@@ -4,19 +4,20 @@
 #include <QUrl>
 #include <QSslError>
 #include <QAbstractSocket>
-QT_FORWARD_DECLARE_CLASS(QTimer)
 #include "servicei.h"
+QT_FORWARD_DECLARE_CLASS(QTimer)
 QT_FORWARD_DECLARE_CLASS(QWebSocket)
-class NotifyByWebSocket : public NotifyServiceI
+class NotifyEventByWebSocket : public NotifyEventI
 {
     Q_OBJECT
 public:
-    NotifyByWebSocket(QObject *parent = nullptr);
-    ~NotifyByWebSocket();
+    NotifyEventByWebSocket(QObject *parent = nullptr);
+    ~NotifyEventByWebSocket();
 
 private:
     QUrl curUrl_;
     QWebSocket *websocket_;
+    ServiceFactoryI *serFactory_{nullptr};
     QTimer *timer_{nullptr};
 
 private slots:

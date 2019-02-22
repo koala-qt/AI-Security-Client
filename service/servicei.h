@@ -11,7 +11,8 @@
 #include "dao/face.pb.h"
 QT_FORWARD_DECLARE_CLASS(QTreeWidgetItem)
 class RestServiceI;
-class NotifyServiceI;
+class NotifyPersonI;
+class NotifyEventI;
 class ServiceFactoryI
 {
 public:
@@ -25,7 +26,8 @@ public:
         WebSocket
     };
     virtual RestServiceI* makeRestServiceI(RestInterfaceType s = HTTPREST) = 0;
-    virtual NotifyServiceI* makeNotifyServiceI(NotifyInterfaceType s = Mqtt) = 0;
+    virtual NotifyPersonI* makeNotifyPersonServiceI(NotifyInterfaceType s = Mqtt) = 0;
+    virtual NotifyEventI* makeNotifyEventServiceI(NotifyInterfaceType s = WebSocket) = 0;
 };
 class RestServiceI : public QObject
 {
@@ -301,32 +303,76 @@ signals:
     void sigFaceLinkDataColl(RestServiceI::FaceLinkDataCollReturn);
 };
 
-class NotifyServiceI : public QThread
+class NotifyPersonI : public QThread
 {
     Q_OBJECT
 public:
-    NotifyServiceI(QObject *parent = nullptr) : QThread(parent){
-
+    struct FaceSnapEventData
+    {
+        QString cameraId;
+        QString cameraPos;
+        QString sceneId;
+        QDateTime snapTime;
+        QImage faceImg;
+    };
+    NotifyPersonI(QObject *parent = nullptr) : QThread(parent){
+        qRegisterMetaType<NotifyPersonI::FaceSnapEventData>("NotifyPersonI::FaceSnapEventData");
     }
 
 signals:
     void sigNetWorkError(QString);
-    void sigInitsized();
-    void sigAreaGarphics(QVector<QPointF>);
-    void sigAlarmData(int,int,int);
-    void sigFaceGrab(int,int,int,int);
-    void sigEventStatics(int,int);
-    void sigTotalEvent(int,int);
-    void sigEventSpider(QVector<QVector<double>>);
-    void sigBlackListAlarmScene(QStringList,QImage);
-    void sigBlackListAlarmFace(QStringList,QImage);
-    void sigIntruderAlarmScene(QStringList,QImage);
-    void sigIntruderAlarmFace(QStringList,QImage);
-    void sigTimeCost(QMap<QString,QVariant>);
-    void sigGrabedPerson(QStringList,QImage);
-    void sigPieChart(QVector<kf::PieCharData>);
-    void sigABDoorAlarmScene(QStringList,QImage);
-    void sigABDoorAlarmFace(QStringList,QImage);
+    void sigFaceSnap(NotifyPersonI::FaceSnapEventData);
     void sigFaceLinkDataFinished(QString);
+};
+
+class NotifyEventI : public QThread
+{
+    Q_OBJECT
+public:
+    struct IntruderEventData
+    {
+        int deviceId;
+        QPolygonF warnZone;
+        QString bodyId;
+        QString sceneId;
+        QDateTime timeStamp;
+        QImage sceneImg;
+    };
+    struct ABDoorEventData
+    {
+        QPolygonF warnZone;
+        QString bodyId;
+        QString deviceId;
+        QString sceneId;
+        QDateTime timeStamp;
+        QImage sceneImg;
+    };
+    struct PersonEventData
+    {
+        qreal faceSimilarity;
+        QPolygonF warnZone;
+        QString id;
+        QString personId;
+        QString deviceId;
+        QString personType;
+        QString eventType;
+        QString faceId;
+        QString sceneId;
+        QString bodyId;
+        QString personTypenName;
+        QDateTime timeStamp;
+        QImage image;
+        QVector<QImage> faceImages;
+    };
+    NotifyEventI(QObject *parent = nullptr) : QThread(parent){
+        qRegisterMetaType<NotifyEventI::IntruderEventData>("NotifyEventI::IntruderEventData");
+        qRegisterMetaType<NotifyEventI::ABDoorEventData>("NotifyEventI::ABDoorEventData");
+        qRegisterMetaType<NotifyEventI::PersonEventData>("NotifyEventI::PersonEventData");
+    }
+
+signals:
+    void sigIntruderEvent(NotifyEventI::IntruderEventData);
+    void sigABDoorEventData(NotifyEventI::ABDoorEventData);
+    void sigPersonEventData(NotifyEventI::PersonEventData);
 };
 #endif // SERVICEI_H

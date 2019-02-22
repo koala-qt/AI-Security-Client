@@ -40,7 +40,8 @@ private:
     QString faceItemStyleSheet_;
     QSize m_faceItemSize,m_eventItemSize;
     QMenu *faceItemMenu_{nullptr},*eventItemMenu_{nullptr};
-    NotifyServiceI *notifyServiceI_{nullptr};
+    NotifyPersonI *notifyPersonI_{nullptr};
+    NotifyEventI *notifyEventI_{nullptr};
     QImage backImg_;
     QMap<QString,QString> curCameraMap_;
 
@@ -52,10 +53,10 @@ private:
 private slots:
     void slotEventComboxIndexChanged(int);
     void slotTreeItemDoubleClicked(QTreeWidgetItem*,int);
-    void slotAddFaceitem(QStringList data, QImage img);
-    void slotOnIntruderEvent(QStringList,QImage);
-    void slotOnBlacklistEvent(QStringList,QImage);
-    void slotOnAbDoorEvent(QStringList,QImage);
+    void slotAddFaceitem(NotifyPersonI::FaceSnapEventData);
+    void slotOnIntruderEvent(NotifyEventI::IntruderEventData);
+    void slotOnPersonEvent(NotifyEventI::PersonEventData);
+    void slotOnAbDoorEvent(NotifyEventI::ABDoorEventData);
     void slotAddDevice(QVector<RestServiceI::CameraInfo>);
     void slotOnCameraGroup(QVector<RestServiceI::CameraGoup>);
     void slotOnSceneInfo(RestServiceI::SceneInfo sinfo);

@@ -195,11 +195,6 @@ void FaceLinkPage::setFaceLinkOidAndImg(QString oid,QPixmap pix)
 
 void FaceLinkPage::slotSearchBtnClicked()
 {
-#if 0
-    NotifyServiceI *notifyServiceI_ = dynamic_cast<NotifyServiceI*>(getWoker("NotifyService"));
-    notifyServiceI_->disconnect(SIGNAL(sigFaceLinkDataFinished(QString)));
-    connect(notifyServiceI_,SIGNAL(sigFaceLinkDataFinished(QString)),this,SLOT(slotFaceLinkFinished(QString)));
-#else
     ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
     RestServiceI *serviceI = factoryI->makeRestServiceI();
     RestServiceI::FaceLinkArgs args;
@@ -210,7 +205,6 @@ void FaceLinkPage::slotSearchBtnClicked()
     args.oid = imgOid_;
     args.startT = startTimeEdit_->dateTime();
     args.thresh = 0.6;
-#if 1
     waitingL_ = new WaitingLabel(dataView_);
     connect(serviceI,&RestServiceI::sigError,this,[this](QString str){
         waitingL_->close();
@@ -224,8 +218,6 @@ void FaceLinkPage::slotSearchBtnClicked()
         searchBtn_->setEnabled(true);
     });
     connect(serviceI,SIGNAL(sigFaceLinkFinished(QString)),this,SLOT(slotFaceLinkFinished(QString)));
-#endif
-#endif
     serviceI->generateFaceLink(args);
     waitingL_->show(500);
     searchBtn_->setEnabled(false);

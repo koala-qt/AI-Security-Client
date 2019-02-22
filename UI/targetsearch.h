@@ -6,13 +6,13 @@ QT_FORWARD_DECLARE_CLASS(QTreeWidget)
 QT_FORWARD_DECLARE_CLASS(QStackedWidget)
 QT_FORWARD_DECLARE_CLASS(QTreeWidgetItem)
 QT_FORWARD_DECLARE_CLASS(CombinationPage)
-QT_FORWARD_DECLARE_CLASS(CaptureSearch)
 QT_FORWARD_DECLARE_CLASS(FaceSearch)
 QT_FORWARD_DECLARE_CLASS(MultipleSearch)
 QT_FORWARD_DECLARE_CLASS(FaceLinkPage)
 QT_FORWARD_DECLARE_CLASS(TrackingPage)
 QT_FORWARD_DECLARE_CLASS(VideoAnalysis)
 QT_FORWARD_DECLARE_CLASS(PortraitSearch)
+QT_FORWARD_DECLARE_CLASS(SemanticSearchPage)
 class TargetSearch : public WidgetI
 {
     Q_OBJECT
@@ -34,7 +34,7 @@ private:
 
     QTreeWidget *treeW_{nullptr};
     QStackedWidget *stackedW_{nullptr};
-    CaptureSearch *capturePage_{nullptr};
+    SemanticSearchPage *semanticSearchPage_{nullptr};
     MultipleSearch *multiPleSearchPage_{nullptr};
     CombinationPage *combinationPage_{nullptr};
     FaceSearch *faceSearchPage_{nullptr};

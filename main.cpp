@@ -40,9 +40,11 @@ int main(int argc, char *argv[])
     a.setApplicationName(QObject::tr("Intelligent Security Surveillance System"));
 
     ServiceFactoryI *facetory = new ServiceFactory;
-    NotifyServiceI *notifySerI = facetory->makeNotifyServiceI(ServiceFactoryI::Mqtt);
-    a.setProperty("NotifyServiceI",reinterpret_cast<unsigned long long>(notifySerI));
     a.setProperty("ServiceFactoryI",reinterpret_cast<unsigned long long>(facetory));
+    NotifyPersonI *notifyPersonSerI = facetory->makeNotifyPersonServiceI();
+    NotifyEventI *notifyEventI = facetory->makeNotifyEventServiceI();
+    a.setProperty("NotifyPersonI",reinterpret_cast<unsigned long long>(notifyPersonSerI));
+    a.setProperty("NotifyEventI",reinterpret_cast<unsigned long long>(notifyEventI));
 
 //    LoginDialog loginD;
 //    loginD.setUserStyle(WidgetManagerI::Danyahei);
@@ -67,12 +69,18 @@ int main(int argc, char *argv[])
         }
     }
 
-    QObject::connect(&a,&QApplication::aboutToQuit,&a,[notifySerI]{
-        notifySerI->requestInterruption();
-        notifySerI->quit();
-        notifySerI->wait();
+    QObject::connect(&a,&QApplication::aboutToQuit,&a,[notifyPersonSerI,notifyEventI]{
+        notifyPersonSerI->requestInterruption();
+        notifyPersonSerI->quit();
+        notifyPersonSerI->wait();
+        delete notifyPersonSerI;
+
+        notifyEventI->quit();
+        notifyEventI->wait();
+        delete notifyEventI;
     });
-    notifySerI->start();
+    notifyPersonSerI->start();
+    notifyEventI->start();
 
     return a.exec();
 }

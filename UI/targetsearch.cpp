@@ -6,7 +6,7 @@
 #include <QHeaderView>
 #include <QEvent>
 #include "targetsearch.h"
-#include "capturesearch.h"
+#include "semanticsearchpage.h"
 #include "facesearch.h"
 #include "combinationpage.h"
 #include "multiplesearch.h"
@@ -22,7 +22,7 @@ TargetSearch::TargetSearch( WidgetI *parent):
     backImg_.load("images/Mask.png");
     treeW_ = new QTreeWidget;
     stackedW_ = new QStackedWidget;
-    capturePage_ = new CaptureSearch();
+    semanticSearchPage_ = new SemanticSearchPage;
     faceSearchPage_ = new FaceSearch();
     combinationPage_ = new CombinationPage();
     multiPleSearchPage_ = new MultipleSearch();
@@ -37,7 +37,7 @@ TargetSearch::TargetSearch( WidgetI *parent):
     mainLay->setSpacing(20);
     setLayout(mainLay);
 
-    stackedW_->addWidget(capturePage_);
+    stackedW_->addWidget(semanticSearchPage_);
     stackedW_->addWidget(faceSearchPage_);
     stackedW_->addWidget(combinationPage_);
     stackedW_->addWidget(multiPleSearchPage_);
@@ -45,7 +45,7 @@ TargetSearch::TargetSearch( WidgetI *parent):
     stackedW_->addWidget(trackingPage_);
     stackedW_->addWidget(portraitSearchPage_);
     stackedW_->addWidget(videoAnalysisPage_);
-    capturePage_->installEventFilter(this);
+    semanticSearchPage_->installEventFilter(this);
     faceSearchPage_->installEventFilter(this);
     multiPleSearchPage_->installEventFilter(this);
     facelinkPage_->installEventFilter(this);
@@ -56,7 +56,7 @@ TargetSearch::TargetSearch( WidgetI *parent):
     itemData items;
     items.name = tr("Capture search");
     items.value = 0;
-    items.childrens << itemData{capturePage_->objectName(),0,QVector<itemData>()} << itemData{"Upload",1,QVector<itemData>()
+    items.childrens << itemData{semanticSearchPage_->objectName(),0,QVector<itemData>()} << itemData{"Upload",1,QVector<itemData>()
                                                                                   << itemData{faceSearchPage_->objectName(),1,QVector<itemData>()}
                                                                                   << itemData{combinationPage_->objectName(),2,QVector<itemData>()}
                                                                                   << itemData{multiPleSearchPage_->objectName(),3,QVector<itemData>()}

@@ -3,7 +3,7 @@
 
 #include "servicei.h"
 #include "restserviceconcureent.h"
-#include "notifybymqtt.h"
+#include "notifypersonbymqtt.h"
 #include "notifybywebsocket.h"
 class ServiceFactory : public ServiceFactoryI
 {
@@ -22,16 +22,32 @@ public:
         }
         return nullptr;
     }
-    inline NotifyServiceI* makeNotifyServiceI(NotifyInterfaceType s){
+    inline NotifyPersonI* makeNotifyPersonServiceI(NotifyInterfaceType s){
         switch (s) {
         case Mqtt:
-            return new NotifyByMqtt;
+            return new NotifyPersonByMqtt;
             break;
         case Kafka:
 
             break;
         case WebSocket:
-            return new NotifyByWebSocket;
+
+            break;
+        default:
+            break;
+        }
+        return nullptr;
+    }
+    inline NotifyEventI* makeNotifyEventServiceI(NotifyInterfaceType s){
+        switch (s) {
+        case Mqtt:
+
+            break;
+        case Kafka:
+
+            break;
+        case WebSocket:
+            return new NotifyEventByWebSocket;
             break;
         default:
             break;
