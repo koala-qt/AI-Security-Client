@@ -24,25 +24,24 @@ public:
     void setUserStyle(int s) override;
 
 protected:
-    void resizeEvent(QResizeEvent *event) override;
-    void paintEvent(QPaintEvent *event) override;
+    bool event(QEvent *event) override;
 
 private:
     QComboBox *eventCombox_{nullptr};
     QLabel *m_faceListL{nullptr};
-    QWidget * stayPersonBack_{nullptr};
+    QWidget *cameraGoupBackW_{nullptr},*faceCaptureBackW_{nullptr},*eventBackW_{nullptr};
     QPushButton *m_settingBtn{nullptr};
     QTreeWidget *m_treeW{nullptr};
     RealPlayManager *m_realPlayM{nullptr};
     QListWidget *m_faceList{nullptr},*eventList_{nullptr};
+    QLineEdit *posEdit_{nullptr};
+    QStringList cameraStringList_;
 
     QSize eventItemSize_;
     QString faceItemStyleSheet_;
     QSize m_faceItemSize,m_eventItemSize;
     QMenu *faceItemMenu_{nullptr},*eventItemMenu_{nullptr};
-    NotifyPersonI *notifyPersonI_{nullptr};
-    NotifyEventI *notifyEventI_{nullptr};
-    QImage backImg_;
+    NotifyServiceI *notifyServiceI_{nullptr};
     QMap<QString,QString> curCameraMap_;
 
     void updateCamera();

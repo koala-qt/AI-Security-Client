@@ -47,7 +47,10 @@ HEADERS += \
     $$PWD/eventsearch.h \
     $$PWD/reportpage.h \
     $$PWD/resourcemanagepage.h \
-    $$PWD/hompage.h
+    $$PWD/hompage.h \
+    $$PWD/videoanalysisdata.h \
+    $$PWD/selectuploadvide.h \
+    $$PWD/uploadvideoprogress.h
 
 SOURCES += \
     $$PWD/videoplayback.cpp \
@@ -95,4 +98,7 @@ SOURCES += \
     $$PWD/portraitsearch.cpp \
     $$PWD/reportpage.cpp \
     $$PWD/resourcemanagepage.cpp \
-    $$PWD/hompage.cpp
+    $$PWD/hompage.cpp \
+    $$PWD/videoanalysisdata.cpp \
+    $$PWD/selectuploadvide.cpp \
+    $$PWD/uploadvideoprogress.cpp

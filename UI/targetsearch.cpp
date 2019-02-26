@@ -19,7 +19,6 @@ TargetSearch::TargetSearch( WidgetI *parent):
     WidgetI(parent)
 {
     setObjectName(tr("Target search"));
-    backImg_.load("images/Mask.png");
     treeW_ = new QTreeWidget;
     stackedW_ = new QStackedWidget;
     semanticSearchPage_ = new SemanticSearchPage;
@@ -51,7 +50,6 @@ TargetSearch::TargetSearch( WidgetI *parent):
     facelinkPage_->installEventFilter(this);
     trackingPage_->installEventFilter(this);
     portraitSearchPage_->installEventFilter(this);
-    videoAnalysisPage_->installEventFilter(this);
     QVector<itemData> devicesVec;
     itemData items;
     items.name = tr("Capture search");
@@ -61,7 +59,8 @@ TargetSearch::TargetSearch( WidgetI *parent):
                                                                                   << itemData{combinationPage_->objectName(),2,QVector<itemData>()}
                                                                                   << itemData{multiPleSearchPage_->objectName(),3,QVector<itemData>()}
                                                                                   << itemData{facelinkPage_->objectName(),4,QVector<itemData>()}
-                                                                                  << itemData{trackingPage_->objectName(),5,QVector<itemData>()}};
+                                                                                  << itemData{trackingPage_->objectName(),5,QVector<itemData>()}
+                                                                                    };
     devicesVec << items;
     items.childrens.clear();
     items.name = portraitSearchPage_->objectName();
@@ -93,7 +92,7 @@ void TargetSearch::setUserStyle(int s)
                                "font-size: 16px;"
                                "color: #CECECE;"
                                "border-radius: 10px;"
-                               "background-color: rgba(0, 0, 0, 90);}");
+                               "background-color: rgb(46,52,65);}");
         treeW_->verticalScrollBar()->setStyleSheet(
                                                     "QScrollBar:vertical{"
                                                     "background: transparent;"
@@ -144,13 +143,6 @@ void TargetSearch::setUserStyle(int s)
                                          "background-color: transparent;"
                                          "}");
     }
-}
-
-void TargetSearch::paintEvent(QPaintEvent *event)
-{
-    Q_UNUSED(event)
-    QPainter p(this);
-    p.drawImage(rect(),backImg_);
 }
 
 void TargetSearch::createTreeItem(QTreeWidget *treeW, QTreeWidgetItem *parentItem, TargetSearch::itemData &items)

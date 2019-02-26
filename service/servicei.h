@@ -13,6 +13,7 @@ QT_FORWARD_DECLARE_CLASS(QTreeWidgetItem)
 class RestServiceI;
 class NotifyPersonI;
 class NotifyEventI;
+class NotifyServiceI;
 class ServiceFactoryI
 {
 public:
@@ -23,8 +24,10 @@ public:
     enum NotifyInterfaceType{
         Mqtt,
         Kafka,
-        WebSocket
+        WebSocket,
+        WebsocketEvent_MqttPerson
     };
+    virtual NotifyServiceI* makeNotifyServiceI(NotifyInterfaceType s = WebsocketEvent_MqttPerson) = 0;
     virtual RestServiceI* makeRestServiceI(RestInterfaceType s = HTTPREST) = 0;
     virtual NotifyPersonI* makeNotifyPersonServiceI(NotifyInterfaceType s = Mqtt) = 0;
     virtual NotifyEventI* makeNotifyEventServiceI(NotifyInterfaceType s = WebSocket) = 0;
@@ -249,7 +252,7 @@ public:
         qRegisterMetaType<RestServiceI::FaceLinkDataCollReturn>("RestServiceI::FaceLinkDataCollReturn");
         qRegisterMetaType<QVector<QPointF>>("QVector<QPointF>");
         qRegisterMetaType<QVector<QVector<double> >>("QVector<QVector<double> >");
-        qRegisterMetaType<QVector<kf::PieCharData>>("QVector<kf::PieCharData>");
+        qRegisterMetaType<QVector<QImage>>("QVector<QImage>");
     }
     virtual void getSceneInfo(const QString old) = 0;
     virtual void faceTracking(FaceTrackingArgs) = 0;
@@ -259,6 +262,7 @@ public:
     virtual void multipleSearch(MultipleSearchArgs &) = 0;
     virtual void getAlarmScenePic(const QString oid) = 0;
     virtual void getImageByUrl(QString &) = 0;
+    virtual void getImagesByUrlList(QStringList &) = 0;
     virtual void generateFaceLink(FaceLinkArgs) = 0;
     virtual void getFaceLinkPoint(QString &) = 0;
     virtual void getFaceLinkTree(QString &) = 0;
@@ -272,9 +276,9 @@ public:
     virtual void setWaringArea(const QString,const QVector<QPair<int,QPolygonF>> &) = 0;
     virtual void getWaringArea(const QString) = 0;
     virtual void searchAlarmHistory(const int page,const int pageCount, const QString &cameraId,const QString &alarmType,const QDateTime &start,const QDateTime &end) = 0;
-
     virtual void semanticSearch(SemanticSearchArgs &) = 0;
     virtual void searchByImage(SearchUseImageArgs &) = 0;
+    virtual void uploadVideo(QString videoPath) = 0;
 
 signals:
     void sigFaceLinkFinished(QString);
@@ -286,6 +290,7 @@ signals:
     void sigFaceLinkData(RestServiceI::FaceLinkPointData);
     void sigSceneInfo(RestServiceI::SceneInfo);
     void sigDownloadImage(QImage);
+    void sigDownloadImages(QVector<QImage>);
     void sigStatisInfo(QVector<StatisTask>);
     void sigFaceInfo(QStringList,QImage);
     void sigCameraGroup(QVector<RestServiceI::CameraGoup>);
@@ -301,6 +306,7 @@ signals:
     void sigCombinationSearch(CombinationSearchReturenData);
     void sigMultipleSearch(QVector<RestServiceI::MultipleSearchItem>);
     void sigFaceLinkDataColl(RestServiceI::FaceLinkDataCollReturn);
+    void sigVideoUploadProgress(double,double);
 };
 
 class NotifyPersonI : public QThread
@@ -323,6 +329,7 @@ signals:
     void sigNetWorkError(QString);
     void sigFaceSnap(NotifyPersonI::FaceSnapEventData);
     void sigFaceLinkDataFinished(QString);
+    void sigVideoFacePicture(QString,QImage);
 };
 
 class NotifyEventI : public QThread
@@ -349,15 +356,16 @@ public:
     };
     struct PersonEventData
     {
+        int personId;
         qreal faceSimilarity;
-        QPolygonF warnZone;
-        QString id;
-        QString personId;
+        qreal lat;
+        qreal lng;
         QString deviceId;
         QString personType;
         QString eventType;
         QString faceId;
         QString sceneId;
+        QString sourceId;
         QString bodyId;
         QString personTypenName;
         QDateTime timeStamp;
@@ -374,5 +382,23 @@ signals:
     void sigIntruderEvent(NotifyEventI::IntruderEventData);
     void sigABDoorEventData(NotifyEventI::ABDoorEventData);
     void sigPersonEventData(NotifyEventI::PersonEventData);
+};
+
+class NotifyServiceI : public QObject
+{
+    Q_OBJECT
+public:
+    NotifyServiceI(QObject *parent = nullptr):QObject(parent){}
+    virtual void start() = 0;
+    virtual void stop() = 0;
+
+signals:
+    void sigNetWorkError(QString);
+    void sigFaceSnap(NotifyPersonI::FaceSnapEventData);
+    void sigFaceLinkDataFinished(QString);
+    void sigIntruderEvent(NotifyEventI::IntruderEventData);
+    void sigABDoorEventData(NotifyEventI::ABDoorEventData);
+    void sigPersonEventData(NotifyEventI::PersonEventData);
+    void sigVideoFacePicture(QString,QImage);
 };
 #endif // SERVICEI_H

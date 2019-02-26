@@ -7,34 +7,40 @@ NoDataTip::NoDataTip(QWidget *parent):
     QWidget(parent)
 {
     imgLabel_ = new QLabel;
-    errorL_ = new QLabel(tr("No results found"));
-    tipsL_ = new QLabel(tr("Please adjust the conditions to re-query"));
+    errorL_ = new QLabel(tr("No results found \nPlease adjust the conditions to re-query"));
 
     QVBoxLayout *mainLay = new QVBoxLayout;
     imgLabel_->setAlignment(Qt::AlignCenter);
     mainLay->addWidget(imgLabel_);
     errorL_->setAlignment(Qt::AlignCenter);
     mainLay->addWidget(errorL_);
-    tipsL_->setAlignment(Qt::AlignCenter);
-    mainLay->addWidget(tipsL_);
     setLayout(mainLay);
 
-    imgLabel_->setPixmap(QPixmap("images/no-data.png"));
     if(parentWidget()){
         parentWidget()->installEventFilter(this);
     }
+    setTipIcon(QPixmap("images/no-data.png"));
+    setTipText(tr("<div>"
+                  "<span style='color:white'>No results found</span>"
+                  "<br/>"
+                  "<span style='color:rgba(255,255,255,100)'>Please adjust the conditions to re-query</span>"
+                  "</div>"));
 }
 
 void NoDataTip::setUserStyle(int styleIndex)
 {
     if(styleIndex == 0){
-        errorL_->setStyleSheet("QLabel{"
-                               "color: white;"
-                               "}");
-        tipsL_->setStyleSheet("QLabel{"
-                               "color: rgba(255,255,255,100);"
-                               "}");
     }
+}
+
+void NoDataTip::setTipIcon(QPixmap pix)
+{
+    imgLabel_->setPixmap(pix);
+}
+
+void NoDataTip::setTipText(QString s)
+{
+    errorL_->setText(s);
 }
 
 bool NoDataTip::event(QEvent *event)

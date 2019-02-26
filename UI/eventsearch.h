@@ -21,8 +21,8 @@ public:
     void setUserStyle(int s) override;
 
 protected:
+    bool eventFilter(QObject *watched, QEvent *event)override;
     bool event(QEvent *event) override;
-    void paintEvent(QPaintEvent *event) override;
 
 private:
     QLabel *m_startTimeL{nullptr},*m_endTimeL{nullptr},*m_positionL{nullptr},*m_waringTyleL{nullptr};
@@ -31,12 +31,13 @@ private:
     QPushButton *m_searchBtn{nullptr};
     PageIndicator *m_pageindicator{nullptr};
     QComboBox *m_positionCombox{nullptr},*m_waringTyleCombox{nullptr};
+    QWidget *centerBack_{nullptr};
+
     QString curCameraid_,curWaringType_;
     QDateTime curStartDateTime_,curEndDateTime_;
     QMenu *menu_{nullptr};
     bool needUpdatePageInfo_ = true;
     QMap<QString,QString> waryingTypeMap_;
-    QImage backImg_;
     NoDataTip *noDataTipW_{nullptr};
 
     void getCameraInfo();

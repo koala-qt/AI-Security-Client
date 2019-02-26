@@ -20,12 +20,16 @@ public:
     QString getPersonDetailes(QString &objId,QImage *face,QImage *body,QStringList *attrsface,QStringList *attrsbody);
     QString getSceneInfo(QString &scenId,RestServiceI::SceneInfo *sceneInfo);
     QString getImageByUrl(QString &url,QImage *image);
+    QImage getImageByUrl(QString url);
     QString captureSearch(RestServiceI::CaptureSearchArgs&, RestServiceI::CaptureSearchReturnData *resDatas);
     QString semanticSearch(RestServiceI::SemanticSearchArgs &,RestServiceI::SemanticReturnData *resDatas);
     QString searchByImage(RestServiceI::SearchUseImageArgs &, QVector<RestServiceI::DataRectureItem> *resVec);
     QString combinationSearch(RestServiceI::CombinationSearchArgs &, RestServiceI::CombinationSearchReturenData *resData);
     QString multipleSearch(RestServiceI::MultipleSearchArgs &,QVector<RestServiceI::MultipleSearchItem> *);
     QString getFaceLinkDataColl(RestServiceI::FaceLinkDataCollArgs &args, RestServiceI::FaceLinkDataCollReturn *resDatas);
+
+protected:
+    int progress(double totalDownLoad,double downloaded,double totalUpload, double uploaded) override;
 
 private:
     QString host_;

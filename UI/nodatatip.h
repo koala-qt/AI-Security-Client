@@ -9,6 +9,8 @@ class NoDataTip : public QWidget
 public:
     NoDataTip(QWidget *parent = nullptr);
     void setUserStyle(int);
+    void setTipIcon(QPixmap);
+    void setTipText(QString);
 
 protected:
     bool event(QEvent *event) override;

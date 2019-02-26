@@ -4,12 +4,12 @@
 #include <QtConcurrent>
 #include <QDebug>
 #include "restserviceconcureent.h"
+#include "dao/cpphttpdao.h"
 
 using namespace std;
 using namespace apache::thrift;
 using namespace apache::thrift::protocol;
 using namespace apache::thrift::transport;
-
 RestConcurrent::RestConcurrent(QObject *parent):
     RestServiceI(parent)
 {
@@ -152,6 +152,18 @@ void RestConcurrent::getImageByUrl(QString &url){
     });
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
     fwatcher->setFuture(QtConcurrent::run(&curlRest_,&DLL::CloudHttpDao::getImageByUrl,url,img));
+}
+
+void RestConcurrent::getImagesByUrlList(QStringList &urlList)
+{
+    QFutureWatcher<QImage> *fwatcher = new QFutureWatcher<QImage>(this);
+    connect(fwatcher,&QFutureWatcher<QImage>::finished,this,[this,fwatcher]{
+        qDebug() << fwatcher->future().results() << "-3333333333333333";
+        emit sigDownloadImages(QVector<QImage>::fromList(fwatcher->future().results()));
+    });
+    connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
+    std::function<QImage(QString)> f = [this](QString url)->QImage{return curlRest_.getImageByUrl(url);};
+    fwatcher->setFuture(QtConcurrent::mapped(urlList,f));
 }
 
 void RestConcurrent::getFaceLinkTree(QString &objectID)
@@ -381,6 +393,25 @@ void RestConcurrent::searchByImage(SearchUseImageArgs &args)
     });
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
     fwatcher->setFuture(QtConcurrent::run(&curlRest_,&DLL::CloudHttpDao::searchByImage,args,resVec));
+}
+
+void RestConcurrent::uploadVideo(QString videoPath)
+{
+    DLL::CppHttpDao *cppDao = new DLL::CppHttpDao;
+    cppDao->setUploadProgressCallBack([this](double total,double uploaded)->void{
+        QMetaObject::invokeMethod(this,"sigVideoUploadProgress",Qt::QueuedConnection,Q_ARG(double,total),Q_ARG(double,uploaded));
+    });
+    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>(this);
+    connect(fwatcher,&QFutureWatcher<QString>::finished,this,[this,fwatcher,cppDao]{
+        if(fwatcher->result().isEmpty()){
+            emit sigResultState(true);
+        }else{
+            emit sigError(fwatcher->result());
+        }
+        delete cppDao;
+    });
+    connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
+    fwatcher->setFuture(QtConcurrent::run(cppDao,&DLL::CppHttpDao::uploadVideo,videoPath));
 }
 
 void RestConcurrent::setWaringArea(const QString cameraId, const QVector<QPair<int, QPolygonF> > &polygonsa)

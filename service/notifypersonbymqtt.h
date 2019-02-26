@@ -9,6 +9,7 @@ class NotifyPersonByMqtt : public NotifyPersonI,public mosqpp::mosquittopp
     Q_OBJECT
 public:
     NotifyPersonByMqtt(QObject *parent = nullptr);
+    ~NotifyPersonByMqtt();
 
 protected:
     void run() override;

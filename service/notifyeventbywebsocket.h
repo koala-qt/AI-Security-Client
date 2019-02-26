@@ -1,5 +1,5 @@
-#ifndef NOTIFYBYWEBSOCKET_H
-#define NOTIFYBYWEBSOCKET_H
+#ifndef NOTIFYEVENTBYWEBSOCKET_H
+#define NOTIFYEVENTBYWEBSOCKET_H
 
 #include <QUrl>
 #include <QSslError>
@@ -29,4 +29,4 @@ private slots:
     void slotSocketError(QAbstractSocket::SocketError);
 };
 
-#endif // NOTIFYBYWEBSOCKET_H
+#endif // NOTIFYEVENTBYWEBSOCKET_H

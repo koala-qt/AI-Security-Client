@@ -22,7 +22,6 @@ public:
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
-    void paintEvent(QPaintEvent *event) override;
 
 private:
     typedef struct item_
@@ -43,7 +42,6 @@ private:
     PortraitSearch *portraitSearchPage_{nullptr};
     VideoAnalysis *videoAnalysisPage_{nullptr};
 
-    QImage backImg_;
     void createTreeItem(QTreeWidget *treeW,QTreeWidgetItem *parentItem,itemData &items);
 
 private slots:

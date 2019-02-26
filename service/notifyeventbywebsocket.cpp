@@ -7,7 +7,7 @@
 #include <QJsonObject>
 #include <QApplication>
 #include <QJsonArray>
-#include "notifybywebsocket.h"
+#include "notifyeventbywebsocket.h"
 
 NotifyEventByWebSocket::NotifyEventByWebSocket(QObject *parent):
     NotifyEventI(parent)
@@ -32,6 +32,8 @@ NotifyEventByWebSocket::~NotifyEventByWebSocket()
 {
     websocket_->close();
     websocket_->deleteLater();
+    quit();
+    wait();
 }
 
 void NotifyEventByWebSocket::slotTimeout()
@@ -99,7 +101,37 @@ void NotifyEventByWebSocket::onTextMessageReceived(QString message)
         evData.sceneId = jsObj.value("sceneId").toString();
         evData.timeStamp = QDateTime::fromMSecsSinceEpoch(jsObj.value("timeStamp").toVariant().toULongLong());
     }else if(eventType == "smsr_alarm_face"){
-
+        PersonEventData evData;
+        evData.faceId = jsObj.value("faceId").toString();
+        evData.faceSimilarity = jsObj.value("faceSimilarity").toDouble();
+        evData.lat = jsObj.value("lat").toDouble();
+        evData.lng = jsObj.value("lng").toDouble();
+        evData.personId = jsObj.value("personId").toInt();
+        evData.personType = jsObj.value("personType").toString();
+        evData.personTypenName = jsObj.value("personTypeName").toString();
+        evData.sceneId = jsObj.value("sceneId").toString();
+        evData.sourceId = jsObj.value("sourceId").toString();
+        evData.timeStamp = QDateTime::fromMSecsSinceEpoch(jsObj.value("timeStamp").toVariant().toULongLong());
+        QString faceUrl = jsObj.value("url").toString();
+        QJsonArray jsArray = jsObj.value("pictures").toArray();
+        QStringList faceUrlList;
+        std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(faceUrlList),[](QJsonValue jsVal){
+            return jsVal.toString();
+        });
+        RestServiceI *serviceI = serFactory_->makeRestServiceI();
+        connect(serviceI,&RestServiceI::sigDownloadImages,this,[this,evData,faceUrl](QVector<QImage> imgs){
+            PersonEventData newData = evData;
+            newData.faceImages = imgs;
+            RestServiceI *serI = serFactory_->makeRestServiceI();
+            connect(serI,&RestServiceI::sigDownloadImage,this,[this,newData](QImage img){
+                PersonEventData fdata = newData;
+                fdata.image = img;
+                emit sigPersonEventData(fdata);
+            });
+            connect(serI,&RestServiceI::sigError,this,[this](QString str){
+                qDebug() << str;
+            });
+        });
     }
 }
 

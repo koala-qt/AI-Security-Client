@@ -17,6 +17,7 @@ public:
     void getPersonDetails(QString &) override;
     void getAlarmScenePic(const QString oid) override;
     void getImageByUrl(QString &) override;
+    void getImagesByUrlList(QStringList &);
     void getFaceLinkTree(QString &) override;
     void getCameraInfo() override;
     void generateFaceLink(FaceLinkArgs) override;
@@ -30,9 +31,9 @@ public:
     void setWaringArea(const QString cameraId, const QVector<QPair<int,QPolygonF>> &arguments) override;
     void getWaringArea(const QString) override;
     void searchAlarmHistory(const int page,const int pageCount, const QString &cameraId,const QString &alarmType,const QDateTime &start,const QDateTime &end) override;
-
-    void semanticSearch(SemanticSearchArgs &);
-    void searchByImage(SearchUseImageArgs &);
+    void semanticSearch(SemanticSearchArgs &) override;
+    void searchByImage(SearchUseImageArgs &) override;
+    void uploadVideo(QString videoPath) override;
 
 private:
     ThriftDao thriftDao_;

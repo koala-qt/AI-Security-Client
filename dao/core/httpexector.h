@@ -3,7 +3,6 @@
 
 #include "basenetexector.h"
 #include <vector>
-#include "curl.h"
 namespace DLL {
 class HttpExector : public BaseHttpExector
 {
@@ -11,6 +10,8 @@ public:
     HttpExector();
     ~HttpExector();
     virtual void setheader(std::vector<std::string> &headers);
+    int postFile(std::string &uri, void *formpost);
+    virtual int progress(double totalDownLoad,double downloaded,double totalUpload, double uploaded) = 0;
 
 protected:
     int send(HTTP_METHORD methord, std::string &url, std::string &data, unsigned long timeout = 1) override;

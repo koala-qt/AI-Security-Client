@@ -2,10 +2,12 @@ HEADERS += \
     $$PWD/servicei.h \
     $$PWD/restserviceconcureent.h \
     $$PWD/servicefacetory.h \
-    $$PWD/notifybywebsocket.h \
-    $$PWD/notifypersonbymqtt.h
+    $$PWD/notifypersonbymqtt.h \
+    $$PWD/notifyeventbywebsocket.h \
+    $$PWD/notifybyeventperson.h
 
 SOURCES += \
     $$PWD/restserviceconcureent.cpp \
-    $$PWD/notifybywebsocket.cpp \
-    $$PWD/notifypersonbymqtt.cpp
+    $$PWD/notifypersonbymqtt.cpp \
+    $$PWD/notifyeventbywebsocket.cpp \
+    $$PWD/notifybyeventperson.cpp

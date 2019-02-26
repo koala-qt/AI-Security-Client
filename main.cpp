@@ -29,8 +29,8 @@ void installTranslators()
 int main(int argc, char *argv[])
 {
 #if (QT_VERSION >= QT_VERSION_CHECK(5,9,0))
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+//    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+//    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 //    qputenv("QT_AUTO_SCREEN_SCALE_FACTOR","1");
 #endif
     QApplication a(argc, argv);
@@ -41,10 +41,8 @@ int main(int argc, char *argv[])
 
     ServiceFactoryI *facetory = new ServiceFactory;
     a.setProperty("ServiceFactoryI",reinterpret_cast<unsigned long long>(facetory));
-    NotifyPersonI *notifyPersonSerI = facetory->makeNotifyPersonServiceI();
-    NotifyEventI *notifyEventI = facetory->makeNotifyEventServiceI();
-    a.setProperty("NotifyPersonI",reinterpret_cast<unsigned long long>(notifyPersonSerI));
-    a.setProperty("NotifyEventI",reinterpret_cast<unsigned long long>(notifyEventI));
+    NotifyServiceI *serviceI = facetory->makeNotifyServiceI();
+    a.setProperty("NotifyServiceI",reinterpret_cast<unsigned long long>(serviceI));
 
 //    LoginDialog loginD;
 //    loginD.setUserStyle(WidgetManagerI::Danyahei);
@@ -69,18 +67,10 @@ int main(int argc, char *argv[])
         }
     }
 
-    QObject::connect(&a,&QApplication::aboutToQuit,&a,[notifyPersonSerI,notifyEventI]{
-        notifyPersonSerI->requestInterruption();
-        notifyPersonSerI->quit();
-        notifyPersonSerI->wait();
-        delete notifyPersonSerI;
-
-        notifyEventI->quit();
-        notifyEventI->wait();
-        delete notifyEventI;
+    QObject::connect(&a,&QApplication::aboutToQuit,&a,[serviceI]{
+        delete serviceI;
     });
-    notifyPersonSerI->start();
-    notifyEventI->start();
+    serviceI->start();
 
     return a.exec();
 }

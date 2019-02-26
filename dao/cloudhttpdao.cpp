@@ -19,7 +19,7 @@ DLL::CloudHttpDao::CloudHttpDao()
     setheader(headers);
 
     QSettings configSetting("config.ini",QSettings::IniFormat);
-    host_ = configSetting.value("CloudHost/host").toString();
+    host_ = configSetting.value("Http/Javahost").toString();
     attributeThresold_ = configSetting.value("CloudHost/attributeThreshold").toFloat();
 
 }
@@ -502,6 +502,21 @@ QString DLL::CloudHttpDao::getImageByUrl(QString &url, QImage *image)
     return QString();
 }
 
+QImage DLL::CloudHttpDao::getImageByUrl(QString url)
+{
+    std::vector<std::string> headers;
+    headers.emplace_back("Content-Type:application/json;charset=UTF-8");
+    headers.emplace_back("User-Agent:Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36");
+    headers.emplace_back("token:7d1e52d3cf0142e19b5901eb1ef91372");
+    headers.emplace_back("Expect:");
+    setheader(headers);
+
+    QImage image;
+    send(DLL::GET,url.toStdString(),std::string(),2);
+    image.loadFromData(QByteArray::fromStdString(responseData()));
+    return image;
+}
+
 QString DLL::CloudHttpDao::captureSearch(RestServiceI::CaptureSearchArgs &args, RestServiceI::CaptureSearchReturnData *resDatas)
 {
     QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-history");
@@ -808,4 +823,9 @@ QString DLL::CloudHttpDao::getFaceLinkDataColl(RestServiceI::FaceLinkDataCollArg
         return item;
     });
     return QString();
+}
+
+int DLL::CloudHttpDao::progress(double totalDownLoad, double downloaded, double totalUpload, double uploaded)
+{
+    return 0;
 }

@@ -3,6 +3,7 @@
 #include <QComboBox>
 #include <QListWidget>
 #include <QWebEngineView>
+#include <QPainter>
 #include <QApplication>
 #include <QPainter>
 #include "hompage.h"
@@ -11,48 +12,61 @@ HomPage::HomPage(WidgetI *parent):
     WidgetI(parent)
 {
     setObjectName(tr("Home"));
-    backImg_.load("images/Mask.png");
     eventCombox_ = new QComboBox;
     eventListW_ = new QListWidget;
+    eventBackW_ = new QWidget;
     webView_ = new QWebEngineView;
     QHBoxLayout *mainLay = new QHBoxLayout;
     QVBoxLayout *vlay = new QVBoxLayout;
     vlay->addWidget(eventCombox_);
     vlay->addWidget(eventListW_);
+    eventBackW_->setLayout(vlay);
     mainLay->addWidget(webView_,13);
-    mainLay->addLayout(vlay,3);
+    mainLay->addWidget(eventBackW_,3);
     setLayout(mainLay);
 
+    eventCombox_->addItem(tr("All events"));
+    eventCombox_->addItem(tr("Blacklist events"));
+    eventCombox_->addItem(tr("Intruder events"));
+    eventCombox_->addItem(tr("AB-Door evetns"));
     eventListW_->setViewMode(QListWidget::IconMode);
     eventListW_->setSpacing(10);
     eventListW_->setMovement(QListView::Static);
-    webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/map.html"));
+    webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/index.html"));
     webView_->page()->setBackgroundColor(Qt::transparent);
 
+    connect(eventCombox_,SIGNAL(currentIndexChanged(int)),this,SLOT(slotEventComboxIndexChanged(int)));
+    notifyServiceI_ = reinterpret_cast<NotifyServiceI*>(qApp->property("NotifyServiceI").toULongLong());
     setUserStyle(userStyle());
+
+    slotEventComboxIndexChanged(0);
 }
 
 void HomPage::setUserStyle(int s)
 {
     if(s == 0){
+        eventBackW_->setStyleSheet("QWidget{"
+                                   "background-color: rgb(48,54,68);"
+                                   "border-radius: 4px;"
+                                   "}");
         eventListW_->setStyleSheet("QListWidget{"
-                                   "background-color:rgba(0,0,0,30);"
-                                   "border-radius:6px;"
+                                   "background-color:transparent;"
+                                   "border-radius:0px;"
                                    "border:none;"
                                    "}");
-
         eventCombox_->setStyleSheet(
                     "QComboBoxListView{"
                     "color: #CECECE;"
                     "background-color: transparent;"
-                    "border-radius: 6px;"
+                    "border-radius: 0px;"
+                    "border: none;"
                     "}"
                     "QComboBox{"
                     "color: white;"
                     "font-size: 18px;"
-                    "background-color: #525964;"
-                    "border: 1px solid #CECECE;"
-                    "border-radius: 6px;"
+                    "background-color: transparent;"
+                    "border: none;"
+                    "border-radius: 0px;"
                     "}"
                     "QComboBox QAbstractItemView{"
                     "background-color: #525964;"
@@ -105,8 +119,82 @@ void HomPage::setUserStyle(int s)
     }
 }
 
-void HomPage::paintEvent(QPaintEvent *event)
+bool HomPage::event(QEvent *event)
 {
-    QPainter p(this);
-    p.drawImage(rect(),backImg_);
+    if(event->type() == QEvent::Show){
+        int imgItemH = (eventListW_->height() - (eventItemCount + 1) * eventListW_->spacing() - eventListW_->frameWidth() * 2) / eventItemCount;
+        int imgItemW = eventListW_->width() - 2 * eventListW_->spacing() - 2 * eventListW_->frameWidth();
+        eventItemSize_.setHeight(imgItemH);
+        eventItemSize_.setWidth(imgItemW);
+        eventListW_->setIconSize(eventItemSize_);
+        for(int i = 0; i < eventListW_->count(); i++){
+            QListWidgetItem *item = eventListW_->item(i);
+            item->setSizeHint(eventItemSize_);
+            item->setIcon(QPixmap::fromImage(item->data(Qt::UserRole + 2).value<QImage>().scaled(eventItemSize_)));
+        }
+    }
+
+    return QWidget::event(event);
+}
+
+void HomPage::slotEventComboxIndexChanged(int index)
+{
+    disconnect(notifyServiceI_,SIGNAL(sigABDoorEventData(NotifyEventI::ABDoorEventData)),this,SLOT(slotOnAbDoorEvent(NotifyEventI::ABDoorEventData)));
+    disconnect(notifyServiceI_,SIGNAL(sigIntruderEvent(NotifyEventI::IntruderEventData)),this,SLOT(slotOnIntruderEvent(NotifyEventI::IntruderEventData)));
+    disconnect(notifyServiceI_,SIGNAL(sigPersonEventData(NotifyEventI::PersonEventData)),this,SLOT(slotOnPersonEvent(NotifyEventI::PersonEventData)));
+    if(index == 0){
+        connect(notifyServiceI_,SIGNAL(sigABDoorEventData(NotifyEventI::ABDoorEventData)),this,SLOT(slotOnAbDoorEvent(NotifyEventI::ABDoorEventData)),Qt::UniqueConnection);
+        connect(notifyServiceI_,SIGNAL(sigIntruderEvent(NotifyEventI::IntruderEventData)),this,SLOT(slotOnIntruderEvent(NotifyEventI::IntruderEventData)),Qt::UniqueConnection);
+        connect(notifyServiceI_,SIGNAL(sigPersonEventData(NotifyEventI::PersonEventData)),this,SLOT(slotOnPersonEvent(NotifyEventI::PersonEventData)),Qt::UniqueConnection);
+    }else if(index == 1){
+        connect(notifyServiceI_,SIGNAL(sigIntruderEvent(NotifyEventI::IntruderEventData)),this,SLOT(slotOnIntruderEvent(NotifyEventI::IntruderEventData)),Qt::UniqueConnection);
+    }else if(index == 2){
+        connect(notifyServiceI_,SIGNAL(sigABDoorEventData(NotifyEventI::ABDoorEventData)),this,SLOT(slotOnAbDoorEvent(NotifyEventI::ABDoorEventData)),Qt::UniqueConnection);
+    }else if(index == 3){
+        connect(notifyServiceI_,SIGNAL(sigPersonEventData(NotifyEventI::PersonEventData)),this,SLOT(slotOnPersonEvent(NotifyEventI::PersonEventData)),Qt::UniqueConnection);
+    }
+}
+
+void HomPage::slotOnIntruderEvent(NotifyEventI::IntruderEventData evData)
+{
+    if(eventListW_->count() >= eventItemCount){
+        delete eventListW_->takeItem(eventItemCount - 1);
+    }
+    QListWidgetItem *item = new QListWidgetItem;
+    QPainter p(&evData.sceneImg);
+    p.setBrush(QColor(200,0,0,100));
+    p.drawPolygon(evData.warnZone);
+    item->setIcon(QPixmap::fromImage(evData.sceneImg).scaled(eventItemSize_));
+    item->setData(Qt::UserRole + 1,evData.sceneId);
+    item->setData(Qt::UserRole + 2,evData.sceneImg);
+    item->setSizeHint(eventItemSize_);
+    eventListW_->insertItem(0,item);
+}
+
+void HomPage::slotOnPersonEvent(NotifyEventI::PersonEventData evData)
+{
+    if(eventListW_->count() >= eventItemCount){
+        delete eventListW_->takeItem(eventItemCount - 1);
+    }
+    QListWidgetItem *item = new QListWidgetItem;
+    item->setIcon(QPixmap::fromImage(evData.image).scaled(eventItemSize_));
+    item->setData(Qt::UserRole + 1,evData.sceneId);
+    item->setSizeHint(eventItemSize_);
+    eventListW_->insertItem(0,item);
+}
+
+void HomPage::slotOnAbDoorEvent(NotifyEventI::ABDoorEventData evData)
+{
+    if(eventListW_->count() >= eventItemCount){
+        delete eventListW_->takeItem(eventItemCount - 1);
+    }
+    QListWidgetItem *item = new QListWidgetItem;
+    QPainter p(&evData.sceneImg);
+    p.setBrush(QColor(100,0,100,100));
+    p.drawPolygon(evData.warnZone);
+    item->setIcon(QPixmap::fromImage(evData.sceneImg).scaled(eventItemSize_));
+    item->setData(Qt::UserRole + 1,evData.sceneId);
+    item->setData(Qt::UserRole + 2,evData.sceneImg);
+    item->setSizeHint(eventItemSize_);
+    eventListW_->insertItem(0,item);
 }

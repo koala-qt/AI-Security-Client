@@ -67,7 +67,7 @@ MainWindow::MainWindow(WidgetI *parent)
     mainLay->setSpacing(0);
     setLayout(mainLay);
     connect(m_topList,SIGNAL(currentRowChanged(int)),m_centerW,SLOT(setCurrentIndex(int)));
-    m_topList->setCurrentRow(m_topList->count() - 2);
+    m_topList->setCurrentRow(m_topList->count() - 1);
 
 
     QFont f = font();
@@ -81,7 +81,7 @@ MainWindow::MainWindow(WidgetI *parent)
 
     f = appNameL_->font();
     f.setBold(true);
-    f.setPixelSize(28);
+    f.setPixelSize(14);
     appNameL_->setFont(f);
 
     setUserStyle(userStyle());
@@ -96,8 +96,18 @@ void MainWindow::setUserStyle(int s)
 {
     QPalette pal;
     if(s == 0){
+        pal = palette();
+        pal.setColor(QPalette::Background,QColor(37,41,52));
+        setPalette(pal);
+        setAutoFillBackground(true);
+
+        pal = m_centerW->palette();
+        pal.setColor(QPalette::Background,QColor(37,41,52));
+        m_centerW->setPalette(pal);
+        m_centerW->setAutoFillBackground(true);
+
         pal = topWgt_->palette();
-        pal.setColor(QPalette::Background,QColor(59,71,79));
+        pal.setColor(QPalette::Background,QColor(48,54,68));
         topWgt_->setPalette(pal);
         topWgt_->setAutoFillBackground(true);
 
@@ -108,7 +118,7 @@ void MainWindow::setUserStyle(int s)
         topBorderLine_->setPalette(pal);
 
         pal = appNameL_->palette();
-        pal.setColor(QPalette::Foreground,QColor(255,255,255,150));
+        pal.setColor(QPalette::Foreground,QColor(255,255,255));
         setPalette(pal);
 
         m_topList->setFrameStyle(QFrame::NoFrame);
@@ -116,11 +126,11 @@ void MainWindow::setUserStyle(int s)
                                  "background-color: transparent;"
                                  "}"
                                  "QListWidget::item{"
-                                 "color: rgba(206,206,206,0.8);"
+                                 "color: rgb(126,140,177);"
                                  "}"
                                  "QListWidget::item:selected{"
-                                 "color:rgba(255,255,255,0.8);"
-                                 "border-image: url(images/item_selected.png);;"
+                                 "color: white;"
+                                 "background-color: rgb(71,65,242);"
                                  "}");
     }
 }

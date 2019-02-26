@@ -3,7 +3,7 @@
 #include <QUuid>
 #include <QDebug>
 #include "notifypersonbymqtt.h"
-#include "dao/face.pb.h"
+#include "dao/Videoface.pb.h"
 
 #pragma execution_character_set("utf-8")
 NotifyPersonByMqtt::NotifyPersonByMqtt(QObject *parent):
@@ -11,6 +11,13 @@ NotifyPersonByMqtt::NotifyPersonByMqtt(QObject *parent):
 {
     timer_ = new QTimer(this);
     QThread::connect(timer_,SIGNAL(timeout()),this,SLOT(slotTimeout()));
+}
+
+NotifyPersonByMqtt::~NotifyPersonByMqtt()
+{
+    requestInterruption();
+    quit();
+    wait();
 }
 
 void NotifyPersonByMqtt::run()
@@ -93,6 +100,13 @@ void NotifyPersonByMqtt::on_message(const mosquitto_message *message)
         QString oid = QString::fromStdString(faceLinkPoint.oid());
         QString msg = QString::fromStdString(faceLinkPoint.msg());
         emit sigFaceLinkDataFinished(oid);
+    }else if(!::strcmp(message->topic,"/video/facepicture")){
+        VideoFacePicture videoPic;
+        videoPic.ParseFromString(std::string(reinterpret_cast<char*>(message->payload),message->payloadlen));
+
+        QImage image;
+        image.loadFromData(QByteArray::fromStdString(videoPic.face_img()));
+        emit sigVideoFacePicture(QString::fromStdString(videoPic.face_id()),image);
     }
 }
 

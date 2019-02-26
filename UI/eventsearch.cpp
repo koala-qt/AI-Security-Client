@@ -26,7 +26,6 @@ EventSearch::EventSearch( WidgetI *parent):
     WidgetI(parent)
 {
     setObjectName(tr("事件检索"));
-    backImg_.load("images/Mask.png");
     QVBoxLayout *mainLay = new QVBoxLayout;
     QHBoxLayout *hlay = new QHBoxLayout;
     hlay->setSpacing(15);
@@ -75,8 +74,13 @@ EventSearch::EventSearch( WidgetI *parent):
     hlay->addStretch();
     mainLay->addLayout(hlay);
 
-    mainLay->setContentsMargins(30,30,30,0);
-    setLayout(mainLay);
+    centerBack_ = new QWidget;
+    mainLay->setContentsMargins(40,40,40,40);
+    centerBack_->setLayout(mainLay);
+    hlay = new QHBoxLayout;
+    hlay->addWidget(centerBack_);
+    hlay->setContentsMargins(40,40,40,40);
+    setLayout(hlay);
 
     menu_ = new QMenu(this);
     menu_->addAction(tr("查看场景图"),[&]{
@@ -114,9 +118,12 @@ EventSearch::EventSearch( WidgetI *parent):
 
     connect(m_searchBtn,SIGNAL(clicked(bool)),this,SLOT(slotSearchBtnClicked()));
     connect(m_pageindicator,SIGNAL(sigPageClicked(int)),this,SLOT(slotSearchPageAlarmHistory(int)));
+    centerBack_->installEventFilter(this);
     m_tableW->setColumnCount(5);
+    m_tableW->setFrameStyle(QFrame::NoFrame);
     m_tableW->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     m_tableW->setHorizontalHeaderLabels(QStringList() << tr("抓拍图片") << tr("抓拍ID") << tr("位置") << tr("报警类型") << tr("时间"));
+    m_tableW->horizontalHeader()->setMinimumHeight(60);
     m_tableW->horizontalHeader()->setSectionResizeMode(0,QHeaderView::Fixed);
     m_tableW->horizontalHeader()->setHighlightSections(false);
     m_tableW->horizontalHeader()->setDefaultSectionSize(112);
@@ -155,7 +162,7 @@ void EventSearch::setUserStyle(int s)
         m_endTimeL->setFont(f);
 
         pal = m_positionL->palette();
-        pal.setColor(QPalette::Foreground,Qt::white);
+        pal.setColor(QPalette::Foreground,QColor(126,140,177));
         m_positionL->setPalette(pal);
         m_waringTyleL->setPalette(pal);
         m_startTimeL->setPalette(pal);
@@ -183,11 +190,13 @@ void EventSearch::setUserStyle(int s)
                     "background: rgba(206,206,206,40);"
                     "}"
                     "QHeaderView{"
-                    "background-color: rgba(206,206,206,20);"
+                    "background-color: rgb(65,73,92);"
                     "}"
                     "QHeaderView::section{"
-                    "color: white;"
-                    "background-color: rgba(206,206,206,40);"
+                    "color: rgb(126,140,177);"
+                    "background-color: transparent;"
+                    "border: none;"
+                    "border-radius: 0px;"
                     "}"
                     "QScrollBar:vertical{"
                     "background: transparent;"
@@ -229,71 +238,18 @@ void EventSearch::setUserStyle(int s)
                     "}");
 
         m_startTimeEdit->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
-            "color:#CECECE;"
+            "color: rgb(126,140,177);"
             "border:1px solid #CECECE;"
             "border-radius:6px;"
             "background-color: transparent;"
                                        "}");
 
         m_endTimeEdit->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
-            "color:#CECECE;"
+            "color: rgb(126,140,177);"
             "border:1px solid #CECECE;"
             "border-radius:6px;"
             "background-color: transparent;"
                                        "}");
-
-//        m_positionCombox->setStyleSheet(
-//                    "QComboBoxListView{"
-//                    "color: white;"
-//                    "background-color: rgb(59,69,78);"
-//                    "}"
-//                    "QComboBox{"
-//                    "color: white;"
-//                    "background-color: rgb(59,69,78);"
-//                    "}"
-//                    "QComboBox QAbstractItemView{"
-//                    "selection-color: white;"
-//                    "outline: 0px;"
-//                    "selection-background-color: rgb(49,54,57);"
-//                    "}"
-//                    "QScrollBar:vertical{"
-//                    "background: rgb(59,69,78);"
-//                    "border: 0px solid gray;"
-//                    "width: 13px;"
-//                    "}"
-//                    "QScrollBar::handle:vertical{"
-//                    "background: rgb(29,35,39);"
-//                    "border-radius: 5px;"
-//                    "}"
-//                    "QScrollBar::add-line:vertical{"
-//                    "background: transparent;"
-//                    "border:0px solid #274168;"
-//                    "border-radius: 5px;"
-//                    "min-height: 10px;"
-//                    "width: 13px;"
-//                    "}"
-//                    "QScrollBar::sub-line:vertical{"
-//                    "background: transparent;"
-//                    "border:0px solid #274168;"
-//                    "border-radius: 5px;"
-//                    "min-height: 10px;"
-//                    "width: 13px;"
-//                    "}"
-//                    "QScrollBar::up-arrow:vertical{"
-//                    "subcontrol-origin: margin;"
-//                    "height: 0px;"
-//                    "border:0 0 0 0;"
-//                    "visible:false;"
-//                    "}"
-//                   "QScrollBar::down-arrow:vertical{"
-//                   "subcontrol-origin: margin;"
-//                   "height: 0px;"
-//                   "visible:false;"
-//                   "}"
-//                   "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
-//                   "background: rgb(46,53,54);"
-//                   "border: 0px solid gray;"
-//                   "}");
 
         m_positionCombox->setStyleSheet(
                     "QComboBoxListView{"
@@ -301,7 +257,7 @@ void EventSearch::setUserStyle(int s)
                     "background-color: #525964;"
                     "}"
                     "QComboBox{"
-                    "color: white;"
+                    "color: rgb(126,140,177);"
                     "font-size: 18px;"
                     "background-color: transparent;"
                     "border: 1px solid #CECECE;"
@@ -359,7 +315,7 @@ void EventSearch::setUserStyle(int s)
                     "background-color: #525964;"
                     "}"
                     "QComboBox{"
-                    "color: white;"
+                    "color: rgb(126,140,177);"
                     "font-size: 18px;"
                     "background-color: transparent;"
                     "border: 1px solid #CECECE;"
@@ -384,6 +340,20 @@ void EventSearch::setUserStyle(int s)
     }
 }
 
+bool EventSearch::eventFilter(QObject *watched, QEvent *event)
+{
+    QWidget *watchWid = qobject_cast<QWidget*>(watched);
+    if(watchWid == centerBack_ && event->type() == QEvent::Paint){
+        QPainter p(watchWid);
+        if(userStyle() == 0){
+            p.setPen(Qt::NoPen);
+            p.setBrush(QColor(48,54,68));
+            p.drawRoundedRect(rect().adjusted(0,0,-p.pen().width(),-p.pen().width()),4,4);
+        }
+    }
+    return WidgetI::eventFilter(watched,event);
+}
+
 bool EventSearch::event(QEvent *event)
 {
     if(event->type() == QEvent::Show && m_searchBtn->isEnabled()){
@@ -392,13 +362,6 @@ bool EventSearch::event(QEvent *event)
         return true;
     }
     return WidgetI::event(event);
-}
-
-void EventSearch::paintEvent(QPaintEvent *event)
-{
-    Q_UNUSED(event)
-    QPainter p(this);
-    p.drawImage(rect(),backImg_);
 }
 
 void EventSearch::getCameraInfo()
