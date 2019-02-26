@@ -12,6 +12,7 @@ public:
 
 private:
     QWebEngineView *webView_{nullptr};
+    QString webHost_;
 };
 
 #endif // REPORTPAGE_H

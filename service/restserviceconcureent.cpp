@@ -158,7 +158,6 @@ void RestConcurrent::getImagesByUrlList(QStringList &urlList)
 {
     QFutureWatcher<QImage> *fwatcher = new QFutureWatcher<QImage>(this);
     connect(fwatcher,&QFutureWatcher<QImage>::finished,this,[this,fwatcher]{
-        qDebug() << fwatcher->future().results() << "-3333333333333333";
         emit sigDownloadImages(QVector<QImage>::fromList(fwatcher->future().results()));
     });
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));

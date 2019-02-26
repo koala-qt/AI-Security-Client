@@ -72,7 +72,7 @@ TrackingPage::TrackingPage( WidgetI *parent):
     connect(searchBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSearchBtnClicked()));
 
     QSettings configSetting("config.ini",QSettings::IniFormat);
-    hostname_ = configSetting.value("CloudHost/host").toString();
+    hostname_ = configSetting.value("Http/Javahost").toString();
 
     setUserStyle(userStyle());
     getCameraInfo();
@@ -230,6 +230,10 @@ void TrackingPage::slotTrackingNew(QVector<RestServiceI::TrackingReturnData> dat
         int holdTime = (value.timeOut.toMSecsSinceEpoch() - value.timeIn.toMSecsSinceEpoch())/1000;
         pointData.holdTime.setNum(holdTime < 1 ? 1 : holdTime);
         pointData.personImgUr = hostname_ + "graph/node/picture/" + value.objId;
+        pointData.lat = value.lat;
+        pointData.lng = value.lng;
+        pointData.sceneId = value.sceneId;
+//        qDebug() << pointData.cameraId << pointData.name << pointData.grabTime << pointData.holdTime << pointData.personImgUr << pointData.lat << pointData.lng;
         return pointData;
     });
     dataView_->updateTracking(trackingVec);

@@ -30,13 +30,14 @@ class TrackingWebView : public QWebEngineView
     Q_OBJECT
 public:
     struct TrackingPoint{
-        int xpos;
-        int ypos;
+        qreal lat;
+        qreal lng;
         int cameraId;
         QString name;
         QString holdTime;
         QString grabTime;
         QString personImgUr;
+        QString sceneId;
     };
     TrackingWebView(QWidget *parent = Q_NULLPTR);
     QSize sizeHint() const override;

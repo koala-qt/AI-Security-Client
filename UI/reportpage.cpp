@@ -1,5 +1,7 @@
 #include <QHBoxLayout>
 #include <QWebEngineView>
+#include <QSettings>
+#include <QApplication>
 #include "reportpage.h"
 
 ReportPage::ReportPage(WidgetI *parent):
@@ -11,7 +13,9 @@ ReportPage::ReportPage(WidgetI *parent):
     mainLay->addWidget(webView_);
     setLayout(mainLay);
 
-    webView_->load(QUrl("http://192.168.100.103:18081/#/login"));
+    QSettings configSetting("config.ini",QSettings::IniFormat);
+    webHost_ = configSetting.value("Http/Javahost").toString();
+    webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/report/report.html"));
     webView_->page()->setBackgroundColor(Qt::transparent);
 }
 

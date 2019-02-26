@@ -1,5 +1,6 @@
 #include <QWebEngineView>
 #include <QHBoxLayout>
+#include <QSettings>
 #include "resourcemanagepage.h"
 
 ResourceManagePage::ResourceManagePage(WidgetI *parent):
@@ -11,7 +12,9 @@ ResourceManagePage::ResourceManagePage(WidgetI *parent):
     mainLay->addWidget(webView_);
     setLayout(mainLay);
 
-    webView_->load(QUrl("http://192.168.100.103:18081/#/login"));
+    QSettings configSetting("config.ini",QSettings::IniFormat);
+    webHost_ = configSetting.value("Http/Javahost").toString();
+    webView_->load(QUrl(tr("%1#/login").arg(webHost_)));
     webView_->page()->setBackgroundColor(Qt::transparent);
 }
 

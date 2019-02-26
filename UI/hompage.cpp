@@ -5,8 +5,10 @@
 #include <QWebEngineView>
 #include <QPainter>
 #include <QApplication>
+#include <QLabel>
 #include <QPainter>
 #include "hompage.h"
+#include "personitemwidget.h"
 
 HomPage::HomPage(WidgetI *parent):
     WidgetI(parent)
@@ -29,9 +31,7 @@ HomPage::HomPage(WidgetI *parent):
     eventCombox_->addItem(tr("Blacklist events"));
     eventCombox_->addItem(tr("Intruder events"));
     eventCombox_->addItem(tr("AB-Door evetns"));
-    eventListW_->setViewMode(QListWidget::IconMode);
-    eventListW_->setSpacing(10);
-    eventListW_->setMovement(QListView::Static);
+    eventListW_->installEventFilter(this);
     webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/index.html"));
     webView_->page()->setBackgroundColor(Qt::transparent);
 
@@ -45,10 +45,6 @@ HomPage::HomPage(WidgetI *parent):
 void HomPage::setUserStyle(int s)
 {
     if(s == 0){
-        eventBackW_->setStyleSheet("QWidget{"
-                                   "background-color: rgb(48,54,68);"
-                                   "border-radius: 4px;"
-                                   "}");
         eventListW_->setStyleSheet("QListWidget{"
                                    "background-color:transparent;"
                                    "border-radius:0px;"
@@ -126,15 +122,26 @@ bool HomPage::event(QEvent *event)
         int imgItemW = eventListW_->width() - 2 * eventListW_->spacing() - 2 * eventListW_->frameWidth();
         eventItemSize_.setHeight(imgItemH);
         eventItemSize_.setWidth(imgItemW);
-        eventListW_->setIconSize(eventItemSize_);
         for(int i = 0; i < eventListW_->count(); i++){
             QListWidgetItem *item = eventListW_->item(i);
             item->setSizeHint(eventItemSize_);
-            item->setIcon(QPixmap::fromImage(item->data(Qt::UserRole + 2).value<QImage>().scaled(eventItemSize_)));
         }
     }
 
     return QWidget::event(event);
+}
+
+bool HomPage::eventFilter(QObject *watched, QEvent *event)
+{
+    QWidget *watchWid = qobject_cast<QWidget*>(watched);
+    if(watchWid == eventBackW_ && event->type() == QEvent::Paint){
+        QPainter p(watchWid);
+        p.setPen(Qt::NoPen);
+        p.setBrush(QColor(48,54,68));
+        p.setRenderHint(QPainter::Antialiasing);
+        p.drawRoundedRect(p.window().adjusted(0,0,-p.pen().width(),-p.pen().width()),4,4);
+    }
+    return WidgetI::eventFilter(watched,event);
 }
 
 void HomPage::slotEventComboxIndexChanged(int index)
@@ -158,43 +165,67 @@ void HomPage::slotEventComboxIndexChanged(int index)
 void HomPage::slotOnIntruderEvent(NotifyEventI::IntruderEventData evData)
 {
     if(eventListW_->count() >= eventItemCount){
-        delete eventListW_->takeItem(eventItemCount - 1);
+        QListWidgetItem *delItem = eventListW_->takeItem(eventItemCount - 1);
+        eventListW_->removeItemWidget(delItem);
+        delete delItem;
     }
-    QListWidgetItem *item = new QListWidgetItem;
+    QListWidgetItem *item = new QListWidgetItem(nullptr,0);
     QPainter p(&evData.sceneImg);
     p.setBrush(QColor(200,0,0,100));
     p.drawPolygon(evData.warnZone);
-    item->setIcon(QPixmap::fromImage(evData.sceneImg).scaled(eventItemSize_));
     item->setData(Qt::UserRole + 1,evData.sceneId);
-    item->setData(Qt::UserRole + 2,evData.sceneImg);
     item->setSizeHint(eventItemSize_);
     eventListW_->insertItem(0,item);
+    QWidget *itemW = new QWidget;
+    QLabel *imgL = new QLabel;
+    QHBoxLayout *mainLay = new QHBoxLayout;
+    mainLay->addWidget(imgL);
+    itemW->setLayout(mainLay);
+    imgL->setPixmap(QPixmap::fromImage(evData.sceneImg.scaled(item->sizeHint())));
+    eventListW_->setItemWidget(item,itemW);
 }
 
 void HomPage::slotOnPersonEvent(NotifyEventI::PersonEventData evData)
 {
     if(eventListW_->count() >= eventItemCount){
-        delete eventListW_->takeItem(eventItemCount - 1);
+        QListWidgetItem *delItem = eventListW_->takeItem(eventItemCount - 1);
+        eventListW_->removeItemWidget(delItem);
+        delete delItem;
     }
-    QListWidgetItem *item = new QListWidgetItem;
-    item->setIcon(QPixmap::fromImage(evData.image).scaled(eventItemSize_));
+    QListWidgetItem *item = new QListWidgetItem(nullptr,2);
     item->setData(Qt::UserRole + 1,evData.sceneId);
     item->setSizeHint(eventItemSize_);
     eventListW_->insertItem(0,item);
+    PersonItemWidget *itemW = new PersonItemWidget;
+    itemW->setStyleSheet("QWidget{"
+                         "background-color: transparent;"
+                         "color: rgb(126,140,177);"
+                         "border-radius: 0px;"
+                         "border: none;"
+                         "}");
+    itemW->setInfos(evData);
+    eventListW_->setItemWidget(item,itemW);
 }
 
 void HomPage::slotOnAbDoorEvent(NotifyEventI::ABDoorEventData evData)
 {
     if(eventListW_->count() >= eventItemCount){
-        delete eventListW_->takeItem(eventItemCount - 1);
+        QListWidgetItem *delItem = eventListW_->takeItem(eventItemCount - 1);
+        eventListW_->removeItemWidget(delItem);
+        delete delItem;
     }
-    QListWidgetItem *item = new QListWidgetItem;
+    QListWidgetItem *item = new QListWidgetItem(nullptr,0);
     QPainter p(&evData.sceneImg);
-    p.setBrush(QColor(100,0,100,100));
+    p.setBrush(QColor(200,100,0,100));
     p.drawPolygon(evData.warnZone);
-    item->setIcon(QPixmap::fromImage(evData.sceneImg).scaled(eventItemSize_));
     item->setData(Qt::UserRole + 1,evData.sceneId);
-    item->setData(Qt::UserRole + 2,evData.sceneImg);
     item->setSizeHint(eventItemSize_);
     eventListW_->insertItem(0,item);
+    QWidget *itemW = new QWidget;
+    QLabel *imgL = new QLabel;
+    QHBoxLayout *mainLay = new QHBoxLayout;
+    mainLay->addWidget(imgL);
+    itemW->setLayout(mainLay);
+    imgL->setPixmap(QPixmap::fromImage(evData.sceneImg.scaled(item->sizeHint())));
+    eventListW_->setItemWidget(item,itemW);
 }

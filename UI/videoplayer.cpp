@@ -35,6 +35,7 @@ VideoPlayer::VideoPlayer(QWidget *parent):
             InformationDialog infoDialog(this);
             infoDialog.setUserStyle(1);
             infoDialog.showMessage("Video stream not working");
+            infoDialog.exec();
             return;
         }
         QDialog setWaringAreaDialog(this);

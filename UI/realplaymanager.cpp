@@ -33,7 +33,7 @@ void RealPlayManager::setUserStyle(int s)
     switch (s) {
     case 0:
         pal = m_focusFrame->palette();
-        pal.setColor(QPalette::Foreground,QColor(189,56,57));
+        pal.setColor(QPalette::Foreground,QColor(25,250,167));
         m_focusFrame->setPalette(pal);
 
         for(int i = 0; i < m_mainLay->count(); i++){

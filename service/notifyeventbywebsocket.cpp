@@ -111,6 +111,7 @@ void NotifyEventByWebSocket::onTextMessageReceived(QString message)
         evData.personTypenName = jsObj.value("personTypeName").toString();
         evData.sceneId = jsObj.value("sceneId").toString();
         evData.sourceId = jsObj.value("sourceId").toString();
+        evData.deviceName = jsObj.value("deviceName").toString();
         evData.timeStamp = QDateTime::fromMSecsSinceEpoch(jsObj.value("timeStamp").toVariant().toULongLong());
         QString faceUrl = jsObj.value("url").toString();
         QJsonArray jsArray = jsObj.value("pictures").toArray();
@@ -131,7 +132,10 @@ void NotifyEventByWebSocket::onTextMessageReceived(QString message)
             connect(serI,&RestServiceI::sigError,this,[this](QString str){
                 qDebug() << str;
             });
+            QString url = faceUrl;
+            serI->getImageByUrl(url);
         });
+        serviceI->getImagesByUrlList(faceUrlList);
     }
 }
 

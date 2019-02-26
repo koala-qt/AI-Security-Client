@@ -18,7 +18,8 @@
 #include <QCompleter>
 #include <QScrollBar>
 #include <QLineEdit>
-#include <QStringListModel>
+#include <QStandardItemModel>
+#include <QBitmap>
 #include "realtimemonitoring.h"
 #include "realplaymanager.h"
 #include "cornerwidget.h"
@@ -28,6 +29,7 @@
 #include "videoplayer.h"
 #include "sceneimagedialog.h"
 #include "informationdialog.h"
+#include "personitemwidget.h"
 
 #pragma execution_character_set("utf-8")
 RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
@@ -93,7 +95,7 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
         faceDialog->setUserStyle(userStyle());
         faceDialog->layout()->setMargin(10);
         faceDialog->setFaceImage(m_faceList->currentItem()->data(Qt::UserRole + 1).value<QImage>());
-        faceDialog->setOid(m_faceList->currentItem()->data(Qt::UserRole + 2).toString());
+//        faceDialog->setOid(m_faceList->currentItem()->data(Qt::UserRole + 2).toString());
         faceDialog->setMinimumHeight(700);
         faceDialog->show();
     });
@@ -118,7 +120,7 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
         });
         label->show(800);
         faceItemMenu_->setEnabled(false);
-        serviceI->getSceneInfo(m_faceList->currentItem()->data(Qt::UserRole + 3).toString());
+        serviceI->getSceneInfo(m_faceList->currentItem()->data(Qt::UserRole + 2).toString());
     });
     m_faceList->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(m_faceList,&QListWidget::customContextMenuRequested,this,[&](const QPoint &p){
@@ -183,8 +185,17 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
 
     posEdit_->setClearButtonEnabled(true);
     QCompleter *cpter = new QCompleter(posEdit_);
+    complterModel_ = new QStandardItemModel;
+    complterModel_->setColumnCount(1);
+    cpter->setModel(complterModel_);
+    cpter->setCompletionColumn(0);
     cpter->setFilterMode(Qt::MatchStartsWith);
     cpter->setModelSorting(QCompleter::CaseSensitivelySortedModel);
+    connect(cpter, static_cast<void(QCompleter::*)(const QModelIndex &)>(&QCompleter::activated),[=](const QModelIndex &index){
+        QTreeWidgetItem *item = reinterpret_cast<QTreeWidgetItem*>(index.data(Qt::UserRole + 1).toULongLong());
+        m_treeW->scrollToItem(item);
+        m_treeW->setCurrentItem(item);
+    });
     posEdit_->setCompleter(cpter);
     posEdit_->setMinimumHeight(36);
     posEdit_->setPlaceholderText(tr("Search"));
@@ -192,9 +203,8 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
     eventCombox_->addItem(tr("Intruder events"));
     eventCombox_->addItem(tr("AB-Door evetns"));
     eventCombox_->addItem(tr("Blacklist events"));
-    eventList_->setViewMode(QListWidget::IconMode);
-    eventList_->setSpacing(10);
-    eventList_->setMovement(QListView::Static);
+    faceCaptureBackW_->installEventFilter(this);
+    eventBackW_->installEventFilter(this);
     connect(eventCombox_,SIGNAL(currentIndexChanged(int)),this,SLOT(slotEventComboxIndexChanged(int)));
     notifyServiceI_ = reinterpret_cast<NotifyServiceI*>(qApp->property("NotifyServiceI").toULongLong());
     connect(notifyServiceI_,SIGNAL(sigFaceSnap(NotifyPersonI::FaceSnapEventData)),this,SLOT(slotAddFaceitem(NotifyPersonI::FaceSnapEventData)));
@@ -287,10 +297,6 @@ void RealtimeMonitoring::setUserStyle(int s)
                                          "background-color: transparent;"
                                          "}");
 
-        faceCaptureBackW_->setStyleSheet("QWidget{"
-                                         "background-color: rgb(48,54,68);"
-                                         "border-radius: 4px;"
-                                         "}");
         m_faceListL->setFont(f);
         m_faceListL->setAlignment(Qt::AlignLeft);
         m_faceListL->setStyleSheet("QLabel{"
@@ -305,15 +311,11 @@ void RealtimeMonitoring::setUserStyle(int s)
                                   "border:none;}");
 
         eventList_->setStyleSheet("QListWidget{"
-                                   "background-color:transparent;"
-                                   "border-radius:0px;"
-                                   "border:none;"
-                                   "}");
-
-        eventBackW_->setStyleSheet("QWidget{"
-                                   "background-color: rgb(48,54,68);"
-                                   "border-radius: 4px;"
-                                   "}");
+                                  "color: red;"
+                                  "background-color: transparent;"
+                                  "border-radius:0px;"
+                                  "border:none;"
+                                  "}");
         eventCombox_->setStyleSheet(
                     "QComboBoxListView{"
                     "color: #CECECE;"
@@ -408,11 +410,9 @@ bool RealtimeMonitoring::event(QEvent *event)
         int imgItemW = eventList_->width() - 2 * eventList_->spacing() - 2 * eventList_->frameWidth();
         eventItemSize_.setHeight(imgItemH);
         eventItemSize_.setWidth(imgItemW);
-        eventList_->setIconSize(eventItemSize_);
         for(int i = 0; i < eventList_->count(); i++){
             QListWidgetItem *item = eventList_->item(i);
             item->setSizeHint(eventItemSize_);
-            item->setIcon(QPixmap::fromImage(item->data(Qt::UserRole + 2).value<QImage>().scaled(eventItemSize_)));
         }
 
         int faceItemW = (m_faceList->width() - (FACEITEMCOUNT + 1) * m_faceList->spacing() - m_faceList->frameWidth() * 2) / FACEITEMCOUNT;
@@ -425,6 +425,19 @@ bool RealtimeMonitoring::event(QEvent *event)
     }
 
     return WidgetI::event(event);
+}
+
+bool RealtimeMonitoring::eventFilter(QObject *watched, QEvent *event)
+{
+    QWidget *watchWid = qobject_cast<QWidget*>(watched);
+    if((watchWid == faceCaptureBackW_ || watchWid == eventBackW_) && event->type() == QEvent::Paint){
+        QPainter p(watchWid);
+        p.setPen(Qt::NoPen);
+        p.setBrush(QColor(48,54,68));
+        p.setRenderHint(QPainter::Antialiasing);
+        p.drawRoundedRect(p.window().adjusted(0,0,-p.pen().width(),-p.pen().width()),4,4);
+    }
+    return WidgetI::eventFilter(watched,event);
 }
 
 void RealtimeMonitoring::updateCamera()
@@ -568,7 +581,6 @@ void RealtimeMonitoring::slotAddFaceitem(NotifyPersonI::FaceSnapEventData faceEv
     QListWidgetItem *item = new QListWidgetItem;
     item->setData(Qt::UserRole + 1,faceEvData.faceImg);
     item->setData(Qt::UserRole + 2,faceEvData.sceneId);
-    item->setData(Qt::UserRole + 3,faceEvData.sceneId);
     item->setSizeHint(m_faceItemSize);
     m_faceList->insertItem(0,item);
     m_faceList->setItemWidget(item,itemWidget);
@@ -577,45 +589,69 @@ void RealtimeMonitoring::slotAddFaceitem(NotifyPersonI::FaceSnapEventData faceEv
 void RealtimeMonitoring::slotOnIntruderEvent(NotifyEventI::IntruderEventData evData)
 {
     if(eventList_->count() >= EVENTITEMCOUNT){
-        delete eventList_->takeItem(EVENTITEMCOUNT - 1);
+        QListWidgetItem *delItem = eventList_->takeItem(EVENTITEMCOUNT - 1);
+        eventList_->removeItemWidget(delItem);
+        delete delItem;
     }
-    QListWidgetItem *item = new QListWidgetItem;
+    QListWidgetItem *item = new QListWidgetItem(nullptr,0);
     QPainter p(&evData.sceneImg);
     p.setBrush(QColor(200,0,0,100));
     p.drawPolygon(evData.warnZone);
-    item->setIcon(QPixmap::fromImage(evData.sceneImg).scaled(eventItemSize_));
     item->setData(Qt::UserRole + 1,evData.sceneId);
-    item->setData(Qt::UserRole + 2,evData.sceneImg);
     item->setSizeHint(eventItemSize_);
     eventList_->insertItem(0,item);
+    QWidget *itemW = new QWidget;
+    QLabel *imgL = new QLabel;
+    QHBoxLayout *mainLay = new QHBoxLayout;
+    mainLay->addWidget(imgL);
+    itemW->setLayout(mainLay);
+    imgL->setPixmap(QPixmap::fromImage(evData.sceneImg.scaled(item->sizeHint())));
+    eventList_->setItemWidget(item,itemW);
 }
 
 void RealtimeMonitoring::slotOnPersonEvent(NotifyEventI::PersonEventData evData)
 {
     if(eventList_->count() >= EVENTITEMCOUNT){
-        delete eventList_->takeItem(EVENTITEMCOUNT - 1);
+        QListWidgetItem *delItem = eventList_->takeItem(EVENTITEMCOUNT - 1);
+        eventList_->removeItemWidget(delItem);
+        delete delItem;
     }
-    QListWidgetItem *item = new QListWidgetItem;
-    item->setIcon(QPixmap::fromImage(evData.image).scaled(eventItemSize_));
+    QListWidgetItem *item = new QListWidgetItem(nullptr,2);
     item->setData(Qt::UserRole + 1,evData.sceneId);
     item->setSizeHint(eventItemSize_);
     eventList_->insertItem(0,item);
+    PersonItemWidget *itemW = new PersonItemWidget;
+    itemW->setStyleSheet("QWidget{"
+                         "background-color: transparent;"
+                         "color: rgb(126,140,177);"
+                         "border-radius: 0px;"
+                         "border: none;"
+                         "}");
+    itemW->setInfos(evData);
+    eventList_->setItemWidget(item,itemW);
 }
 
 void RealtimeMonitoring::slotOnAbDoorEvent(NotifyEventI::ABDoorEventData evData)
 {
     if(eventList_->count() >= EVENTITEMCOUNT){
-        delete eventList_->takeItem(EVENTITEMCOUNT - 1);
+        QListWidgetItem *delItem = eventList_->takeItem(EVENTITEMCOUNT - 1);
+        eventList_->removeItemWidget(delItem);
+        delete delItem;
     }
-    QListWidgetItem *item = new QListWidgetItem;
+    QListWidgetItem *item = new QListWidgetItem(nullptr,0);
     QPainter p(&evData.sceneImg);
-    p.setBrush(QColor(100,0,100,100));
+    p.setBrush(QColor(200,100,0,100));
     p.drawPolygon(evData.warnZone);
-    item->setIcon(QPixmap::fromImage(evData.sceneImg).scaled(eventItemSize_));
     item->setData(Qt::UserRole + 1,evData.sceneId);
-    item->setData(Qt::UserRole + 2,evData.sceneImg);
     item->setSizeHint(eventItemSize_);
     eventList_->insertItem(0,item);
+    QWidget *itemW = new QWidget;
+    QLabel *imgL = new QLabel;
+    QHBoxLayout *mainLay = new QHBoxLayout;
+    mainLay->addWidget(imgL);
+    itemW->setLayout(mainLay);
+    imgL->setPixmap(QPixmap::fromImage(evData.sceneImg.scaled(item->sizeHint())));
+    eventList_->setItemWidget(item,itemW);
 }
 
 void RealtimeMonitoring::slotAddDevice(QVector<RestServiceI::CameraInfo> data)
@@ -635,11 +671,12 @@ void RealtimeMonitoring::slotAddDevice(QVector<RestServiceI::CameraInfo> data)
             m_realPlayM->playByOrder(info.rtsp,info.cameraId,camera->text(0));
         }
         curCameraMap_[info.cameraId] = info.cameraPos;
-        cameraStringList_ << info.cameraPos;
+
+        QStandardItem *citem = new QStandardItem(info.cameraPos);
+        citem->setData(reinterpret_cast<unsigned long long>(camera));
+        complterModel_->insertRow(complterModel_->rowCount());
+        complterModel_->setItem(complterModel_->rowCount() - 1,citem);
     }
-    QStringListModel *listMode = new QStringListModel;
-    listMode->setStringList(cameraStringList_);
-    posEdit_->completer()->setModel(listMode);
 }
 
 void RealtimeMonitoring::slotOnCameraGroup(QVector<RestServiceI::CameraGoup> groups)

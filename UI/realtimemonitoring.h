@@ -13,8 +13,10 @@ QT_FORWARD_DECLARE_CLASS(QPushButton)
 QT_FORWARD_DECLARE_CLASS(QListWidget)
 QT_FORWARD_DECLARE_CLASS(QMenu)
 QT_FORWARD_DECLARE_CLASS(QComboBox)
+QT_FORWARD_DECLARE_CLASS(QStandardItemModel)
 #define FACEITEMCOUNT 8
 #define EVENTITEMCOUNT 5
+
 class RealtimeMonitoring : public WidgetI
 {
     Q_OBJECT
@@ -25,6 +27,7 @@ public:
 
 protected:
     bool event(QEvent *event) override;
+    bool eventFilter(QObject *watched, QEvent *event)override;
 
 private:
     QComboBox *eventCombox_{nullptr};
@@ -35,7 +38,7 @@ private:
     RealPlayManager *m_realPlayM{nullptr};
     QListWidget *m_faceList{nullptr},*eventList_{nullptr};
     QLineEdit *posEdit_{nullptr};
-    QStringList cameraStringList_;
+    QStandardItemModel *complterModel_{nullptr};
 
     QSize eventItemSize_;
     QString faceItemStyleSheet_;

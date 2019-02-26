@@ -278,7 +278,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     endTimeEdit_->setMinimumWidth(160);
     searchBtn_->setMinimumSize(120,44);
     pageIndicator_->setPageInfo(0,0);
-    personTypeVec_ << qMakePair(QString("All"),QVector<int>() << 1 << 2 << 3 << 6);
+    personTypeVec_ << qMakePair(QString("All"),QVector<int>() << 1 << 2 << 3 << 5 << 6);
     personTypeVec_ << qMakePair(QString("Semantic"),QVector<int>() << 0 << 1 << 2 << 3 << 5 << 6);
     personTypeVec_ << qMakePair(QString("facelink"),QVector<int>() << 0 << 1 << 2 << 3 << 4 << 5 << 6);
     for(auto &v : personTypeVec_){

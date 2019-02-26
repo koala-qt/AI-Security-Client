@@ -303,9 +303,12 @@ QString DLL::CloudHttpDao::tracking(RestServiceI::FaceTrackingArgs &args, QVecto
         RestServiceI::TrackingReturnData pdata;
         pdata.cameraId = dataObj.value("cameraId").toString();
         pdata.objId = dataObj.value("id").toString();
+        pdata.lat = dataObj.value("lat").toDouble();
+        pdata.lng = dataObj.value("lng").toDouble();
         pdata.faceImg.loadFromData(QByteArray::fromBase64(dataObj.value("faceSnap").toString().toLatin1()));
         pdata.timeIn = QDateTime::fromMSecsSinceEpoch(dataObj.value("tsIn").toVariant().toULongLong());
         pdata.timeOut = QDateTime::fromMSecsSinceEpoch(dataObj.value("tsOut").toVariant().toULongLong());
+        pdata.sceneId = dataObj.value("faceSceneId").toString();
         allData << pdata;
     }
     if(allData.isEmpty())return "no points";

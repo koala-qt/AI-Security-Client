@@ -110,8 +110,11 @@ public:
     };
     struct TrackingReturnData
     {
+        qreal lat;
+        qreal lng;
         QString cameraId;
         QString objId;
+        QString sceneId;
         QVariantList faceIds;
         QVariantList faceAttr;
         QVariantList bodyIds;
@@ -361,6 +364,7 @@ public:
         qreal lat;
         qreal lng;
         QString deviceId;
+        QString deviceName;
         QString personType;
         QString eventType;
         QString faceId;
