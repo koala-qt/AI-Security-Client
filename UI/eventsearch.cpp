@@ -14,6 +14,7 @@
 #include <QFile>
 #include <QApplication>
 #include <QMessageBox>
+#include <QSettings>
 #include "pageindicator.h"
 #include "waitinglabel.h"
 #include "sceneimagedialog.h"
@@ -135,8 +136,12 @@ EventSearch::EventSearch( WidgetI *parent):
     QPixmap pix(1,m_waringTyleCombox->iconSize().height());
     pix.fill(Qt::transparent);
     QVector<QPair<QString,QString>>  waringType;
-    waringType << qMakePair(tr(""),tr("不限")) << qMakePair(tr("intruder"),tr("闯入报警")) << qMakePair(tr("blacklistface"),tr("黑名单报警"))
-               << qMakePair(tr("abdoor"),tr("AB-Door events"));
+    waringType << qMakePair(tr(""),tr("不限"))
+               << qMakePair(tr("smsr_alarm_intruder"),tr("闯入报警"))
+               << qMakePair(tr("smsr_alarm_abdoor"),tr("AB-Door events"))
+               << qMakePair(tr("smsr_alarm_climb"),tr("Climb events"))
+               << qMakePair(tr("smsr_alarm_gather"),tr("Gather events"))
+               << qMakePair(tr("smsr_alarm_face"),tr("黑名单报警"));
     for(const QPair<QString,QString> &pairValue : waringType) {
         m_waringTyleCombox->addItem(pix,pairValue.second,pairValue.first);
         waryingTypeMap_.insert(pairValue.first,pairValue.second);
@@ -144,6 +149,9 @@ EventSearch::EventSearch( WidgetI *parent):
     noDataTipW_ = new NoDataTip(m_tableW);
     setUserStyle(userStyle());
     getCameraInfo();
+
+    QSettings configSeting("config.ini",QSettings::IniFormat);
+    javaHost_ = configSeting.value("Http/Javahost").toString();
 }
 
 void EventSearch::setUserStyle(int s)
@@ -388,7 +396,7 @@ void EventSearch::slotSearchPageAlarmHistory(int page)
         m_pageindicator->setEnabled(true);
         noDataTipW_->hide();
     });
-    connect(serviceI,&RestServiceI::sigAlarmHistory,this,[this,label](const PagedAlarmHis value){
+    connect(serviceI,&RestServiceI::sigAlarmHistory,this,[this,label](const RestServiceI::EventSearchReturn value){
         label->close();
         slotAlarmHistory(value);
         m_searchBtn->setEnabled(true);
@@ -466,45 +474,50 @@ void EventSearch::slotSearchBtnClicked()
     slotSearchPageAlarmHistory(1);
 }
 
-void EventSearch::slotAlarmHistory(PagedAlarmHis data)
+void EventSearch::slotAlarmHistory(RestServiceI::EventSearchReturn data)
 {
     m_pageindicator->adjustRow();
     if(needUpdatePageInfo_){
-        m_pageindicator->setPageInfo(data.total_page,data.total_count);
+        m_pageindicator->setPageInfo(data.totalPage,data.total);
         needUpdatePageInfo_ = false;
     }
-    for(const AlarmHis &itemData : data.alarm_his){
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    for(const RestServiceI::EventSearchItem &itemData : data.data){
         m_tableW->insertRow(m_tableW->rowCount());
         QTableWidgetItem *item = new QTableWidgetItem;
         m_tableW->setItem(m_tableW->rowCount() - 1,0,item);
-        QImage img;
-        img.loadFromData(QByteArray::fromStdString(itemData.alarm_img));
         QLabel *label = new QLabel;
         label->setScaledContents(true);
-        label->setPixmap(QPixmap::fromImage(img));
+
+        RestServiceI *serviceI = factoryI->makeRestServiceI();
+        connect(serviceI,&RestServiceI::sigDownloadImage,label,[label](QImage img){
+            label->setPixmap(QPixmap::fromImage(img));
+        });
+        serviceI->getImageByUrl(tr("%1api/v2/external/monitor-detail/download-image?collection=snap_scene&fieldName=snapshot&objId=%2").arg(javaHost_,itemData.sceneId));
+
         m_tableW->setCellWidget(m_tableW->rowCount() - 1,0,label);
 
         item = new QTableWidgetItem;
-        item->setText(QString::fromStdString(itemData.oid));
+        item->setText(itemData.id);
         item->setTextAlignment(Qt::AlignCenter);
         m_tableW->setItem(m_tableW->rowCount() - 1,1,item);
 
         item = new QTableWidgetItem;
-        item->setText(QString::fromStdString(itemData.camera_pos));
+        item->setText(itemData.sourceName);
         item->setTextAlignment(Qt::AlignCenter);
         m_tableW->setItem(m_tableW->rowCount() - 1,2,item);
 
         item = new QTableWidgetItem;
-        item->setText(waryingTypeMap_.value(QString::fromStdString(itemData.alarm_type)));
+        item->setText(itemData.eventType);
         item->setTextAlignment(Qt::AlignCenter);
         m_tableW->setItem(m_tableW->rowCount() - 1,3,item);
 
         item = new QTableWidgetItem;
-        item->setText(QDateTime::fromMSecsSinceEpoch(itemData.time).toString("yyyy-MM-dd HH:mm:ss"));
+        item->setText(itemData.timeStamp.toString("yyyy-MM-dd HH:mm:ss"));
         item->setTextAlignment(Qt::AlignCenter);
         m_tableW->setItem(m_tableW->rowCount() - 1,4,item);
     }
-    if(data.alarm_his.empty()){
+    if(!data.total){
         noDataTipW_->show();
     }
 }

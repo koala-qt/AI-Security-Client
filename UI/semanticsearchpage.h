@@ -56,10 +56,14 @@ private:
     NoDataTip *noDataW_{nullptr};
 
     void getCameraInfo();
+    void setTableData(QVector<RestServiceI::DataRectureItem> &data);
     QStringList checkedAttrbute(QTreeWidgetItem*);
 
 private slots:
+    void slotPageIndexChanged(int);
+    void slotSearchAll(int);
     void slotSemanticSearch(int);
+    void slotSearchFaceLink(int);
     void slotSearchBtnClicked();
     void slotOnCameraInfo(QVector<RestServiceI::CameraInfo>);
     void createTreeItem(QTreeWidget *treeW,QTreeWidgetItem *parentItem,itemData &items);

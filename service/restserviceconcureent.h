@@ -3,6 +3,7 @@
 #include "servicei.h"
 #include "dao/thriftdao.h"
 #include "dao/cloudhttpdao.h"
+
 class RestConcurrent : public RestServiceI
 {
     Q_OBJECT
@@ -37,7 +38,7 @@ public:
 
 private:
     ThriftDao thriftDao_;
-    DLL::CloudHttpDao curlRest_;
+    DLL::CloudHttpDao *curlRest_{nullptr};
 };
 
 #endif // RESTSERVICE_H

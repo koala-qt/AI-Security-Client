@@ -10,6 +10,8 @@ NotifyByEventPerson::NotifyByEventPerson(NotifyEventI *notifyEvI, NotifyPersonI 
     connect(notifyEventI_,SIGNAL(sigABDoorEventData(NotifyEventI::ABDoorEventData)),this,SIGNAL(sigABDoorEventData(NotifyEventI::ABDoorEventData)));
     connect(notifyEventI_,SIGNAL(sigIntruderEvent(NotifyEventI::IntruderEventData)),this,SIGNAL(sigIntruderEvent(NotifyEventI::IntruderEventData)));
     connect(notifyEventI_,SIGNAL(sigPersonEventData(NotifyEventI::PersonEventData)),this,SIGNAL(sigPersonEventData(NotifyEventI::PersonEventData)));
+    connect(notifyEventI_,SIGNAL(sigClimbEventData(NotifyEventI::ClimbEventData)),this,SIGNAL(sigClimbEventData(NotifyEventI::ClimbEventData)));
+    connect(notifyEventI_,SIGNAL(sigGatherEventData(NotifyEventI::GatherEventData)),this,SIGNAL(sigGatherEventData(NotifyEventI::GatherEventData)));
     connect(notifyPersonI_,SIGNAL(sigFaceLinkDataFinished(QString)),this,SIGNAL(sigFaceLinkDataFinished(QString)));
     connect(notifyPersonI_,SIGNAL(sigFaceSnap(NotifyPersonI::FaceSnapEventData)),this,SIGNAL(sigFaceSnap(NotifyPersonI::FaceSnapEventData)));
     connect(notifyPersonI_,SIGNAL(sigNetWorkError(QString)),this,SIGNAL(sigNetWorkError(QString)));

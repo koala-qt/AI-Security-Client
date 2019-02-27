@@ -33,6 +33,7 @@ private:
     QComboBox *m_positionCombox{nullptr},*m_waringTyleCombox{nullptr};
     QWidget *centerBack_{nullptr};
 
+    QString javaHost_;
     QString curCameraid_,curWaringType_;
     QDateTime curStartDateTime_,curEndDateTime_;
     QMenu *menu_{nullptr};
@@ -45,7 +46,7 @@ private:
 private slots:
     void slotOnCameraInfo(QVector<RestServiceI::CameraInfo>);
     void slotSearchBtnClicked();
-    void slotAlarmHistory(PagedAlarmHis);
+    void slotAlarmHistory(RestServiceI::EventSearchReturn);
     void slotSearchPageAlarmHistory(int page);
     void slotOnSceneInfo(RestServiceI::SceneInfo);
 };

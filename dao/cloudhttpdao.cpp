@@ -156,6 +156,7 @@ QString DLL::CloudHttpDao::faceLink_(RestServiceI::FaceLinkArgs &args, QString *
     std::vector<std::string> headers;
     headers.emplace_back("Content-Type:application/json;charset=UTF-8");
     headers.emplace_back("User-Agent:Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36");
+    headers.emplace_back("token:7d1e52d3cf0142e19b5901eb1ef91372");
     headers.emplace_back("Expect:");
     setheader(headers);
 
@@ -523,12 +524,15 @@ QImage DLL::CloudHttpDao::getImageByUrl(QString url)
 QString DLL::CloudHttpDao::captureSearch(RestServiceI::CaptureSearchArgs &args, RestServiceI::CaptureSearchReturnData *resDatas)
 {
     QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-history");
-    QString postData = QObject::tr("mode=2&faceAttrs=&bodyAttrs=&cameraId=%4&startTime=%5&finishTime=%6&pageNo=%7&pageSize=%8&property=true")
+    QString postData = QObject::tr("mode=2&faceAttrs=%1&bodyAttrs=&cameraId=%2&startTime=%3&finishTime=%4&pageNo=%5&pageSize=%6&property=true")
+            .arg(args.faceAttributList.join(','))
             .arg(args.position)
             .arg(args.start.toString("yyyy-MM-dd HH:mm:ss"))
             .arg(args.end.toString("yyyy-MM-dd HH:mm:ss"))
             .arg(args.page)
             .arg(args.pageCount);
+    qDebug() << urlStr;
+    qDebug() << postData;
     int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),5);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
@@ -823,6 +827,60 @@ QString DLL::CloudHttpDao::getFaceLinkDataColl(RestServiceI::FaceLinkDataCollArg
         img.loadFromData(QByteArray::fromBase64(itemObj.value("snapshot").toString().toLatin1()));
         item.img = img;
         item.personId = itemObj.value("personId").toString();
+        return item;
+    });
+    return QString();
+}
+
+QString DLL::CloudHttpDao::eventSearch(const int page, const int pageCount, const QString &cameraId, const QString &alarmType, const QDateTime &start, const QDateTime &end, RestServiceI::EventSearchReturn *resData)
+{
+    QString urlStr = host_ + QObject::tr("api/v2/cmcc/monitor/alarm/find?event_type=%1&source_id=%2&pageNo=%3&pageSize=%4&startStamp=%5&endStamp=%6")
+            .arg(alarmType,cameraId)
+            .arg(page)
+            .arg(pageCount)
+            .arg(start.toString("yyyy-MM-dd%20HH:mm:ss"),end.toString("yyyy-MM-dd%20HH:mm:ss"));
+    qDebug() << urlStr;
+    int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),4);
+    if(resCode != CURLE_OK){
+        return curl_easy_strerror(CURLcode(resCode));
+    }
+
+    QJsonParseError jsError;
+    QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
+    if(jsError.error != QJsonParseError::NoError){
+        return jsError.errorString();
+    }
+
+    QJsonObject jsObj = jsDoc.object();
+    int status = jsObj.value("status").toInt();
+    if(status != 200){
+        return jsObj.value("message").toString();
+    }
+
+    resData->total = jsObj.value("total").toInt();
+    resData->totalPage = jsObj.value("pageNumber").toInt();
+    QJsonArray jsArray = jsObj.value("data").toArray();
+    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(resData->data),[](const QJsonValue &jsValue){
+        RestServiceI::EventSearchItem item;
+        QJsonObject itemObj = jsValue.toObject();
+        item.id = itemObj.value("id").toString();
+        item.sourceId = itemObj.value("sourceId").toString();
+        item.sourceName = itemObj.value("sourceName").toString();
+        item.eventType = itemObj.value("eventType").toString();
+        item.sceneId = itemObj.value("sceneId").toString();
+        item.bodyId = itemObj.value("bodyId").toString();
+        QJsonArray jsArray = itemObj.value("warnZone").toArray();
+        QVector<int> pointVec;
+        std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(pointVec),[](QJsonValue jsVal){
+            return jsVal.toInt();
+        });
+        if(!pointVec.isEmpty() && !(pointVec.count() % 2))
+        {
+            for(int i = 0; i < pointVec.count(); i = i + 2){
+                item.warnZong << QPointF(qreal(pointVec.at(i)) / 2, qreal(pointVec.at(i + 1)) / 2);
+            }
+        }
+        item.timeStamp = QDateTime::fromMSecsSinceEpoch(itemObj.value("timeStamp").toVariant().toULongLong());
         return item;
     });
     return QString();

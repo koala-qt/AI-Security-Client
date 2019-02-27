@@ -59,6 +59,8 @@ private slots:
     void slotOnIntruderEvent(NotifyEventI::IntruderEventData);
     void slotOnPersonEvent(NotifyEventI::PersonEventData);
     void slotOnAbDoorEvent(NotifyEventI::ABDoorEventData);
+    void slotOnClimbEvent(NotifyEventI::ClimbEventData);
+    void slotOngGatherEvent(NotifyEventI::GatherEventData);
     void slotAddDevice(QVector<RestServiceI::CameraInfo>);
     void slotOnCameraGroup(QVector<RestServiceI::CameraGoup>);
     void slotOnSceneInfo(RestServiceI::SceneInfo sinfo);

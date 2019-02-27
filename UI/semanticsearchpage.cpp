@@ -158,7 +158,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
         faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
         faceDialog->setWindowModality(Qt::ApplicationModal);
         QPalette pal = faceDialog->palette();
-        pal.setColor(QPalette::Background,QColor(112,110,119));
+        pal.setColor(QPalette::Background,QColor(37,41,52));
         faceDialog->setPalette(pal);
         faceDialog->setAutoFillBackground(true);
         faceDialog->setUserStyle(userStyle());
@@ -174,7 +174,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
         portSearchDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
         portSearchDialog->setWindowModality(Qt::ApplicationModal);
         QPalette pal = portSearchDialog->palette();
-        pal.setColor(QPalette::Background,QColor(112,110,119));
+        pal.setColor(QPalette::Background,QColor(37,41,52));
         portSearchDialog->setPalette(pal);
         portSearchDialog->setAutoFillBackground(true);
         portSearchDialog->setUserStyle(userStyle());
@@ -184,6 +184,10 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     });
     dataMenu_->addAction(tr("Face link"),[this]{
         FaceLinkPage *faceLinkP = new FaceLinkPage(this);
+        QPalette pal = faceLinkP->palette();
+        pal.setColor(QPalette::Background,QColor(37,41,52));
+        faceLinkP->setPalette(pal);
+        faceLinkP->setAutoFillBackground(true);
         faceLinkP->setAttribute(Qt::WA_DeleteOnClose);
         faceLinkP->setWindowFlags(Qt::Window | Qt::Dialog);
         faceLinkP->setWindowModality(Qt::ApplicationModal);
@@ -195,7 +199,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     dataMenu_->addAction(tr("Tracking"),[this]{
         TrackingPage *view = new TrackingPage(this);
         QPalette pal = view->palette();
-        pal.setColor(QPalette::Background,QColor(100,100,100));
+        pal.setColor(QPalette::Background,QColor(37,41,52));
         view->setPalette(pal);
         view->setAutoFillBackground(true);
         view->setUserStyle(userStyle());
@@ -278,7 +282,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     endTimeEdit_->setMinimumWidth(160);
     searchBtn_->setMinimumSize(120,44);
     pageIndicator_->setPageInfo(0,0);
-    personTypeVec_ << qMakePair(QString("All"),QVector<int>() << 1 << 2 << 3 << 5 << 6);
+    personTypeVec_ << qMakePair(QString("All"),QVector<int>() << 1 << 2 << 3 << 6);
     personTypeVec_ << qMakePair(QString("Semantic"),QVector<int>() << 0 << 1 << 2 << 3 << 5 << 6);
     personTypeVec_ << qMakePair(QString("facelink"),QVector<int>() << 0 << 1 << 2 << 3 << 4 << 5 << 6);
     for(auto &v : personTypeVec_){
@@ -612,6 +616,40 @@ void SemanticSearchPage::getCameraInfo()
     serviceI->getCameraInfo();
 }
 
+void SemanticSearchPage::setTableData(QVector<RestServiceI::DataRectureItem> &data)
+{
+    dataListW_->clear();
+    for(int i = 0; i < personTypeVec_.count(); i++){
+        if(personTypeCombox_->itemText(curMode_) == personTypeVec_.at(i).first){
+            for(int j = 0; j < dataMenu_->actions().count(); j++){
+                dataMenu_->actions().at(j)->setEnabled(personTypeVec_.at(i).second.contains(j));
+            }
+            break;
+        }
+    }
+    QFontMetrics fs(dataListW_->font());
+    int textwidth = itemSize_.width() / (fs.height() >> 1);
+    for (RestServiceI::DataRectureItem &info : data) {
+        QString cameraPosStr = cameraMapInfo_.value(info.cameraId);
+        if(fs.width(cameraPosStr) >  itemSize_.width()){
+            cameraPosStr = cameraPosStr.left(textwidth);
+            cameraPosStr.remove(cameraPosStr.count() - 4, 3);
+            cameraPosStr.append("...");
+        }
+        QListWidgetItem *item = new QListWidgetItem(cameraPosStr + '\n' + info.time.toString("yyyy-MM-dd HH:mm:ss"));
+        item->setSizeHint(itemSize_);
+        item->setIcon(QPixmap::fromImage(info.img));
+        item->setData(Qt::UserRole+1,info.img);
+        item->setData(Qt::UserRole+2,info.id);
+        item->setData(Qt::UserRole+3,info.cameraId);
+        item->setData(Qt::UserRole+4,info.personId);
+        item->setData(Qt::UserRole+5,info.sceneId);
+        item->setToolTip(cameraMapInfo_.value(info.cameraId));
+        item->setTextAlignment(Qt::AlignHCenter);
+        dataListW_->addItem(item);
+    }
+}
+
 void SemanticSearchPage::slotSemanticSearch(int page)
 {
     ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
@@ -627,7 +665,7 @@ void SemanticSearchPage::slotSemanticSearch(int page)
         searchBtn_->setEnabled(true);
         noDataW_->show();
     });
-    connect(serviceI,&RestServiceI::sigSemanticSearch,this,[this,label](RestServiceI::SemanticReturnData &returnData){
+    connect(serviceI,&RestServiceI::sigSemanticSearch,this,[this,label](RestServiceI::SemanticReturnData returnData){
         label->close();
         pageIndicator_->adjustRow();
         if(needUpdatePageInfo_){
@@ -637,52 +675,63 @@ void SemanticSearchPage::slotSemanticSearch(int page)
         if(returnData.toatal == 0){
             noDataW_->show();
         }
-        dataListW_->clear();
-        QVector<std::tuple<QImage, QString, QString, QString, QDateTime,QString,QString> > dataListVec;
-        std::transform(returnData.records.begin(),returnData.records.end(),std::back_inserter(dataListVec),[this](RestServiceI::DataRectureItem &nodeV){
-            return std::make_tuple(nodeV.img,nodeV.id,nodeV.cameraId,cameraMapInfo_.value(nodeV.cameraId),nodeV.time,nodeV.personId,nodeV.sceneId);
-        });
-        for(int i = 0; i < personTypeVec_.count(); i++){
-            if(personTypeCombox_->itemText(curMode_) == personTypeVec_.at(i).first){
-                for(int j = 0; j < dataMenu_->actions().count(); j++){
-                    dataMenu_->actions().at(j)->setEnabled(personTypeVec_.at(i).second.contains(j));
-                }
-                break;
-            }
-        }
-        QFontMetrics fs(dataListW_->font());
-        int textwidth = itemSize_.width() / (fs.height() >> 1);
-        for (RestServiceI::DataRectureItem &info : returnData.records) {
-            QString cameraPosStr = cameraMapInfo_.value(info.cameraId);
-            if(fs.width(cameraPosStr) >  itemSize_.width()){
-                cameraPosStr = cameraPosStr.left(textwidth);
-                cameraPosStr.remove(cameraPosStr.count() - 4, 3);
-                cameraPosStr.append("...");
-            }
-            QListWidgetItem *item = new QListWidgetItem(cameraPosStr + '\n' + info.time.toString("yyyy-MM-dd HH:mm:ss"));
-            item->setSizeHint(itemSize_);
-            item->setIcon(QPixmap::fromImage(info.img));
-            item->setData(Qt::UserRole+1,info.img);
-            item->setData(Qt::UserRole+2,info.id);
-            item->setData(Qt::UserRole+3,info.cameraId);
-            item->setData(Qt::UserRole+4,info.personId);
-            item->setData(Qt::UserRole+5,info.sceneId);
-            item->setToolTip(cameraMapInfo_.value(info.cameraId));
-            item->setTextAlignment(Qt::AlignHCenter);
-            dataListW_->addItem(item);
-        }
+        setTableData(returnData.records);
         pageIndicator_->setEnabled(true);
         searchBtn_->setEnabled(true);
     });
     RestServiceI::SemanticSearchArgs args;
     args.cameraId = curCameraId_;
-    args.mode = curMode_;
+    args.mode = 0;
     args.startT = curStartTime_;
     args.endT = curEndTime_;
     args.pageNo = page;
     args.pageSize = dataRows_ * dataCols_;
     args.faceAttributList = curfaceAttrList_;
     serviceI->semanticSearch(args);
+    label->show(500);
+    pageIndicator_->setEnabled(false);
+    searchBtn_->setEnabled(false);
+    noDataW_->hide();
+    dataListW_->clear();
+}
+
+void SemanticSearchPage::slotSearchFaceLink(int page)
+{
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
+    WaitingLabel *label = new WaitingLabel(dataListW_);
+    connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
+        label->close();
+        delete label;
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(userStyle());
+        infoDialog.showMessage(str);
+        pageIndicator_->setEnabled(true);
+        searchBtn_->setEnabled(true);
+        noDataW_->show();
+    });
+    connect(serviceI,&RestServiceI::sigFaceLinkDataColl,this,[this,label](RestServiceI::FaceLinkDataCollReturn &returnData){
+        label->close();
+        delete label;
+        pageIndicator_->adjustRow();
+        if(needUpdatePageInfo_){
+            pageIndicator_->setPageInfo(returnData.totalPage,returnData.toatal);
+            needUpdatePageInfo_ = false;
+        }
+        if(returnData.toatal == 0){
+            noDataW_->show();
+        }
+        setTableData(returnData.records);
+        pageIndicator_->setEnabled(true);
+        searchBtn_->setEnabled(true);
+    });
+    RestServiceI::FaceLinkDataCollArgs args;
+    args.cameraId = curCameraId_;
+    args.startT = curStartTime_;
+    args.endT = curEndTime_;
+    args.pageNo = page;
+    args.pageSize = dataRows_ * dataCols_;
+    serviceI->getFaceLinkDataColl(args);
     label->show(500);
     pageIndicator_->setEnabled(false);
     searchBtn_->setEnabled(false);
@@ -703,6 +752,63 @@ QStringList SemanticSearchPage::checkedAttrbute(QTreeWidgetItem *item)
     return attrbuteList;
 }
 
+void SemanticSearchPage::slotPageIndexChanged(int page)
+{
+    if(curMode_ == 0){
+        slotSearchAll(page);
+    }else if(curMode_ == 1){
+        slotSemanticSearch(page);
+    }else if(curMode_ == 2){
+        slotSearchFaceLink(2);
+    }
+}
+
+void SemanticSearchPage::slotSearchAll(int page)
+{
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
+    WaitingLabel *label = new WaitingLabel(dataListW_);
+    connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
+        label->close();
+        delete label;
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(userStyle());
+        infoDialog.showMessage(str);
+        infoDialog.exec();
+        pageIndicator_->setEnabled(true);
+        searchBtn_->setEnabled(true);
+        noDataW_->show();
+    });
+    connect(serviceI,&RestServiceI::sigCaptureSearch,this,[this,label](RestServiceI::CaptureSearchReturnData value){
+        label->close();
+        delete label;
+        pageIndicator_->adjustRow();
+        if(needUpdatePageInfo_){
+            pageIndicator_->setPageInfo(value.totalPage,value.totalCount);
+            needUpdatePageInfo_ = false;
+        }
+        if(value.totalCount == 0){
+            noDataW_->show();
+        }
+        setTableData(value.data);
+        pageIndicator_->setEnabled(true);
+        searchBtn_->setEnabled(true);
+    });
+    RestServiceI::CaptureSearchArgs args;
+    args.page = page;
+    args.pageCount = dataRows_ * dataCols_;
+    args.position = curCameraId_;
+    args.faceAttributList = curfaceAttrList_;
+    args.start = curStartTime_;
+    args.end = curEndTime_;
+    serviceI->captureSearch(args);
+    label->show(500);
+    pageIndicator_->setEnabled(false);
+    searchBtn_->setEnabled(false);
+    noDataW_->hide();
+    dataListW_->clear();
+}
+
 void SemanticSearchPage::slotSearchBtnClicked()
 {
     curfaceAttrList_.clear();
@@ -712,7 +818,7 @@ void SemanticSearchPage::slotSearchBtnClicked()
     curStartTime_ = startTimeEdit_->dateTime();
     curEndTime_ = endTimeEdit_->dateTime();
     needUpdatePageInfo_ = true;
-    slotSemanticSearch(1);
+    slotPageIndexChanged(1);
 }
 
 void SemanticSearchPage::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)

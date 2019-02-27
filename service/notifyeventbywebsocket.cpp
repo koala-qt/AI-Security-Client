@@ -70,8 +70,9 @@ void NotifyEventByWebSocket::onTextMessageReceived(QString message)
     if(eventType == "smsr_alarm_intruder"){
         IntruderEventData evData;
         evData.bodyId = jsObj.value("bodyId").toString();
-        evData.deviceId = jsObj.value("deviceId").toInt();
+        evData.deviceName = jsObj.value("deviceName").toString();
         evData.sceneId = jsObj.value("sceneId").toString();
+        evData.eventType = eventType;
         evData.timeStamp = QDateTime::fromMSecsSinceEpoch(jsObj.value("timeStamp").toVariant().toULongLong());
         QJsonArray jsArray = jsObj.value("warnZone").toArray();
         QVector<int> pointVec;
@@ -97,9 +98,81 @@ void NotifyEventByWebSocket::onTextMessageReceived(QString message)
     }else if(eventType == "smsr_alarm_abdoor"){
         ABDoorEventData evData;
         evData.bodyId = jsObj.value("bodyId").toString();
-        evData.deviceId = jsObj.value("deviceId").toInt();
+        evData.deviceName = jsObj.value("deviceName").toString();
         evData.sceneId = jsObj.value("sceneId").toString();
+        evData.eventType = eventType;
         evData.timeStamp = QDateTime::fromMSecsSinceEpoch(jsObj.value("timeStamp").toVariant().toULongLong());
+        QJsonArray jsArray = jsObj.value("warnZone").toArray();
+        QVector<int> pointVec;
+        std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(pointVec),[](QJsonValue jsVal){
+            return jsVal.toInt();
+        });
+        if(!pointVec.isEmpty() && !(pointVec.count() % 2))
+        {
+            for(int i = 0; i < pointVec.count(); i = i + 2){
+                evData.warnZone << QPointF(qreal(pointVec.at(i)) / 2, qreal(pointVec.at(i + 1)) / 2);
+            }
+        }
+        RestServiceI *serviceI = serFactory_->makeRestServiceI();
+        connect(serviceI,&RestServiceI::sigDownloadImage,this,[this,evData](QImage img){
+            ABDoorEventData newData = evData;
+            newData.sceneImg = img;
+            emit sigABDoorEventData(newData);
+        });
+        connect(serviceI,&RestServiceI::sigError,this,[this](QString str){
+            qDebug() << str;
+        });
+        serviceI->getImageByUrl(jsObj.value("url").toString());
+    }else if(eventType == tr("smsr_alarm_climb")){
+        ClimbEventData evData;
+        evData.bodyId = jsObj.value("bodyId").toString();
+        evData.deviceName = jsObj.value("deviceName").toString();
+        evData.eventType = eventType;
+        evData.lat = jsObj.value("lat").toDouble();
+        evData.lng = jsObj.value("lng").toDouble();
+        evData.sceneId = jsObj.value("sceneId").toString();
+        evData.sourceId = jsObj.value("sourceId").toString();
+        evData.timeStamp = QDateTime::fromMSecsSinceEpoch(jsObj.value("timeStamp").toVariant().toULongLong());
+        QJsonArray jsArray = jsObj.value("warnZone").toArray();
+        QVector<int> pointVec;
+        std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(pointVec),[](QJsonValue jsVal){
+            return jsVal.toInt();
+        });
+        if(!pointVec.isEmpty() && !(pointVec.count() % 2))
+        {
+            for(int i = 0; i < pointVec.count(); i = i + 2){
+                evData.warnZone << QPointF(qreal(pointVec.at(i)) / 2, qreal(pointVec.at(i + 1)) / 2);
+            }
+        }
+        RestServiceI *serviceI = serFactory_->makeRestServiceI();
+        connect(serviceI,&RestServiceI::sigDownloadImage,this,[this,evData](QImage img){
+            ClimbEventData newData = evData;
+            newData.sceneImg = img;
+            emit sigClimbEventData(newData);
+        });
+        connect(serviceI,&RestServiceI::sigError,this,[this](QString str){
+            qDebug() << str;
+        });
+        serviceI->getImageByUrl(jsObj.value("url").toString());
+    }else if(eventType == tr("smsr_alarm_gather")){
+        GatherEventData evData;
+        evData.deviceName = jsObj.value("deviceName").toString();
+        evData.eventType = eventType;
+        evData.lat = jsObj.value("lat").toDouble();
+        evData.lng = jsObj.value("lng").toDouble();
+        evData.sceneId = jsObj.value("sceneId").toString();
+        evData.sourceId = jsObj.value("sourceId").toString();
+        evData.timeStamp = QDateTime::fromMSecsSinceEpoch(jsObj.value("timeStamp").toVariant().toULongLong());
+        RestServiceI *serviceI = serFactory_->makeRestServiceI();
+        connect(serviceI,&RestServiceI::sigDownloadImage,this,[this,evData](QImage img){
+            GatherEventData newData = evData;
+            newData.sceneImg = img;
+            emit sigGatherEventData(newData);
+        });
+        connect(serviceI,&RestServiceI::sigError,this,[this](QString str){
+            qDebug() << str;
+        });
+        serviceI->getImageByUrl(jsObj.value("url").toString());
     }else if(eventType == "smsr_alarm_face"){
         PersonEventData evData;
         evData.faceId = jsObj.value("faceId").toString();

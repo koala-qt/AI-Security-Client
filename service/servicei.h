@@ -68,6 +68,8 @@ public:
         int page;
         int pageCount;
         QString position;
+        QStringList faceAttributList;
+        QStringList bodyAttributeList;
         QDateTime start;
         QDateTime end;
     };
@@ -234,12 +236,29 @@ public:
         int totalPage;
         QVector<DataRectureItem> records;
     };
+    struct EventSearchItem
+    {
+        QString id;
+        QString sourceId;
+        QString sourceName;
+        QString eventType;
+        QString sceneId;
+        QString bodyId;
+        QPolygonF warnZong;
+        QDateTime timeStamp;
+    };
+    struct EventSearchReturn
+    {
+        int total;
+        int totalPage;
+        QVector<EventSearchItem> data;
+    };
     RestServiceI(QObject *parent = nullptr):QObject(parent){
         qRegisterMetaType<QVector<RestServiceI::CameraInfo>>("QVector<RestServiceI::CameraInfo>");
         qRegisterMetaType<PagedSnapFaceHis>("PagedSnapFaceHis");
         qRegisterMetaType<QVector<StatisTask>>("QVector<StatisTask>");
         qRegisterMetaType<QVector<QPolygonF>>("QVector<QPolygonF>");
-        qRegisterMetaType<PagedAlarmHis>("PagedAlarmHis");
+        qRegisterMetaType<RestServiceI::EventSearchReturn>("RestServiceI::EventSearchReturn");
         qRegisterMetaType<QVector<QPair<int,QPolygonF>>>("QVector<QPair<int,QPolygonF>>");
         qRegisterMetaType<QVector<SearchFace>>("QVector<SearchFace>");
         qRegisterMetaType<QVector<RestServiceI::CameraGoup>>("QVector<RestServiceI::CameraGoup>");
@@ -299,7 +318,7 @@ signals:
     void sigCameraGroup(QVector<RestServiceI::CameraGoup>);
     void sigCameraInfo(QVector<RestServiceI::CameraInfo>);
     void sigCaptureSearch(RestServiceI::CaptureSearchReturnData);
-    void sigAlarmHistory(PagedAlarmHis);
+    void sigAlarmHistory(RestServiceI::EventSearchReturn);
     void sigFaceLinkTree(QJsonObject);
     void sigPeronsDetails(QImage,QImage,QStringList,QStringList);
     void sigPersonNumbers(int,int);
@@ -341,19 +360,51 @@ class NotifyEventI : public QThread
 public:
     struct IntruderEventData
     {
-        int deviceId;
+        qreal lat;
+        qreal lng;
         QPolygonF warnZone;
         QString bodyId;
         QString sceneId;
+        QString deviceName;
+        QString eventType;
+        QString sourceId;
         QDateTime timeStamp;
         QImage sceneImg;
     };
     struct ABDoorEventData
     {
+        qreal lat;
+        qreal lng;
         QPolygonF warnZone;
         QString bodyId;
-        QString deviceId;
         QString sceneId;
+        QString deviceName;
+        QString eventType;
+        QString sourceId;
+        QDateTime timeStamp;
+        QImage sceneImg;
+    };
+    struct ClimbEventData
+    {
+        qreal lat;
+        qreal lng;
+        QPolygonF warnZone;
+        QString bodyId;
+        QString deviceName;
+        QString eventType;
+        QString sceneId;
+        QString sourceId;
+        QDateTime timeStamp;
+        QImage sceneImg;
+    };
+    struct GatherEventData
+    {
+        QString deviceName;
+        QString eventType;
+        qreal lat;
+        qreal lng;
+        QString sceneId;
+        QString sourceId;
         QDateTime timeStamp;
         QImage sceneImg;
     };
@@ -380,19 +431,25 @@ public:
         qRegisterMetaType<NotifyEventI::IntruderEventData>("NotifyEventI::IntruderEventData");
         qRegisterMetaType<NotifyEventI::ABDoorEventData>("NotifyEventI::ABDoorEventData");
         qRegisterMetaType<NotifyEventI::PersonEventData>("NotifyEventI::PersonEventData");
+        qRegisterMetaType<NotifyEventI::GatherEventData>("NotifyEventI::GatherEventData");
+        qRegisterMetaType<NotifyEventI::ClimbEventData>("NotifyEventI::ClimbEventData");
     }
 
 signals:
     void sigIntruderEvent(NotifyEventI::IntruderEventData);
     void sigABDoorEventData(NotifyEventI::ABDoorEventData);
     void sigPersonEventData(NotifyEventI::PersonEventData);
+    void sigGatherEventData(NotifyEventI::GatherEventData);
+    void sigClimbEventData(NotifyEventI::ClimbEventData);
 };
 
 class NotifyServiceI : public QObject
 {
     Q_OBJECT
 public:
-    NotifyServiceI(QObject *parent = nullptr):QObject(parent){}
+    NotifyServiceI(QObject *parent = nullptr):QObject(parent){
+
+    }
     virtual void start() = 0;
     virtual void stop() = 0;
 
@@ -404,5 +461,7 @@ signals:
     void sigABDoorEventData(NotifyEventI::ABDoorEventData);
     void sigPersonEventData(NotifyEventI::PersonEventData);
     void sigVideoFacePicture(QString,QImage);
+    void sigGatherEventData(NotifyEventI::GatherEventData);
+    void sigClimbEventData(NotifyEventI::ClimbEventData);
 };
 #endif // SERVICEI_H

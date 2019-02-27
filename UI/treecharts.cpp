@@ -20,7 +20,7 @@ TreeCharts::TreeCharts(QWidget *parent)
 #else
     load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/calendar-charts.html"));
 #endif
-    page()->setBackgroundColor(QColor(66,66,66,50));
+    page()->setBackgroundColor(QColor(66,66,66,20));
     setContextMenuPolicy(Qt::NoContextMenu);
 }
 
@@ -41,6 +41,7 @@ void TreeCharts::stopWaiting()
 
 void TreeBridge::updateData(QJsonObject &jsObj)
 {
+    qDebug() << jsObj;
     if(isInitsized_){
         emit sigDataChanged(jsObj);
     }else{
