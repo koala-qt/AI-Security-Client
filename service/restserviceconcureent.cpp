@@ -430,6 +430,38 @@ void RestConcurrent::uploadVideo(QString videoPath)
     fwatcher->setFuture(QtConcurrent::run(cppDao,&DLL::CppHttpDao::uploadVideo,videoPath));
 }
 
+void RestConcurrent::portraitLibCompSearch(RestServiceI::PortraitLibCompArgs &args)
+{
+    QVector<PortraitLibCompItem> *resVec = new QVector<PortraitLibCompItem>;
+    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>(this);
+    connect(fwatcher,&QFutureWatcher<QString>::finished,this,[this,resVec,fwatcher]{
+        if(fwatcher->result().isEmpty()){
+            emit sigPortraitLibCompResult(*resVec);
+        }else{
+            emit sigError(fwatcher->result());
+        }
+        delete resVec;
+    });
+    connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
+    fwatcher->setFuture(QtConcurrent::run(curlRest_,&DLL::CloudHttpDao::portraitLibCompSearch,args,resVec));
+}
+
+void RestConcurrent::queryPersonTypes()
+{
+    QVector<PersonType> *resVec = new QVector<PersonType>;
+    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>(this);
+    connect(fwatcher,&QFutureWatcher<QString>::finished,this,[this,resVec,fwatcher]{
+        if(fwatcher->result().isEmpty()){
+            emit sigPersonTypesResult(*resVec);
+        }else{
+            emit sigError(fwatcher->result());
+        }
+        delete resVec;
+    });
+    connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
+    fwatcher->setFuture(QtConcurrent::run(curlRest_,&DLL::CloudHttpDao::queryPersonTypes,resVec));
+}
+
 void RestConcurrent::setWaringArea(const QString cameraId, const QVector<QPair<int, QPolygonF> > &polygonsa)
 {
     std::vector<std::pair<AreaType::type,std::vector<Point>>> polyPoints;

@@ -887,6 +887,100 @@ QString DLL::CloudHttpDao::eventSearch(RestServiceI::EventSearchArgs &args, Rest
     return QString();
 }
 
+QString DLL::CloudHttpDao::portraitLibCompSearch(RestServiceI::PortraitLibCompArgs &args, QVector<RestServiceI::PortraitLibCompItem> *resVec)
+{
+#if 0
+    QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-history");
+#else
+    QString urlStr = QObject::tr("http://192.168.2.145:8080/api/v2/cmcc/portrait/search");
+#endif
+    QByteArray imgStr;
+    QBuffer imgBuf(&imgStr);
+    imgBuf.open(QIODevice::WriteOnly);
+    args.image.save(&imgBuf,"jpg");
+    QString base64Str(imgStr.toBase64(QByteArray::Base64UrlEncoding));
+    QString postData = QObject::tr("similarity=%1&limit=%2&picture=%3&requireBase64=%4&personType=%5&token=%6")
+            .arg(args.similarity)
+            .arg(args.limit)
+            .arg(base64Str)
+            .arg(args.bRequireBase64)
+            .arg(args.libType)
+            //.arg(args.nPersonId)
+            //.arg(args.strPersonName)
+            .arg("7d1e52d3cf0142e19b5901eb1ef91372");
+    if (args.nPersonId > 0)
+    {
+        postData.append(QString("&personId=%1").arg(args.nPersonId));
+    }
+    if (!args.strPersonName.isEmpty())
+    {
+        postData.append(QString("&personName=%1").arg(args.strPersonName));
+    }
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),60);
+    if(resCode != CURLE_OK){
+        return curl_easy_strerror(CURLcode(resCode));
+    }
+
+    QJsonParseError jsError;
+    QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
+    if(jsError.error != QJsonParseError::NoError){
+        return jsError.errorString();
+    }
+
+    QJsonObject jsObj = jsDoc.object();
+    int status = jsObj.value("status").toInt();
+    if(status != 200){
+        return jsObj.value("message").toString();
+    }
+    QJsonArray dataJsArray = jsObj.value("data").toArray();
+    std::transform(dataJsArray.begin(),dataJsArray.end(),std::back_inserter(*resVec),[](QJsonValue jsVal){
+        RestServiceI::PortraitLibCompItem sitem;
+        QJsonObject itemObj = jsVal.toObject();
+        sitem.strPersonName = itemObj.value("personName").toString();
+        sitem.nPersonId = itemObj.value("personId").toInt();
+        sitem.faceImg.loadFromData(QByteArray::fromBase64(itemObj.value("picture").toString().toLatin1()));
+        sitem.dSimilarity = itemObj.value("similarity").toDouble();
+        sitem.strSubType = itemObj.value("personGroupName").toString();
+        return sitem;
+    });
+    return QString();
+}
+
+QString DLL::CloudHttpDao::queryPersonTypes(QVector<RestServiceI::PersonType> *resVec)
+{
+#if 0
+    QString urlStr = host_ +  QObject::tr("api/v2/person/type/find?token=7d1e52d3cf0142e19b5901eb1ef91372");
+#else
+    QString urlStr = "http://192.168.2.145:8080/api/v2/person/type/find?token=7d1e52d3cf0142e19b5901eb1ef91372"; // internal test
+#endif
+
+    int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),60);
+    if(resCode != CURLE_OK){
+        return curl_easy_strerror(CURLcode(resCode));
+    }
+
+    QJsonParseError jsError;
+    QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
+    if(jsError.error != QJsonParseError::NoError){
+        return jsError.errorString();
+    }
+
+    QJsonObject jsObj = jsDoc.object();
+    int status = jsObj.value("status").toInt();
+    if(status != 200){
+        return jsObj.value("message").toString();
+    }
+    QJsonArray dataJsArray = jsObj.value("data").toArray();
+    std::transform(dataJsArray.begin(),dataJsArray.end(),std::back_inserter(*resVec),[](QJsonValue jsVal){
+        RestServiceI::PersonType sitem;
+        QJsonObject itemObj = jsVal.toObject();
+        sitem.strTypeName = itemObj.value("name").toString();
+        sitem.nId = itemObj.value("id").toInt();
+        sitem.strTypeNo = itemObj.value("no").toString();
+        return sitem;
+    });
+    return QString();
+}
 int DLL::CloudHttpDao::progress(double totalDownLoad, double downloaded, double totalUpload, double uploaded)
 {
     return 0;

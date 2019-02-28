@@ -35,6 +35,16 @@ public:
     void semanticSearch(SemanticSearchArgs &) override;
     void searchByImage(SearchUseImageArgs &) override;
     void uploadVideo(QString videoPath) override;
+    /**
+     * Added by aihc for Portrait library comparison.
+     * @brief portraitLibCompSearch
+     */
+    void portraitLibCompSearch(PortraitLibCompArgs &args) override;
+    /**
+     * Added by aihc for Portrait library comparison.
+     * @brief queryPersonTypes
+     */
+    void queryPersonTypes() override;
 
 private:
     ThriftDao thriftDao_;

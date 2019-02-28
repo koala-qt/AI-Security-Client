@@ -263,6 +263,47 @@ public:
         int totalPage;
         QVector<EventSearchItem> data;
     };
+
+    /**
+     * Added by aihc for Portrait library comparison.
+     * @brief The PersonType struct
+     */
+    struct PersonType
+    {
+        int nId;
+        QString strTypeNo;
+        QString strTypeName;
+    };
+    /**
+     * Added by aihc for Portrait library comparison.
+     * @brief The PortraitLibCompArgs struct
+     */
+    struct PortraitLibCompArgs
+    {
+        //int pageNo;
+        //int pageSize;
+        QImage image;
+        QString libType; // Not ID.This is the field no.
+        int nPersonId;
+        QString strPersonName; // Name
+        float similarity;
+        int limit;
+        bool bRequireBase64; // Whether to return image data.
+    };
+    /**
+     * Added by aihc for Portrait library comparison.
+     * @brief The Portrait library comparison struct
+     */
+    struct PortraitLibCompItem
+    {
+        QImage faceImg; // picture
+        QString strPersonName;
+        int nPersonId;
+        double dSimilarity;
+        //QString nBigPersonType;
+        QString strSubType;
+    };
+
     RestServiceI(QObject *parent = nullptr):QObject(parent){
         qRegisterMetaType<QVector<RestServiceI::CameraInfo>>("QVector<RestServiceI::CameraInfo>");
         qRegisterMetaType<PagedSnapFaceHis>("PagedSnapFaceHis");
@@ -285,6 +326,10 @@ public:
         qRegisterMetaType<QVector<QPointF>>("QVector<QPointF>");
         qRegisterMetaType<QVector<QVector<double> >>("QVector<QVector<double> >");
         qRegisterMetaType<QVector<QImage>>("QVector<QImage>");
+        // Added by aihc begin
+        qRegisterMetaType<QVector<RestServiceI::PortraitLibCompItem>>("QVector<RestServiceI::PortraitLibCompItem>");
+        qRegisterMetaType<QVector<RestServiceI::PersonType>>("QVector<RestServiceI::PersonType>");
+        // Added by aihc end
     }
     virtual void getSceneInfo(const QString old) = 0;
     virtual void faceTracking(FaceTrackingArgs) = 0;
@@ -311,6 +356,16 @@ public:
     virtual void semanticSearch(SemanticSearchArgs &) = 0;
     virtual void searchByImage(SearchUseImageArgs &) = 0;
     virtual void uploadVideo(QString videoPath) = 0;
+    /**
+     * Added by aihc for Portrait library comparison.
+     * @brief portraitLibCompSearch
+     */
+    virtual void portraitLibCompSearch(PortraitLibCompArgs &) = 0;
+    /**
+     * Added by aihc for Portrait library comparison.
+     * @brief queryPersonType
+     */
+    virtual void queryPersonTypes() = 0;
 
 signals:
     void sigFaceLinkFinished(QString);
@@ -339,6 +394,16 @@ signals:
     void sigMultipleSearch(QVector<RestServiceI::MultipleSearchItem>);
     void sigFaceLinkDataColl(RestServiceI::FaceLinkDataCollReturn);
     void sigVideoUploadProgress(double,double);
+    /**
+     * Added by aihc for Portrait library comparison.
+     * @brief sigPortraitLibCompResult
+     */
+    void sigPortraitLibCompResult(QVector<RestServiceI::PortraitLibCompItem>);
+    /**
+     * Added by aihc for Portrait library comparison.
+     * @brief sigPersonTypesResult
+     */
+    void sigPersonTypesResult(QVector<RestServiceI::PersonType>);
 };
 
 class NotifyPersonI : public QThread
