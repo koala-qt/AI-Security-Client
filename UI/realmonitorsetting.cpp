@@ -304,7 +304,7 @@ void RealMonitorSetting::slotAddStatis(bool s)
     }else{
         InformationDialog infoDialog(this);
         infoDialog.setUserStyle(1);
-        infoDialog.showMessage(tr("Add path failed"));
+        infoDialog.setMessage(tr("Add path failed"));
         infoDialog.exec();
     }
 }
@@ -316,7 +316,7 @@ void RealMonitorSetting::slotRemoveStatis(bool s)
     }else{
         InformationDialog infoDialog(this);
         infoDialog.setUserStyle(1);
-        infoDialog.showMessage(tr("Deleted path failed"));
+        infoDialog.setMessage(tr("Deleted path failed"));
         infoDialog.exec();
     }
 }

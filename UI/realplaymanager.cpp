@@ -160,7 +160,7 @@ void RealPlayManager::playByFocus(QString url, QString id, QString name)
     if(! (w = dynamic_cast<VideoPlayer*>(m_focusFrame->widget()))){
         InformationDialog infoDialog(this);
         infoDialog.setUserStyle(userStyle());
-        infoDialog.showMessage(tr("Please select a window first"));
+        infoDialog.setMessage(tr("Please select a window first"));
         infoDialog.exec();
         return;
     }
@@ -168,7 +168,7 @@ void RealPlayManager::playByFocus(QString url, QString id, QString name)
     if(m_videoMap.contains(id)){
         InformationDialog infoDialog(this);
         infoDialog.setUserStyle(userStyle());
-        infoDialog.showMessage(tr("Already in the play window"));
+        infoDialog.setMessage(tr("Already in the play window"));
         infoDialog.exec();
         return;
     }

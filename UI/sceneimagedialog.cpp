@@ -211,7 +211,7 @@ void SceneImageDialog::slotSaveBtnClicked()
     if(!curScenInfo_.image.save(filePath)){
         InformationDialog infoDialog(this);
         infoDialog.setUserStyle(1);
-        infoDialog.showMessage("Operation failed!");
+        infoDialog.setMessage("Operation failed!");
     }
 }
 

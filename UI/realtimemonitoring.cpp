@@ -108,7 +108,7 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
             delete label;
             InformationDialog infoDialog(this);
             infoDialog.setUserStyle(userStyle());
-            infoDialog.showMessage(str);
+            infoDialog.setMessage(str);
             infoDialog.exec();
             faceItemMenu_->setEnabled(true);
         });
@@ -147,7 +147,7 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
             delete label;
             InformationDialog infoDialog(this);
             infoDialog.setUserStyle(userStyle());
-            infoDialog.showMessage(str);
+            infoDialog.setMessage(str);
             infoDialog.exec();
             faceItemMenu_->setEnabled(true);
         });
@@ -543,7 +543,7 @@ void RealtimeMonitoring::slotTreeItemDoubleClicked(QTreeWidgetItem *item, int co
     if(!m_realPlayM->focusPlayer()){
         InformationDialog infoDialog(this);
         infoDialog.setUserStyle(userStyle());
-        infoDialog.showMessage("Please selecte a window");
+        infoDialog.setMessage("Please selecte a window");
         infoDialog.exec();
         return;
     }

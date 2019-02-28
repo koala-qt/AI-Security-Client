@@ -96,7 +96,7 @@ CombinationPage::CombinationPage( WidgetI *parent):
         if(!faceTable_->item(faceTable_->currentRow(),0)->data(Qt::UserRole).value<QImage>().save(filePath)){
             InformationDialog infoDialog(this);
             infoDialog.setUserStyle(userStyle());
-            infoDialog.showMessage("Operation failed!");
+            infoDialog.setMessage("Operation failed!");
             infoDialog.exec();
         }
     });
@@ -109,7 +109,7 @@ CombinationPage::CombinationPage( WidgetI *parent):
             delete label;
             InformationDialog infoDialog(this);
             infoDialog.setUserStyle(userStyle());
-            infoDialog.showMessage(str);
+            infoDialog.setMessage(str);
             infoDialog.exec();
             faceDataMenu_->setEnabled(true);
         });
@@ -139,7 +139,7 @@ CombinationPage::CombinationPage( WidgetI *parent):
         if(!bodyTable_->item(bodyTable_->currentRow(),0)->data(Qt::UserRole).value<QImage>().save(filePath)){
             InformationDialog infoDialog(this);
             infoDialog.setUserStyle(userStyle());
-            infoDialog.showMessage("Operation failed!");
+            infoDialog.setMessage("Operation failed!");
             infoDialog.exec();
         }
     });
@@ -152,7 +152,7 @@ CombinationPage::CombinationPage( WidgetI *parent):
         if(!bodyTable_->item(bodyTable_->currentRow(),1)->data(Qt::UserRole).value<QImage>().save(filePath)){
             InformationDialog infoDialog(this);
             infoDialog.setUserStyle(userStyle());
-            infoDialog.showMessage("Operation failed!");
+            infoDialog.setMessage("Operation failed!");
             infoDialog.exec();
         }
     });
@@ -165,7 +165,7 @@ CombinationPage::CombinationPage( WidgetI *parent):
             delete label;
             InformationDialog infoDialog(this);
             infoDialog.setUserStyle(userStyle());
-            infoDialog.showMessage(str);
+            infoDialog.setMessage(str);
             infoDialog.exec();
             bodyDataMenu_->setEnabled(true);
         });
@@ -326,7 +326,7 @@ void CombinationPage::slotSearchBtnClicked()
         delete label;
         InformationDialog infoDialog(this);
         infoDialog.setUserStyle(userStyle());
-        infoDialog.showMessage(str);
+        infoDialog.setMessage(str);
         infoDialog.exec();
         searchBtn_->setEnabled(true);
         noFaceDataW_->show();

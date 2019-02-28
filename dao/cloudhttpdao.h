@@ -27,7 +27,7 @@ public:
     QString combinationSearch(RestServiceI::CombinationSearchArgs &, RestServiceI::CombinationSearchReturenData *resData);
     QString multipleSearch(RestServiceI::MultipleSearchArgs &,QVector<RestServiceI::MultipleSearchItem> *);
     QString getFaceLinkDataColl(RestServiceI::FaceLinkDataCollArgs &args, RestServiceI::FaceLinkDataCollReturn *resDatas);
-    QString eventSearch(const int page,const int pageCount, const QString &cameraId,const QString &alarmType,const QDateTime &start,const QDateTime &end,RestServiceI::EventSearchReturn *resData);
+    QString eventSearch(RestServiceI::EventSearchArgs &args,RestServiceI::EventSearchReturn *resData);
 
 protected:
     int progress(double totalDownLoad,double downloaded,double totalUpload, double uploaded) override;

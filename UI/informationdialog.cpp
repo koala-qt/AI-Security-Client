@@ -47,7 +47,7 @@ QSize InformationDialog::sizeHint() const
     return QSize(250,160);
 }
 
-void InformationDialog::showMessage(QString str)
+void InformationDialog::setMessage(QString str)
 {
     textL_->setText(str);
 }

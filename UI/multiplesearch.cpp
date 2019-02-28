@@ -67,7 +67,7 @@ MultipleSearch::MultipleSearch( WidgetI *parent):
             delete label;
             InformationDialog infoDialog(this);
             infoDialog.setUserStyle(userStyle());
-            infoDialog.showMessage(str);
+            infoDialog.setMessage(str);
             infoDialog.exec();
             dataMenu_->setEnabled(true);
         });
@@ -332,7 +332,7 @@ void MultipleSearch::slotSearchBtnClicked()
         delete label;
         InformationDialog infoDialog(this);
         infoDialog.setUserStyle(userStyle());
-        infoDialog.showMessage(str);
+        infoDialog.setMessage(str);
         infoDialog.exec();
         searchBtn_->setEnabled(true);
         noDataW_->show();

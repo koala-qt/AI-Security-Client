@@ -20,7 +20,7 @@ DLL::CloudHttpDao::CloudHttpDao()
 
     QSettings configSetting("config.ini",QSettings::IniFormat);
     host_ = configSetting.value("Http/Javahost").toString();
-    attributeThresold_ = configSetting.value("CloudHost/attributeThreshold").toFloat();
+    attributeThresold_ = configSetting.value("Http/attributeThreshold").toFloat();
 
 }
 
@@ -390,6 +390,7 @@ QString DLL::CloudHttpDao::getPeronAverageTime(RestServiceI::AveragePersonTimeAr
 QString DLL::CloudHttpDao::getPersonDetailes(QString &objId, QImage *face, QImage *body, QStringList *attrsface, QStringList *attrsbody)
 {
     QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/portrait?objId=%1&threshold=%2").arg(objId).arg(attributeThresold_);
+    qDebug() << urlStr << objId;
     int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),5);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
@@ -832,14 +833,13 @@ QString DLL::CloudHttpDao::getFaceLinkDataColl(RestServiceI::FaceLinkDataCollArg
     return QString();
 }
 
-QString DLL::CloudHttpDao::eventSearch(const int page, const int pageCount, const QString &cameraId, const QString &alarmType, const QDateTime &start, const QDateTime &end, RestServiceI::EventSearchReturn *resData)
+QString DLL::CloudHttpDao::eventSearch(RestServiceI::EventSearchArgs &args, RestServiceI::EventSearchReturn *resData)
 {
-    QString urlStr = host_ + QObject::tr("api/v2/cmcc/monitor/alarm/find?event_type=%1&source_id=%2&pageNo=%3&pageSize=%4&startStamp=%5&endStamp=%6")
-            .arg(alarmType,cameraId)
-            .arg(page)
-            .arg(pageCount)
-            .arg(start.toString("yyyy-MM-dd%20HH:mm:ss"),end.toString("yyyy-MM-dd%20HH:mm:ss"));
-    qDebug() << urlStr;
+    QString urlStr = host_ + QObject::tr("api/v2/cmcc/monitor/alarm/find?eventType=%1&sourceId=%2&pageNo=%3&pageSize=%4&startStamp=%5&endStamp=%6")
+            .arg(args.alarmType,args.cameraId)
+            .arg(args.pageNo)
+            .arg(args.pageSize)
+            .arg(args.start.toString("yyyy-MM-dd%20HH:mm:ss"),args.end.toString("yyyy-MM-dd%20HH:mm:ss"));
     int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),4);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
@@ -860,7 +860,7 @@ QString DLL::CloudHttpDao::eventSearch(const int page, const int pageCount, cons
     resData->total = jsObj.value("total").toInt();
     resData->totalPage = jsObj.value("pageNumber").toInt();
     QJsonArray jsArray = jsObj.value("data").toArray();
-    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(resData->data),[](const QJsonValue &jsValue){
+    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(resData->data),[this](const QJsonValue &jsValue){
         RestServiceI::EventSearchItem item;
         QJsonObject itemObj = jsValue.toObject();
         item.id = itemObj.value("id").toString();
@@ -881,6 +881,7 @@ QString DLL::CloudHttpDao::eventSearch(const int page, const int pageCount, cons
             }
         }
         item.timeStamp = QDateTime::fromMSecsSinceEpoch(itemObj.value("timeStamp").toVariant().toULongLong());
+        getImageByUrl(QObject::tr("%1api/v2/external/monitor-detail/download-image?collection=snap_scene&fieldName=snapshot&objId=%2").arg(host_,item.sceneId),&item.image);
         return item;
     });
     return QString();

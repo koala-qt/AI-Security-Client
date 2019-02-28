@@ -10,7 +10,7 @@ class InformationDialog : public QDialog
 public:
     InformationDialog(QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
     QSize sizeHint() const override;
-    void showMessage(QString);
+    void setMessage(QString);
     void setUserStyle(int);
 
 protected:

@@ -236,6 +236,15 @@ public:
         int totalPage;
         QVector<DataRectureItem> records;
     };
+    struct EventSearchArgs
+    {
+        int pageNo;
+        int pageSize;
+        QString cameraId;
+        QString alarmType;
+        QDateTime start;
+        QDateTime end;
+    };
     struct EventSearchItem
     {
         QString id;
@@ -246,6 +255,7 @@ public:
         QString bodyId;
         QPolygonF warnZong;
         QDateTime timeStamp;
+        QImage image;
     };
     struct EventSearchReturn
     {
@@ -297,7 +307,7 @@ public:
     virtual void captureSearch(CaptureSearchArgs &) = 0;
     virtual void setWaringArea(const QString,const QVector<QPair<int,QPolygonF>> &) = 0;
     virtual void getWaringArea(const QString) = 0;
-    virtual void searchAlarmHistory(const int page,const int pageCount, const QString &cameraId,const QString &alarmType,const QDateTime &start,const QDateTime &end) = 0;
+    virtual void searchAlarmHistory(EventSearchArgs &) = 0;
     virtual void semanticSearch(SemanticSearchArgs &) = 0;
     virtual void searchByImage(SearchUseImageArgs &) = 0;
     virtual void uploadVideo(QString videoPath) = 0;

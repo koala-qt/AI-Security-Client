@@ -93,20 +93,17 @@ EventSearch::EventSearch( WidgetI *parent):
             delete label;
             InformationDialog infoDialog(this);
             infoDialog.setUserStyle(userStyle());
-            infoDialog.showMessage(str);
+            infoDialog.setMessage(str);
             infoDialog.exec();
             menu_->setEnabled(true);
         });
-        connect(serviceI,&RestServiceI::sigDownloadImage,this,[&,label](const QImage img){
+        connect(serviceI,&RestServiceI::sigSceneInfo,this,[&,label](const RestServiceI::SceneInfo sinfo){
             label->close();
             delete label;
-            RestServiceI::SceneInfo sinfo;
-            sinfo.image = img;
-            sinfo.sceneId = m_tableW->item(m_tableW->currentRow(),1)->text();
             slotOnSceneInfo(sinfo);
             menu_->setEnabled(true);
         });
-        serviceI->getAlarmScenePic(m_tableW->item(m_tableW->currentRow(),1)->text());
+        serviceI->getSceneInfo(m_tableW->item(m_tableW->currentRow(),1)->text());
         label->show(500);
         menu_->setEnabled(false);
     });
@@ -390,7 +387,7 @@ void EventSearch::slotSearchPageAlarmHistory(int page)
         label->close();
         InformationDialog infoDialog(this);
         infoDialog.setUserStyle(userStyle());
-        infoDialog.showMessage(str);
+        infoDialog.setMessage(str);
         infoDialog.exec();
         m_searchBtn->setEnabled(true);
         m_pageindicator->setEnabled(true);
@@ -402,7 +399,14 @@ void EventSearch::slotSearchPageAlarmHistory(int page)
         m_searchBtn->setEnabled(true);
         m_pageindicator->setEnabled(true);
     });
-    serviceI->searchAlarmHistory(page,20,curCameraid_,curWaringType_,curStartDateTime_,curEndDateTime_);
+    RestServiceI::EventSearchArgs args;
+    args.pageNo = page;
+    args.pageSize = 20;
+    args.cameraId = curCameraid_;
+    args.alarmType = curWaringType_;
+    args.start = curStartDateTime_;
+    args.end = curEndDateTime_;
+    serviceI->searchAlarmHistory(args);
     label->show(500);
     m_searchBtn->setEnabled(false);
     m_pageindicator->setEnabled(false);
@@ -481,24 +485,17 @@ void EventSearch::slotAlarmHistory(RestServiceI::EventSearchReturn data)
         m_pageindicator->setPageInfo(data.totalPage,data.total);
         needUpdatePageInfo_ = false;
     }
-    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
     for(const RestServiceI::EventSearchItem &itemData : data.data){
         m_tableW->insertRow(m_tableW->rowCount());
         QTableWidgetItem *item = new QTableWidgetItem;
         m_tableW->setItem(m_tableW->rowCount() - 1,0,item);
         QLabel *label = new QLabel;
         label->setScaledContents(true);
-
-        RestServiceI *serviceI = factoryI->makeRestServiceI();
-        connect(serviceI,&RestServiceI::sigDownloadImage,label,[label](QImage img){
-            label->setPixmap(QPixmap::fromImage(img));
-        });
-        serviceI->getImageByUrl(tr("%1api/v2/external/monitor-detail/download-image?collection=snap_scene&fieldName=snapshot&objId=%2").arg(javaHost_,itemData.sceneId));
-
+        label->setPixmap(QPixmap::fromImage(itemData.image));
         m_tableW->setCellWidget(m_tableW->rowCount() - 1,0,label);
 
         item = new QTableWidgetItem;
-        item->setText(itemData.id);
+        item->setText(itemData.sceneId);
         item->setTextAlignment(Qt::AlignCenter);
         m_tableW->setItem(m_tableW->rowCount() - 1,1,item);
 

@@ -346,7 +346,7 @@ void RestConcurrent::getWaringArea(const QString cameraId)
     fwatcher->setFuture(QtConcurrent::run(&thriftDao_,&ThriftDao::getWaringArea,cameraId.toStdString(),errorStr));
 }
 
-void RestConcurrent::searchAlarmHistory(const int page, const int pageCount, const QString &cameraId, const QString &alarmType, const QDateTime &start, const QDateTime &end)
+void RestConcurrent::searchAlarmHistory(EventSearchArgs &args)
 {
 #if 0
     std::string *errorStr = new std::string;
@@ -375,17 +375,7 @@ void RestConcurrent::searchAlarmHistory(const int page, const int pageCount, con
         delete resDatas;
     });
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
-    fwatcher->setFuture(QtConcurrent::run([=,this]{
-//        std::function<QString(int,int,QString,QString,QDateTime,QDateTime,RestServiceI::EventSearchReturn*)> f = std::bind(&DLL::CloudHttpDao::eventSearch,curlRest_,
-//                                                                                                                           std::placeholders::_1,
-//                                                                                                                           std::placeholders::_2,
-//                                                                                                                           std::placeholders::_3,
-//                                                                                                                           std::placeholders::_4,
-//                                                                                                                           std::placeholders::_5,
-//                                                                                                                           std::placeholders::_6,
-//                                                                                                                           std::placeholders::_7);
-        return curlRest_->eventSearch(page,pageCount,cameraId,alarmType,start,end,resDatas);
-    }));
+    fwatcher->setFuture(QtConcurrent::run(curlRest_,&DLL::CloudHttpDao::eventSearch,args,resDatas));
 #endif
 }
 

@@ -34,7 +34,7 @@ VideoPlayer::VideoPlayer(QWidget *parent):
         if(playState() != Playing){
             InformationDialog infoDialog(this);
             infoDialog.setUserStyle(1);
-            infoDialog.showMessage("Video stream not working");
+            infoDialog.setMessage("Video stream not working");
             infoDialog.exec();
             return;
         }
@@ -137,7 +137,7 @@ VideoPlayer::VideoPlayer(QWidget *parent):
                 }else{
                     InformationDialog infoDialog(this);
                     infoDialog.setUserStyle(1);
-                    infoDialog.showMessage("Setting failed");
+                    infoDialog.setMessage("Setting failed");
                 }
             });
             serI->setWaringArea(m_deviceId,areas);

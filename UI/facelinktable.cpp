@@ -70,7 +70,7 @@ FacelinkTable::FacelinkTable( WidgetI *parent):
             delete label;
             InformationDialog infoDialog(dataListW_);
             infoDialog.setUserStyle(userStyle());
-            infoDialog.showMessage(str);
+            infoDialog.setMessage(str);
             dataMenu_->setEnabled(true);
         });
         connect(serviceI,&RestServiceI::sigPeronsDetails,this,[this,label](QImage face,QImage body,QStringList faceAttr,QStringList bodyAttr){
@@ -103,7 +103,7 @@ FacelinkTable::FacelinkTable( WidgetI *parent):
             delete label;
             InformationDialog infoDialog(dataListW_);
             infoDialog.setUserStyle(userStyle());
-            infoDialog.showMessage(str);
+            infoDialog.setMessage(str);
             dataMenu_->setEnabled(true);
         });
         connect(serviceI,&RestServiceI::sigSceneInfo,this,[this,label](const RestServiceI::SceneInfo sinfo){
@@ -192,7 +192,7 @@ FacelinkTable::FacelinkTable( WidgetI *parent):
         if(!dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>().save(filePath)){
             InformationDialog infoDialog(this);
             infoDialog.setUserStyle(userStyle());
-            infoDialog.showMessage("Operation failed!");
+            infoDialog.setMessage("Operation failed!");
         }
     });
     dataListW_->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -432,7 +432,7 @@ void FacelinkTable::slotSemanticSearch(int page)
         delete label;
         InformationDialog infoDialog(this);
         infoDialog.setUserStyle(userStyle());
-        infoDialog.showMessage(str);
+        infoDialog.setMessage(str);
         pageIndicator_->setEnabled(true);
         searchBtn_->setEnabled(true);
         noDataW_->show();

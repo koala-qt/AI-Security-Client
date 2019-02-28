@@ -213,7 +213,7 @@ void FaceLinkPage::slotSearchBtnClicked()
         dataView_->stopWaiting();
         InformationDialog infoDialog(this);
         infoDialog.setUserStyle(userStyle());
-        infoDialog.showMessage(str);
+        infoDialog.setMessage(str);
         infoDialog.exec();
         searchBtn_->setEnabled(true);
     });
@@ -235,7 +235,7 @@ void FaceLinkPage::slotFaceLinkFinished(QString oid)
         dataView_->stopWaiting();
         InformationDialog infoDialog(this);
         infoDialog.setUserStyle(userStyle());
-        infoDialog.showMessage(str);
+        infoDialog.setMessage(str);
         infoDialog.exec();
         searchBtn_->setEnabled(true);
     });
@@ -257,7 +257,7 @@ void FaceLinkPage::slotFaceLinkTree(QJsonObject jsObj)
     if(jsObj.isEmpty()){
         InformationDialog infoDialog(this);
         infoDialog.setUserStyle(userStyle());
-        infoDialog.showMessage("No matched result !");
+        infoDialog.setMessage("No matched result !");
         infoDialog.exec();
         return;
     }

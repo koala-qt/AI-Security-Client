@@ -47,7 +47,7 @@ void VideoAnalysis::slotFileSelected(QString videoFile)
         stackedW_->setCurrentIndex(0);
         InformationDialog infoDialog(this);
         infoDialog.setUserStyle(userStyle());
-        infoDialog.showMessage(str);
+        infoDialog.setMessage(str);
         infoDialog.exec();
     });
     connect(serviceI,&RestServiceI::sigVideoUploadProgress,this,[this](double total,double uploaded){

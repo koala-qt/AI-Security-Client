@@ -84,7 +84,8 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
             delete label;
             InformationDialog infoDialog(dataListW_);
             infoDialog.setUserStyle(userStyle());
-            infoDialog.showMessage(str);
+            infoDialog.setMessage(str);
+            infoDialog.exec();
             dataMenu_->setEnabled(true);
         });
         connect(serviceI,&RestServiceI::sigPeronsDetails,this,[this,label](QImage face,QImage body,QStringList faceAttr,QStringList bodyAttr){
@@ -116,7 +117,8 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
             delete label;
             InformationDialog infoDialog(dataListW_);
             infoDialog.setUserStyle(userStyle());
-            infoDialog.showMessage(str);
+            infoDialog.setMessage(str);
+            infoDialog.exec();
             dataMenu_->setEnabled(true);
         });
         connect(serviceI,&RestServiceI::sigSceneInfo,this,[this,label](const RestServiceI::SceneInfo sinfo){
@@ -220,7 +222,8 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
         if(!dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>().save(filePath)){
             InformationDialog infoDialog(this);
             infoDialog.setUserStyle(userStyle());
-            infoDialog.showMessage("Operation failed!");
+            infoDialog.setMessage("Operation failed!");
+            infoDialog.exec();
         }
     });
     dataListW_->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -660,7 +663,8 @@ void SemanticSearchPage::slotSemanticSearch(int page)
         label->close();
         InformationDialog infoDialog(this);
         infoDialog.setUserStyle(userStyle());
-        infoDialog.showMessage(str);
+        infoDialog.setMessage(str);
+        infoDialog.exec();
         pageIndicator_->setEnabled(true);
         searchBtn_->setEnabled(true);
         noDataW_->show();
@@ -705,7 +709,8 @@ void SemanticSearchPage::slotSearchFaceLink(int page)
         delete label;
         InformationDialog infoDialog(this);
         infoDialog.setUserStyle(userStyle());
-        infoDialog.showMessage(str);
+        infoDialog.setMessage(str);
+        infoDialog.exec();
         pageIndicator_->setEnabled(true);
         searchBtn_->setEnabled(true);
         noDataW_->show();
@@ -773,7 +778,7 @@ void SemanticSearchPage::slotSearchAll(int page)
         delete label;
         InformationDialog infoDialog(this);
         infoDialog.setUserStyle(userStyle());
-        infoDialog.showMessage(str);
+        infoDialog.setMessage(str);
         infoDialog.exec();
         pageIndicator_->setEnabled(true);
         searchBtn_->setEnabled(true);

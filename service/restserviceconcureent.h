@@ -31,7 +31,7 @@ public:
     void captureSearch(CaptureSearchArgs &) override;
     void setWaringArea(const QString cameraId, const QVector<QPair<int,QPolygonF>> &arguments) override;
     void getWaringArea(const QString) override;
-    void searchAlarmHistory(const int page,const int pageCount, const QString &cameraId,const QString &alarmType,const QDateTime &start,const QDateTime &end) override;
+    void searchAlarmHistory(EventSearchArgs &) override;
     void semanticSearch(SemanticSearchArgs &) override;
     void searchByImage(SearchUseImageArgs &) override;
     void uploadVideo(QString videoPath) override;

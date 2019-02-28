@@ -186,7 +186,7 @@ void TrackingPage::slotSearchBtnClicked()
         dataView_->updateTracking(QVector<TrackingWebView::TrackingPoint>());
         InformationDialog infoDialog(this);
         infoDialog.setUserStyle(userStyle());
-        infoDialog.showMessage(str);
+        infoDialog.setMessage(str);
         infoDialog.exec();
         searchBtn_->setEnabled(true);
     });

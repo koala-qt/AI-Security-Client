@@ -135,7 +135,7 @@ FaceSearch::FaceSearch(WidgetI *parent):
             delete label;
             InformationDialog infoDialog(this);
             infoDialog.setUserStyle(userStyle());
-            infoDialog.showMessage(str);
+            infoDialog.setMessage(str);
             infoDialog.exec();
             menu_->setEnabled(true);
         });
@@ -158,7 +158,7 @@ FaceSearch::FaceSearch(WidgetI *parent):
         if(!m_tableW->item(m_tableW->currentRow(),0)->data(Qt::UserRole).value<QImage>().save(filePath)){
             InformationDialog infoDialog(this);
             infoDialog.setUserStyle(userStyle());
-            infoDialog.showMessage("Operation failed!");
+            infoDialog.setMessage("Operation failed!");
             infoDialog.exec();
         }
     });
@@ -547,7 +547,7 @@ void FaceSearch::slotSearchClicked()
         delete label;
         InformationDialog infoDialog(m_tableW);
         infoDialog.setUserStyle(userStyle());
-        infoDialog.showMessage(str);
+        infoDialog.setMessage(str);
         infoDialog.exec();
         m_searchBtn->setEnabled(true);
         m_pageIndicator->setEnabled(true);
