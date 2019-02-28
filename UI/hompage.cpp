@@ -117,20 +117,37 @@ void HomPage::setUserStyle(int s)
     }
 }
 
-bool HomPage::event(QEvent *event)
+//bool HomPage::event(QEvent *event)
+//{
+//    if(event->type() == QEvent::Show){
+//        int imgItemH = (eventListW_->height() - (eventItemCount + 1) * eventListW_->spacing() - eventListW_->frameWidth() * 2) / eventItemCount;
+//        int imgItemW = eventListW_->width() - 2 * eventListW_->spacing() - 2 * eventListW_->frameWidth();
+//        eventItemSize_.setHeight(imgItemH);
+//        eventItemSize_.setWidth(imgItemW);
+//        for(int i = 0; i < eventListW_->count(); i++){
+//            QListWidgetItem *item = eventListW_->item(i);
+//            item->setSizeHint(eventItemSize_);
+//        }
+//    }
+
+//    return WidgetI::event(event);
+//}
+
+void HomPage::resizeEvent(QResizeEvent *event)
 {
-    if(event->type() == QEvent::Show){
-        int imgItemH = (eventListW_->height() - (eventItemCount + 1) * eventListW_->spacing() - eventListW_->frameWidth() * 2) / eventItemCount;
-        int imgItemW = eventListW_->width() - 2 * eventListW_->spacing() - 2 * eventListW_->frameWidth();
-        eventItemSize_.setHeight(imgItemH);
-        eventItemSize_.setWidth(imgItemW);
-        for(int i = 0; i < eventListW_->count(); i++){
-            QListWidgetItem *item = eventListW_->item(i);
-            item->setSizeHint(eventItemSize_);
-        }
+    int imgItemH = (eventListW_->height() - (eventItemCount + 1) * eventListW_->spacing() - eventListW_->frameWidth() * 2) / eventItemCount;
+    int imgItemW = eventListW_->width() - 2 * eventListW_->spacing() - 2 * eventListW_->frameWidth();
+    eventItemSize_.setHeight(imgItemH);
+    eventItemSize_.setWidth(imgItemW);
+
+    eventItemSize_.setHeight(251);
+    eventItemSize_.setWidth(456);
+    for(int i = 0; i < eventListW_->count(); i++){
+        QListWidgetItem *item = eventListW_->item(i);
+        item->setSizeHint(eventItemSize_);
     }
 
-    return QWidget::event(event);
+    return WidgetI::resizeEvent(event);
 }
 
 bool HomPage::eventFilter(QObject *watched, QEvent *event)
@@ -157,6 +174,8 @@ void HomPage::slotEventComboxIndexChanged(int index)
         connect(notifyServiceI_,SIGNAL(sigABDoorEventData(NotifyEventI::ABDoorEventData)),this,SLOT(slotOnAbDoorEvent(NotifyEventI::ABDoorEventData)),Qt::UniqueConnection);
         connect(notifyServiceI_,SIGNAL(sigIntruderEvent(NotifyEventI::IntruderEventData)),this,SLOT(slotOnIntruderEvent(NotifyEventI::IntruderEventData)),Qt::UniqueConnection);
         connect(notifyServiceI_,SIGNAL(sigPersonEventData(NotifyEventI::PersonEventData)),this,SLOT(slotOnPersonEvent(NotifyEventI::PersonEventData)),Qt::UniqueConnection);
+        connect(notifyServiceI_,SIGNAL(sigClimbEventData(NotifyEventI::ClimbEventData)),this,SLOT(slotOnClimbEvent(NotifyEventI::ClimbEventData)));
+        connect(notifyServiceI_,SIGNAL(sigGatherEventData(NotifyEventI::GatherEventData)),this,SLOT(slotOngGatherEvent(NotifyEventI::GatherEventData)));
     }else if(index == 1){
         connect(notifyServiceI_,SIGNAL(sigIntruderEvent(NotifyEventI::IntruderEventData)),this,SLOT(slotOnIntruderEvent(NotifyEventI::IntruderEventData)),Qt::UniqueConnection);
     }else if(index == 2){

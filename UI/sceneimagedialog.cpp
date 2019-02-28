@@ -56,8 +56,7 @@ SceneImageDialog::SceneImageDialog(QWidget *parent, Qt::WindowFlags f):
     hlay->addLayout(vlay,9);
     hlay->addWidget(spiteL_);
     hlay->addWidget(listW_,2);
-    hlay->setContentsMargins(10,10,0,10);
-    hlay->setSpacing(20);
+    hlay->setContentsMargins(10,10,10,10);
     operateAreaW_->setLayout(hlay);
     mainLay->addWidget(operateAreaW_);
     btnBox_->setContentsMargins(0,0,10,0);
@@ -96,6 +95,9 @@ SceneImageDialog::SceneImageDialog(QWidget *parent, Qt::WindowFlags f):
     connect(saveBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSaveBtnClicked()));
 #ifdef USERECTIMAGE
     sureSelectBtn_->hide();
+    listW_->hide();
+    spiteL_->hide();
+    deleSelectBtn_->hide();
     connect(rectesImgArea_,SIGNAL(sigClickedImage(QImage)),this,SLOT(slotOnClickedImage(QImage)));
 #endif
 }
@@ -251,12 +253,16 @@ void SceneImageDialog::slotDeleteBtnClicke()
 #ifdef USERECTIMAGE
 void SceneImageDialog::slotOnClickedImage(QImage img)
 {
+#if 0
     QListWidgetItem *item = new QListWidgetItem;
     item->setData(Qt::UserRole,QPixmap::fromImage(img));
     item->setSizeHint(itemSizeHint_);
     item->setIcon(QPixmap::fromImage(img.scaled(listW_->iconSize())));
     item->setTextAlignment(Qt::AlignCenter);
     listW_->addItem(item);
+    selectedImages_ << img;
+#endif
+    selectedImages_.clear();
     selectedImages_ << img;
 }
 #endif

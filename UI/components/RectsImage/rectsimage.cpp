@@ -20,6 +20,12 @@ void RectsImage::setRectLineColor(QColor c)
     rectLineColor_ = c;
 }
 
+void RectsImage::setHightlightRect(QRect rc)
+{
+    hightlightRect_ = rc;
+    update();
+}
+
 void RectsImage::clearImages()
 {
     seletedImages_.clear();

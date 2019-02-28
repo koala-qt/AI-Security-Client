@@ -66,6 +66,8 @@ void NotifyEventByWebSocket::onTextMessageReceived(QString message)
         return;
     }
     QJsonObject jsObj = jsDoc.object();
+    if(jsObj.value("type") != "snap-alarm-type")return;
+    jsObj = jsObj.value("data").toObject();
     QString eventType = jsObj.value("eventType").toString();
     if(eventType == "smsr_alarm_intruder"){
         IntruderEventData evData;

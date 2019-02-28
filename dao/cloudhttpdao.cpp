@@ -57,7 +57,7 @@ QString DLL::CloudHttpDao::getCameraInfo(QVector<RestServiceI::CameraInfo> *came
 
 QString DLL::CloudHttpDao::getGroup(QString groupNo, QVector<RestServiceI::CameraGoup> *resGroups)
 {
-    QString urlStr = host_ +  QObject::tr("api/v2/external/device/group/find?groupNo=%1").arg(groupNo);
+    QString urlStr = host_ +  QObject::tr("api/v2/device/group/find?groupNo=%1").arg(groupNo);
     int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),5);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
@@ -89,7 +89,7 @@ QString DLL::CloudHttpDao::getGroup(QString groupNo, QVector<RestServiceI::Camer
 
 QString DLL::CloudHttpDao::getDevice(QString groupNo, QVector<RestServiceI::CameraInfo> *devices)
 {
-    QString urlStr = host_ + QObject::tr("api/v2/external/device/info/find?type=1&pageSize=10000000&pageNo=1&groupNo=%1").arg(groupNo);
+    QString urlStr = host_ + QObject::tr("api/v2/device/info/find?type=1&pageSize=10000000&pageNo=1&groupNo=%1").arg(groupNo);
     int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),5);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
@@ -155,6 +155,7 @@ QString DLL::CloudHttpDao::faceLink_(RestServiceI::FaceLinkArgs &args, QString *
 {
     std::vector<std::string> headers;
     headers.emplace_back("Content-Type:application/json;charset=UTF-8");
+    headers.emplace_back("Accept-Language: en-US,en;q=0.9");
     headers.emplace_back("User-Agent:Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36");
     headers.emplace_back("token:7d1e52d3cf0142e19b5901eb1ef91372");
     headers.emplace_back("Expect:");
@@ -165,7 +166,7 @@ QString DLL::CloudHttpDao::faceLink_(RestServiceI::FaceLinkArgs &args, QString *
     imgBuf.open(QIODevice::WriteOnly);
     args.faceImg.save(&imgBuf,"jpg");
     QString urlStr = host_ + QObject::tr("api/v2/external/monitor-detail/person-link");
-    qDebug() << urlStr;
+    qDebug() << urlStr << args.oid;
     QJsonObject jsObj{{"startTime",args.startT.toString("yyyy-MM-dd HH:mm:ss")},
                       {"finishTime",args.endT.toString("yyyy-MM-dd HH:mm:ss")},
                       {"depth",args.depth},
@@ -191,7 +192,7 @@ QString DLL::CloudHttpDao::faceLink_(RestServiceI::FaceLinkArgs &args, QString *
     if(status != 200){
         return jsObj.value("message").toString();
     }
-    *finishId = args.oid;
+    *finishId = jsObj.value("data").toString();
     return QString();
 }
 
@@ -525,7 +526,7 @@ QImage DLL::CloudHttpDao::getImageByUrl(QString url)
 QString DLL::CloudHttpDao::captureSearch(RestServiceI::CaptureSearchArgs &args, RestServiceI::CaptureSearchReturnData *resDatas)
 {
     QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-history");
-    QString postData = QObject::tr("mode=2&faceAttrs=%1&bodyAttrs=&cameraId=%2&startTime=%3&finishTime=%4&pageNo=%5&pageSize=%6&property=true")
+    QString postData = QObject::tr("mode=4&faceAttrs=%1&bodyAttrs=&cameraId=%2&startTime=%3&finishTime=%4&pageNo=%5&pageSize=%6&property=true")
             .arg(args.faceAttributList.join(','))
             .arg(args.position)
             .arg(args.start.toString("yyyy-MM-dd HH:mm:ss"))
@@ -889,7 +890,7 @@ QString DLL::CloudHttpDao::eventSearch(RestServiceI::EventSearchArgs &args, Rest
 
 QString DLL::CloudHttpDao::portraitLibCompSearch(RestServiceI::PortraitLibCompArgs &args, QVector<RestServiceI::PortraitLibCompItem> *resVec)
 {
-#if 0
+#if 1
     QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-history");
 #else
     QString urlStr = QObject::tr("http://192.168.2.145:8080/api/v2/cmcc/portrait/search");
@@ -948,7 +949,7 @@ QString DLL::CloudHttpDao::portraitLibCompSearch(RestServiceI::PortraitLibCompAr
 
 QString DLL::CloudHttpDao::queryPersonTypes(QVector<RestServiceI::PersonType> *resVec)
 {
-#if 0
+#if 1
     QString urlStr = host_ +  QObject::tr("api/v2/person/type/find?token=7d1e52d3cf0142e19b5901eb1ef91372");
 #else
     QString urlStr = "http://192.168.2.145:8080/api/v2/person/type/find?token=7d1e52d3cf0142e19b5901eb1ef91372"; // internal test
