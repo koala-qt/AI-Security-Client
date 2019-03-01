@@ -207,26 +207,26 @@ void VideoPlayback::updateCamera()
 
 void VideoPlayback::getCameraGroup(QTreeWidgetItem *item, QString groupNo)
 {
-    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
-    RestServiceI *serviceI = factoryI->makeRestServiceI();
-    connect(serviceI,&RestServiceI::sigCameraGroup,this,[item,this](QVector<RestServiceI::CameraGoup> groups){
-        foreach (const RestServiceI::CameraGoup &groupV, groups) {
-            QTreeWidgetItem *childItem = nullptr;
-            qDebug() << item << groupV.deviceNumber;
-            if(!item){
-                childItem = new QTreeWidgetItem(deviceTree_,QStringList() << groupV.groupName,0);
-            }else{
-                childItem = new QTreeWidgetItem(item,QStringList() << groupV.groupName,0);
-            }
-            childItem->setData(0,Qt::UserRole,groupV.groupNo);
-            childItem->setData(1,Qt::UserRole + 1,groupV.description);
-            if(groupV.deviceNumber){
-                getCameraDevice(childItem,groupV.groupNo);
-                getCameraGroup(childItem,groupV.groupNo);
-            }
-        }
-    });
-    serviceI->getCameraGroup(groupNo);
+//    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+//    RestServiceI *serviceI = factoryI->makeRestServiceI();
+//    connect(serviceI,&RestServiceI::sigCameraGroup,this,[item,this](QVector<RestServiceI::CameraGoup> groups){
+//        foreach (const RestServiceI::CameraGoup &groupV, groups) {
+//            QTreeWidgetItem *childItem = nullptr;
+//            qDebug() << item << groupV.deviceNumber;
+//            if(!item){
+//                childItem = new QTreeWidgetItem(deviceTree_,QStringList() << groupV.groupName,0);
+//            }else{
+//                childItem = new QTreeWidgetItem(item,QStringList() << groupV.groupName,0);
+//            }
+//            childItem->setData(0,Qt::UserRole,groupV.groupNo);
+//            childItem->setData(1,Qt::UserRole + 1,groupV.description);
+//            if(groupV.deviceNumber){
+//                getCameraDevice(childItem,groupV.groupNo);
+//                getCameraGroup(childItem,groupV.groupNo);
+//            }
+//        }
+//    });
+//    serviceI->getCameraGroup(groupNo);
 }
 
 void VideoPlayback::getCameraDevice(QTreeWidgetItem *item, QString groupNo)

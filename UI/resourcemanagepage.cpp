@@ -1,6 +1,7 @@
 #include <QWebEngineView>
 #include <QHBoxLayout>
 #include <QSettings>
+#include <QApplication>
 #include "resourcemanagepage.h"
 
 ResourceManagePage::ResourceManagePage(WidgetI *parent):
@@ -14,11 +15,19 @@ ResourceManagePage::ResourceManagePage(WidgetI *parent):
 
     QSettings configSetting("config.ini",QSettings::IniFormat);
     webHost_ = configSetting.value("Http/Javahost").toString();
-    webView_->load(QUrl(tr("%1#/login").arg(webHost_)));
     webView_->page()->setBackgroundColor(Qt::transparent);
 }
 
 void ResourceManagePage::setUserStyle(int s)
 {
 
+}
+
+void ResourceManagePage::loadWebPage(int index)
+{
+    if(index == 0){
+        webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + tr("/jsHtml/resource/device_page/index.html")));
+    }else if(index == 1){
+        webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + tr("/jsHtml/resource/person_page/index.html")));
+    }
 }

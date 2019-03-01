@@ -105,22 +105,18 @@ void RestConcurrent::multipleSearch(MultipleSearchArgs &args)
 
 void RestConcurrent::getPersonDetails(QString &objId)
 {
-    QImage *face = new QImage, *body = new QImage;
-    QStringList *attrsface = new QStringList, *attrsbody = new QStringList;
+    PortraitReturnData *resDatas = new PortraitReturnData;
     QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>(this);
     connect(fwatcher,&QFutureWatcher<QString>::finished,this,[=]{
         if(fwatcher->result().isEmpty()){
-            emit sigPeronsDetails(*face,*body,*attrsface,*attrsbody);
+            emit sigPeronsDetails(*resDatas);
         }else{
             emit sigError(fwatcher->result());
         }
-        delete face;
-        delete body;
-        delete attrsface;
-        delete attrsbody;
+        delete resDatas;
     });
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
-    fwatcher->setFuture(QtConcurrent::run(curlRest_,&DLL::CloudHttpDao::getPersonDetailes,objId,face,body,attrsface,attrsbody));
+    fwatcher->setFuture(QtConcurrent::run(curlRest_,&DLL::CloudHttpDao::getPersonDetailes,objId,resDatas));
 }
 
 void RestConcurrent::getAlarmScenePic(const QString oid)

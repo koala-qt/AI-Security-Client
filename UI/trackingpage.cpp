@@ -102,11 +102,14 @@ void TrackingPage::setUserStyle(int s)
             "background-color: transparent;"
             "}");
         searchBtn_->setStyleSheet("QPushButton{"
+                                  "background-color: rgb(83,77,251);"
                                   "color: white;"
-                                  "background-color: rgba(112, 112, 112, 1);"
+                                  "border-radius: 6px;"
+                                  "font-size: 18px;"
                                   "}"
                                   "QPushButton:pressed{"
-                                  "background-color: rgba(255,0,0,100);"
+                                  "padding: 2px;"
+                                  "background-color: #312DA6;"
                                   "}");
         threshSpin_->setStyleSheet("QSpinBox{"
                                  "padding-right: 15px;"
@@ -130,14 +133,14 @@ void TrackingPage::setUserStyle(int s)
                                  "border-image: url(images/under.png) 1;"
                                  "}");
         searchBtn_->setStyleSheet("QPushButton{"
-                                  "background-color: #B4A06C;"
+                                  "background-color: rgb(83,77,251);"
                                   "color: white;"
                                   "border-radius: 6px;"
-                                  "font-size:18px;"
+                                  "font-size: 18px;"
                                   "}"
                                   "QPushButton:pressed{"
                                   "padding: 2px;"
-                                  "background-color: rgba(255,0,0,100);"
+                                  "background-color: #312DA6;"
                                   "}");
     }
 }

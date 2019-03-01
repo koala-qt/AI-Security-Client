@@ -9,6 +9,7 @@ class ResourceManagePage : public WidgetI
 public:
     ResourceManagePage(WidgetI *parent = nullptr);
     void setUserStyle(int s = 0) override;
+    void loadWebPage(int index);
 
 private:
     QWebEngineView *webView_{nullptr};

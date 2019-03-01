@@ -8,7 +8,7 @@ class CloudHttpDao : public HttpExector
 public:
     CloudHttpDao();
     QString getCameraInfo(QVector<RestServiceI::CameraInfo> *cameras);
-    QString getGroup(QString groupNo,QVector<RestServiceI::CameraGoup> *resGroups);
+    QString getGroup(QString groupNo, QVector<RestServiceI::CameraGoup> *resGroups);
     QString getDevice(QString groupNo, QVector<RestServiceI::CameraInfo> *devices);
     QString faceLink(RestServiceI::FaceLinkArgs &args);
     QString faceLink_(RestServiceI::FaceLinkArgs &args,QString *finishId);
@@ -17,7 +17,7 @@ public:
     QString tracking(RestServiceI::FaceTrackingArgs &args, QVector<RestServiceI::TrackingReturnData> *resVec);
     QString getPersonNumbers(RestServiceI::PersonsStayArgs &args, int &num, int &times);
     QString getPeronAverageTime(RestServiceI::AveragePersonTimeArgs &args);
-    QString getPersonDetailes(QString &objId,QImage *face,QImage *body,QStringList *attrsface,QStringList *attrsbody);
+    QString getPersonDetailes(QString &objId, RestServiceI::PortraitReturnData *resDatas);
     QString getSceneInfo(QString &scenId,RestServiceI::SceneInfo *sceneInfo);
     QString getImageByUrl(QString &url,QImage *image);
     QImage getImageByUrl(QString url);

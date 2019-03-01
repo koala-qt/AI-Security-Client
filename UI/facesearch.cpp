@@ -295,15 +295,14 @@ void FaceSearch::setUserStyle(int s)
         m_pageIndicator->setUserStyle();
 
         m_searchBtn->setStyleSheet("QPushButton{"
-                                   "border: 0px;"
-                                   "color:white;"
-                                   "background: #B4A06C;"
+                                   "background-color: rgb(83,77,251);"
+                                   "color: white;"
                                    "border-radius: 6px;"
-                                   "font-size:18px;"
+                                   "font-size: 18px;"
                                    "}"
                                    "QPushButton:pressed{"
-                                   "padding: 1px;"
-                                   "background-color: rgba(255,0,0,100);"
+                                   "padding: 2px;"
+                                   "background-color: #312DA6;"
                                    "}");
         cameraCombox_->setStyleSheet(
                     "QComboBoxListView{"
@@ -612,7 +611,6 @@ void FaceSearch::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
             slotSearchClicked();
         }
     });
-    dialog.setRectLinePen(Qt::yellow);
     dialog.exec();
 #else
     QDialog dialog;

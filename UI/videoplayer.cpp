@@ -33,7 +33,7 @@ VideoPlayer::VideoPlayer(QWidget *parent):
     menu_->addAction(tr("设置警戒区"),this,[&]{
         if(playState() != Playing){
             InformationDialog infoDialog(this);
-            infoDialog.setUserStyle(1);
+            infoDialog.setUserStyle(0);
             infoDialog.setMessage("Video stream not working");
             infoDialog.exec();
             return;
@@ -46,22 +46,26 @@ VideoPlayer::VideoPlayer(QWidget *parent):
         QDialogButtonBox *buttonBox = new QDialogButtonBox;
         QPushButton *okBtn = buttonBox->addButton(tr("确定"),QDialogButtonBox::AcceptRole);
         okBtn->setStyleSheet("QPushButton{"
+                             "background-color: rgb(83,77,251);"
                              "color: white;"
-                             "background-color: rgb(59,69,78);"
-                             "font-family: Arial;"
+                             "border-radius: 6px;"
+                             "font-size: 18px;"
                              "}"
                              "QPushButton:pressed{"
-                             "background-color: rgb(49,54,57);"
+                             "padding: 2px;"
+                             "background-color: #312DA6;"
                              "}");
         QPushButton *cancelBtn = buttonBox->addButton(tr("取消"),QDialogButtonBox::RejectRole);
         cancelBtn->setStyleSheet("QPushButton{"
-                             "color: white;"
-                             "background-color: rgb(59,69,78);"
-                             "font-family: Arial;"
-                             "}"
-                             "QPushButton:pressed{"
-                             "background-color: rgb(49,54,57);"
-                             "}");
+                                 "background-color: rgb(83,77,251);"
+                                 "color: white;"
+                                 "border-radius: 6px;"
+                                 "font-size: 18px;"
+                                 "}"
+                                 "QPushButton:pressed{"
+                                 "padding: 2px;"
+                                 "background-color: #312DA6;"
+                                 "}");
 
         PaintArea *paintArea = new PaintArea;
         QHBoxLayout *hlay = new QHBoxLayout;
@@ -136,7 +140,7 @@ VideoPlayer::VideoPlayer(QWidget *parent):
                     slotSetPolygons(areas);
                 }else{
                     InformationDialog infoDialog(this);
-                    infoDialog.setUserStyle(1);
+                    infoDialog.setUserStyle(0);
                     infoDialog.setMessage("Setting failed");
                 }
             });
