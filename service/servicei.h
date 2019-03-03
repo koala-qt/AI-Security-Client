@@ -322,6 +322,34 @@ public:
         QString strSubType;
     };
 
+    // m:n start
+    /**
+     * Added by aihc for Multiple face analysis.
+     * @brief The PortraitLibCompArgs struct
+     */
+    struct MNFaceAnalysisArgs
+    {
+        QString strFolderPath;
+        int cameraId;
+        QDateTime startTime;
+        QDateTime endTime;
+    };
+    struct MNCaptureItem
+    {
+        QImage captureImg;
+        int cameraId;
+        double dSimilarity;
+    };
+    /**
+     * Added by aihc for Multiple face analysis.
+     * @brief The MNFaceAnalysisItem struct
+     */
+    struct MNFaceAnalysisItem
+    {
+        QImage uploadImg;
+        QList<MNCaptureItem> captureItems;
+    };
+    // m:n end
     RestServiceI(QObject *parent = nullptr):QObject(parent){
         qRegisterMetaType<QVector<RestServiceI::CameraInfo>>("QVector<RestServiceI::CameraInfo>");
         qRegisterMetaType<PagedSnapFaceHis>("PagedSnapFaceHis");
@@ -348,6 +376,7 @@ public:
         // Added by aihc begin
         qRegisterMetaType<QVector<RestServiceI::PortraitLibCompItem>>("QVector<RestServiceI::PortraitLibCompItem>");
         qRegisterMetaType<QVector<RestServiceI::PersonType>>("QVector<RestServiceI::PersonType>");
+        qRegisterMetaType<QVector<RestServiceI::MNFaceAnalysisItem>>("QVector<RestServiceI::MNFaceAnalysisItem>");
         // Added by aihc end
     }
     virtual void getSceneInfo(const QString old) = 0;
@@ -385,6 +414,11 @@ public:
      * @brief queryPersonType
      */
     virtual void queryPersonTypes() = 0;
+    /**
+     * Added by aihc for Multiple face analysis.
+     * @brief mnFaceAnalysisSearch
+     */
+    virtual void mnFaceAnalysisSearch(MNFaceAnalysisArgs &) = 0;
 
 signals:
     void sigFaceLinkFinished(QString);
@@ -423,6 +457,7 @@ signals:
      * @brief sigPersonTypesResult
      */
     void sigPersonTypesResult(QVector<RestServiceI::PersonType>);
+    void sigMNFaceAnalysisResult(QVector<RestServiceI::MNFaceAnalysisItem>);
 };
 
 class NotifyPersonI : public QThread

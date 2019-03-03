@@ -13,6 +13,10 @@ QT_FORWARD_DECLARE_CLASS(TrackingPage)
 QT_FORWARD_DECLARE_CLASS(VideoAnalysis)
 QT_FORWARD_DECLARE_CLASS(PortraitSearch)
 QT_FORWARD_DECLARE_CLASS(SemanticSearchPage)
+
+// Added by aihc for Multiple face analysis.
+class MultipleFaceAnalysis;
+
 class TargetSearch : public WidgetI
 {
     Q_OBJECT
@@ -41,7 +45,8 @@ private:
     TrackingPage *trackingPage_{nullptr};
     PortraitSearch *portraitSearchPage_{nullptr};
     VideoAnalysis *videoAnalysisPage_{nullptr};
-
+    // Added by aihc for Multiple face analysis.
+    MultipleFaceAnalysis *m_pMultFaceAnalysis = Q_NULLPTR;
     void createTreeItem(QTreeWidget *treeW,QTreeWidgetItem *parentItem,itemData &items);
 
 private slots:

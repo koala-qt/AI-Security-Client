@@ -45,6 +45,11 @@ public:
      * @brief queryPersonTypes
      */
     void queryPersonTypes() override;
+    /**
+     * Added by aihc for Multiple face analysis.
+     * @brief mnFaceAnalysisSearch
+     */
+    void mnFaceAnalysisSearch(MNFaceAnalysisArgs &args) override;
 
 private:
     ThriftDao thriftDao_;

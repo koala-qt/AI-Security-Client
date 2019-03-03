@@ -51,7 +51,8 @@ HEADERS += \
     $$PWD/videoanalysisdata.h \
     $$PWD/selectuploadvide.h \
     $$PWD/uploadvideoprogress.h \
-    $$PWD/personitemwidget.h
+    $$PWD/personitemwidget.h \
+    $$PWD/multiplefaceanalysis.h
 
 SOURCES += \
     $$PWD/videoplayback.cpp \
@@ -103,4 +104,5 @@ SOURCES += \
     $$PWD/videoanalysisdata.cpp \
     $$PWD/selectuploadvide.cpp \
     $$PWD/uploadvideoprogress.cpp \
-    $$PWD/personitemwidget.cpp
+    $$PWD/personitemwidget.cpp \
+    $$PWD/multiplefaceanalysis.cpp

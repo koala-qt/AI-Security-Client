@@ -976,6 +976,54 @@ QString DLL::CloudHttpDao::queryPersonTypes(QVector<RestServiceI::PersonType> *r
     });
     return QString();
 }
+
+QString DLL::CloudHttpDao::mnFaceAnalysisSearch(RestServiceI::MNFaceAnalysisArgs &args, QVector<RestServiceI::MNFaceAnalysisItem> *resVec)
+{
+#if 0
+    QString urlStr = host_ +  QObject::tr("api/v2/cmcc/portrait/m-compare-n");
+#else
+    QString urlStr = QObject::tr("http://192.168.2.145:8080/api/v2/cmcc/portrait/m-compare-n");
+#endif
+
+    //int resCode = sendMultPic(args.strFolderPath, args.startTime.toString("yyyy-MM-dd HH:mm:ss"),args.endTime.toString("yyyy-MM-dd HH:mm:ss"),QString::number(args.cameraId));
+    int resCode = send(DLL::POST,urlStr.toStdString(),std::string(),60);
+    if(resCode != CURLE_OK){
+        return curl_easy_strerror(CURLcode(resCode));
+    }
+
+    QJsonParseError jsError;
+    QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
+    if(jsError.error != QJsonParseError::NoError){
+        return jsError.errorString();
+    }
+
+    QJsonObject jsObj = jsDoc.object();
+    int status = jsObj.value("status").toInt();
+    if(status != 200){
+        return jsObj.value("message").toString();
+    }
+    QJsonArray dataJsArray = jsObj.value("data").toArray();
+    std::transform(dataJsArray.begin(),dataJsArray.end(),std::back_inserter(*resVec),[](QJsonValue jsVal){
+        RestServiceI::MNFaceAnalysisItem sitem;
+        QJsonObject itemObj = jsVal.toObject();
+        sitem.uploadImg.loadFromData(QByteArray::fromBase64(itemObj.value("picture").toString().toLatin1()));
+        QJsonArray captureArray = itemObj.value("captures").toArray();
+        QList<RestServiceI::MNCaptureItem> captureItems;
+        std::transform(captureArray.begin(), captureArray.end(), std::back_inserter(captureItems), [](QJsonValue captureVal)
+        {
+            QJsonObject itemObj2 = captureVal.toObject();
+            RestServiceI::MNCaptureItem captureItem;
+            captureItem.cameraId = itemObj2.value("cameraId").toInt();
+            captureItem.dSimilarity = itemObj2.value("similarity").toDouble();
+            captureItem.captureImg.loadFromData(QByteArray::fromBase64(itemObj2.value("picture").toString().toLatin1()));
+            return captureItem;
+        });
+        sitem.captureItems = captureItems;
+        return sitem;
+    });
+    return QString();
+}
+
 int DLL::CloudHttpDao::progress(double totalDownLoad, double downloaded, double totalUpload, double uploaded)
 {
     return 0;

@@ -14,6 +14,7 @@
 #include "trackingpage.h"
 #include "videoanalysis.h"
 #include "portraitsearch.h"
+#include "multiplefaceanalysis.h"
 
 TargetSearch::TargetSearch( WidgetI *parent):
     WidgetI(parent)
@@ -29,6 +30,8 @@ TargetSearch::TargetSearch( WidgetI *parent):
     trackingPage_ = new TrackingPage();
     videoAnalysisPage_ = new VideoAnalysis();
     portraitSearchPage_ = new PortraitSearch;
+    // Added by aihc for Multiple face analysis.
+    m_pMultFaceAnalysis = new MultipleFaceAnalysis;
     QHBoxLayout *mainLay = new QHBoxLayout;
     mainLay->addWidget(treeW_,33);
     mainLay->addWidget(stackedW_,155);
@@ -42,6 +45,7 @@ TargetSearch::TargetSearch( WidgetI *parent):
     stackedW_->addWidget(multiPleSearchPage_);
     stackedW_->addWidget(facelinkPage_);
     stackedW_->addWidget(trackingPage_);
+    stackedW_->addWidget(m_pMultFaceAnalysis);
     stackedW_->addWidget(portraitSearchPage_);
     stackedW_->addWidget(videoAnalysisPage_);
     semanticSearchPage_->installEventFilter(this);
@@ -50,6 +54,7 @@ TargetSearch::TargetSearch( WidgetI *parent):
     facelinkPage_->installEventFilter(this);
     trackingPage_->installEventFilter(this);
     portraitSearchPage_->installEventFilter(this);
+    m_pMultFaceAnalysis->installEventFilter(this);
     QVector<itemData> devicesVec;
     itemData items;
     items.name = tr("Capture search");
@@ -60,15 +65,16 @@ TargetSearch::TargetSearch( WidgetI *parent):
                                                                                   << itemData{multiPleSearchPage_->objectName(),3,QVector<itemData>()}
                                                                                   << itemData{facelinkPage_->objectName(),4,QVector<itemData>()}
                                                                                   << itemData{trackingPage_->objectName(),5,QVector<itemData>()}
-                                                                                    };
+                                                                                  <<
+                                                                                  itemData{m_pMultFaceAnalysis->objectName(),6,QVector<itemData>()}};
     devicesVec << items;
     items.childrens.clear();
     items.name = portraitSearchPage_->objectName();
-    items.value = 6;
+    items.value = 7;
     devicesVec << items;
     items.childrens.clear();
     items.name = videoAnalysisPage_->objectName();
-    items.value = 7;
+    items.value = 8;
     devicesVec << items;
     for(auto value : devicesVec){
         createTreeItem(treeW_,nullptr,value);

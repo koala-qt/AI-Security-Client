@@ -37,6 +37,8 @@ public:
     QString portraitLibCompSearch(RestServiceI::PortraitLibCompArgs &args, QVector<RestServiceI::PortraitLibCompItem> *resVec);
     // * Added by aihc for Portrait library comparison.
     QString queryPersonTypes(QVector<RestServiceI::PersonType> *resVec);
+    // M:N Added by aihc
+    QString mnFaceAnalysisSearch(RestServiceI::MNFaceAnalysisArgs &args, QVector<RestServiceI::MNFaceAnalysisItem> *resVec);
 
 protected:
     int progress(double totalDownLoad,double downloaded,double totalUpload, double uploaded) override;

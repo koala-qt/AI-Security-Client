@@ -442,6 +442,22 @@ void RestConcurrent::portraitLibCompSearch(RestServiceI::PortraitLibCompArgs &ar
     fwatcher->setFuture(QtConcurrent::run(curlRest_,&DLL::CloudHttpDao::portraitLibCompSearch,args,resVec));
 }
 
+void RestConcurrent::mnFaceAnalysisSearch(RestServiceI::MNFaceAnalysisArgs &args)
+{
+    QVector<MNFaceAnalysisItem> *resVec = new QVector<MNFaceAnalysisItem>;
+    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>(this);
+    connect(fwatcher,&QFutureWatcher<QString>::finished,this,[this,resVec,fwatcher]{
+        if(fwatcher->result().isEmpty()){
+            emit sigMNFaceAnalysisResult(*resVec);
+        }else{
+            emit sigError(fwatcher->result());
+        }
+        delete resVec;
+    });
+    connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
+    fwatcher->setFuture(QtConcurrent::run(curlRest_,&DLL::CloudHttpDao::mnFaceAnalysisSearch,args,resVec));
+}
+
 void RestConcurrent::queryPersonTypes()
 {
     QVector<PersonType> *resVec = new QVector<PersonType>;
