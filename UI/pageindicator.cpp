@@ -119,27 +119,27 @@ void PageIndicator::setUserStyle()
     pal.setColor(QPalette::Foreground,Qt::white);
     m_infoL->setPalette(pal);
 }
-
+#include <QDebug>
 void PageIndicator::slotRowChanged(int row)
 {
     if(!m_listW->currentItem() || m_listW->currentItem()->text() == "..." || m_currPage == m_listW->currentItem()->text().toInt()){
         return;
     }
 
-    int m_curPage = m_listW->currentItem()->text().toInt();
+    m_currPage = m_listW->currentItem()->text().toInt();
     m_changedIndex = 0;
     if(m_totalPages > ITEMCOUNT){
         int offset = (ITEMCOUNT - 2 - 3 - 1) / 2;
         int middle = 1 + offset + 1;
-        if(m_curPage + 3 >= m_totalPages){
+        if(m_currPage + 3 >= m_totalPages){
             m_listW->item(1)->setText("...");
             m_listW->item(1)->setFlags(Qt::NoItemFlags);
             for(int i = 0; i < ITEMCOUNT - 2; i++){
                 m_listW->item(2 + i)->setText(QString::number(m_totalPages - (ITEMCOUNT - 2 - 1) + i));
             }
             m_listW->item(ITEMCOUNT - 3)->setFlags(Qt::ItemIsSelectable|Qt::ItemIsDragEnabled|Qt::ItemIsUserCheckable|Qt::ItemIsEnabled);
-            m_changedIndex = m_curPage - m_listW->currentItem()->text().toInt();
-        }else if(m_curPage - middle > 0 && m_curPage + 3 < m_totalPages){
+            m_changedIndex = m_currPage - m_listW->currentItem()->text().toInt();
+        }else if(m_currPage - middle > 0 && m_currPage + 3 < m_totalPages){
             m_listW->item(1)->setText("...");
             m_listW->item(1)->setFlags(Qt::NoItemFlags);
             m_listW->item(ITEMCOUNT - 3)->setText("...");
@@ -157,7 +157,7 @@ void PageIndicator::slotRowChanged(int row)
                 }
                 m_changedIndex = middle - row;
             }
-        }else if(m_curPage - middle <= 0){
+        }else if(m_currPage - middle <= 0){
             m_listW->item(ITEMCOUNT - 3)->setText("...");
             m_listW->item(ITEMCOUNT - 3)->setFlags(Qt::NoItemFlags);
             m_listW->item(1)->setText("2");
@@ -165,11 +165,11 @@ void PageIndicator::slotRowChanged(int row)
             for(int i = 0; i < ITEMCOUNT - 3; i++){
                 m_listW->item(i)->setText(QString::number(i + 1));
             }
-            m_changedIndex = m_curPage - m_listW->currentItem()->text().toInt();
+            m_changedIndex = m_currPage - m_listW->currentItem()->text().toInt();
         }
     }
 
-    emit sigPageClicked(m_curPage);
+    emit sigPageClicked(m_currPage);
 //    QTimer::singleShot(30,this,[this]{m_listW->setCurrentRow(m_listW->currentRow() + m_changedIndex);});
 }
 

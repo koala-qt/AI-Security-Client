@@ -415,7 +415,6 @@ void EventSearch::slotSearchPageAlarmHistory(int page)
     m_searchBtn->setEnabled(false);
     m_pageindicator->setEnabled(false);
     noDataTipW_->hide();
-    m_tableW->model()->removeRows(0,m_tableW->rowCount());
 }
 
 void EventSearch::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
@@ -488,6 +487,7 @@ void EventSearch::slotAlarmHistory(RestServiceI::EventSearchReturn data)
         m_pageindicator->setPageInfo(data.totalPage,data.total);
         needUpdatePageInfo_ = false;
     }
+    m_tableW->model()->removeRows(0,m_tableW->rowCount());
     for(const RestServiceI::EventSearchItem &itemData : data.data){
         m_tableW->insertRow(m_tableW->rowCount());
         QTableWidgetItem *item = new QTableWidgetItem;

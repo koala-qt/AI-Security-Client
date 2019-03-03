@@ -702,6 +702,7 @@ void SemanticSearchPage::slotSemanticSearch(int page)
     attributTreeW_->setEnabled(false);
     noDataW_->hide();
     dataListW_->clear();
+    preIsSearch_ = true;
 }
 
 void SemanticSearchPage::slotSearchFaceLink(int page)
@@ -747,6 +748,7 @@ void SemanticSearchPage::slotSearchFaceLink(int page)
     attributTreeW_->setEnabled(false);
     noDataW_->hide();
     dataListW_->clear();
+    preIsSearch_ = true;
 }
 
 QStringList SemanticSearchPage::checkedAttrbute(QTreeWidgetItem *item)
@@ -852,6 +854,7 @@ void SemanticSearchPage::slotSearchAll(int page)
     attributTreeW_->setEnabled(false);
     noDataW_->hide();
     dataListW_->clear();
+    preIsSearch_ = true;
 }
 
 void SemanticSearchPage::slotSearchBtnClicked()
@@ -863,7 +866,6 @@ void SemanticSearchPage::slotSearchBtnClicked()
     curStartTime_ = startTimeEdit_->dateTime();
     curEndTime_ = endTimeEdit_->dateTime();
     needUpdatePageInfo_ = true;
-    preIsSearch_ = true;
     slotPageIndexChanged(1);
 }
 
