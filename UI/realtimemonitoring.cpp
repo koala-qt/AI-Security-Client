@@ -218,6 +218,7 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
     updateCamera();
 #else
     getCameraGroup(nullptr,"1005");
+    getCameraDevice(nullptr,"1005");
 #endif
 //    eventItemSize_.setWidth(640);
 //    eventItemSize_.setHeight(960);
@@ -482,7 +483,6 @@ void RealtimeMonitoring::getCameraGroup(QTreeWidgetItem* item,QString groupNo)
     ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
     RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI,&RestServiceI::sigCameraGroup,this,[item,this,groupNo](QVector<RestServiceI::CameraGoup> groups){
-        getCameraDevice(item,groupNo);
         foreach (const RestServiceI::CameraGoup &groupV, groups) {
             QTreeWidgetItem *childItem = nullptr;
             qDebug() << item << groupV.deviceNumber;
