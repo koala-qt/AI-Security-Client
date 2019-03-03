@@ -65,8 +65,7 @@ TargetSearch::TargetSearch( WidgetI *parent):
                                                                                   << itemData{multiPleSearchPage_->objectName(),3,QVector<itemData>()}
                                                                                   << itemData{facelinkPage_->objectName(),4,QVector<itemData>()}
                                                                                   << itemData{trackingPage_->objectName(),5,QVector<itemData>()}
-                                                                                  <<
-                                                                                  itemData{m_pMultFaceAnalysis->objectName(),6,QVector<itemData>()}};
+                                                                                  << itemData{m_pMultFaceAnalysis->objectName(),6,QVector<itemData>()}};
     devicesVec << items;
     items.childrens.clear();
     items.name = portraitSearchPage_->objectName();

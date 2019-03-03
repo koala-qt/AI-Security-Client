@@ -47,6 +47,11 @@ void TrackingWebView::updateTracking(QVector<TrackingWebView::TrackingPoint> &da
     webBridge_->updateData(jsArray);
 }
 
+void TrackingBridge::setHostName(QString s)
+{
+    hostName_ = s;
+}
+
 void TrackingBridge::updateData(QJsonArray &jsArray)
 {
     if(isInitsized_){
@@ -71,7 +76,13 @@ void TrackingBridge::onInitsized()
     if(!curJsonArray_.isEmpty()){
         emit sigTrackingDataChanged(curJsonArray_);
     }
+    emit sigHostNameChanged(hostName_);
     isInitsized_ = true;
+}
+
+void TrackingBridge::onCameraClicked(QJsonObject jsObj)
+{
+    qDebug() << jsObj;
 }
 
 void TrackingWebView::startWaiting()
@@ -82,4 +93,9 @@ void TrackingWebView::startWaiting()
 void TrackingWebView::stopWaiting()
 {
     webBridge_->stopWaiting();
+}
+
+void TrackingWebView::setHostName(QString s)
+{
+    webBridge_->setHostName(s);
 }

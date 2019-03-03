@@ -1,5 +1,6 @@
 #include <QWebEngineView>
 #include <QHBoxLayout>
+#include <QWebChannel>
 #include <QSettings>
 #include <QApplication>
 #include "resourcemanagepage.h"
@@ -15,7 +16,12 @@ ResourceManagePage::ResourceManagePage(WidgetI *parent):
 
     QSettings configSetting("config.ini",QSettings::IniFormat);
     webHost_ = configSetting.value("Http/Javahost").toString();
+    QWebChannel *webChannel = new QWebChannel(webView_);
+    webBridge_ = new ResourceWebBridge(webChannel);
+    webChannel->registerObject("Bridge",webBridge_);
+    webView_->page()->setWebChannel(webChannel);
     webView_->page()->setBackgroundColor(Qt::transparent);
+    webBridge_->setHostName(webHost_);
 }
 
 void ResourceManagePage::setUserStyle(int s)
@@ -30,4 +36,23 @@ void ResourceManagePage::loadWebPage(int index)
     }else if(index == 1){
         webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + tr("/jsHtml/resource/person_page/index.html")));
     }
+}
+
+ResourceWebBridge::ResourceWebBridge(QObject *parent):
+    QObject(parent)
+{
+
+}
+
+void ResourceWebBridge::setHostName(QString s)
+{
+    if(!s.isEmpty() && s.right(1) == '/'){
+        s.remove(s.count() - 1, 1);
+    }
+    host_ = s;
+}
+
+void ResourceWebBridge::onInitsized()
+{
+    emit sigHostNameChanged(host_);
 }

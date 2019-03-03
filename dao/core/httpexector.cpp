@@ -39,7 +39,7 @@ void DLL::HttpExector::setheader(std::vector<std::string> &headers)
     curl_easy_setopt(_curl,CURLOPT_HTTPHEADER,_headers);
 }
 
-int DLL::HttpExector::postFile(std::string &uri, void *formpost)
+int DLL::HttpExector::submitFormData(std::string &uri, void *formpost)
 {
     _recvData.clear();
     curl_easy_setopt(_curl,CURLOPT_URL,uri.c_str());

@@ -10,7 +10,7 @@ public:
     HttpExector();
     ~HttpExector();
     virtual void setheader(std::vector<std::string> &headers);
-    int postFile(std::string &uri, void *formpost);
+    int submitFormData(std::string &uri, void *formpost);
     virtual int progress(double totalDownLoad,double downloaded,double totalUpload, double uploaded) = 0;
 
 protected:

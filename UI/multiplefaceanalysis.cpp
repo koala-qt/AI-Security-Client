@@ -61,8 +61,20 @@ void MultipleFaceAnalysis::setUserStyle(int style)
                                       "selection-background-color: #4741F2;"
                                       "}");
         m_pTxtFolderPath->setStyleSheet("width:400px;max-width:450px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;");
-        m_pDateSTime->setStyleSheet("width:250px;max-width:250px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;");
-        m_pDateETime->setStyleSheet("width:250px;max-width:250px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;");
+        m_pDateSTime->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
+                                    "font-family:PingFang SC Regular;"
+                                    "width:250px;max-width:250px;height:34px;"
+                                    "color: rgb(126,140,177);"
+                                    "box-shadow:1px 1px 0px rgba(77,86,107,1);"
+                                    "border-radius:6px;"
+                                    "background-color: rgb(40,45,56);}");
+        m_pDateETime->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
+                                    "font-family:PingFang SC Regular;"
+                                    "width:250px;max-width:250px;height:34px;"
+                                    "color: rgb(126,140,177);"
+                                    "box-shadow:1px 1px 0px rgba(77,86,107,1);"
+                                    "border-radius:6px;"
+                                    "background-color: rgb(40,45,56);}");
 
         // border:1px solid #CECECE;
         m_tableW->setStyleSheet(

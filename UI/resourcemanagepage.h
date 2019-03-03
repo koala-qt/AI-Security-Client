@@ -3,6 +3,24 @@
 
 #include "widgetinterface.h"
 QT_FORWARD_DECLARE_CLASS(QWebEngineView)
+
+class ResourceWebBridge : public QObject
+{
+    Q_OBJECT
+public:
+    ResourceWebBridge(QObject *parent = nullptr);
+    void setHostName(QString);
+
+signals:
+    void sigHostNameChanged(QString);
+
+public slots:
+    void onInitsized();
+
+private:
+    QString host_;
+};
+
 class ResourceManagePage : public WidgetI
 {
     Q_OBJECT
@@ -13,6 +31,7 @@ public:
 
 private:
     QWebEngineView *webView_{nullptr};
+    ResourceWebBridge *webBridge_{nullptr};
     QString webHost_;
 };
 

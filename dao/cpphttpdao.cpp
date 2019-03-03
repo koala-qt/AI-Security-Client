@@ -71,7 +71,7 @@ QString DLL::CppHttpDao::uploadVideoByForm(QString videoPath)
                      CURLFORM_FILENAME, fileNameStd.data(),
                      CURLFORM_END);
 #endif
-        int resCode = postFile(urlStr.toStdString(),formpost);
+        int resCode = submitFormData(urlStr.toStdString(),formpost);
         if(resCode != CURLE_OK){
             return curl_easy_strerror(CURLcode(resCode));
         }
