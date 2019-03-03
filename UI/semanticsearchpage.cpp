@@ -88,7 +88,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
             infoDialog.exec();
             dataMenu_->setEnabled(true);
         });
-        connect(serviceI,&RestServiceI::sigPeronsDetails,this,[this,label](QImage face,QImage body,QStringList faceAttr,QStringList bodyAttr){
+        connect(serviceI,&RestServiceI::sigPeronsDetails,this,[this,label](RestServiceI::PortraitReturnData resData){
             label->close();
             delete label;
             Portrait *detailsW = new Portrait(this);
@@ -96,7 +96,8 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
             detailsW->setWindowFlags(Qt::Window | Qt::Dialog);
             detailsW->setWindowModality(Qt::ApplicationModal);
             detailsW->setUserStyle(userStyle());
-            detailsW->slotSetData(face,body,faceAttr,bodyAttr);
+            detailsW->slotSetData(resData);
+            detailsW->setMinimumSize(582,514);
             detailsW->show();
             QPoint r = dataListW_->mapToGlobal(dataListW_->rect().center());
             QRect dr = detailsW->rect();
@@ -128,7 +129,6 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
             dialog.setUserStyle(userStyle());
             dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
             dialog.setSceneInfo(sinfo);
-            dialog.setRectLinePen(Qt::yellow);
             connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
                 if(!images.count()){
                     return;
@@ -138,7 +138,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
                 faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
                 faceDialog->setWindowModality(Qt::ApplicationModal);
                 QPalette pal = faceDialog->palette();
-                pal.setColor(QPalette::Background,QColor(112,110,119));
+                pal.setColor(QPalette::Background,QColor(37,41,52));
                 faceDialog->setPalette(pal);
                 faceDialog->setAutoFillBackground(true);
                 faceDialog->setUserStyle(userStyle());
@@ -180,6 +180,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
         portSearchDialog->setPalette(pal);
         portSearchDialog->setAutoFillBackground(true);
         portSearchDialog->setUserStyle(userStyle());
+        portSearchDialog->setMinimumSize(1250,710);
 //        portSearchDialog->layout()->setMargin(10);
 //        portSearchDialog->setMinimumHeight(700);
         portSearchDialog->show();
@@ -293,7 +294,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     }
     noDataW_ = new NoDataTip(dataListW_);
 
-    connect(pageIndicator_,SIGNAL(sigPageClicked(int)),this,SLOT(slotSemanticSearch(int)));
+    connect(pageIndicator_,SIGNAL(sigPageClicked(int)),this,SLOT(slotPageIndexChanged(int)));
     connect(searchBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSearchBtnClicked()));
     connect(attributTreeW_,SIGNAL(itemChanged(QTreeWidgetItem*,int)),this,SLOT(slotTreeItemChanged(QTreeWidgetItem*,int)));
 
@@ -461,14 +462,14 @@ void SemanticSearchPage::setUserStyle(int s)
             "background-color: transparent;"
             "}");
         searchBtn_->setStyleSheet("QPushButton{"
-                                  "background-color: #B4A06C;"
+                                  "background-color: rgb(83,77,251);"
                                   "color: white;"
                                   "border-radius: 6px;"
-                                  "font-size:18px;"
+                                  "font-size: 18px;"
                                   "}"
                                   "QPushButton:pressed{"
                                   "padding: 2px;"
-                                  "background-color: rgba(255,0,0,100);"
+                                  "background-color: #312DA6;"
                                   "}");
         dataListW_->setStyleSheet("QListWidget{"
                                   "background: transparent;"
@@ -668,6 +669,7 @@ void SemanticSearchPage::slotSemanticSearch(int page)
         infoDialog.exec();
         pageIndicator_->setEnabled(true);
         searchBtn_->setEnabled(true);
+        attributTreeW_->setEnabled(true);
         noDataW_->show();
     });
     connect(serviceI,&RestServiceI::sigSemanticSearch,this,[this,label](RestServiceI::SemanticReturnData returnData){
@@ -683,6 +685,7 @@ void SemanticSearchPage::slotSemanticSearch(int page)
         setTableData(returnData.records);
         pageIndicator_->setEnabled(true);
         searchBtn_->setEnabled(true);
+        attributTreeW_->setEnabled(true);
     });
     RestServiceI::SemanticSearchArgs args;
     args.cameraId = curCameraId_;
@@ -696,6 +699,7 @@ void SemanticSearchPage::slotSemanticSearch(int page)
     label->show(500);
     pageIndicator_->setEnabled(false);
     searchBtn_->setEnabled(false);
+    attributTreeW_->setEnabled(false);
     noDataW_->hide();
     dataListW_->clear();
 }
@@ -714,6 +718,7 @@ void SemanticSearchPage::slotSearchFaceLink(int page)
         infoDialog.exec();
         pageIndicator_->setEnabled(true);
         searchBtn_->setEnabled(true);
+        attributTreeW_->setEnabled(true);
         noDataW_->show();
     });
     connect(serviceI,&RestServiceI::sigFaceLinkDataColl,this,[this,label](RestServiceI::FaceLinkDataCollReturn &returnData){
@@ -730,9 +735,11 @@ void SemanticSearchPage::slotSearchFaceLink(int page)
         setTableData(returnData.records);
         pageIndicator_->setEnabled(true);
         searchBtn_->setEnabled(true);
+        attributTreeW_->setEnabled(true);
     });
     RestServiceI::FaceLinkDataCollArgs args;
     args.cameraId = curCameraId_;
+    args.faceAttrs = curfaceAttrList_;
     args.startT = curStartTime_;
     args.endT = curEndTime_;
     args.pageNo = page;
@@ -741,6 +748,7 @@ void SemanticSearchPage::slotSearchFaceLink(int page)
     label->show(500);
     pageIndicator_->setEnabled(false);
     searchBtn_->setEnabled(false);
+    attributTreeW_->setEnabled(false);
     noDataW_->hide();
     dataListW_->clear();
 }
@@ -765,7 +773,7 @@ void SemanticSearchPage::slotPageIndexChanged(int page)
     }else if(curMode_ == 1){
         slotSemanticSearch(page);
     }else if(curMode_ == 2){
-        slotSearchFaceLink(2);
+        slotSearchFaceLink(page);
     }
 }
 
@@ -783,6 +791,7 @@ void SemanticSearchPage::slotSearchAll(int page)
         infoDialog.exec();
         pageIndicator_->setEnabled(true);
         searchBtn_->setEnabled(true);
+        attributTreeW_->setEnabled(true);
         noDataW_->show();
     });
     connect(serviceI,&RestServiceI::sigCaptureSearch,this,[this,label](RestServiceI::CaptureSearchReturnData value){
@@ -799,6 +808,7 @@ void SemanticSearchPage::slotSearchAll(int page)
         setTableData(value.data);
         pageIndicator_->setEnabled(true);
         searchBtn_->setEnabled(true);
+        attributTreeW_->setEnabled(true);
     });
     RestServiceI::CaptureSearchArgs args;
     args.page = page;
@@ -811,6 +821,7 @@ void SemanticSearchPage::slotSearchAll(int page)
     label->show(500);
     pageIndicator_->setEnabled(false);
     searchBtn_->setEnabled(false);
+    attributTreeW_->setEnabled(false);
     noDataW_->hide();
     dataListW_->clear();
 }
@@ -839,7 +850,7 @@ void SemanticSearchPage::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data
 
 void SemanticSearchPage::slotTreeItemChanged(QTreeWidgetItem *item, int column)
 {
-    qDebug() << item << column;
+    slotSearchBtnClicked();
 }
 
 void SemanticSearchPage::createTreeItem(QTreeWidget *treeW, QTreeWidgetItem *parentItem, SemanticSearchPage::itemData &items)

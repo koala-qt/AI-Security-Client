@@ -2,25 +2,32 @@
 #define PORTRAIT_H
 
 #include "widgetinterface.h"
+#include "service/servicei.h"
 QT_FORWARD_DECLARE_CLASS(QLabel)
+QT_FORWARD_DECLARE_CLASS(QPushButton)
 QT_FORWARD_DECLARE_CLASS(CornerWidget)
 QT_FORWARD_DECLARE_CLASS(FlowLayout)
 class Portrait : public WidgetI
 {
+    Q_OBJECT
 public:
     Portrait( WidgetI *parent = nullptr);
     void setUserStyle(int s) override;
 
 public slots:
-    void slotSetData(QImage face,QImage body,QStringList faceAttributeList,QStringList bodyAttributeList);
+    void slotSetData(RestServiceI::PortraitReturnData &data);
 
 private:
-    CornerWidget *faceCornerW_{nullptr};
-    QLabel *faceL_{nullptr},*personL_{nullptr},*splitVL_{nullptr},*personBack_{nullptr},
-    *faceAttributeTitleL_,*bodyAttributeTitleL_{nullptr},*attributeSpliteL_{nullptr},
-    *faceTextL{nullptr},*bodyTextL{nullptr};
-    QWidget *faceAttributeBack{nullptr},*bodyAttributeBack_{nullptr};
+    QLabel *faceImgL_{nullptr},*bodyImgL_{nullptr},
+    *idL_{nullptr},*nameL_{nullptr},*personType_{nullptr};
     FlowLayout *flowLayFace_{nullptr},*flowLayBody_{nullptr};
+    QPushButton *saveBtn_{nullptr};
+
+    QString curObjId_;
+    QImage curFaceImg_,curBodyImg_;
+
+private slots:
+    void slotSaveBtnClicked();
 };
 
 #endif // PORTRAIT_H

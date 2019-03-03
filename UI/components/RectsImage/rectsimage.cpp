@@ -1,6 +1,7 @@
 #include <QPainter>
 #include <QCursor>
 #include <QMouseEvent>
+#include <QBitmap>
 #include "rectsimage.h"
 
 RectsImage::RectsImage(QWidget *parent):
@@ -20,9 +21,9 @@ void RectsImage::setRectLineColor(QColor c)
     rectLineColor_ = c;
 }
 
-void RectsImage::setHightlightRect(QRect rc)
+void RectsImage::setClickedHight(bool s)
 {
-    hightlightRect_ = rc;
+    clickedHightlight_ = s;
     update();
 }
 
@@ -66,6 +67,9 @@ void RectsImage::mouseReleaseEvent(QMouseEvent *event)
         wRect.moveTo(pairV.first.x() * xPer_,pairV.first.y() * yPer_);
         if(wRect.contains(event->pos())){
             seletedImages_ << pairV.second;
+            hightlightRect_ = pairV.first;
+            clickedHightlight_ = true;
+            update();
             emit sigClickedImage(pairV.second);
             break;
         }
@@ -113,5 +117,21 @@ void RectsImage::paintEvent(QPaintEvent *event)
     painter.setPen(rectLineColor_);
     for(QPair<QRect,QImage> &pairV : rectsImgVec_){
         painter.drawRect(pairV.first);
+    }
+    painter.end();
+
+    if(clickedHightlight_){
+        QPixmap menban(backImg_.size());
+        menban.fill(QColor(0,0,0,100));
+        QPixmap mask(backImg_.size());
+        mask.fill(Qt::transparent);
+        painter.begin(&mask);
+        painter.setPen(Qt::blue);
+        painter.fillRect(hightlightRect_.adjusted(-painter.pen().width(),-painter.pen().width(),painter.pen().width(),painter.pen().width()),Qt::blue);
+        menban.setMask(mask.createMaskFromColor(Qt::blue));
+        painter.end();
+        painter.begin(this);
+        painter.setWindow(0,0,backImg_.width(),backImg_.height());
+        painter.drawPixmap(painter.window(),menban);
     }
 }

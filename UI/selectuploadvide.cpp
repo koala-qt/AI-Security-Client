@@ -50,14 +50,14 @@ void SelectUploadVide::setUserStyle(int s)
 {
     if(s == 0){
         upLoadBtn_->setStyleSheet("QPushButton{"
-                                  "background-color: rgb(71,65,242);"
+                                  "background-color: rgb(83,77,251);"
                                   "color: white;"
                                   "border-radius: 6px;"
-                                  "font-size:14px;"
+                                  "font-size: 18px;"
                                   "}"
                                   "QPushButton:pressed{"
                                   "padding: 2px;"
-                                  "background-color: rgba(255,0,0,100);"
+                                  "background-color: #312DA6;"
                                   "}");
         videoTextL_->setStyleSheet("QLabel{"
                                    "color: rgb(85,96,120);"

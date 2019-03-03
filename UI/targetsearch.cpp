@@ -73,7 +73,7 @@ TargetSearch::TargetSearch( WidgetI *parent):
     for(auto value : devicesVec){
         createTreeItem(treeW_,nullptr,value);
     }
-    treeW_->expandItem(treeW_->topLevelItem(0));
+    treeW_->expandAll();
     treeW_->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
     treeW_->headerItem()->setSizeHint(0,QSize(-1,45));
     treeW_->headerItem()->setText(0,tr(""));
@@ -184,7 +184,7 @@ bool TargetSearch::eventFilter(QObject *watched, QEvent *event)
     if(isIn && event->type() == QEvent::Paint){
         QPainter p(watchedWid);
         p.setPen(Qt::NoPen);
-        p.setBrush(QColor(0,0,0,50));
+        p.setBrush(QColor(48,54,68));
         p.drawRoundedRect(stackedW_->rect().adjusted(0,0,-p.pen().width(),-p.pen().width()),4,4);
     }
 

@@ -303,7 +303,7 @@ void RealMonitorSetting::slotAddStatis(bool s)
         timeCostTable_->setItem(0,2,item);
     }else{
         InformationDialog infoDialog(this);
-        infoDialog.setUserStyle(1);
+        infoDialog.setUserStyle(0);
         infoDialog.setMessage(tr("Add path failed"));
         infoDialog.exec();
     }
@@ -315,7 +315,7 @@ void RealMonitorSetting::slotRemoveStatis(bool s)
         timeCostTable_->removeRow(curRmRow_);
     }else{
         InformationDialog infoDialog(this);
-        infoDialog.setUserStyle(1);
+        infoDialog.setUserStyle(0);
         infoDialog.setMessage(tr("Deleted path failed"));
         infoDialog.exec();
     }

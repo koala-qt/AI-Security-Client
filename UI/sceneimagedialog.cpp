@@ -98,6 +98,7 @@ SceneImageDialog::SceneImageDialog(QWidget *parent, Qt::WindowFlags f):
     listW_->hide();
     spiteL_->hide();
     deleSelectBtn_->hide();
+    setRectLinePen(QColor(19,255,175));
     connect(rectesImgArea_,SIGNAL(sigClickedImage(QImage)),this,SLOT(slotOnClickedImage(QImage)));
 #endif
 }
@@ -115,7 +116,7 @@ void SceneImageDialog::setSceneInfo(const RestServiceI::SceneInfo &sinfo)
 void SceneImageDialog::setRectLinePen(QColor c)
 {
 #ifdef USERECTIMAGE
-
+    rectesImgArea_->setRectLineColor(c);
 #else
     QPalette pal = selectAreaW_->palette();
     pal.setColor(QPalette::Foreground,c);
@@ -128,11 +129,11 @@ void SceneImageDialog::setUserStyle(int styleArg)
     QPalette pal;
     if(styleArg == 0){
         pal = palette();
-        pal.setColor(QPalette::Background,QColor(87,87,87));
+        pal.setColor(QPalette::Background,QColor(48,54,68));
         setPalette(pal);
 
         pal = operateAreaW_->palette();
-        pal.setColor(QPalette::Background,QColor(75,75,75));
+        pal.setColor(QPalette::Background,QColor(48,54,68));
         operateAreaW_->setPalette(pal);
         operateAreaW_->setAutoFillBackground(true);
 
@@ -142,43 +143,52 @@ void SceneImageDialog::setUserStyle(int styleArg)
         spiteL_->setAutoFillBackground(true);
 
         searchBtn_->setStyleSheet("QPushButton{"
+                                  "background-color: rgb(83,77,251);"
                                   "color: white;"
-                                  "background-color: transparent;"
-                                  "border: 1px solid rgba(255,255,255,0.4);"
-                                  "border-radius: 20px;"
+                                  "border-radius: 4px;"
+                                  "font-size: 12px;"
                                   "}"
                                   "QPushButton:pressed{"
-                                  "background-color: rgb(180,160,108);"
+                                  "padding: 2px;"
+                                  "background-color: #312DA6;"
                                   "}");
         cancelBtn_->setStyleSheet("QPushButton{"
+                                  "background-color: rgb(83,77,251);"
                                   "color: white;"
-                                  "background-color: transparent;"
-                                  "border: 1px solid rgba(255,255,255,0.4);"
-                                  "border-radius: 20px;"
+                                  "border-radius: 4px;"
+                                  "font-size: 12px;"
                                   "}"
                                   "QPushButton:pressed{"
-                                  "background-color: rgb(180,160,108);"
+                                  "padding: 2px;"
+                                  "background-color: #312DA6;"
                                   "}");
         sureSelectBtn_->setStyleSheet("QPushButton{"
+                                      "background-color: rgb(83,77,251);"
                                       "color: white;"
-                                      "background-color: rgb(100,100,100);"
+                                      "border-radius: 6px;"
+                                      "font-size: 18px;"
                                       "}"
                                       "QPushButton:pressed{"
-                                      "background-color: rgba(255,0,0,100);"
+                                      "padding: 2px;"
+                                      "background-color: #312DA6;"
                                       "}");
         deleSelectBtn_->setStyleSheet("QPushButton{"
+                                      "background-color: rgb(83,77,251);"
                                       "color: white;"
-                                      "background-color: rgb(100,100,100);"
+                                      "border-radius: 6px;"
+                                      "font-size: 18px;"
                                       "}"
                                       "QPushButton:pressed{"
-                                      "background-color: rgba(255,0,0,100);"
+                                      "padding: 2px;"
+                                      "background-color: #312DA6;"
                                       "}");
         saveBtn_->setStyleSheet("QPushButton{"
+                                "background-color: rgb(83,77,251);"
                                 "color: white;"
-                                "background-color: rgb(100,100,100);"
                                 "}"
                                 "QPushButton:pressed{"
-                                "background-color: rgba(255,0,0,100);"
+                                "padding: 2px;"
+                                "background-color: #312DA6;"
                                 "}");
 
         pal = listW_->palette();
@@ -212,7 +222,7 @@ void SceneImageDialog::slotSaveBtnClicked()
     if(filePath.isEmpty())return;
     if(!curScenInfo_.image.save(filePath)){
         InformationDialog infoDialog(this);
-        infoDialog.setUserStyle(1);
+        infoDialog.setUserStyle(0);
         infoDialog.setMessage("Operation failed!");
     }
 }

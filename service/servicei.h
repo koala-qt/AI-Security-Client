@@ -56,13 +56,6 @@ public:
         QDateTime endTime;
         QImage img;
     };
-    struct CameraGoup
-    {
-        QString description;
-        QString groupName;
-        QString groupNo;
-        int deviceNumber;
-    };
     struct CaptureSearchArgs
     {
         int page;
@@ -78,6 +71,18 @@ public:
         QString cameraId;
         QString cameraPos;
         QString rtsp;
+    };
+    struct CameraGoup
+    {
+        QString description;
+        QString groupName;
+        QString groupNo;
+        int deviceNumber;
+    };
+    struct CameraGoupReturn
+    {
+        CameraGoup thisInfo;
+        QVector<CameraGoup> childGroup;
     };
     struct SceneInfo
     {
@@ -97,6 +102,7 @@ public:
         int num;
         float thresh;
         QString oid;
+        QStringList  faceAttrs;
         QDateTime startT;
         QDateTime endT;
         QImage faceImg;
@@ -227,6 +233,7 @@ public:
         int pageNo;
         int pageSize;
         QString cameraId;
+        QStringList faceAttrs;
         QDateTime startT;
         QDateTime endT;
     };
@@ -235,6 +242,17 @@ public:
         int toatal;
         int totalPage;
         QVector<DataRectureItem> records;
+    };
+    struct PortraitReturnData
+    {
+        QString objId;
+        QString id;
+        QString name;
+        QString personType;
+        QStringList faceAttrs;
+        QStringList bodyAttrs;
+        QImage faceImg;
+        QImage bodyImg;
     };
     struct EventSearchArgs
     {
@@ -326,6 +344,7 @@ public:
         qRegisterMetaType<QVector<QPointF>>("QVector<QPointF>");
         qRegisterMetaType<QVector<QVector<double> >>("QVector<QVector<double> >");
         qRegisterMetaType<QVector<QImage>>("QVector<QImage>");
+        qRegisterMetaType<RestServiceI::PortraitReturnData>("RestServiceI::PortraitReturnData");
         // Added by aihc begin
         qRegisterMetaType<QVector<RestServiceI::PortraitLibCompItem>>("QVector<RestServiceI::PortraitLibCompItem>");
         qRegisterMetaType<QVector<RestServiceI::PersonType>>("QVector<RestServiceI::PersonType>");
@@ -385,7 +404,7 @@ signals:
     void sigCaptureSearch(RestServiceI::CaptureSearchReturnData);
     void sigAlarmHistory(RestServiceI::EventSearchReturn);
     void sigFaceLinkTree(QJsonObject);
-    void sigPeronsDetails(QImage,QImage,QStringList,QStringList);
+    void sigPeronsDetails(RestServiceI::PortraitReturnData);
     void sigPersonNumbers(int,int);
     void sigSemanticSearch(RestServiceI::SemanticReturnData);
     void sigSearchByImage(QVector<RestServiceI::DataRectureItem>);

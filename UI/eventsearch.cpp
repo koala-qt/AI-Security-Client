@@ -70,9 +70,9 @@ EventSearch::EventSearch( WidgetI *parent):
 
     m_pageindicator = new PageIndicator;
     hlay = new QHBoxLayout;
-    hlay->addStretch();
     hlay->addWidget(m_pageindicator);
-    hlay->addStretch();
+    hlay->setAlignment(Qt::AlignRight);
+    mainLay->setSpacing(20);
     mainLay->addLayout(hlay);
 
     centerBack_ = new QWidget;
@@ -124,11 +124,13 @@ EventSearch::EventSearch( WidgetI *parent):
     m_tableW->horizontalHeader()->setMinimumHeight(60);
     m_tableW->horizontalHeader()->setSectionResizeMode(0,QHeaderView::Fixed);
     m_tableW->horizontalHeader()->setHighlightSections(false);
-    m_tableW->horizontalHeader()->setDefaultSectionSize(112);
-    m_tableW->verticalHeader()->setDefaultSectionSize(112);
+    m_tableW->horizontalHeader()->setDefaultSectionSize(192);
+    m_tableW->verticalHeader()->setDefaultSectionSize(108);
     m_tableW->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_tableW->setFocusPolicy(Qt::NoFocus);
     m_tableW->setEditTriggers(QTableWidget::NoEditTriggers);
+    m_tableW->hideColumn(1);
+    m_tableW->setShowGrid(false);
     m_pageindicator->setPageInfo(0,0);
     QPixmap pix(1,m_waringTyleCombox->iconSize().height());
     pix.fill(Qt::transparent);
@@ -174,105 +176,106 @@ void EventSearch::setUserStyle(int s)
         m_endTimeL->setPalette(pal);
 
         m_searchBtn->setStyleSheet("QPushButton{"
-                                   "background-color: #B4A06C;"
+                                   "background-color: rgb(83,77,251);"
                                    "color: white;"
-                                   //"border: 1px solid #34A2FF;"
                                    "border-radius: 6px;"
                                    "font-size: 18px;"
                                    "}"
                                    "QPushButton:pressed{"
                                    "padding: 2px;"
-                                   "background-color: rgba(255,0,0,100);"
+                                   "background-color: #312DA6;"
                                    "}");
-        m_tableW->setStyleSheet(
-                    "QTableView{"
-                    "color: white;"
-                    "border: none;"
-                    "font-size: 18px;"
-                    "background-color: transparent;"
-                    "selection-background-color: rgba(206,206,206,40);"
-                    "}"
-                    "QTableView QTableCornerButton::section{"
-                    "background: rgba(206,206,206,40);"
-                    "}"
-                    "QHeaderView{"
-                    "background-color: rgb(65,73,92);"
-                    "}"
-                    "QHeaderView::section{"
-                    "color: rgb(126,140,177);"
-                    "background-color: transparent;"
-                    "border: none;"
-                    "border-radius: 0px;"
-                    "}"
-                    "QScrollBar:vertical{"
-                    "background: transparent;"
-                    "border: 0px solid gray;"
-                    "width: 13px;"
-                    "}"
-                    "QScrollBar::handle:vertical{"
-                    "background: rgba(255,255,255,0.5);"
-                    "border-radius: 5px;"
-                    "}"
-                    "QScrollBar::add-line:vertical{"
-                    "background: transparent;"
-                    "border:0px solid #274168;"
-                    "border-radius: 5px;"
-                    "min-height: 10px;"
-                    "width: 13px;"
-                    "}"
-                    "QScrollBar::sub-line:vertical{"
-                    "background: transparent;"
-                    "border:0px solid #274168;"
-                    "min-height: 10px;"
-                    "width: 13px;"
-                    "}"
-                    "QScrollBar::up-arrow:vertical{"
-                    "subcontrol-origin: margin;"
-                    "height: 0px;"
-                    "border:0 0 0 0;"
-                    "visible:false;"
-                    "}"
-                    "QScrollBar::down-arrow:vertical{"
-                    "subcontrol-origin: margin;"
-                    "height: 0px;"
-                    "visible:false;"
-                    "}"
-                    "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
-                    "background: transparent;"
-                    "border: none;"
-                    "border-radius: 0px;"
-                    "}");
+        m_tableW->setStyleSheet("QTableView{"
+                                "selection-background-color: #383F4F;"
+                                "background-color: #383F4F;"
+                                "color: #7E8CB1;"
+                                "}"
+                                "QTableView QTableCornerButton::section{"
+                                "background: rgb(65,73,92);"
+                                "}"
+                                "QTableWidget::Item{"
+                                "border-bottom: 1px solid rgb(62,69,84);"
+                                "}"
+                                "QTableWidget::item:selected{"
+                                "background-color: rgb(43,49,61);"
+                                "color: white;"
+                                "}"
+                                "QHeaderView{"
+                                "background-color: rgb(65,73,92);"
+                                "}"
+                                "QHeaderView::section{"
+                                "color: rgb(126,140,177);"
+                                "background-color: transparent;"
+                                "border: none;"
+                                "border-radius: 0px;"
+                                "}"
+                                "QScrollBar:vertical{"
+                                "background: transparent;"
+                                "border: 0px solid gray;"
+                                "width: 13px;"
+                                "}"
+                                "QScrollBar::handle:vertical{"
+                                "background: rgba(255,255,255,0.5);"
+                                "border-radius: 5px;"
+                                "}"
+                                "QScrollBar::add-line:vertical{"
+                                "background: transparent;"
+                                "border:0px solid #274168;"
+                                "border-radius: 5px;"
+                                "min-height: 10px;"
+                                "width: 13px;"
+                                "}"
+                                "QScrollBar::sub-line:vertical{"
+                                "background: transparent;"
+                                "border:0px solid #274168;"
+                                "min-height: 10px;"
+                                "width: 13px;"
+                                "}"
+                                "QScrollBar::up-arrow:vertical{"
+                                "subcontrol-origin: margin;"
+                                "height: 0px;"
+                                "border:0 0 0 0;"
+                                "visible:false;"
+                                "}"
+                                "QScrollBar::down-arrow:vertical{"
+                                "subcontrol-origin: margin;"
+                                "height: 0px;"
+                                "visible:false;"
+                                "}"
+                                "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
+                                "background: transparent;"
+                                "border: none;"
+                                "border-radius: 0px;"
+                                "}");
 
         m_startTimeEdit->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
-            "color: rgb(126,140,177);"
-            "border:1px solid #CECECE;"
-            "border-radius:6px;"
-            "background-color: transparent;"
-                                       "}");
+                                       "color: rgb(126,140,177);"
+                                       "box-shadow:1px 1px 0px rgba(77,86,107,1);"
+                                       "border-radius:6px;"
+                                       "background-color: rgb(40,45,56);}");
 
         m_endTimeEdit->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
-            "color: rgb(126,140,177);"
-            "border:1px solid #CECECE;"
-            "border-radius:6px;"
-            "background-color: transparent;"
-                                       "}");
+                                     "color: rgb(126,140,177);"
+                                     "box-shadow:1px 1px 0px rgba(77,86,107,1);"
+                                     "border-radius:6px;"
+                                     "background-color: rgb(40,45,56);}");
 
         m_positionCombox->setStyleSheet(
                     "QComboBoxListView{"
                     "color: #CECECE;"
-                    "background-color: #525964;"
+                    "background-color: rgb(43,49,61);"
                     "}"
                     "QComboBox{"
                     "color: rgb(126,140,177);"
                     "font-size: 18px;"
-                    "background-color: transparent;"
-                    "border: 1px solid #CECECE;"
+                    "background-color: rgb(40,45,56);"
+                    "box-shadow: 1px 1px 0px rgba(77,86,107,1);"
                     "border-radius: 6px;"
                     "}"
                     "QComboBox QAbstractItemView{"
                     "selection-color: white;"
                     "outline: 0px;"
-                    "selection-background-color: #CECECE;"
+                    "selection-background-color: rgb(71,65,242);"
                     "}"
                     "QComboBox::drop-down{"
                     "subcontrol-position: center right;border-image: url(images/dropdown2.png);width:11px;height:8px;subcontrol-origin: padding;margin-right:5px;"
@@ -318,19 +321,19 @@ void EventSearch::setUserStyle(int s)
         m_waringTyleCombox->setStyleSheet(
                     "QComboBoxListView{"
                     "color: #CECECE;"
-                    "background-color: #525964;"
+                    "background-color: rgb(43,49,61);"
                     "}"
                     "QComboBox{"
                     "color: rgb(126,140,177);"
                     "font-size: 18px;"
-                    "background-color: transparent;"
-                    "border: 1px solid #CECECE;"
+                    "background-color: rgb(40,45,56);"
+                    "box-shadow:1px 1px 0px rgba(77,86,107,1);"
                     "border-radius: 6px;"
                     "}"
                     "QComboBox QAbstractItemView{"
                     "selection-color: white;"
                     "outline: 0px;"
-                    "selection-background-color: #CECECE;"
+                    "selection-background-color: rgb(71,65,242);"
                     "}"
                     "QComboBox::drop-down{"
                     "subcontrol-position: center right;border-image: url(images/dropdown2.png);width:11px;height:8px;subcontrol-origin: padding;margin-right:5px;"
@@ -434,7 +437,6 @@ void EventSearch::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
     dialog.setUserStyle(userStyle());
     dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
     dialog.setSceneInfo(sinfo);
-    dialog.setRectLinePen(Qt::yellow);
     connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
         if(!images.count()){
             return;

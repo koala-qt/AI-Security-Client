@@ -141,14 +141,15 @@ void PortraitSearch::setUserStyle(int s)
         m_pageIndicator->setUserStyle();
 
         m_pBtnSearch->setStyleSheet("QPushButton{"
-                                   "border: 0px;"
-                                   "color:white;"
-                                   "font-size:12px;width:99px;height:34px;font-family:PingFang SC Regular;"
-                                   "border-image:url(images/portraitlibrary/search.png);"
-                                   "}"
-                                   "QPushButton:pressed{"
-                                   "padding: 1px;"
-                                   "}");
+                                    "background-color: rgb(83,77,251);"
+                                    "color: white;"
+                                    "border-radius: 6px;"
+                                    "font-size: 18px;"
+                                    "}"
+                                    "QPushButton:pressed{"
+                                    "padding: 2px;"
+                                    "background-color: #312DA6;"
+                                    "}");
 
         m_pDataTip->setUserStyle(s);
         }

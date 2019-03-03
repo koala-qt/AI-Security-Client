@@ -10,7 +10,7 @@ public:
     RectsImage(QWidget *parent = nullptr);
     QSize sizeHint() const override;
     void setRectLineColor(QColor c = Qt::yellow);
-    void setHightlightRect(QRect rc);
+    void setClickedHight(bool s = true);
     void clearImages();
     QVector<QImage> selectedImages();
     void setInfos(const QImage backImg, const QVector<QPair<QRect,QImage>> &rectsVec);
@@ -26,7 +26,7 @@ protected:
     void paintEvent(QPaintEvent *event) override;
 
 private:
-    bool isDown_ = false;
+    bool isDown_ = false,clickedHightlight_ = false;
     qreal xPer_ = 0.0,yPer_ = 0.0;
     QRect hightlightRect_;
     QImage backImg_;

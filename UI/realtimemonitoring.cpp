@@ -218,6 +218,7 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
     updateCamera();
 #else
     getCameraGroup(nullptr,"1005");
+    getCameraDevice(nullptr,"1005");
 #endif
 //    eventItemSize_.setWidth(640);
 //    eventItemSize_.setHeight(960);
@@ -481,7 +482,7 @@ void RealtimeMonitoring::getCameraGroup(QTreeWidgetItem* item,QString groupNo)
 {
     ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
     RestServiceI *serviceI = factoryI->makeRestServiceI();
-    connect(serviceI,&RestServiceI::sigCameraGroup,this,[item,this](QVector<RestServiceI::CameraGoup> groups){
+    connect(serviceI,&RestServiceI::sigCameraGroup,this,[item,this,groupNo](QVector<RestServiceI::CameraGoup> groups){
         foreach (const RestServiceI::CameraGoup &groupV, groups) {
             QTreeWidgetItem *childItem = nullptr;
             qDebug() << item << groupV.deviceNumber;
@@ -507,7 +508,12 @@ void RealtimeMonitoring::getCameraDevice(QTreeWidgetItem *item, QString groupNo)
     RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI,&RestServiceI::sigCameraInfo,this,[this,item](QVector<RestServiceI::CameraInfo> devices){
         for (auto &info : devices) {
-            QTreeWidgetItem *camera = new QTreeWidgetItem(item, QStringList() << info.cameraPos,1);
+            QTreeWidgetItem *camera = nullptr;
+            if(!item){
+                camera = new QTreeWidgetItem(m_treeW, QStringList() << info.cameraPos,1);
+            }else{
+                camera = new QTreeWidgetItem(item, QStringList() << info.cameraPos,1);
+            }
             camera->setData(0,Qt::UserRole + 1, info.cameraId);
             camera->setData(0,Qt::UserRole + 2, info.rtsp);
             camera->setData(0,Qt::UserRole + 3, info.cameraPos);
@@ -526,7 +532,6 @@ void RealtimeMonitoring::getCameraDevice(QTreeWidgetItem *item, QString groupNo)
             complterModel_->insertRow(complterModel_->rowCount());
             complterModel_->setItem(complterModel_->rowCount() - 1,citem);
         }
-        qDebug() << complterModel_->rowCount() << "gggggggggggggggggggggggggggggggg";
     });
     serviceI->getCameraDevice(groupNo);
 }
@@ -781,7 +786,6 @@ void RealtimeMonitoring::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
     dialog.setUserStyle(userStyle());
     dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
     dialog.setSceneInfo(sinfo);
-    dialog.setRectLinePen(Qt::yellow);
     connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
         if(!images.count()){
             return;

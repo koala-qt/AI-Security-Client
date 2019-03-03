@@ -78,7 +78,6 @@ MultipleSearch::MultipleSearch( WidgetI *parent):
             dialog.setUserStyle(userStyle());
             dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
             dialog.setSceneInfo(sinfo);
-            dialog.setRectLinePen(Qt::yellow);
             connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
                 if(!images.count()){
                     return;
@@ -230,14 +229,14 @@ void MultipleSearch::setUserStyle(int style)
             "background-color: transparent;"
             "}");
         searchBtn_->setStyleSheet("QPushButton{"
-                                  "background-color: #B4A06C;"
+                                  "background-color: rgb(83,77,251);"
                                   "color: white;"
                                   "border-radius: 6px;"
-                                  "font-size:18px;"
+                                  "font-size: 18px;"
                                   "}"
                                   "QPushButton:pressed{"
                                   "padding: 2px;"
-                                  "background-color: rgba(255,0,0,100);"
+                                  "background-color: #312DA6;"
                                   "}");
         dataList_->setStyleSheet("QListWidget{"
                                  "background-color: transparent;"

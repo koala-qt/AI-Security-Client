@@ -388,7 +388,7 @@ QString DLL::CloudHttpDao::getPeronAverageTime(RestServiceI::AveragePersonTimeAr
     return QString();
 }
 
-QString DLL::CloudHttpDao::getPersonDetailes(QString &objId, QImage *face, QImage *body, QStringList *attrsface, QStringList *attrsbody)
+QString DLL::CloudHttpDao::getPersonDetailes(QString &objId, RestServiceI::PortraitReturnData *resDatas)
 {
     QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/portrait?objId=%1&threshold=%2").arg(objId).arg(attributeThresold_);
     qDebug() << urlStr << objId;
@@ -410,14 +410,18 @@ QString DLL::CloudHttpDao::getPersonDetailes(QString &objId, QImage *face, QImag
     }
 
     QJsonObject dataJsObj = jsObj.value("data").toObject();
-    face->loadFromData(QByteArray::fromBase64(dataJsObj.value("faceSnap").toString().toLatin1()));
-    body->loadFromData(QByteArray::fromBase64(dataJsObj.value("bodySnap").toString().toLatin1()));
+    resDatas->faceImg.loadFromData(QByteArray::fromBase64(dataJsObj.value("faceSnap").toString().toLatin1()));
+    resDatas->bodyImg.loadFromData(QByteArray::fromBase64(dataJsObj.value("bodySnap").toString().toLatin1()));
+    resDatas->id = dataJsObj.value("personId").toString();
+    resDatas->objId = dataJsObj.value("id").toString();
+    resDatas->name = dataJsObj.value("personName").toString();
+    resDatas->personType = dataJsObj.value("personTypeName").toString();
     QJsonArray jsArray = dataJsObj.value("faceAttrs").toArray();
-    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(*attrsface),[](QJsonValue jsValue){
+    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(resDatas->faceAttrs),[](QJsonValue jsValue){
         return jsValue.toString();
     });
     jsArray = dataJsObj.value("bodyAttrs").toArray();
-    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(*attrsbody),[](QJsonValue jsValue){
+    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(resDatas->bodyAttrs),[](QJsonValue jsValue){
         return jsValue.toString();
     });
     return QString();
@@ -791,10 +795,8 @@ QString DLL::CloudHttpDao::multipleSearch(RestServiceI::MultipleSearchArgs &args
 QString DLL::CloudHttpDao::getFaceLinkDataColl(RestServiceI::FaceLinkDataCollArgs &args, RestServiceI::FaceLinkDataCollReturn *resDatas)
 {
     QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-person-inlink");
-    QString postData = QObject::tr("cameraId=%1&startTime=%2&finishTime=%3&pageNo=%4&pageSize=%5")
-            .arg(args.cameraId)
-            .arg(args.startT.toString("yyyy-MM-dd HH:mm:ss"))
-            .arg(args.endT.toString("yyyy-MM-dd HH:mm:ss"))
+    QString postData = QObject::tr("cameraId=%1&faceAttrs=%2&startTime=%3&finishTime=%4&pageNo=%5&pageSize=%6")
+            .arg(args.cameraId,args.faceAttrs.join(','),args.startT.toString("yyyy-MM-dd HH:mm:ss"),args.endT.toString("yyyy-MM-dd HH:mm:ss"))
             .arg(args.pageNo)
             .arg(args.pageSize);
     qDebug() << urlStr;
@@ -890,11 +892,7 @@ QString DLL::CloudHttpDao::eventSearch(RestServiceI::EventSearchArgs &args, Rest
 
 QString DLL::CloudHttpDao::portraitLibCompSearch(RestServiceI::PortraitLibCompArgs &args, QVector<RestServiceI::PortraitLibCompItem> *resVec)
 {
-#if 1
-    QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-history");
-#else
-    QString urlStr = QObject::tr("http://192.168.2.145:8080/api/v2/cmcc/portrait/search");
-#endif
+    QString urlStr = host_ + QObject::tr("api/v2/cmcc/portrait/search");
     QByteArray imgStr;
     QBuffer imgBuf(&imgStr);
     imgBuf.open(QIODevice::WriteOnly);
@@ -949,11 +947,7 @@ QString DLL::CloudHttpDao::portraitLibCompSearch(RestServiceI::PortraitLibCompAr
 
 QString DLL::CloudHttpDao::queryPersonTypes(QVector<RestServiceI::PersonType> *resVec)
 {
-#if 1
     QString urlStr = host_ +  QObject::tr("api/v2/person/type/find?token=7d1e52d3cf0142e19b5901eb1ef91372");
-#else
-    QString urlStr = "http://192.168.2.145:8080/api/v2/person/type/find?token=7d1e52d3cf0142e19b5901eb1ef91372"; // internal test
-#endif
 
     int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),60);
     if(resCode != CURLE_OK){

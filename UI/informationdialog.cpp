@@ -61,23 +61,27 @@ void InformationDialog::setUserStyle(int styleIndex)
         setPalette(pal);
 
         closeBtn_->setStyleSheet("QPushButton{"
-                                 "color: rgba(0,0,0,100);"
-                                 "background-color: transparent;"
+                                 "background-color: rgb(83,77,251);"
+                                 "color: white;"
+                                 "border-radius: 6px;"
+                                 "font-size: 18px;"
                                  "}"
                                  "QPushButton:pressed{"
-                                 "background-color: rgba(255,0,0,100);"
+                                 "padding: 2px;"
+                                 "background-color: #312DA6;"
                                  "}");
         textL_->setStyleSheet("QLabel{"
                               "color: black;"
                               "}");
         okBtn_->setStyleSheet("QPushButton{"
-                              "border: 1px solid rgba(255,255,255,100);"
+                              "background-color: rgb(83,77,251);"
                               "color: white;"
-                              "background-color: rgba(255,0,0,150);"
-                              "radius: 8px;"
+                              "border-radius: 6px;"
+                              "font-size: 18px;"
                               "}"
                               "QPushButton:pressed{"
-                              "background-color: rgba(255,0,0,100);"
+                              "padding: 2px;"
+                              "background-color: #312DA6;"
                               "}");
     }
 }

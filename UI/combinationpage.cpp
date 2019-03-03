@@ -271,7 +271,7 @@ bool CombinationPage::eventFilter(QObject *watched, QEvent *event)
     if((backW == faceDataBackW_ || backW == bodyDataBackW_ || backW == conditionBackW_) && event->type() == QEvent::Paint){
         QPainter p(backW);
         p.setPen(Qt::NoPen);
-        p.setBrush(QColor(0,0,0,50));
+        p.setBrush(QColor(48,54,68));
         p.drawRoundedRect(backW->rect().adjusted(0,0,-p.pen().width(),-p.pen().width()),4,4);
     }
 
@@ -434,7 +434,6 @@ void CombinationPage::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
     dialog.setUserStyle(userStyle());
     dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
     dialog.setSceneInfo(sinfo);
-    dialog.setRectLinePen(Qt::yellow);
     connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
         if(!images.count()){
             return;
@@ -717,14 +716,14 @@ void CombinationPage::setUserStyle(int s)
                     "border-radius: 0px;"
                     "}");
         searchBtn_->setStyleSheet("QPushButton{"
-                                  "background-color: #B4A06C;"
+                                  "background-color: rgb(83,77,251);"
                                   "color: white;"
                                   "border-radius: 6px;"
-                                  "font-size:18px;"
+                                  "font-size: 18px;"
                                   "}"
                                   "QPushButton:pressed{"
                                   "padding: 2px;"
-                                  "background-color: rgba(255,0,0,100);"
+                                  "background-color: #312DA6;"
                                   "}");
         similaritySpin_->setStyleSheet("QSpinBox{"
                                  "padding-right: 15px;"
