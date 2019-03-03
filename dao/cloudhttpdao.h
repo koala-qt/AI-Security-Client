@@ -28,6 +28,7 @@ public:
     QString multipleSearch(RestServiceI::MultipleSearchArgs &,QVector<RestServiceI::MultipleSearchItem> *);
     QString getFaceLinkDataColl(RestServiceI::FaceLinkDataCollArgs &args, RestServiceI::FaceLinkDataCollReturn *resDatas);
     QString eventSearch(RestServiceI::EventSearchArgs &args,RestServiceI::EventSearchReturn *resData);
+    QString searchAvailableAttribute(RestServiceI::SearchAttrsArgs &args, QStringList *resData);
     /**
      * Added by aihc for Portrait library comparison.
      * @brief portraitLibCompSearch

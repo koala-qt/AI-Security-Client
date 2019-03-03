@@ -23,6 +23,7 @@ TrackingWebView::TrackingWebView(QWidget *parent):
 #endif
     page()->setBackgroundColor(Qt::transparent);
     setContextMenuPolicy(Qt::NoContextMenu);
+    connect(webBridge_,SIGNAL(sigCameraClicked(QString)),this,SIGNAL(sigCameraClicked(QString)));
     QNetworkProxyFactory::setUseSystemConfiguration(false);
 }
 
@@ -38,12 +39,14 @@ void TrackingWebView::updateTracking(QVector<TrackingWebView::TrackingPoint> &da
         QJsonObject jsObj;
         jsObj["pos"] = QJsonObject{{"lat",value.lat},{"lng",value.lng}};
         jsObj["name"] = value.name;
+        jsObj["cameraId"] = value.cameraId;
         jsObj["holdTime"] = value.holdTime;
         jsObj["grabTime"] = value.grabTime;
         jsObj["personImg"] = value.personImgUr;
         jsObj["sceneId"] = value.sceneId;
         jsArray << jsObj;
     }
+    qDebug() << jsArray;
     webBridge_->updateData(jsArray);
 }
 
@@ -80,9 +83,9 @@ void TrackingBridge::onInitsized()
     isInitsized_ = true;
 }
 
-void TrackingBridge::onCameraClicked(QJsonObject jsObj)
+void TrackingBridge::onCameraClicked(QString cameraId)
 {
-    qDebug() << jsObj;
+    emit sigCameraClicked(cameraId);
 }
 
 void TrackingWebView::startWaiting()

@@ -35,6 +35,7 @@ public:
     void semanticSearch(SemanticSearchArgs &) override;
     void searchByImage(SearchUseImageArgs &) override;
     void uploadVideo(QString videoPath) override;
+    void getAvailabelAttrs(SearchAttrsArgs &) override;
     /**
      * Added by aihc for Portrait library comparison.
      * @brief portraitLibCompSearch

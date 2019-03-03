@@ -19,10 +19,11 @@ signals:
     void sigTrackingDataChanged(QJsonArray);
     void sigMovieingStart();
     void sigMovieStop();
+    void sigCameraClicked(QString);
 
 public slots:
     void onInitsized();
-    void onCameraClicked(QJsonObject);
+    void onCameraClicked(QString cameraId);
 
 private:
     bool isInitsized_ = false;
@@ -37,7 +38,7 @@ public:
     struct TrackingPoint{
         qreal lat;
         qreal lng;
-        int cameraId;
+        QString cameraId;
         QString name;
         QString holdTime;
         QString grabTime;
@@ -50,6 +51,9 @@ public:
     void stopWaiting();
     void setHostName(QString);
     void updateTracking(QVector<TrackingPoint> &data);
+
+signals:
+    void sigCameraClicked(QString);
 
 private:
     TrackingBridge *webBridge_{nullptr};

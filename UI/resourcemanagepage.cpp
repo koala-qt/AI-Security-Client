@@ -3,6 +3,9 @@
 #include <QWebChannel>
 #include <QSettings>
 #include <QApplication>
+#include <QWebEngineProfile>
+#include <QFileDialog>
+#include <QStandardPaths>
 #include "resourcemanagepage.h"
 
 ResourceManagePage::ResourceManagePage(WidgetI *parent):
@@ -22,6 +25,8 @@ ResourceManagePage::ResourceManagePage(WidgetI *parent):
     webView_->page()->setWebChannel(webChannel);
     webView_->page()->setBackgroundColor(Qt::transparent);
     webBridge_->setHostName(webHost_);
+
+    connect(webView_->page()->profile(),SIGNAL(downloadRequested(QWebEngineDownloadItem*)),this,SLOT(slotLoadRequest(QWebEngineDownloadItem*)));
 }
 
 void ResourceManagePage::setUserStyle(int s)
@@ -36,6 +41,13 @@ void ResourceManagePage::loadWebPage(int index)
     }else if(index == 1){
         webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + tr("/jsHtml/resource/person_page/index.html")));
     }
+}
+
+void ResourceManagePage::slotLoadRequest(QWebEngineDownloadItem *download)
+{
+    QString filenName = QFileDialog::getSaveFileName(this,tr("download"),download->path());
+    if(filenName.isEmpty())return;
+    download->accept();
 }
 
 ResourceWebBridge::ResourceWebBridge(QObject *parent):

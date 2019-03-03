@@ -6,6 +6,26 @@
 QT_FORWARD_DECLARE_CLASS(QComboBox)
 QT_FORWARD_DECLARE_CLASS(QListWidget)
 QT_FORWARD_DECLARE_CLASS(QWebEngineView)
+QT_FORWARD_DECLARE_CLASS(QWebChannel)
+class HomePageWebBridge : public QObject
+{
+    Q_OBJECT
+public:
+    HomePageWebBridge(QObject *parent =nullptr);
+    void setHostName(QString);
+
+signals:
+    void sigHostNameChanged(QString);
+    void sigCameraClicked(QString);
+
+public slots:
+    void onInitsized();
+    void onCameraClicked(QString);
+
+private:
+    QString hostName_;
+};
+
 class HomPage : public WidgetI
 {
     Q_OBJECT
@@ -23,7 +43,7 @@ private:
     QComboBox *eventCombox_{nullptr};
     QListWidget *eventListW_{nullptr};
     QWebEngineView *webView_{nullptr};
-
+    HomePageWebBridge *webBridge_{nullptr};
     QSize eventItemSize_;
     const int eventItemCount = 5;
     NotifyServiceI *notifyServiceI_{nullptr};
@@ -35,6 +55,7 @@ private slots:
     void slotOnAbDoorEvent(NotifyEventI::ABDoorEventData);
     void slotOnClimbEvent(NotifyEventI::ClimbEventData);
     void slotOngGatherEvent(NotifyEventI::GatherEventData);
+    void slotOnCameraClicked(QString);
 };
 
 #endif // HOMPAGE_H

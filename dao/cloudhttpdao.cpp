@@ -89,7 +89,7 @@ QString DLL::CloudHttpDao::getGroup(QString groupNo, QVector<RestServiceI::Camer
 
 QString DLL::CloudHttpDao::getDevice(QString groupNo, QVector<RestServiceI::CameraInfo> *devices)
 {
-    QString urlStr = host_ + QObject::tr("api/v2/device/info/find?type=1&pageSize=10000000&pageNo=1&groupNo=%1").arg(groupNo);
+    QString urlStr = host_ + QObject::tr("api/v2/device/info/find-by-groupno?type=1&pageSize=10000000&pageNo=1&groupNo=%1").arg(groupNo);
     int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),5);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
@@ -886,6 +886,34 @@ QString DLL::CloudHttpDao::eventSearch(RestServiceI::EventSearchArgs &args, Rest
         item.timeStamp = QDateTime::fromMSecsSinceEpoch(itemObj.value("timeStamp").toVariant().toULongLong());
         getImageByUrl(QObject::tr("%1api/v2/external/monitor-detail/download-image?collection=snap_scene&fieldName=snapshot&objId=%2").arg(host_,item.sceneId),&item.image);
         return item;
+    });
+    return QString();
+}
+
+QString DLL::CloudHttpDao::searchAvailableAttribute(RestServiceI::SearchAttrsArgs &args, QStringList *resData)
+{
+    QString urlStr = host_ + QObject::tr("api/v2/external/monitor-detail/query/face-attributes?startTime=%1&finishTime=%2&cameraId=%3")
+            .arg(args.startT.toString("yyyy-MM-dd%20HH:mm:ss"),args.endT.toString("yyyy-MM-dd%20HH:mm:ss"),args.cameraId);
+    int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),4);
+    if(resCode != CURLE_OK){
+        return curl_easy_strerror(CURLcode(resCode));
+    }
+
+    QJsonParseError jsError;
+    QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
+    if(jsError.error != QJsonParseError::NoError){
+        return jsError.errorString();
+    }
+
+    QJsonObject jsObj = jsDoc.object();
+    int status = jsObj.value("status").toInt();
+    if(status != 200){
+        return jsObj.value("message").toString();
+    }
+
+    QJsonArray jsArray = jsObj.value("data").toArray();
+    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(*resData),[this](const QJsonValue &jsValue){
+        return jsValue.toString();
     });
     return QString();
 }

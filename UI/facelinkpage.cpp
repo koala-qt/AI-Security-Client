@@ -77,7 +77,7 @@ FaceLinkPage::FaceLinkPage( WidgetI *parent) :
     startTimeEdit_->setDateTime(QDateTime::currentDateTime().addDays(-1));
     endTimeEdit_->setDateTime(QDateTime::currentDateTime());
     imgBtn_->setFocusPolicy(Qt::NoFocus);
-    levelCombox_->addItems(QStringList() << tr("1") << tr("2") << tr("3") << tr("4") << tr("5") << tr("6"));
+    levelCombox_->addItems(QStringList() << tr("1") << tr("2") << tr("3"));
 
     connect(searchBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSearchBtnClicked()));
     connect(imgBtn_,SIGNAL(clicked(bool)),this,SLOT(slotImgBtnClicked()));

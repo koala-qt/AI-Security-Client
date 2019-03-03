@@ -7,8 +7,11 @@
 #include <QApplication>
 #include <QLabel>
 #include <QPainter>
+#include <QWebEnginePage>
+#include <QWebChannel>
 #include "hompage.h"
 #include "personitemwidget.h"
+#include "videoplayer.h"
 
 HomPage::HomPage(WidgetI *parent):
     WidgetI(parent)
@@ -36,8 +39,13 @@ HomPage::HomPage(WidgetI *parent):
     eventBackW_->installEventFilter(this);
     webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/index.html"));
     webView_->page()->setBackgroundColor(Qt::transparent);
+    QWebChannel *channel = new QWebChannel(webView_);
+    webBridge_ = new HomePageWebBridge(channel);
+    channel->registerObject("Bridge", webBridge_);
+    webView_->page()->setWebChannel(channel);
 
     connect(eventCombox_,SIGNAL(currentIndexChanged(int)),this,SLOT(slotEventComboxIndexChanged(int)));
+    connect(webBridge_,SIGNAL(sigCameraClicked(QString)),this,SLOT(slotOnCameraClicked(QString)));
     notifyServiceI_ = reinterpret_cast<NotifyServiceI*>(qApp->property("NotifyServiceI").toULongLong());
     setUserStyle(userStyle());
 
@@ -298,4 +306,38 @@ void HomPage::slotOngGatherEvent(NotifyEventI::GatherEventData evData)
     itemW->setLayout(mainLay);
     imgL->setPixmap(QPixmap::fromImage(evData.sceneImg.scaled(item->sizeHint())));
     eventListW_->setItemWidget(item,itemW);
+}
+
+void HomPage::slotOnCameraClicked(QString rtsp)
+{
+    qDebug() << rtsp;
+    VideoPlayer *player = new VideoPlayer(this);
+    player->setWindowTitle(rtsp);
+    player->setAttribute(Qt::WA_DeleteOnClose);
+    player->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+    player->setWindowModality(Qt::ApplicationModal);
+    player->setMinimumSize(960,540);
+    player->startPlay(rtsp,"fmg_decoder");
+    player->show();
+}
+
+HomePageWebBridge::HomePageWebBridge(QObject *parent):
+    QObject(parent)
+{
+
+}
+
+void HomePageWebBridge::setHostName(QString s)
+{
+    hostName_ = s;
+}
+
+void HomePageWebBridge::onInitsized()
+{
+    emit sigHostNameChanged(hostName_);
+}
+
+void HomePageWebBridge::onCameraClicked(QString rtsp)
+{
+    emit sigCameraClicked(rtsp);
 }

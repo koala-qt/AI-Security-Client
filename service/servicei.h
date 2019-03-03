@@ -281,6 +281,12 @@ public:
         int totalPage;
         QVector<EventSearchItem> data;
     };
+    struct SearchAttrsArgs
+    {
+        QString cameraId;
+        QDateTime startT;
+        QDateTime endT;
+    };
 
     /**
      * Added by aihc for Portrait library comparison.
@@ -404,6 +410,7 @@ public:
     virtual void semanticSearch(SemanticSearchArgs &) = 0;
     virtual void searchByImage(SearchUseImageArgs &) = 0;
     virtual void uploadVideo(QString videoPath) = 0;
+    virtual void getAvailabelAttrs(SearchAttrsArgs &) = 0;
     /**
      * Added by aihc for Portrait library comparison.
      * @brief portraitLibCompSearch
@@ -447,6 +454,7 @@ signals:
     void sigMultipleSearch(QVector<RestServiceI::MultipleSearchItem>);
     void sigFaceLinkDataColl(RestServiceI::FaceLinkDataCollReturn);
     void sigVideoUploadProgress(double,double);
+    void sigAvailableAttrs(QStringList);
     /**
      * Added by aihc for Portrait library comparison.
      * @brief sigPortraitLibCompResult

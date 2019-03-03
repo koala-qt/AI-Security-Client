@@ -1,6 +1,7 @@
 #ifndef RESOURCEMANAGEPAGE_H
 #define RESOURCEMANAGEPAGE_H
 
+#include <QWebEngineDownloadItem>
 #include "widgetinterface.h"
 QT_FORWARD_DECLARE_CLASS(QWebEngineView)
 
@@ -33,6 +34,9 @@ private:
     QWebEngineView *webView_{nullptr};
     ResourceWebBridge *webBridge_{nullptr};
     QString webHost_;
+
+private slots:
+    void slotLoadRequest(QWebEngineDownloadItem*download);
 };
 
 #endif // RESOURCEMANAGEPAGE_H

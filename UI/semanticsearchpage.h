@@ -15,6 +15,7 @@ QT_FORWARD_DECLARE_CLASS(QPushButton)
 QT_FORWARD_DECLARE_CLASS(PageIndicator)
 QT_FORWARD_DECLARE_CLASS(QMenu)
 QT_FORWARD_DECLARE_CLASS(NoDataTip)
+QT_FORWARD_DECLARE_CLASS(WaitingLabel)
 class SemanticSearchPage : public WidgetI
 {
     Q_OBJECT
@@ -48,6 +49,7 @@ private:
     QDateTime curStartTime_,curEndTime_;
     int curMode_;
     bool needUpdatePageInfo_ = true;
+    bool preIsSearch_ = false;
     int dataRows_;
     int dataCols_;
     QSize itemSize_,iconSize_;
@@ -58,6 +60,7 @@ private:
     void getCameraInfo();
     void setTableData(QVector<RestServiceI::DataRectureItem> &data);
     QStringList checkedAttrbute(QTreeWidgetItem*);
+    void getAvailableAttrs(WaitingLabel *);
 
 private slots:
     void slotPageIndexChanged(int);

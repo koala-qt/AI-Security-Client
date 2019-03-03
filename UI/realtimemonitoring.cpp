@@ -217,8 +217,8 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
 #if 0
     updateCamera();
 #else
-    getCameraGroup(nullptr,"1005");
     getCameraDevice(nullptr,"1005");
+    getCameraGroup(nullptr,"1005");
 #endif
 //    eventItemSize_.setWidth(640);
 //    eventItemSize_.setHeight(960);
@@ -494,8 +494,8 @@ void RealtimeMonitoring::getCameraGroup(QTreeWidgetItem* item,QString groupNo)
             childItem->setData(0,Qt::UserRole,groupV.groupNo);
             childItem->setData(1,Qt::UserRole + 1,groupV.description);
             if(groupV.deviceNumber){
-                getCameraDevice(childItem,groupV.groupNo);
                 getCameraGroup(childItem,groupV.groupNo);
+                getCameraDevice(childItem,groupV.groupNo);
             }
         }
     });

@@ -15,6 +15,7 @@
 #include "trackingwebview.h"
 #include "waitinglabel.h"
 #include "informationdialog.h"
+#include "videoplayer.h"
 
 TrackingPage::TrackingPage( WidgetI *parent):
     WidgetI(parent)
@@ -74,6 +75,7 @@ TrackingPage::TrackingPage( WidgetI *parent):
     QSettings configSetting("config.ini",QSettings::IniFormat);
     hostname_ = configSetting.value("Http/Javahost").toString();
 
+    connect(dataView_,SIGNAL(sigCameraClicked(QString)),this,SLOT(slotOnCameraClicked(QString)));
     setUserStyle(userStyle());
     getCameraInfo();
 }
@@ -218,7 +220,7 @@ void TrackingPage::slotSearchBtnClicked()
 void TrackingPage::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)
 {
     for(RestServiceI::CameraInfo &info : data){
-        curCameraMap_[info.cameraId] = info.cameraPos;
+        curCameraMap_[info.cameraId] = info;
     }
 }
 
@@ -227,8 +229,8 @@ void TrackingPage::slotTrackingNew(QVector<RestServiceI::TrackingReturnData> dat
     QVector<TrackingWebView::TrackingPoint> trackingVec;
     std::transform(data.begin(),data.end(),std::back_inserter(trackingVec),[this](const RestServiceI::TrackingReturnData &value){
         TrackingWebView::TrackingPoint pointData;
-        pointData.cameraId = value.cameraId.toInt();
-        pointData.name = curCameraMap_.value(value.cameraId);
+        pointData.cameraId = value.cameraId;
+        pointData.name = curCameraMap_.value(value.cameraId).cameraPos;
         pointData.grabTime = value.timeIn.toString("yyyy-MM-dd HH:mm:ss");
         int holdTime = (value.timeOut.toMSecsSinceEpoch() - value.timeIn.toMSecsSinceEpoch())/1000;
         pointData.holdTime.setNum(holdTime < 1 ? 1 : holdTime);
@@ -253,4 +255,15 @@ void TrackingPage::slotTracking(QVector<SearchFace> data)
         return pointData;
     });
     dataView_->updateTracking(trackingVec);
+}
+
+void TrackingPage::slotOnCameraClicked(QString cameraId)
+{
+    VideoPlayer *player = new VideoPlayer(this);
+    player->setAttribute(Qt::WA_DeleteOnClose);
+    player->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+    player->setWindowModality(Qt::ApplicationModal);
+    player->setMinimumSize(960,540);
+    player->startPlay(curCameraMap_.value(cameraId).rtsp,"fmg_decoder");
+    player->show();
 }

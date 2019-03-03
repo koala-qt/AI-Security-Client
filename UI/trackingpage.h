@@ -24,7 +24,7 @@ private:
     TrackingWebView *dataView_{nullptr};
 
     QString curOid_,hostname_;
-    QMap<QString,QString> curCameraMap_;
+    QMap<QString,RestServiceI::CameraInfo> curCameraMap_;
     void getCameraInfo();
 
 private slots:
@@ -33,6 +33,7 @@ private slots:
     void slotOnCameraInfo(QVector<RestServiceI::CameraInfo>);
     void slotTrackingNew(QVector<RestServiceI::TrackingReturnData>);
     void slotTracking(QVector<SearchFace>);
+    void slotOnCameraClicked(QString);
 };
 
 #endif // TRACKINGPAGE_H
