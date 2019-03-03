@@ -67,7 +67,7 @@ MainWindow::MainWindow(WidgetI *parent)
     mainLay->setSpacing(0);
     setLayout(mainLay);
     connect(m_topList,SIGNAL(currentRowChanged(int)),m_centerW,SLOT(setCurrentIndex(int)));
-    m_topList->setCurrentRow(m_topList->count() - 1);
+    m_topList->setCurrentRow(m_topList->count() - 2);
 
 
     QFont f = font();

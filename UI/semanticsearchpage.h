@@ -66,6 +66,7 @@ private slots:
     void slotSearchFaceLink(int);
     void slotSearchBtnClicked();
     void slotOnCameraInfo(QVector<RestServiceI::CameraInfo>);
+    void slotTreeItemChanged(QTreeWidgetItem*,int);
     void createTreeItem(QTreeWidget *treeW,QTreeWidgetItem *parentItem,itemData &items);
 };
 

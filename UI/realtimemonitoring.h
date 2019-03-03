@@ -26,7 +26,8 @@ public:
     void setUserStyle(int s) override;
 
 protected:
-    bool event(QEvent *event) override;
+//    bool event(QEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
     bool eventFilter(QObject *watched, QEvent *event)override;
 
 private:

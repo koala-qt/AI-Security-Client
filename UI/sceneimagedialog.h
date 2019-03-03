@@ -11,6 +11,7 @@ QT_FORWARD_DECLARE_CLASS(QLabel)
 QT_FORWARD_DECLARE_CLASS(SelectImage)
 QT_FORWARD_DECLARE_CLASS(RectsImage)
 #define USERECTIMAGE
+#define SINGLEIMAGE
 class SceneImageDialog : public QDialog
 {
     Q_OBJECT

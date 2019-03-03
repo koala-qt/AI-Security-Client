@@ -189,8 +189,8 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
     complterModel_->setColumnCount(1);
     cpter->setModel(complterModel_);
     cpter->setCompletionColumn(0);
-    cpter->setFilterMode(Qt::MatchStartsWith);
-    cpter->setModelSorting(QCompleter::CaseSensitivelySortedModel);
+//    cpter->setFilterMode(Qt::MatchStartsWith);
+//    cpter->setModelSorting(QCompleter::CaseSensitivelySortedModel);
     connect(cpter, static_cast<void(QCompleter::*)(const QModelIndex &)>(&QCompleter::activated),[=](const QModelIndex &index){
         QTreeWidgetItem *item = reinterpret_cast<QTreeWidgetItem*>(index.data(Qt::UserRole + 1).toULongLong());
         m_treeW->scrollToItem(item);
@@ -214,9 +214,14 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
     m_settingBtn->hide();
 
     setUserStyle(userStyle());
+#if 0
     updateCamera();
+#else
+    getCameraGroup(nullptr,"1005");
+#endif
+//    eventItemSize_.setWidth(640);
+//    eventItemSize_.setHeight(960);
     slotEventComboxIndexChanged(0);
-//    getCameraGroup(nullptr,"1005");
 }
 
 RealtimeMonitoring::~RealtimeMonitoring()
@@ -405,28 +410,50 @@ void RealtimeMonitoring::setUserStyle(int s)
     }
 }
 
-bool RealtimeMonitoring::event(QEvent *event)
-{
-    if(event->type() == QEvent::Show){
-        int imgItemH = (eventList_->height() - (EVENTITEMCOUNT + 1) * eventList_->spacing() - eventList_->frameWidth() * 2) / EVENTITEMCOUNT;
-        int imgItemW = eventList_->width() - 2 * eventList_->spacing() - 2 * eventList_->frameWidth();
-        eventItemSize_.setHeight(imgItemH);
-        eventItemSize_.setWidth(imgItemW);
-        for(int i = 0; i < eventList_->count(); i++){
-            QListWidgetItem *item = eventList_->item(i);
-            item->setSizeHint(eventItemSize_);
-        }
+//bool RealtimeMonitoring::event(QEvent *event)
+//{
+//    if(event->type() == QEvent::Show){
+//        int imgItemH = (eventList_->height() - (EVENTITEMCOUNT + 1) * eventList_->spacing() - eventList_->frameWidth() * 2) / EVENTITEMCOUNT;
+//        int imgItemW = eventList_->width() - 2 * eventList_->spacing() - 2 * eventList_->frameWidth();
+//        eventItemSize_.setHeight(imgItemH);
+//        eventItemSize_.setWidth(imgItemW);
+//        for(int i = 0; i < eventList_->count(); i++){
+//            QListWidgetItem *item = eventList_->item(i);
+//            item->setSizeHint(eventItemSize_);
+//        }
 
-        int faceItemW = (m_faceList->width() - (FACEITEMCOUNT + 1) * m_faceList->spacing() - m_faceList->frameWidth() * 2) / FACEITEMCOUNT;
-        int faceItemH = m_faceList->height() - m_faceList->spacing() * 2 - m_faceList->frameWidth() * 2;
-        m_faceItemSize = QSize(faceItemW,faceItemH);
-        for(int i = 0; i < m_faceList->count(); i++){
-            QListWidgetItem *item = m_faceList->item(i);
-            item->setSizeHint(m_faceItemSize);
-        }
+//        int faceItemW = (m_faceList->width() - (FACEITEMCOUNT + 1) * m_faceList->spacing() - m_faceList->frameWidth() * 2) / FACEITEMCOUNT;
+//        int faceItemH = m_faceList->height() - m_faceList->spacing() * 2 - m_faceList->frameWidth() * 2;
+//        m_faceItemSize = QSize(faceItemW,faceItemH);
+//        for(int i = 0; i < m_faceList->count(); i++){
+//            QListWidgetItem *item = m_faceList->item(i);
+//            item->setSizeHint(m_faceItemSize);
+//        }
+//    }
+
+//    return WidgetI::event(event);
+//}
+
+void RealtimeMonitoring::resizeEvent(QResizeEvent *event)
+{
+    int imgItemH = (eventList_->height() - (EVENTITEMCOUNT + 1) * eventList_->spacing() - eventList_->frameWidth() * 2) / EVENTITEMCOUNT;
+    int imgItemW = eventList_->width() - 2 * eventList_->spacing() - 2 * eventList_->frameWidth();
+    eventItemSize_.setHeight(imgItemH);
+    eventItemSize_.setWidth(imgItemW);
+    for(int i = 0; i < eventList_->count(); i++){
+        QListWidgetItem *item = eventList_->item(i);
+        item->setSizeHint(eventItemSize_);
     }
 
-    return WidgetI::event(event);
+    int faceItemW = (m_faceList->width() - (FACEITEMCOUNT + 1) * m_faceList->spacing() - m_faceList->frameWidth() * 2) / FACEITEMCOUNT;
+    int faceItemH = m_faceList->height() - m_faceList->spacing() * 2 - m_faceList->frameWidth() * 2;
+    m_faceItemSize = QSize(faceItemW,faceItemH);
+    for(int i = 0; i < m_faceList->count(); i++){
+        QListWidgetItem *item = m_faceList->item(i);
+        item->setSizeHint(m_faceItemSize);
+    }
+
+    return  WidgetI::resizeEvent(event);
 }
 
 bool RealtimeMonitoring::eventFilter(QObject *watched, QEvent *event)
@@ -492,7 +519,14 @@ void RealtimeMonitoring::getCameraDevice(QTreeWidgetItem *item, QString groupNo)
             if(!camera->data(0,Qt::UserRole + 2).toString().isEmpty()){
                 m_realPlayM->playByOrder(info.rtsp,info.cameraId,camera->text(0));
             }
+            curCameraMap_[info.cameraId] = info.cameraPos;
+
+            QStandardItem *citem = new QStandardItem(info.cameraPos);
+            citem->setData(reinterpret_cast<unsigned long long>(camera));
+            complterModel_->insertRow(complterModel_->rowCount());
+            complterModel_->setItem(complterModel_->rowCount() - 1,citem);
         }
+        qDebug() << complterModel_->rowCount() << "gggggggggggggggggggggggggggggggg";
     });
     serviceI->getCameraDevice(groupNo);
 }

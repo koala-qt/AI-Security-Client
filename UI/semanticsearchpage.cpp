@@ -295,6 +295,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
 
     connect(pageIndicator_,SIGNAL(sigPageClicked(int)),this,SLOT(slotSemanticSearch(int)));
     connect(searchBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSearchBtnClicked()));
+    connect(attributTreeW_,SIGNAL(itemChanged(QTreeWidgetItem*,int)),this,SLOT(slotTreeItemChanged(QTreeWidgetItem*,int)));
 
     QSettings config("config.ini",QSettings::IniFormat);
     dataRows_ = config.value("App/SemanticRows").toInt();
@@ -834,6 +835,11 @@ void SemanticSearchPage::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data
         posCombox_->addItem(info.cameraPos,info.cameraId);
         cameraMapInfo_[info.cameraId] = info.cameraPos;
     }
+}
+
+void SemanticSearchPage::slotTreeItemChanged(QTreeWidgetItem *item, int column)
+{
+    qDebug() << item << column;
 }
 
 void SemanticSearchPage::createTreeItem(QTreeWidget *treeW, QTreeWidgetItem *parentItem, SemanticSearchPage::itemData &items)

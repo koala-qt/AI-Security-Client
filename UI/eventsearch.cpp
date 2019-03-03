@@ -186,7 +186,8 @@ void EventSearch::setUserStyle(int s)
                                    "}");
         m_tableW->setStyleSheet(
                     "QTableView{"
-                    "color: white;border:1px solid #CECECE;"
+                    "color: white;"
+                    "border: none;"
                     "font-size: 18px;"
                     "background-color: transparent;"
                     "selection-background-color: rgba(206,206,206,40);"
