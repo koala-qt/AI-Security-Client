@@ -13,13 +13,14 @@
 #include <QScrollBar>
 #include <QFileDialog>
 #include <QStandardPaths>
+#include <QComboBox>
 
 #include "pageindicator.h"
 #include "nodatatip.h"
 #include "waitinglabel.h"
 #include "informationdialog.h"
 
-const char* FaceLibTypeTag = "FaceLibType";
+const char* FaceTypeCheckedTag = "FaceTypeChecked";
 PortraitSearch::PortraitSearch(WidgetI *parent):
     WidgetI(parent)
 {
@@ -50,6 +51,21 @@ void PortraitSearch::setUserStyle(int s)
         m_txtID->setStyleSheet("width:150px;max-width:250px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;");
         m_pLabName->setStyleSheet(commStyle);
         m_pTxtName->setStyleSheet(m_txtID->styleSheet());
+        // 3.1 add
+        m_pLabLimit->setStyleSheet(commStyle);
+        m_pLabSimilary->setStyleSheet(commStyle);
+        m_pLimitCombo->setStyleSheet("QComboBox{width:150px;max-width:250px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;}"
+                                     "QComboBox::drop-down{"
+                                     "subcontrol-position: center right;border-image: url(images/portraitlibrary/icon_arrow.png);width:8px;height:5px;subcontrol-origin: padding;margin-right:5px;"
+                                     "}"
+                                     "QComboBox QAbstractItemView{"
+                                     "background-color:#282D38;"
+                                     "selection-color: white;"
+                                     "outline: 0px;color:white;"
+                                     "selection-background-color: #4741F2;"
+                                     "}");
+    m_pTxtSimilary->setStyleSheet(m_txtID->styleSheet());
+#if 0
         m_faceLibBar->setStyleSheet("QTabBar{border-image:url(images/portraitlibrary/barbg.png);font-size:12px;background-color:transparent;}"
                                     "QTabBar::tab{border-image:url(images/portraitlibrary/tab-noselected.png);width:120px;height:40px;color:#7E8CB1;"
                                     "margin-right:2px;margin-left:2px;margin-top:2px;margin-bottom:2px;font-family:PingFang SC Regular;"
@@ -62,7 +78,9 @@ void PortraitSearch::setUserStyle(int s)
                                     border-image:url(images/portraitlibrary/tabselected.png); \
                                     color: white; \
                                 }");
-        // border:1px solid #CECECE;
+#endif
+        m_pFaceTypesWgt->setStyleSheet(".QWidget{border-image:url(images/portraitlibrary/barbg.png);background-color:transparent;min-width:400px;height:45px;max-height:45px;}");
+// border:1px solid #CECECE;
         m_tableW->setStyleSheet(
                     "QTableView{"
                     "color: #7E8CB1;"
@@ -169,7 +187,7 @@ void PortraitSearch::onBtnSearchClicked()
         infoDialog.exec();
         m_pBtnSearch->setEnabled(true);
         m_pageIndicator->setEnabled(true);
-        m_faceLibBar->setEnabled(true);
+        //m_faceLibBar->setEnabled(true);
         m_pDataTip->show();
     });
     connect(serviceI, &RestServiceI::sigPortraitLibCompResult, this, [&,label](const QVector<RestServiceI::PortraitLibCompItem> value){
@@ -188,7 +206,7 @@ void PortraitSearch::onBtnSearchClicked()
 #else
         slotAddRow(value);
 #endif
-        m_faceLibBar->setEnabled(true);
+        //m_faceLibBar->setEnabled(true);
         m_pBtnSearch->setEnabled(true);
         m_pageIndicator->setEnabled(true);
         if (value.isEmpty())
@@ -200,10 +218,25 @@ void PortraitSearch::onBtnSearchClicked()
     RestServiceI::PortraitLibCompArgs args;
     args.image = m_faceImg;
     args.bRequireBase64 = true;
-    args.libType = m_vecPersonTypes[m_faceLibBar->currentIndex()].strTypeNo;
-    m_strBigPersonType = m_faceLibBar->tabText(m_faceLibBar->currentIndex());
-    args.similarity = 0.3;
-    args.limit = 100;
+    //args.libType = m_vecPersonTypes[m_faceLibBar->currentIndex()].strTypeNo;
+    QString strTypes;
+    int index = 0;
+    for (auto btnTypeItem : m_lstFaceLibTypes)
+    {
+        if (btnTypeItem->property(FaceTypeCheckedTag).toString() == "true")
+        {
+            if (!strTypes.isEmpty())
+            {
+                strTypes.append(",");
+            }
+            strTypes.append(m_vecPersonTypes[index].strTypeNo);
+        }
+        index++;
+    }
+    args.libType = strTypes;
+    //m_strBigPersonType = m_faceLibBar->tabText(m_faceLibBar->currentIndex());
+    args.similarity = m_pTxtSimilary->text().toDouble();
+    args.limit = m_pLimitCombo->currentText().toInt();
     if (!m_txtID->text().isEmpty())
     {
         args.nPersonId = m_txtID->text().toInt();
@@ -215,7 +248,7 @@ void PortraitSearch::onBtnSearchClicked()
     args.strPersonName = m_pTxtName->text();
     serviceI->portraitLibCompSearch(args);
     label->show(500);
-    m_faceLibBar->setEnabled(false);
+    //m_faceLibBar->setEnabled(false);
     m_pBtnSearch->setEnabled(false);
     m_pageIndicator->setEnabled(false);
     m_pDataTip->hide();
@@ -283,9 +316,10 @@ void PortraitSearch::init()
     QVBoxLayout *topRighVlay = new QVBoxLayout;
     topRigWgt->setLayout(topRighVlay);
     QHBoxLayout *topHlay = new QHBoxLayout;
-    topHlay->setSpacing(10);
+    topHlay->setSpacing(0);
     topRighVlay->addLayout(topHlay);
     //int nTypeCount = m_mapFaceLibTypes.size();
+#if 0
     m_faceLibBar = new QTabBar;
     m_faceLibBar->setDrawBase(false);
     //queryPersonTypes();
@@ -297,6 +331,14 @@ void PortraitSearch::init()
     }
 #endif
     topHlay->addWidget(m_faceLibBar);
+#endif
+    // 3.1 edit
+    m_pFaceTypesWgt = new QWidget;
+    m_pFaceTypesHLay = new QHBoxLayout;
+    m_pFaceTypesHLay->setSpacing(5);
+    m_pFaceTypesHLay->setMargin(2);
+    m_pFaceTypesWgt->setLayout(m_pFaceTypesHLay);
+    topHlay->addWidget(m_pFaceTypesWgt);
     topHlay->addStretch();
     QHBoxLayout *bottomHlay = new QHBoxLayout;
     bottomHlay->setSpacing(10);
@@ -311,6 +353,21 @@ void PortraitSearch::init()
     m_pTxtName = new QLineEdit;
     m_pTxtName->setMaxLength(50);
     bottomHlay->addWidget(m_pTxtName);
+    // 3.1 add
+    m_pLabLimit = new QLabel(tr("Top"));
+    bottomHlay->addWidget(m_pLabLimit);
+    m_pLimitCombo = new QComboBox;
+    bottomHlay->addWidget(m_pLimitCombo);
+    m_pLimitCombo->addItem(tr("10"));
+    m_pLimitCombo->addItem(tr("20"));
+    m_pLimitCombo->addItem(tr("30"));
+    m_pLimitCombo->addItem(tr("50"));
+    m_pLimitCombo->addItem(tr("100"));
+    m_pLabSimilary = new QLabel(tr("Similarity"));
+    bottomHlay->addWidget(m_pLabSimilary);
+    m_pTxtSimilary = new QLineEdit(tr("0.3"));
+    m_pTxtSimilary->setValidator(new QDoubleValidator(1, 0.1, 2, this));
+    bottomHlay->addWidget(m_pTxtSimilary);
     m_pBtnSearch = new QPushButton(tr("Search"));
     connect(m_pBtnSearch, SIGNAL(clicked(bool)),
             this, SLOT(onBtnSearchClicked()));
@@ -421,10 +478,33 @@ void PortraitSearch::queryPersonTypes()
         delete label;
         m_vecPersonTypes = value;
         auto iter = value.begin();
+        QPushButton *m_btnFaceType = Q_NULLPTR;
         for (iter; iter != value.end(); ++iter)
         {
+#if 0
             m_faceLibBar->addTab(iter->strTypeName);
+#endif
+            m_btnFaceType = new QPushButton(iter->strTypeName);
+            m_btnFaceType->setProperty(FaceTypeCheckedTag, "false");
+            m_btnFaceType->setStyleSheet("QPushButton{border-image:url(images/portraitlibrary/tab-noselected.png);color:#7E8CB1;font-size:12px;font-family:PingFang SC Regular;width:120px;height:40px;}");
+            m_pFaceTypesHLay->addWidget(m_btnFaceType);
+            connect(m_btnFaceType, &QPushButton::clicked, this, [this, m_btnFaceType]{
+                if (m_btnFaceType->property(FaceTypeCheckedTag).toString() == "false")
+                {
+                    m_btnFaceType->setIcon(QIcon("images/portraitlibrary/icon_selected.png"));
+                    m_btnFaceType->setProperty(FaceTypeCheckedTag, "true");
+                    m_btnFaceType->setStyleSheet("QPushButton{border-image:url(images/portraitlibrary/tabselected.png);color:#7E8CB1;font-size:12px;font-family:PingFang SC Regular;width:120px;height:40px;}");
+                }
+                else
+                {
+                    m_btnFaceType->setIcon(QIcon(""));
+                    m_btnFaceType->setStyleSheet("QPushButton{border-image:url(images/portraitlibrary/tab-noselected.png);color:#7E8CB1;font-size:12px;font-family:PingFang SC Regular;width:120px;height:40px;}");
+                    m_btnFaceType->setProperty(FaceTypeCheckedTag, "false");
+                }
+            });
+            m_lstFaceLibTypes.append(m_btnFaceType);
         }
+        m_pFaceTypesHLay->addStretch();
         //slotAddRow(value);
     });
     serviceI->queryPersonTypes();

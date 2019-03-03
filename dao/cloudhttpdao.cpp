@@ -899,7 +899,7 @@ QString DLL::CloudHttpDao::portraitLibCompSearch(RestServiceI::PortraitLibCompAr
     imgBuf.open(QIODevice::WriteOnly);
     args.image.save(&imgBuf,"jpg");
     QString base64Str(imgStr.toBase64(QByteArray::Base64UrlEncoding));
-    QString postData = QObject::tr("similarity=%1&limit=%2&picture=%3&requireBase64=%4&personType=%5&token=%6")
+    QString postData = QObject::tr("similarity=%1&limit=%2&picture=%3&requireBase64=%4&personTypes=%5&token=%6")
             .arg(args.similarity)
             .arg(args.limit)
             .arg(base64Str)
