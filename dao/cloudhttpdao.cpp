@@ -7,6 +7,8 @@
 #include <QBuffer>
 #include <QRect>
 #include <QDebug>
+#include <QDir>
+#include <QFileInfoList>
 #include "cloudhttpdao.h"
 
 DLL::CloudHttpDao::CloudHttpDao()
@@ -1008,13 +1010,41 @@ QString DLL::CloudHttpDao::queryPersonTypes(QVector<RestServiceI::PersonType> *r
 QString DLL::CloudHttpDao::mnFaceAnalysisSearch(RestServiceI::MNFaceAnalysisArgs &args, QVector<RestServiceI::MNFaceAnalysisItem> *resVec)
 {
 #if 0
-    QString urlStr = host_ +  QObject::tr("api/v2/cmcc/portrait/m-compare-n");
+    QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-history");
 #else
     QString urlStr = QObject::tr("http://192.168.2.145:8080/api/v2/cmcc/portrait/m-compare-n");
 #endif
+#if 1
+    QDir dir(args.strFolderPath);
+    dir.setFilter(QDir::Files);
+    QStringList filters;
+    filters << "*.png" << "*.jpg" << "*.bmp";
+    dir.setNameFilters(filters);
+    QFileInfoList images = dir.entryInfoList();
+     QStringList imgsBase64StrList;
+     for(int i = 0; i < images.count(); ++i)
+     {
+         QFileInfo curFile = images.at(i);
+         // 图片文件夹
+         QImage tempImg(curFile.filePath());
+         QByteArray imgStr;
+         QBuffer imgBuf(&imgStr);
+         imgBuf.open(QIODevice::WriteOnly);
+         tempImg.save(&imgBuf, "jpg");
+         imgsBase64StrList << imgStr.toBase64(QByteArray::Base64UrlEncoding);
+     }
 
-    //int resCode = sendMultPic(args.strFolderPath, args.startTime.toString("yyyy-MM-dd HH:mm:ss"),args.endTime.toString("yyyy-MM-dd HH:mm:ss"),QString::number(args.cameraId));
-    int resCode = send(DLL::POST,urlStr.toStdString(),std::string(),60);
+    QString postData = QObject::tr("pictures=%1&requireBase64=%2&token=%3")
+            .arg(imgsBase64StrList.join(','))
+            .arg(true)
+            .arg("7d1e52d3cf0142e19b5901eb1ef91372");
+#endif
+#if 0
+    int resCode = sendMultPic(args.strFolderPath, args.startTime.toString("yyyy-MM-dd HH:mm:ss"),args.endTime.toString("yyyy-MM-dd HH:mm:ss"),QString::number(args.cameraId));
+#else
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),60);
+
+#endif
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -1034,7 +1064,25 @@ QString DLL::CloudHttpDao::mnFaceAnalysisSearch(RestServiceI::MNFaceAnalysisArgs
     std::transform(dataJsArray.begin(),dataJsArray.end(),std::back_inserter(*resVec),[](QJsonValue jsVal){
         RestServiceI::MNFaceAnalysisItem sitem;
         QJsonObject itemObj = jsVal.toObject();
-        sitem.uploadImg.loadFromData(QByteArray::fromBase64(itemObj.value("picture").toString().toLatin1()));
+        sitem.uploadImg.loadFromData(QByteArray::fromBase64(itemObj.value("picture").toString().toLatin1(), QByteArray::Base64UrlEncoding));
+        if (itemObj.contains("extractRes"))
+        {
+            sitem.bSuccess = itemObj.value("extractRes").toBool();
+        }
+        else
+        {
+            sitem.bSuccess = true;
+        }
+        if (!sitem.bSuccess)
+        {
+            sitem.strErrMsg = itemObj.value("reason").toString();
+        }
+        else
+        {
+            sitem.nPersonId = itemObj.value("personId").toInt();
+            sitem.strSubType = itemObj.value("personGroupName").toString();
+            sitem.strBigType = itemObj.value("personType").toString();
+        }
         QJsonArray captureArray = itemObj.value("captures").toArray();
         QList<RestServiceI::MNCaptureItem> captureItems;
         std::transform(captureArray.begin(), captureArray.end(), std::back_inserter(captureItems), [](QJsonValue captureVal)
