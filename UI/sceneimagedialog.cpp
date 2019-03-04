@@ -35,7 +35,7 @@ SceneImageDialog::SceneImageDialog(QWidget *parent, Qt::WindowFlags f):
     deleSelectBtn_ = new QPushButton(tr("delete all"));
     operateAreaW_ = new QWidget;
 #ifdef USERECTIMAGE
-    saveBtn_ = new QPushButton(tr("Save scene"),rectesImgArea_);
+    saveBtn_ = new QPushButton(tr("Save images"),rectesImgArea_);
 #else
     saveBtn_ = new QPushButton(tr("Save scene"),selectAreaW_);
 #endif
@@ -103,11 +103,16 @@ SceneImageDialog::SceneImageDialog(QWidget *parent, Qt::WindowFlags f):
 #endif
 }
 
+void SceneImageDialog::setShowRect(bool face, bool body)
+{
+    rectesImgArea_->setShowRect(face,body);
+}
+
 void SceneImageDialog::setSceneInfo(const RestServiceI::SceneInfo &sinfo)
 {
 #ifdef USERECTIMAGE
     curScenInfo_ = sinfo;
-    rectesImgArea_->setInfos(curScenInfo_.image,sinfo.faceRectVec);
+    rectesImgArea_->setInfos(curScenInfo_.image,sinfo.faceRectVec,sinfo.bodyRectVec);
 #else
     selectAreaW_->setBackImage(sinfo.image);
 #endif
@@ -218,12 +223,21 @@ void SceneImageDialog::setUserStyle(int styleArg)
 
 void SceneImageDialog::slotSaveBtnClicked()
 {
-    QString filePath =  QFileDialog::getSaveFileName(this,tr("Save face image"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/" + curScenInfo_.sceneId + ".jpg",tr("Images (*.png *.jpg)"));
+    QString filePath =  QFileDialog::getExistingDirectory(this,tr("Save face image"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),QFileDialog::DontResolveSymlinks);
     if(filePath.isEmpty())return;
-    if(!curScenInfo_.image.save(filePath)){
-        InformationDialog infoDialog(this);
-        infoDialog.setUserStyle(0);
-        infoDialog.setMessage("Operation failed!");
+    for(int i = 0; i < curScenInfo_.faceRectVec.count(); i++){
+        if(!curScenInfo_.faceRectVec.at(i).second.save(filePath + tr("/%1-face-%2.jpg").arg(curScenInfo_.sceneId).arg(i))){
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(0);
+            infoDialog.setMessage("Operation failed!");
+        }
+    }
+    for(int i = 0; i < curScenInfo_.bodyRectVec.count(); i++){
+        if(!curScenInfo_.bodyRectVec.at(i).second.save(filePath + tr("/%1-body-%2.jpg").arg(curScenInfo_.sceneId).arg(i))){
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(0);
+            infoDialog.setMessage("Operation failed!");
+        }
     }
 }
 

@@ -88,6 +88,7 @@ EventSearch::EventSearch( WidgetI *parent):
         ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
         RestServiceI *serviceI = factoryI->makeRestServiceI();
         WaitingLabel *label = new WaitingLabel(this);
+        int curRowIndex = m_tableW->currentRow();
         connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
             label->close();
             delete label;
@@ -97,13 +98,18 @@ EventSearch::EventSearch( WidgetI *parent):
             infoDialog.exec();
             menu_->setEnabled(true);
         });
-        connect(serviceI,&RestServiceI::sigSceneInfo,this,[&,label](const RestServiceI::SceneInfo sinfo){
+        connect(serviceI,&RestServiceI::sigSceneInfo,this,[&,label,curRowIndex](RestServiceI::SceneInfo sinfo){
             label->close();
             delete label;
+            QPainter p(&sinfo.image);
+            p.setBrush(waringColorMap_.value(m_tableW->item(curRowIndex,3)->text()));
+            p.setPen(Qt::NoPen);
+            p.drawPolygon(m_tableW->item(curRowIndex,0)->data(Qt::UserRole).value<QPolygonF>());
+            p.end();
             slotOnSceneInfo(sinfo);
             menu_->setEnabled(true);
         });
-        serviceI->getSceneInfo(m_tableW->item(m_tableW->currentRow(),1)->text());
+        serviceI->getSceneInfo(m_tableW->item(curRowIndex,1)->text());
         label->show(500);
         menu_->setEnabled(false);
     });
@@ -134,16 +140,16 @@ EventSearch::EventSearch( WidgetI *parent):
     m_pageindicator->setPageInfo(0,0);
     QPixmap pix(1,m_waringTyleCombox->iconSize().height());
     pix.fill(Qt::transparent);
-    QVector<QPair<QString,QString>>  waringType;
-    waringType << qMakePair(tr(""),tr("不限"))
-               << qMakePair(tr("smsr_alarm_intruder"),tr("闯入报警"))
-               << qMakePair(tr("smsr_alarm_abdoor"),tr("AB-Door events"))
-               << qMakePair(tr("smsr_alarm_climb"),tr("Climb events"))
-               << qMakePair(tr("smsr_alarm_gather"),tr("Gather events"))
-               << qMakePair(tr("smsr_alarm_face"),tr("黑名单报警"));
-    for(const QPair<QString,QString> &pairValue : waringType) {
-        m_waringTyleCombox->addItem(pix,pairValue.second,pairValue.first);
-        waryingTypeMap_.insert(pairValue.first,pairValue.second);
+    QVector<std::tuple<QString,QString,QColor>> waringTypeTupleVec;
+    waringTypeTupleVec << std::make_tuple(tr(""),tr("Unlimited"),Qt::transparent)
+                       << std::make_tuple(tr("smsr_alarm_intruder"),tr("Intruder events"),QColor(200,0,0,100))
+                       << std::make_tuple(tr("smsr_alarm_abdoor"),tr("AB-Door events"),QColor(0,200,0,100))
+                       << std::make_tuple(tr("smsr_alarm_climb"),tr("Climb events"),QColor(100,100,0,100))
+                       << std::make_tuple(tr("smsr_alarm_gather"),tr("Gather events"),QColor(100,0,100,100))
+                       << std::make_tuple(tr("smsr_alarm_face"),tr("Blacklist events"),Qt::transparent);
+    for(const std::tuple<QString,QString,QColor> &tupleValue : waringTypeTupleVec) {
+        m_waringTyleCombox->addItem(pix,std::get<1>(tupleValue),std::get<0>(tupleValue));
+        waringColorMap_.insert(std::get<0>(tupleValue),std::get<2>(tupleValue));
     }
     noDataTipW_ = new NoDataTip(m_tableW);
     setUserStyle(userStyle());
@@ -445,7 +451,7 @@ void EventSearch::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
         faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
         faceDialog->setWindowModality(Qt::ApplicationModal);
         QPalette pal = faceDialog->palette();
-        pal.setColor(QPalette::Background,QColor(112,110,119));
+        pal.setColor(QPalette::Background,QColor(37,41,52));
         faceDialog->setPalette(pal);
         faceDialog->setAutoFillBackground(true);
         faceDialog->setUserStyle(userStyle());
@@ -488,12 +494,18 @@ void EventSearch::slotAlarmHistory(RestServiceI::EventSearchReturn data)
         needUpdatePageInfo_ = false;
     }
     m_tableW->model()->removeRows(0,m_tableW->rowCount());
-    for(const RestServiceI::EventSearchItem &itemData : data.data){
+    for(RestServiceI::EventSearchItem &itemData : data.data){
         m_tableW->insertRow(m_tableW->rowCount());
         QTableWidgetItem *item = new QTableWidgetItem;
+        item->setData(Qt::UserRole,itemData.warnZong);
         m_tableW->setItem(m_tableW->rowCount() - 1,0,item);
         QLabel *label = new QLabel;
         label->setScaledContents(true);
+        QPainter p(&itemData.image);
+        p.setBrush(waringColorMap_.value(itemData.eventType));
+        p.setPen(Qt::NoPen);
+        p.drawPolygon(itemData.warnZong);
+        p.end();
         label->setPixmap(QPixmap::fromImage(itemData.image));
         m_tableW->setCellWidget(m_tableW->rowCount() - 1,0,label);
 

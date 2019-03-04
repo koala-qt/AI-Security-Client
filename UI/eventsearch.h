@@ -38,8 +38,8 @@ private:
     QDateTime curStartDateTime_,curEndDateTime_;
     QMenu *menu_{nullptr};
     bool needUpdatePageInfo_ = true;
-    QMap<QString,QString> waryingTypeMap_;
     NoDataTip *noDataTipW_{nullptr};
+    QMap<QString,QColor> waringColorMap_;
 
     void getCameraInfo();
 

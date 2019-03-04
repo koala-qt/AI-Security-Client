@@ -8,6 +8,7 @@ RectsImage::RectsImage(QWidget *parent):
     QWidget(parent)
 {
     setRectLineColor();
+    setShowRect();
     setMouseTracking(true);
 }
 
@@ -16,9 +17,16 @@ QSize RectsImage::sizeHint() const
     return QSize(960,540);
 }
 
-void RectsImage::setRectLineColor(QColor c)
+void RectsImage::setShowRect(bool face, bool body)
 {
-    rectLineColor_ = c;
+    showFaceRect_ = face;
+    showBodyRect_ = body;
+}
+
+void RectsImage::setRectLineColor(QColor face, QColor body)
+{
+    rectLineColor_ = face;
+    bodyRectLineColor_ = body;
 }
 
 void RectsImage::setClickedHight(bool s)
@@ -37,10 +45,11 @@ QVector<QImage> RectsImage::selectedImages()
     return seletedImages_;
 }
 
-void RectsImage::setInfos(const QImage backImg, const QVector<QPair<QRect, QImage> > &rectsVec)
+void RectsImage::setInfos(const QImage backImg, const QVector<QPair<QRect, QImage> > &rectsVec, const QVector<QPair<QRect, QImage> > &bodyRectImgVec)
 {
     backImg_ = backImg;
     rectsImgVec_ = rectsVec;
+    bodyRectImgVec_ = bodyRectImgVec;
 }
 
 void RectsImage::mousePressEvent(QMouseEvent *event)
@@ -114,9 +123,17 @@ void RectsImage::paintEvent(QPaintEvent *event)
     QPainter painter(this);
     painter.setWindow(0,0,backImg_.width(),backImg_.height());
     painter.drawImage(painter.window(),backImg_);
-    painter.setPen(rectLineColor_);
-    for(QPair<QRect,QImage> &pairV : rectsImgVec_){
-        painter.drawRect(pairV.first);
+    if(showFaceRect_){
+        painter.setPen(rectLineColor_);
+        for(QPair<QRect,QImage> &pairV : rectsImgVec_){
+            painter.drawRect(pairV.first);
+        }
+    }
+    if(showBodyRect_){
+        painter.setPen(bodyRectLineColor_);
+        for(QPair<QRect,QImage> &pairV : bodyRectImgVec_){
+            painter.drawRect(pairV.first);
+        }
     }
     painter.end();
 

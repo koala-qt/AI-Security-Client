@@ -430,7 +430,7 @@ QString DLL::CloudHttpDao::getPersonDetailes(QString &objId, RestServiceI::Portr
 QString DLL::CloudHttpDao::getSceneInfo(QString &scenId, RestServiceI::SceneInfo *sceneInfo)
 {
     QStringList requiredFileds;
-    requiredFileds << "face_bbox" << "face_id" << "snapshot";
+    requiredFileds << "face_bbox" << "face_id" << "body_bbox" << "body_id" << "snapshot";
     QString urlStr = host_ + QObject::tr("api/v2/external/monitor-detail/find-document?collection=snap_scene&requiredFields=%1&objId=%2")
             .arg(requiredFileds.join(','))
             .arg(scenId);
@@ -480,6 +480,29 @@ QString DLL::CloudHttpDao::getSceneInfo(QString &scenId, RestServiceI::SceneInfo
         sceneInfo->faceRectVec << qMakePair(QRect(x,y,rWidth,rHeight),faceImg);
     }
     sceneInfo->sceneId = scenId;
+
+    QJsonArray jsArray = jsObj.value("bodyId").toArray();
+    QStringList bodyIdList;
+    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(bodyIdList),[](QJsonValue jsVal){return jsVal.toString();});
+    QJsonArray bodyBoxArray = jsObj.value("bodyBbox").toArray();
+    if(bodyBoxArray.count() < bodyIdList.count())return QString();
+    for(int i = 0; i < bodyIdList.count(); i++){
+        QVariantList pointsList = bodyBoxArray.at(i).toArray().toVariantList();
+        if(pointsList.count() < 4)continue;
+        qreal xPer = 0.5,yPer = 0.5;
+        int x = pointsList.first().toInt() * xPer;
+        int y = pointsList.at(1).toInt() * yPer;
+        int rWidth = pointsList.at(2).toInt() * xPer;
+        int rHeight = pointsList.at(3).toInt() * yPer;
+
+        QImage bodyImage;
+        QString bodyImgUrl = host_  + "api/v2/external/monitor-detail/download-image?collection=snap_body&fieldName=snapshot&objId=" + bodyIdList.at(i);
+        QString errorStr = getImageByUrl(bodyImgUrl,&bodyImage);
+        if(!errorStr.isEmpty()){
+            return errorStr;
+        }
+        sceneInfo->bodyRectVec << qMakePair(QRect(x,y,rWidth,rHeight),bodyImage);
+    }
     return QString();
 }
 
@@ -892,8 +915,8 @@ QString DLL::CloudHttpDao::eventSearch(RestServiceI::EventSearchArgs &args, Rest
 
 QString DLL::CloudHttpDao::searchAvailableAttribute(RestServiceI::SearchAttrsArgs &args, QStringList *resData)
 {
-    QString urlStr = host_ + QObject::tr("api/v2/external/monitor-detail/query/face-attributes?startTime=%1&finishTime=%2&cameraId=%3")
-            .arg(args.startT.toString("yyyy-MM-dd%20HH:mm:ss"),args.endT.toString("yyyy-MM-dd%20HH:mm:ss"),args.cameraId);
+    QString urlStr = host_ + QObject::tr("api/v2/external/monitor-detail/query/face-attributes?mode=%1&faceAttrs=%2&startTime=%3&finishTime=%4&cameraId=%5")
+            .arg(args.model,args.faceAttrs.join(','),args.startT.toString("yyyy-MM-dd%20HH:mm:ss"),args.endT.toString("yyyy-MM-dd%20HH:mm:ss"),args.cameraId);
     int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),4);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));

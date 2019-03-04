@@ -795,6 +795,8 @@ void SemanticSearchPage::getAvailableAttrs(WaitingLabel *label)
     });
     RestServiceI::SearchAttrsArgs args;
     args.cameraId = curCameraId_;
+    args.model = QString::number(curMode_ + 1);
+    args.faceAttrs = curfaceAttrList_;
     args.startT = curStartTime_;
     args.endT = curEndTime_;
     serviceI->getAvailabelAttrs(args);

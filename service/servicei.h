@@ -88,6 +88,7 @@ public:
     {
         QString sceneId;
         QVector<QPair<QRect,QImage>> faceRectVec;
+        QVector<QPair<QRect,QImage>> bodyRectVec;
         QImage image;
     };
     struct SearchABDoorTimeArg
@@ -284,6 +285,8 @@ public:
     struct SearchAttrsArgs
     {
         QString cameraId;
+        QString model;
+        QStringList faceAttrs;
         QDateTime startT;
         QDateTime endT;
     };

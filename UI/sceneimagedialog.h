@@ -17,6 +17,7 @@ class SceneImageDialog : public QDialog
     Q_OBJECT
 public:
     SceneImageDialog(QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
+    void setShowRect(bool face, bool body);
     void setSceneInfo(const RestServiceI::SceneInfo &sinfo);
     void setRectLinePen(QColor);
     void setUserStyle(int);
