@@ -1003,7 +1003,7 @@ QString DLL::CloudHttpDao::queryPersonTypes(QVector<RestServiceI::PersonType> *r
 {
     QString urlStr = host_ +  QObject::tr("api/v2/person/type/find?token=7d1e52d3cf0142e19b5901eb1ef91372");
 
-    int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),60);
+    int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),2);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -1112,21 +1112,22 @@ QString DLL::CloudHttpDao::mnFaceAnalysisSearch(RestServiceI::MNFaceAnalysisArgs
         {
             sitem.strErrMsg = itemObj.value("reason").toString();
         }
-        else
-        {
-            sitem.nPersonId = itemObj.value("personId").toInt();
-            sitem.strSubType = itemObj.value("personGroupName").toString();
-            sitem.strBigType = itemObj.value("personType").toString();
-        }
         QJsonArray captureArray = itemObj.value("captures").toArray();
         QList<RestServiceI::MNCaptureItem> captureItems;
-        std::transform(captureArray.begin(), captureArray.end(), std::back_inserter(captureItems), [](QJsonValue captureVal)
+        std::transform(captureArray.begin(), captureArray.end(), std::back_inserter(captureItems), [sitem](QJsonValue captureVal)
         {
             QJsonObject itemObj2 = captureVal.toObject();
             RestServiceI::MNCaptureItem captureItem;
             captureItem.cameraId = itemObj2.value("cameraId").toInt();
             captureItem.dSimilarity = itemObj2.value("similarity").toDouble();
             captureItem.captureImg.loadFromData(QByteArray::fromBase64(itemObj2.value("picture").toString().toLatin1()));
+            if (sitem.bSuccess)
+            {
+                captureItem.nPersonId = itemObj2.value("personId").toInt();
+                captureItem.strSubType = itemObj2.value("personGroupName").toString();
+                captureItem.strBigType = itemObj2.value("personType").toString();
+                captureItem.strPersonName = itemObj2.value("personName").toString();
+            }
             return captureItem;
         });
         sitem.captureItems = captureItems;

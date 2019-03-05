@@ -22,6 +22,7 @@
 #include "waitinglabel.h"
 #include "informationdialog.h"
 
+#pragma execution_character_set("utf-8")
 const char * CaptureImgTag = "CaptureImage";
 const char* MNFaceTypeCheckedTag = "FaceTypeChecked";
 MultipleFaceAnalysis::MultipleFaceAnalysis(WidgetI *parent):
@@ -423,7 +424,7 @@ void MultipleFaceAnalysis::init()
     m_tableW->setColumnCount(6);
     m_tableW->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     m_tableW->horizontalHeader()->setSectionResizeMode(0,QHeaderView::Fixed);
-    m_tableW->setHorizontalHeaderLabels(QStringList() << tr("Upload Photo") << tr("Capture1") << tr("Capture2") << tr("Capture3") << tr("Capture4") << tr("Capture5")); // Big type and small type.  << tr("Type"))
+    m_tableW->setHorizontalHeaderLabels(QStringList() << tr("Upload Photo") << tr("Comparison result 1") << tr("Comparison result 2") << tr("Comparison result 3") << tr("Comparison result 4") << tr("Comparison result 5"));
     m_tableW->setColumnWidth(UploadImgCol, 180);
     m_tableW->horizontalHeader()->setSortIndicatorShown(false);
     //connect(m_tableW->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(onSectionClicked(int)));
@@ -480,6 +481,7 @@ void MultipleFaceAnalysis::queryPersonTypes()
             connect(m_pBtnOperation, SIGNAL(clicked(bool)),
                     this, SLOT(onBtnOperationClicked()));
             m_pFaceTypesHLay->addWidget(m_pBtnOperation);
+            m_pFaceTypesHLay->addSpacing(10);
         }
         auto iter = value.begin();
         QPushButton *m_btnFaceType = Q_NULLPTR;
@@ -554,29 +556,69 @@ void MultipleFaceAnalysis::slotAddRow(QVector<RestServiceI::MNFaceAnalysisItem> 
         m_tableW->setItem(m_tableW->rowCount() - 1,ImageCol,item);
 #else
         QLabel *tempLab = new QLabel;
-        tempLab->setPixmap(QPixmap::fromImage(itemData.uploadImg).scaled(100, 100));
+        tempLab->setPixmap(QPixmap::fromImage(itemData.uploadImg).scaled(57, 80));
         tempLab->setAlignment(Qt::AlignCenter);
         m_tableW->setCellWidget(m_tableW->rowCount() - 1, UploadImgCol, tempLab);
 #endif
         int columnIndex = 1;
         //QLabel *captureLab;
-        QPushButton *captureLab = Q_NULLPTR;
+        QWidget *captureWgt = Q_NULLPTR;
+        QLabel *captureLab = Q_NULLPTR;
+        QLabel *idLab = Q_NULLPTR;
+        QLabel *nameLab = Q_NULLPTR;
+        QLabel *simiLab = Q_NULLPTR;
+        QHBoxLayout *hLay = Q_NULLPTR;
+        QVBoxLayout *vLay = Q_NULLPTR;
+        QWidget *captureContainer = Q_NULLPTR;
+        QHBoxLayout *hContainerLay = Q_NULLPTR;
         for (const RestServiceI::MNCaptureItem &captureitem : itemData.captureItems)
         {
-            //aptureLab = new QLabel;
-            //captureLab->setPixmap(QPixmap::fromImage(captureitem.captureImg).scaled(100, 100));
+            captureContainer = new QWidget;
+            //captureContainer->setStyleSheet("background-color:black;");
+            hContainerLay = new QHBoxLayout;
+            hContainerLay->setMargin(0);
+            hContainerLay->setSpacing(0);
+            hContainerLay->setAlignment(Qt::AlignCenter);
+            captureContainer->setLayout(hContainerLay);
+            captureWgt = new QWidget;
+            hContainerLay->addWidget(captureWgt);
+            captureWgt->setStyleSheet("font-size:10px;color:#7E8CB1;font-family:PingFang SC Regular;height:50px;");
+            hLay = new QHBoxLayout;
+            hLay->setMargin(0);
+            hLay->setAlignment(Qt::AlignCenter);
+            hLay->setSpacing(10);
+            captureWgt->setLayout(hLay);
+            vLay = new QVBoxLayout;
+
+            captureLab = new QLabel;
+            captureLab->setPixmap(QPixmap::fromImage(captureitem.captureImg).scaled(46, 46));
+            hLay->addWidget(captureLab);
+            hLay->addLayout(vLay);
+            idLab = new QLabel(QString(tr("%1%2")).arg("ID:").arg(QString::number(captureitem.nPersonId)));
+            vLay->addWidget(idLab);
+            nameLab = new QLabel(QString("%1%2").arg(tr("Name:")).arg(captureitem.strPersonName));
+            qDebug() << "name" << nameLab->text();
+            vLay->addWidget(nameLab);
+            simiLab = new QLabel(QString(tr("%1%2")).arg("Similarity:").arg(QString::number(captureitem.dSimilarity)));
+            vLay->addWidget(simiLab);
+            m_tableW->setCellWidget(m_tableW->rowCount() - 1, columnIndex, captureWgt);
+#if 0
             captureLab = new QPushButton;
             captureLab->setStyleSheet("background-color:transparent;border:0px;");
-//            connect(captureLab, &QPushButton::clicked, this, [this]{
-//                m_pTipWgt->move(QCursor::pos());
-//                m_pTipWgt;
-//            });
             captureLab->setProperty(CaptureImgTag, "true");
-            captureLab->setIcon(QPixmap::fromImage(captureitem.captureImg).scaled(100, 100));
+            captureLab->setIcon(QPixmap::fromImage(captureitem.captureImg).scaled(46, 46));
             captureLab->setIconSize(QSize(100, 100));
             //captureLab->setAlignment(Qt::AlignCenter);
             m_tableW->setCellWidget(m_tableW->rowCount() - 1, columnIndex, captureLab);
+#endif
             columnIndex++;
+        }
+        if ((0 == itemData.captureItems.count())
+                && !itemData.bSuccess)
+        {
+            QTableWidgetItem *errItem = new QTableWidgetItem(itemData.strErrMsg);
+            m_tableW->setItem(m_tableW->rowCount() - 1, Capture1, errItem);
+            errItem->setTextAlignment(Qt::AlignCenter);
         }
         //auto captureItems = itemData.captureItems;
 

@@ -515,6 +515,7 @@ void PortraitSearch::queryPersonTypes()
             connect(m_pBtnOperation, SIGNAL(clicked(bool)),
                     this, SLOT(onBtnOperationClicked()));
             m_pFaceTypesHLay->addWidget(m_pBtnOperation);
+            m_pFaceTypesHLay->addSpacing(10);
         }
         auto iter = value.begin();
         QPushButton *m_btnFaceType = Q_NULLPTR;
