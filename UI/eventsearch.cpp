@@ -256,13 +256,13 @@ void EventSearch::setUserStyle(int s)
 
         m_startTimeEdit->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
                                        "color: rgb(126,140,177);"
-                                       "box-shadow:1px 1px 0px rgba(77,86,107,1);"
+//                                       "box-shadow:1px 1px 0px rgba(77,86,107,1);"
                                        "border-radius:6px;"
                                        "background-color: rgb(40,45,56);}");
 
         m_endTimeEdit->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
                                      "color: rgb(126,140,177);"
-                                     "box-shadow:1px 1px 0px rgba(77,86,107,1);"
+//                                     "box-shadow:1px 1px 0px rgba(77,86,107,1);"
                                      "border-radius:6px;"
                                      "background-color: rgb(40,45,56);}");
 
@@ -275,7 +275,7 @@ void EventSearch::setUserStyle(int s)
                     "color: rgb(126,140,177);"
                     "font-size: 18px;"
                     "background-color: rgb(40,45,56);"
-                    "box-shadow: 1px 1px 0px rgba(77,86,107,1);"
+//                    "box-shadow: 1px 1px 0px rgba(77,86,107,1);"
                     "border-radius: 6px;"
                     "}"
                     "QComboBox QAbstractItemView{"
@@ -333,7 +333,7 @@ void EventSearch::setUserStyle(int s)
                     "color: rgb(126,140,177);"
                     "font-size: 18px;"
                     "background-color: rgb(40,45,56);"
-                    "box-shadow:1px 1px 0px rgba(77,86,107,1);"
+//                    "box-shadow:1px 1px 0px rgba(77,86,107,1);"
                     "border-radius: 6px;"
                     "}"
                     "QComboBox QAbstractItemView{"

@@ -54,7 +54,7 @@ void PortraitSearch::setUserStyle(int s)
         // 3.1 add
         m_pLabLimit->setStyleSheet(commStyle);
         m_pLabSimilary->setStyleSheet(commStyle);
-        m_pLimitCombo->setStyleSheet("QComboBox{width:150px;max-width:250px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;}"
+        m_pLimitCombo->setStyleSheet("QComboBox{width:70px;max-width:250px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;}"
                                      "QComboBox::drop-down{"
                                      "subcontrol-position: center right;border-image: url(images/portraitlibrary/icon_arrow.png);width:8px;height:5px;subcontrol-origin: padding;margin-right:5px;"
                                      "}"
@@ -64,7 +64,7 @@ void PortraitSearch::setUserStyle(int s)
                                      "outline: 0px;color:white;"
                                      "selection-background-color: #4741F2;"
                                      "}");
-    m_pTxtSimilary->setStyleSheet(m_txtID->styleSheet());
+        m_pTxtSimilary->setStyleSheet("width:70px;max-width:250px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;");
 #if 0
         m_faceLibBar->setStyleSheet("QTabBar{border-image:url(images/portraitlibrary/barbg.png);font-size:12px;background-color:transparent;}"
                                     "QTabBar::tab{border-image:url(images/portraitlibrary/tab-noselected.png);width:120px;height:40px;color:#7E8CB1;"
@@ -72,86 +72,92 @@ void PortraitSearch::setUserStyle(int s)
                                     "}"
                                     "QTabBar::tab:hover { \
                                     border-image:url(images/portraitlibrary/tabselected.png); \
-                                    color:#7E8CB1; \
-                                    }"
-                                    "QTabBar::tab:selected { \
-                                    border-image:url(images/portraitlibrary/tabselected.png); \
-                                    color: white; \
-                                }");
+                color:#7E8CB1; \
+    }"
+    "QTabBar::tab:selected { \
+    border-image:url(images/portraitlibrary/tabselected.png); \
+color: white; \
+}");
 #endif
-        m_pFaceTypesWgt->setStyleSheet(".QWidget{border-image:url(images/portraitlibrary/barbg.png);background-color:transparent;min-width:400px;height:45px;max-height:45px;}");
+m_pFaceTypesWgt->setStyleSheet(".QWidget{border-image:url(images/portraitlibrary/barbg.png);background-color:transparent;min-width:400px;height:45px;max-height:45px;}");
 // border:1px solid #CECECE;
-        m_tableW->setStyleSheet(
-                    "QTableView{"
-                    "color: #7E8CB1;"
-                    "font-size: 12px;"
-                    "background-color: transparent;"
-                    "selection-background-color: rgba(206,206,206,40);"
-                    "}"
-                    "QTableView QTableCornerButton::section{"
-                    "background: rgba(206,206,206,20);"
-                    "}"
-                    "QHeaderView{"
-                    "background-color: rgba(206,206,206,20);"
-                    "}"
-                    "QHeaderView::section{"
-                    "color: #7E8CB1;"
-                    "background-color: rgba(206,206,206,40);"
-                    "}");
-        m_tableW->verticalScrollBar()->setStyleSheet(
-                                                    "QScrollBar:vertical{"
-                                                    "background: transparent;"
-                                                    "border-radius: 10px;"
-                                                    "border: none;"
-                                                    "width: 13px;"
-                                                    "}"
-                                                    "QScrollBar::handle:vertical{"
-                                                    "background: rgba(255,255,255,0.5);"
-                                                    "border-radius: 5px;"
-                                                    "}"
-                                                    "QScrollBar::add-line:vertical{"
-                                                    "background: transparent;"
-                                                    "border:0px solid #274168;"
-                                                    "border-radius: 5px;"
-                                                    "min-height: 10px;"
-                                                    "width: 13px;"
-                                                    "}"
-                                                    "QScrollBar::sub-line:vertical{"
-                                                    "background: transparent;"
-                                                    "border:0px solid #274168;"
-                                                    "min-height: 10px;"
-                                                    "width: 13px;"
-                                                    "}"
-                                                    "QScrollBar::up-arrow:vertical{"
-                                                    "subcontrol-origin: margin;"
-                                                    "height: 0px;"
-                                                    "border:0 0 0 0;"
-                                                    "visible:false;"
-                                                    "}"
-                                                    "QScrollBar::down-arrow:vertical{"
-                                                    "subcontrol-origin: margin;"
-                                                    "height: 0px;"
-                                                    "visible:false;"
-                                                    "}"
-                                                    "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
-                                                    "background: transparent;"
-                                                    "border-radius: 10px;"
-                                                    "}");
+m_tableW->setStyleSheet(
+        "QTableView{"
+        "color: #7E8CB1;"
+        "font-size: 12px;"
+        "background-color: transparent;"
+        "selection-background-color: rgba(206,206,206,40);"
+        "}"
+        "QTableView QTableCornerButton::section{"
+        "background: rgba(206,206,206,20);"
+        "}"
+        "QHeaderView{"
+        "background-color: rgba(206,206,206,20);"
+        "}"
+        "QHeaderView::section{"
+        "color: #7E8CB1;"
+        "background-color: rgba(206,206,206,40);"
+        "}");
+m_tableW->verticalScrollBar()->setStyleSheet(
+        "QScrollBar:vertical{"
+        "background: transparent;"
+        "border-radius: 10px;"
+        "border: none;"
+        "width: 13px;"
+        "}"
+        "QScrollBar::handle:vertical{"
+        "background: rgba(255,255,255,0.5);"
+        "border-radius: 5px;"
+        "}"
+        "QScrollBar::add-line:vertical{"
+        "background: transparent;"
+        "border:0px solid #274168;"
+        "border-radius: 5px;"
+        "min-height: 10px;"
+        "width: 13px;"
+        "}"
+        "QScrollBar::sub-line:vertical{"
+        "background: transparent;"
+        "border:0px solid #274168;"
+        "min-height: 10px;"
+        "width: 13px;"
+        "}"
+        "QScrollBar::up-arrow:vertical{"
+        "subcontrol-origin: margin;"
+        "height: 0px;"
+        "border:0 0 0 0;"
+        "visible:false;"
+        "}"
+        "QScrollBar::down-arrow:vertical{"
+        "subcontrol-origin: margin;"
+        "height: 0px;"
+        "visible:false;"
+        "}"
+        "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
+        "background: transparent;"
+        "border-radius: 10px;"
+        "}");
 
-        m_pageIndicator->setUserStyle();
+m_pageIndicator->setUserStyle();
 
-        m_pBtnSearch->setStyleSheet("QPushButton{"
-                                   "border: 0px;"
-                                   "color:white;"
-                                   "font-size:12px;width:99px;height:34px;font-family:PingFang SC Regular;"
-                                   "border-image:url(images/portraitlibrary/search.png);"
-                                   "}"
-                                   "QPushButton:pressed{"
-                                   "padding: 1px;"
-                                   "}");
+m_pBtnSearch->setStyleSheet("QPushButton{"
+                            "border: 0px;"
+                            "color:white;"
+                            "font-size:12px;width:99px;height:34px;font-family:PingFang SC Regular;"
+                            "border-image:url(images/portraitlibrary/search.png);"
+                            "}"
+                            "QPushButton:pressed{"
+                            "padding: 1px;"
+                            "}");
 
-        m_pDataTip->setUserStyle(s);
-        }
+m_pDataTip->setUserStyle(s);
+}
+}
+
+void PortraitSearch::slotAddImage(QImage &img)
+{
+    m_faceImg = img;
+    m_btnImg->setIcon(QPixmap::fromImage(m_faceImg).scaled(m_btnImg->iconSize()));
 }
 
 bool PortraitSearch::event(QEvent *event)
@@ -223,7 +229,7 @@ void PortraitSearch::onBtnSearchClicked()
     int index = 0;
     for (auto btnTypeItem : m_lstFaceLibTypes)
     {
-        if (btnTypeItem->property(FaceTypeCheckedTag).toString() == "true")
+        if (btnTypeItem->property(FaceTypeCheckedTag).toBool())
         {
             if (!strTypes.isEmpty())
             {
@@ -282,6 +288,21 @@ void PortraitSearch::onSectionClicked(int index)
         m_tableW->sortByColumn(index, Qt::DescendingOrder);
     }
     isDescendingOrder = !isDescendingOrder;
+}
+
+void PortraitSearch::onBtnOperationClicked()
+{
+    updateBtnPersonTypeStyle(m_pBtnOperation);
+    if (!m_pBtnOperation->property(FaceTypeCheckedTag).toBool())
+    {
+        updatePersonTypesState();
+        m_pBtnOperation->setText(tr("Select all"));
+    }
+    else
+    {
+        updatePersonTypesState();
+        m_pBtnOperation->setText(tr("Unselect all"));
+    }
 }
 
 void PortraitSearch::init()
@@ -477,6 +498,16 @@ void PortraitSearch::queryPersonTypes()
         label->close();
         delete label;
         m_vecPersonTypes = value;
+        // 3.5 add
+        if (value.count() > 0)
+        {
+            m_pBtnOperation = new QPushButton(tr("Select all"));
+            m_pBtnOperation->setProperty(FaceTypeCheckedTag, false);
+            m_pBtnOperation->setStyleSheet("QPushButton{border-image:url(images/portraitlibrary/tab-noselected.png);color:#7E8CB1;font-size:12px;font-family:PingFang SC Regular;width:120px;height:40px;}");
+            connect(m_pBtnOperation, SIGNAL(clicked(bool)),
+                    this, SLOT(onBtnOperationClicked()));
+            m_pFaceTypesHLay->addWidget(m_pBtnOperation);
+        }
         auto iter = value.begin();
         QPushButton *m_btnFaceType = Q_NULLPTR;
         for (iter; iter != value.end(); ++iter)
@@ -485,22 +516,11 @@ void PortraitSearch::queryPersonTypes()
             m_faceLibBar->addTab(iter->strTypeName);
 #endif
             m_btnFaceType = new QPushButton(iter->strTypeName);
-            m_btnFaceType->setProperty(FaceTypeCheckedTag, "false");
+            m_btnFaceType->setProperty(FaceTypeCheckedTag, false);
             m_btnFaceType->setStyleSheet("QPushButton{border-image:url(images/portraitlibrary/tab-noselected.png);color:#7E8CB1;font-size:12px;font-family:PingFang SC Regular;width:120px;height:40px;}");
             m_pFaceTypesHLay->addWidget(m_btnFaceType);
             connect(m_btnFaceType, &QPushButton::clicked, this, [this, m_btnFaceType]{
-                if (m_btnFaceType->property(FaceTypeCheckedTag).toString() == "false")
-                {
-                    m_btnFaceType->setIcon(QIcon("images/portraitlibrary/icon_selected.png"));
-                    m_btnFaceType->setProperty(FaceTypeCheckedTag, "true");
-                    m_btnFaceType->setStyleSheet("QPushButton{border-image:url(images/portraitlibrary/tabselected.png);color:#7E8CB1;font-size:12px;font-family:PingFang SC Regular;width:120px;height:40px;}");
-                }
-                else
-                {
-                    m_btnFaceType->setIcon(QIcon(""));
-                    m_btnFaceType->setStyleSheet("QPushButton{border-image:url(images/portraitlibrary/tab-noselected.png);color:#7E8CB1;font-size:12px;font-family:PingFang SC Regular;width:120px;height:40px;}");
-                    m_btnFaceType->setProperty(FaceTypeCheckedTag, "false");
-                }
+                updateBtnPersonTypeStyle(m_btnFaceType);
             });
             m_lstFaceLibTypes.append(m_btnFaceType);
         }
@@ -509,4 +529,34 @@ void PortraitSearch::queryPersonTypes()
     });
     serviceI->queryPersonTypes();
     label->show(500);
+}
+
+void PortraitSearch::updatePersonTypesState()
+{
+    bool bChecked = m_pBtnOperation->property(FaceTypeCheckedTag).toBool();
+    for (auto *tempBtn : m_lstFaceLibTypes)
+    {
+        tempBtn->setProperty(FaceTypeCheckedTag, !bChecked);
+        qDebug() << "FaceTypeCheckedTag" << tempBtn->property(FaceTypeCheckedTag);
+    }
+    for (auto *btn : m_lstFaceLibTypes)
+    {
+        updateBtnPersonTypeStyle(btn);
+    }
+}
+
+void PortraitSearch::updateBtnPersonTypeStyle(QPushButton *btn)
+{
+    if (!btn->property(FaceTypeCheckedTag).toBool())
+    {
+        btn->setIcon(QIcon("images/portraitlibrary/icon_selected.png"));
+        btn->setProperty(FaceTypeCheckedTag, true);
+        btn->setStyleSheet("QPushButton{border-image:url(images/portraitlibrary/tabselected.png);color:#7E8CB1;font-size:12px;font-family:PingFang SC Regular;width:120px;height:40px;}");
+    }
+    else
+    {
+        btn->setIcon(QIcon(""));
+        btn->setProperty(FaceTypeCheckedTag, false);
+        btn->setStyleSheet("QPushButton{border-image:url(images/portraitlibrary/tab-noselected.png);color:#7E8CB1;font-size:12px;font-family:PingFang SC Regular;width:120px;height:40px;}");
+    }
 }

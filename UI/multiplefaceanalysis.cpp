@@ -65,14 +65,14 @@ void MultipleFaceAnalysis::setUserStyle(int style)
                                     "font-family:PingFang SC Regular;"
                                     "width:250px;max-width:250px;height:34px;"
                                     "color: rgb(126,140,177);"
-                                    "box-shadow:1px 1px 0px rgba(77,86,107,1);"
+//                                    "box-shadow:1px 1px 0px rgba(77,86,107,1);"
                                     "border-radius:6px;"
                                     "background-color: rgb(40,45,56);}");
         m_pDateETime->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
                                     "font-family:PingFang SC Regular;"
                                     "width:250px;max-width:250px;height:34px;"
                                     "color: rgb(126,140,177);"
-                                    "box-shadow:1px 1px 0px rgba(77,86,107,1);"
+//                                    "box-shadow:1px 1px 0px rgba(77,86,107,1);"
                                     "border-radius:6px;"
                                     "background-color: rgb(40,45,56);}");
 
@@ -311,7 +311,7 @@ void MultipleFaceAnalysis::init()
     m_tableW->setHorizontalHeaderLabels(QStringList() << tr("Upload Photo") << tr("Capture1") << tr("Capture2") << tr("Capture3") << tr("Capture4") << tr("Capture5")); // Big type and small type.  << tr("Type"))
     m_tableW->setColumnWidth(UploadImgCol, 180);
     m_tableW->horizontalHeader()->setSortIndicatorShown(false);
-    connect(m_tableW->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(onSectionClicked(int)));
+    //connect(m_tableW->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(onSectionClicked(int)));
     m_pageIndicator = new PageIndicator;
     m_pageIndicator->setPageInfo(0,0);
     m_pageIndicator->hide();

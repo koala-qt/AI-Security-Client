@@ -45,6 +45,9 @@ public:
         SubPersonType
     };
 
+public slots:
+    void slotAddImage(QImage &img);
+
 protected:
     bool event(QEvent *event) override;
 
@@ -52,12 +55,16 @@ private slots:
     void onBtnSearchClicked();
     void onBtnImgClicked();
     void onSectionClicked(int index);
+    void onBtnOperationClicked();
 
 private:
     void init();
     void slotAddRow(QVector<RestServiceI::PortraitLibCompItem> info);
 
     void queryPersonTypes();
+
+    void updatePersonTypesState();
+    void updateBtnPersonTypeStyle(QPushButton *btn);
 
 private:
     QPushButton *m_btnImg = Q_NULLPTR;
@@ -87,6 +94,7 @@ private:
 
     // 3.1 edit
     QWidget *m_pFaceTypesWgt{nullptr};
+    QPushButton *m_pBtnOperation{nullptr};
     QList<QPushButton *> m_lstFaceLibTypes;
     QHBoxLayout *m_pFaceTypesHLay{nullptr};
 };

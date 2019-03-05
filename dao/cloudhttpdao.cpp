@@ -1033,7 +1033,7 @@ QString DLL::CloudHttpDao::queryPersonTypes(QVector<RestServiceI::PersonType> *r
 QString DLL::CloudHttpDao::mnFaceAnalysisSearch(RestServiceI::MNFaceAnalysisArgs &args, QVector<RestServiceI::MNFaceAnalysisItem> *resVec)
 {
 #if 0
-    QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-history");
+    QString urlStr = host_ +  QObject::tr("/api/v2/cmcc/portrait/m-compare-n");
 #else
     QString urlStr = QObject::tr("http://192.168.2.145:8080/api/v2/cmcc/portrait/m-compare-n");
 #endif
@@ -1066,7 +1066,6 @@ QString DLL::CloudHttpDao::mnFaceAnalysisSearch(RestServiceI::MNFaceAnalysisArgs
     int resCode = sendMultPic(args.strFolderPath, args.startTime.toString("yyyy-MM-dd HH:mm:ss"),args.endTime.toString("yyyy-MM-dd HH:mm:ss"),QString::number(args.cameraId));
 #else
     int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),60);
-
 #endif
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
