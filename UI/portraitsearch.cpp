@@ -88,6 +88,14 @@ m_tableW->setStyleSheet(
         "background-color: transparent;"
         "selection-background-color: rgba(206,206,206,40);"
         "}"
+        "QTableWidget::item"
+        "{"
+        "color: #7E8CB1;"
+        "}"
+        "QTableWidget::item::selected"
+        "{"
+        "color: #7E8CB1;"
+        "}"
         "QTableView QTableCornerButton::section{"
         "background: rgba(206,206,206,20);"
         "}"
@@ -470,7 +478,7 @@ void PortraitSearch::slotAddRow(QVector<RestServiceI::PortraitLibCompItem> info)
         m_tableW->setItem(m_tableW->rowCount() - 1,SimilarityCol,item);
 
         item = new QTableWidgetItem;
-        item->setText(m_strBigPersonType);
+        item->setText(itemData.strBigType);
         item->setTextAlignment(Qt::AlignCenter);
         m_tableW->setItem(m_tableW->rowCount() - 1,MainPersonType,item);
 

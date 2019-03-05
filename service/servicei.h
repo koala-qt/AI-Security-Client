@@ -327,7 +327,7 @@ public:
         QString strPersonName;
         int nPersonId;
         double dSimilarity;
-        //QString nBigPersonType;
+        QString strBigType;
         QString strSubType;
     };
 

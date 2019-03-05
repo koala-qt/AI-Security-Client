@@ -992,6 +992,7 @@ QString DLL::CloudHttpDao::portraitLibCompSearch(RestServiceI::PortraitLibCompAr
         sitem.nPersonId = itemObj.value("personId").toInt();
         sitem.faceImg.loadFromData(QByteArray::fromBase64(itemObj.value("picture").toString().toLatin1()));
         sitem.dSimilarity = itemObj.value("similarity").toDouble();
+        sitem.strBigType = itemObj.value("personType").toString();
         sitem.strSubType = itemObj.value("personGroupName").toString();
         return sitem;
     });
