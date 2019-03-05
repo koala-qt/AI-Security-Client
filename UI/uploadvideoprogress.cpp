@@ -37,6 +37,7 @@ UploadVideoProgress::UploadVideoProgress(WidgetI *parent):
 
     progressBackW_->installEventFilter(this);
     progressBarBackW_->installEventFilter(this);
+    connect(cancelBtn_,SIGNAL(clicked(bool)),this,SIGNAL(sigCancelBtnClicked()));
     setUserStyle(userStyle());
 }
 

@@ -29,6 +29,8 @@ public:
     QString getFaceLinkDataColl(RestServiceI::FaceLinkDataCollArgs &args, RestServiceI::FaceLinkDataCollReturn *resDatas);
     QString eventSearch(RestServiceI::EventSearchArgs &args,RestServiceI::EventSearchReturn *resData);
     QString searchAvailableAttribute(RestServiceI::SearchAttrsArgs &args, QStringList *resData);
+    QString getPersonGroupInfo(QString &groupNo, QVector<RestServiceI::PersonGroupInfo> *resData);
+    QString registerPerson(RestServiceI::PersonRegisterArgs &args);
     /**
      * Added by aihc for Portrait library comparison.
      * @brief portraitLibCompSearch
@@ -47,6 +49,8 @@ protected:
 private:
     QString host_;
     float attributeThresold_ = 0.5;
+
+    void parsePersonGroupInfo(QJsonObject jsObj, RestServiceI::PersonGroupInfo &parentData);
 };
 }
 

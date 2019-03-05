@@ -2,6 +2,7 @@
 #define VIDEOANALYSIS_H
 
 #include "widgetinterface.h"
+#include "service/servicei.h"
 QT_FORWARD_DECLARE_CLASS(SelectUploadVide)
 QT_FORWARD_DECLARE_CLASS(QStackedWidget)
 QT_FORWARD_DECLARE_CLASS(VideoAnalysisData)
@@ -14,6 +15,7 @@ public:
     void setUserStyle(int s) override;
 
 private:
+    RestServiceI *upLoadVideoService_{nullptr};
     QStackedWidget *stackedW_{nullptr};
     VideoAnalysisData *videoDataW_{nullptr};
     UploadVideoProgress *progressW_{nullptr};
@@ -21,6 +23,7 @@ private:
 
 private slots:
     void slotFileSelected(QString);
+    void slotCancelUPload();
 };
 
 #endif // VIDEOANALYSIS_H

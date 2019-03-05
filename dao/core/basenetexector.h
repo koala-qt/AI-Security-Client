@@ -18,6 +18,7 @@ class BaseHttpExector
 {
 public:
     BaseHttpExector() = default;
+    virtual void cancelRequest() = 0;
     virtual ~BaseHttpExector(){}
 
 protected:

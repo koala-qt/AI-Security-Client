@@ -31,6 +31,7 @@
 #include "informationdialog.h"
 #include "nodatatip.h"
 #include "portraitsearch.h"
+#include "personmark.h"
 
 SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     WidgetI(parent)
@@ -181,6 +182,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
         portSearchDialog->setAutoFillBackground(true);
         portSearchDialog->setUserStyle(userStyle());
         portSearchDialog->setMinimumSize(1250,710);
+        portSearchDialog->slotAddImage(dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>());
 //        portSearchDialog->layout()->setMargin(10);
 //        portSearchDialog->setMinimumHeight(700);
         portSearchDialog->show();
@@ -224,6 +226,17 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
             InformationDialog infoDialog(this);
             infoDialog.setUserStyle(userStyle());
             infoDialog.setMessage("Operation failed!");
+            infoDialog.exec();
+        }
+    });
+    dataMenu_->addAction(tr("Test register"),[this]{
+        PersonMark markDialog;
+        markDialog.setPhoto(dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>());
+        QDialog::DialogCode returnCode = QDialog::DialogCode(markDialog.exec());
+        if(returnCode == QDialog::Accepted){
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(0);
+            infoDialog.setMessage(tr("Successed"));
             infoDialog.exec();
         }
     });
@@ -286,7 +299,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     endTimeEdit_->setMinimumWidth(160);
     searchBtn_->setMinimumSize(120,44);
     pageIndicator_->setPageInfo(0,0);
-    personTypeVec_ << qMakePair(QString("All"),QVector<int>() << 1 << 2 << 3 << 6);
+    personTypeVec_ << qMakePair(QString("All"),QVector<int>() << 1 << 2 << 3 << 6 << 7);
     personTypeVec_ << qMakePair(QString("Semantic"),QVector<int>() << 0 << 1 << 2 << 3 << 5 << 6);
     personTypeVec_ << qMakePair(QString("Facelink"),QVector<int>() << 0 << 1 << 2 << 3 << 4 << 5 << 6);
     for(auto &v : personTypeVec_){

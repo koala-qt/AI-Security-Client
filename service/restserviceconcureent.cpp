@@ -442,6 +442,41 @@ void RestConcurrent::getAvailabelAttrs(RestServiceI::SearchAttrsArgs & args)
     fwatcher->setFuture(QtConcurrent::run(curlRest_,&DLL::CloudHttpDao::searchAvailableAttribute,args,resVec));
 }
 
+void RestConcurrent::getPersonGoupInfos(QString &groupNo)
+{
+    QVector<RestServiceI::PersonGroupInfo> *resData = new QVector<RestServiceI::PersonGroupInfo>;
+    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>(this);
+    connect(fwatcher,&QFutureWatcher<QString>::finished,this,[this,resData,fwatcher]{
+        if(fwatcher->result().isEmpty()){
+            emit sigPersonGroupInfos(*resData);
+        }else{
+            emit sigError(fwatcher->result());
+        }
+        delete resData;
+    });
+    connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
+    fwatcher->setFuture(QtConcurrent::run(curlRest_,&DLL::CloudHttpDao::getPersonGroupInfo,groupNo,resData));
+}
+
+void RestConcurrent::cancelRequest()
+{
+    curlRest_->cancelRequest();
+}
+
+void RestConcurrent::personRegist(RestServiceI::PersonRegisterArgs &args)
+{
+    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>(this);
+    connect(fwatcher,&QFutureWatcher<QString>::finished,this,[this,fwatcher]{
+        if(fwatcher->result().isEmpty()){
+            emit sigResultState(true);
+        }else{
+            emit sigError(fwatcher->result());
+        }
+    });
+    connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
+    fwatcher->setFuture(QtConcurrent::run(curlRest_,&DLL::CloudHttpDao::registerPerson,args));
+}
+
 void RestConcurrent::portraitLibCompSearch(RestServiceI::PortraitLibCompArgs &args)
 {
     QVector<PortraitLibCompItem> *resVec = new QVector<PortraitLibCompItem>;

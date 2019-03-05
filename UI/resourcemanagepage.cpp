@@ -25,6 +25,7 @@ ResourceManagePage::ResourceManagePage(WidgetI *parent):
     webView_->page()->setWebChannel(webChannel);
     webView_->page()->setBackgroundColor(Qt::transparent);
     webBridge_->setHostName(webHost_);
+    webView_->setContextMenuPolicy(Qt::NoContextMenu);
 
     connect(webView_->page()->profile(),SIGNAL(downloadRequested(QWebEngineDownloadItem*)),this,SLOT(slotLoadRequest(QWebEngineDownloadItem*)));
 }

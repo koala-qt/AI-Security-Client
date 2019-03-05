@@ -12,6 +12,9 @@ public:
     UploadVideoProgress(WidgetI *parent = nullptr);
     void setUserStyle(int s) override;
 
+signals:
+    void sigCancelBtnClicked();
+
 protected:
     bool eventFilter(QObject *watched, QEvent *event)override;
 

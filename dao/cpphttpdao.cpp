@@ -23,7 +23,7 @@ QString DLL::CppHttpDao::uploadVideo(QString videoPath)
         QByteArray video = file.readAll();
         std::string videoBuffer = video.toStdString();
         QString urlStr = host_ + QObject::tr("api/v1/video/analyze");
-        int resCode = send(POST,urlStr.toStdString(),videoBuffer,60);
+        int resCode = send(POST,urlStr.toStdString(),videoBuffer,-1);
         if(resCode != CURLE_OK){
             return curl_easy_strerror(CURLcode(resCode));
         }

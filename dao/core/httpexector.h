@@ -7,13 +7,16 @@ namespace DLL {
 class HttpExector : public BaseHttpExector
 {
 public:
+    bool cancelRequestFlag_ = false;
+
     HttpExector();
     ~HttpExector();
-    virtual void setheader(std::vector<std::string> &headers);
-    int submitFormData(std::string &uri, void *formpost);
+    void cancelRequest(){cancelRequestFlag_ = true;}
     virtual int progress(double totalDownLoad,double downloaded,double totalUpload, double uploaded) = 0;
 
 protected:
+    virtual void setheader(std::vector<std::string> &headers);
+    int submitFormData(std::string &uri, void *formpost);
     int send(HTTP_METHORD methord, std::string &url, std::string &data, unsigned long timeout = 1) override;
     const std::string & responseData() override;
 

@@ -766,7 +766,7 @@ QString DLL::CloudHttpDao::combinationSearch(RestServiceI::CombinationSearchArgs
 
 QString DLL::CloudHttpDao::multipleSearch(RestServiceI::MultipleSearchArgs &args, QVector<RestServiceI::MultipleSearchItem> *resVec)
 {
-    QString urlStr = host_ +  QObject::tr("/api/v2/external/monitor-detail/multiple-find");
+    QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/multiple-find");
     QStringList imgsBase64StrList;
     for(QImage &img : args.images){
         QByteArray imgStr;
@@ -943,6 +943,84 @@ QString DLL::CloudHttpDao::searchAvailableAttribute(RestServiceI::SearchAttrsArg
     return QString();
 }
 
+QString DLL::CloudHttpDao::getPersonGroupInfo(QString &groupNo, QVector<RestServiceI::PersonGroupInfo> *resData)
+{
+    QString urlStr = host_ + QObject::tr("api/v2/person/group/find?no=%1")
+            .arg(groupNo);
+    int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),4);
+    if(resCode != CURLE_OK){
+        return curl_easy_strerror(CURLcode(resCode));
+    }
+
+    QJsonParseError jsError;
+    QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
+    if(jsError.error != QJsonParseError::NoError){
+        return jsError.errorString();
+    }
+
+    QJsonObject jsObj = jsDoc.object();
+    int status = jsObj.value("status").toInt();
+    if(status != 200){
+        return jsObj.value("message").toString();
+    }
+
+    QJsonArray jsArray = jsObj.value("data").toArray();
+    std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(*resData),[this](const QJsonValue &jsValue){
+        RestServiceI::PersonGroupInfo groupData;
+        parsePersonGroupInfo(jsValue.toObject(),groupData);
+        return groupData;
+    });
+    return QString();
+}
+
+QString DLL::CloudHttpDao::registerPerson(RestServiceI::PersonRegisterArgs &args)
+{
+    std::vector<std::string> headers;
+    headers.emplace_back("Content-Type:application/json;charset=UTF-8");
+    headers.emplace_back("Accept-Language: en-US,en;q=0.9");
+    headers.emplace_back("User-Agent:Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36");
+    headers.emplace_back("token:7d1e52d3cf0142e19b5901eb1ef91372");
+    headers.emplace_back("Expect:");
+    setheader(headers);
+
+    QString urlStr = host_ +  QObject::tr("api/v2/person/info/insert");
+    QJsonArray imgArray;
+    QByteArray imgStr;
+    QBuffer imgBuf(&imgStr);
+    imgBuf.open(QIODevice::WriteOnly);
+    args.image.save(&imgBuf,"jpg");
+    imgArray << QJsonObject{{"name",args.name +".jpg"},{"base64",QString(imgStr.toBase64())}};
+    QJsonObject argObj;
+    argObj["name"] = args.name;
+    argObj["code"] = args.id;
+    argObj["groupNo"] = args.groupNo;
+    argObj["groupName"] = args.groupName;
+    argObj["typeNo"] = args.personTypeNo;
+    argObj["typeName"] = args.personTypeName;
+    argObj["isSnap"] = true;
+    argObj["pictures"] = imgArray;
+    QJsonDocument jsDoc(argObj);
+    QByteArray argsByteArray = jsDoc.toJson();
+    std::string argsstr = argsByteArray.toStdString();
+    int resCode = send(DLL::POST,urlStr.toStdString(),argsstr,5);
+    if(resCode != CURLE_OK){
+        return curl_easy_strerror(CURLcode(resCode));
+    }
+
+    QJsonParseError jsError;
+    jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
+    if(jsError.error != QJsonParseError::NoError){
+        return jsError.errorString();
+    }
+
+    QJsonObject jsObj = jsDoc.object();
+    int status = jsObj.value("status").toInt();
+    if(status != 200){
+        return jsObj.value("message").toString();
+    }
+    return QString();
+}
+
 QString DLL::CloudHttpDao::portraitLibCompSearch(RestServiceI::PortraitLibCompArgs &args, QVector<RestServiceI::PortraitLibCompItem> *resVec)
 {
     QString urlStr = host_ + QObject::tr("api/v2/cmcc/portrait/search");
@@ -1003,7 +1081,7 @@ QString DLL::CloudHttpDao::queryPersonTypes(QVector<RestServiceI::PersonType> *r
 {
     QString urlStr = host_ +  QObject::tr("api/v2/person/type/find?token=7d1e52d3cf0142e19b5901eb1ef91372");
 
-    int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),60);
+    int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),2);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -1026,6 +1104,8 @@ QString DLL::CloudHttpDao::queryPersonTypes(QVector<RestServiceI::PersonType> *r
         sitem.strTypeName = itemObj.value("name").toString();
         sitem.nId = itemObj.value("id").toInt();
         sitem.strTypeNo = itemObj.value("no").toString();
+        QJsonDocument jsValueDoc = QJsonDocument::fromJson(itemObj.value("value").toString().toLatin1());
+        sitem.groupNo = jsValueDoc.object().value("group").toString();
         return sitem;
     });
     return QString();
@@ -1033,8 +1113,8 @@ QString DLL::CloudHttpDao::queryPersonTypes(QVector<RestServiceI::PersonType> *r
 
 QString DLL::CloudHttpDao::mnFaceAnalysisSearch(RestServiceI::MNFaceAnalysisArgs &args, QVector<RestServiceI::MNFaceAnalysisItem> *resVec)
 {
-#if 0
-    QString urlStr = host_ +  QObject::tr("/api/v2/cmcc/portrait/m-compare-n");
+#if 1
+    QString urlStr = host_ +  QObject::tr("api/v2/cmcc/portrait/m-compare-n");
 #else
     QString urlStr = QObject::tr("http://192.168.2.145:8080/api/v2/cmcc/portrait/m-compare-n");
 #endif
@@ -1138,4 +1218,23 @@ QString DLL::CloudHttpDao::mnFaceAnalysisSearch(RestServiceI::MNFaceAnalysisArgs
 int DLL::CloudHttpDao::progress(double totalDownLoad, double downloaded, double totalUpload, double uploaded)
 {
     return 0;
+}
+
+void DLL::CloudHttpDao::parsePersonGroupInfo(QJsonObject jsObj, RestServiceI::PersonGroupInfo &parentData)
+{
+    RestServiceI::PersonGroupInfo newInfoObj;
+    newInfoObj.no = jsObj.value("no").toString();
+    newInfoObj.name = jsObj.value("name").toString();
+    newInfoObj.id = jsObj.value("id").toInt();
+    if(parentData.no.isEmpty()){
+        parentData = newInfoObj;
+    }else{
+        parentData.children << newInfoObj;
+    }
+    if(jsObj.contains("children")){
+        QJsonArray jsArray = jsObj.value("children").toArray();
+        for(const QJsonValue &jsVal : jsArray){
+            parsePersonGroupInfo(jsVal.toObject(),parentData);
+        }
+    }
 }

@@ -12,6 +12,9 @@ size_t onReply(void *ptr,size_t size, size_t nmemb, void *userData)
 int progress_func(void *ptr, double totalDownLoad,double downloaded,double totalUpload, double uploaded)
 {
     DLL::HttpExector *objPtr = reinterpret_cast<DLL::HttpExector*>(ptr);
+    if(objPtr->cancelRequestFlag_){
+        return -1;
+    }
     objPtr->progress(totalDownLoad,downloaded,totalUpload,uploaded);
     return 0;
 }

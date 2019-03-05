@@ -36,6 +36,9 @@ public:
     void searchByImage(SearchUseImageArgs &) override;
     void uploadVideo(QString videoPath) override;
     void getAvailabelAttrs(SearchAttrsArgs &) override;
+    void getPersonGoupInfos(QString &groupNo) override;
+    void cancelRequest() override;
+    void personRegist(PersonRegisterArgs &) override;
     /**
      * Added by aihc for Portrait library comparison.
      * @brief portraitLibCompSearch

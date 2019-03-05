@@ -27,6 +27,7 @@ VideoAnalysis::VideoAnalysis(WidgetI *parent):
     stackedW_->addWidget(progressW_);
     stackedW_->addWidget(videoDataW_);
     connect(selectVideoW_,SIGNAL(sigVideoSelected(QString)),this,SLOT(slotFileSelected(QString)));
+    connect(progressW_,SIGNAL(sigCancelBtnClicked()),this,SLOT(slotCancelUPload()));
 }
 
 void VideoAnalysis::setUserStyle(int s)
@@ -37,22 +38,31 @@ void VideoAnalysis::setUserStyle(int s)
 void VideoAnalysis::slotFileSelected(QString videoFile)
 {
     ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
-    RestServiceI *serviceI = factoryI->makeRestServiceI();
-    connect(serviceI,&RestServiceI::sigResultState,this,[this](bool res){
+    upLoadVideoService_ = factoryI->makeRestServiceI();
+    connect(upLoadVideoService_,&RestServiceI::sigResultState,this,[this](bool res){
+        upLoadVideoService_ = nullptr;
         if(res){
             stackedW_->setCurrentIndex(2);
         }
     });
-    connect(serviceI,&RestServiceI::sigError,this,[this](QString str){
+    connect(upLoadVideoService_,&RestServiceI::sigError,this,[this](QString str){
+        upLoadVideoService_ = nullptr;
         stackedW_->setCurrentIndex(0);
         InformationDialog infoDialog(this);
         infoDialog.setUserStyle(userStyle());
         infoDialog.setMessage(str);
         infoDialog.exec();
     });
-    connect(serviceI,&RestServiceI::sigVideoUploadProgress,this,[this](double total,double uploaded){
+    connect(upLoadVideoService_,&RestServiceI::sigVideoUploadProgress,this,[this](double total,double uploaded){
         stackedW_->setCurrentIndex(1);
         progressW_->slotSetValue(total,uploaded);
     });
-    serviceI->uploadVideo(videoFile);
+    upLoadVideoService_->uploadVideo(videoFile);
+}
+
+void VideoAnalysis::slotCancelUPload()
+{
+    if(upLoadVideoService_){
+        upLoadVideoService_->cancelRequest();
+    }
 }

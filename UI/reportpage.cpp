@@ -21,6 +21,7 @@ ReportPage::ReportPage(WidgetI *parent):
     QWebChannel *channel = new QWebChannel(webBridge_);
     webView_->page()->setWebChannel(channel);
     webView_->page()->setBackgroundColor(Qt::transparent);
+    webView_->setContextMenuPolicy(Qt::NoContextMenu);
 }
 
 void ReportPage::setUserStyle(int s)

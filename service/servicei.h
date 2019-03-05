@@ -290,6 +290,25 @@ public:
         QDateTime startT;
         QDateTime endT;
     };
+    struct PersonGroupInfo
+    {
+        int id = -1;
+        QString no;
+        QString name;
+        QString description;
+        QVector<PersonGroupInfo> children;
+    };
+    struct PersonRegisterArgs
+    {
+        QString name;
+        QString id;
+        QString personTypeNo;
+        QString personTypeName;
+        QString groupNo;
+        QString groupName;
+        QString describ;
+        QImage image;
+    };
 
     /**
      * Added by aihc for Portrait library comparison.
@@ -300,6 +319,7 @@ public:
         int nId;
         QString strTypeNo;
         QString strTypeName;
+        QString groupNo;
     };
     /**
      * Added by aihc for Portrait library comparison.
@@ -394,6 +414,7 @@ public:
         qRegisterMetaType<QVector<QVector<double> >>("QVector<QVector<double> >");
         qRegisterMetaType<QVector<QImage>>("QVector<QImage>");
         qRegisterMetaType<RestServiceI::PortraitReturnData>("RestServiceI::PortraitReturnData");
+        qRegisterMetaType<QVector<RestServiceI::PersonGroupInfo>>("QVector<RestServiceI::PersonGroupInfo>");
         // Added by aihc begin
         qRegisterMetaType<QVector<RestServiceI::PortraitLibCompItem>>("QVector<RestServiceI::PortraitLibCompItem>");
         qRegisterMetaType<QVector<RestServiceI::PersonType>>("QVector<RestServiceI::PersonType>");
@@ -426,6 +447,9 @@ public:
     virtual void searchByImage(SearchUseImageArgs &) = 0;
     virtual void uploadVideo(QString videoPath) = 0;
     virtual void getAvailabelAttrs(SearchAttrsArgs &) = 0;
+    virtual void personRegist(PersonRegisterArgs &) = 0;
+    virtual void getPersonGoupInfos(QString &groupNo) = 0;
+    virtual void cancelRequest() = 0;
     /**
      * Added by aihc for Portrait library comparison.
      * @brief portraitLibCompSearch
@@ -470,6 +494,7 @@ signals:
     void sigFaceLinkDataColl(RestServiceI::FaceLinkDataCollReturn);
     void sigVideoUploadProgress(double,double);
     void sigAvailableAttrs(QStringList);
+    void sigPersonGroupInfos(QVector<RestServiceI::PersonGroupInfo>);
     /**
      * Added by aihc for Portrait library comparison.
      * @brief sigPortraitLibCompResult
