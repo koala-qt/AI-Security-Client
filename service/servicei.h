@@ -374,6 +374,10 @@ public:
         QImage captureImg;
         int cameraId;
         double dSimilarity;
+        QString strPersonName;
+        int nPersonId;
+        QString strBigType;
+        QString strSubType;
     };
     /**
      * Added by aihc for Multiple face analysis.
@@ -382,10 +386,6 @@ public:
     struct MNFaceAnalysisItem
     {
         QImage uploadImg;
-        QString strPersonName;
-        int nPersonId;
-        QString strBigType;
-        QString strSubType;
         bool bSuccess;
         QString strErrMsg;
         QList<MNCaptureItem> captureItems;
