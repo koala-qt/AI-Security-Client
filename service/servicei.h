@@ -342,6 +342,12 @@ public:
         int cameraId;
         QDateTime startTime;
         QDateTime endTime;
+        QString libType; // Not ID.This is the field no.
+        int nPersonId;
+        QString strPersonName; // Name
+        float similarity;
+        int limit; // can not pass the value.
+        bool bRequireBase64; // Whether to return image data.
     };
     struct MNCaptureItem
     {

@@ -16,6 +16,7 @@ QT_FORWARD_DECLARE_CLASS(QPushButton)
 QT_FORWARD_DECLARE_CLASS(QComboBox)
 QT_FORWARD_DECLARE_CLASS(QLineEdit)
 QT_FORWARD_DECLARE_CLASS(QTableWidget)
+QT_FORWARD_DECLARE_CLASS(QHBoxLayout)
 
 class NoDataTip;
 class PageIndicator;
@@ -39,6 +40,7 @@ public:
 
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;
+    bool event(QEvent *event) override;
 
 private slots:
     void slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data);
@@ -46,10 +48,18 @@ private slots:
     void onBtnUploadFolderClicked();
     void onBtnSearchClicked();
 
+    void onBtnOperationClicked();
+
 private:
     void init();
 
     void getCameraInfo();
+
+    void queryPersonTypes();
+
+    void updatePersonTypesState();
+    void updateBtnPersonTypeStyle(QPushButton *btn);
+
 
     void slotAddRow(QVector<RestServiceI::MNFaceAnalysisItem> info);
 
@@ -71,6 +81,22 @@ private:
 
     QMap<QString,QString> m_curCameraMapInfo;
     QWidget *m_pTipWgt{nullptr};
+
+    // 3.5 edit
+    bool m_bFirstLoading = true;
+    QVector<RestServiceI::PersonType> m_vecPersonTypes;
+    QString m_strBigPersonType;
+    QLabel *m_pLabID = Q_NULLPTR;
+    QLineEdit *m_txtID = Q_NULLPTR;
+    QLabel *m_pLabName = Q_NULLPTR;
+    QLineEdit *m_pTxtName = Q_NULLPTR;
+    QLabel *m_pLabSimilary{nullptr};
+    QLineEdit *m_pTxtSimilary{nullptr};
+    QWidget *m_pFaceTypesWgt{nullptr};
+    QPushButton *m_pBtnOperation{nullptr};
+    QList<QPushButton *> m_lstFaceLibTypes;
+    QHBoxLayout *m_pFaceTypesHLay{nullptr};
+
 
 };
 
