@@ -378,7 +378,7 @@ void PortraitSearch::init()
     topHlay->addWidget(m_pFaceTypesWgt);
     topHlay->addStretch();
     QHBoxLayout *bottomHlay = new QHBoxLayout;
-    bottomHlay->setSpacing(10);
+    bottomHlay->setSpacing(15);
     topRighVlay->addLayout(bottomHlay);
     m_pLabID = new QLabel(tr("ID"));
     bottomHlay->addWidget(m_pLabID);

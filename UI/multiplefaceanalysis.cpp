@@ -361,10 +361,15 @@ void MultipleFaceAnalysis::init()
     m_pFaceTypesHLay->setSpacing(5);
     m_pFaceTypesHLay->setMargin(2);
     m_pFaceTypesWgt->setLayout(m_pFaceTypesHLay);
-    topVLay->addWidget(m_pFaceTypesWgt);
+    QHBoxLayout *faceTypeHLay = new QHBoxLayout;
+    faceTypeHLay->addWidget(m_pFaceTypesWgt);
+    faceTypeHLay->addStretch();
+    //topVLay->addWidget(m_pFaceTypesWgt);
+    topVLay->addLayout(faceTypeHLay);
+    //topVLay->addStretch();
 
     QHBoxLayout *bottomHlay = new QHBoxLayout;
-    bottomHlay->setSpacing(10);
+    bottomHlay->setSpacing(15);
     mainLay->addLayout(bottomHlay);
     m_pLabID = new QLabel(tr("ID"));
     bottomHlay->addWidget(m_pLabID);
