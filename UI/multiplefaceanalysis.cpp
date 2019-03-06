@@ -93,22 +93,32 @@ void MultipleFaceAnalysis::setUserStyle(int style)
                     "QTableView{"
                     "color: #7E8CB1;"
                     "font-size: 12px;"
-                    "background-color: transparent;"
-                    "selection-background-color: rgba(206,206,206,40);"
+                    "background-color: #383F4F;"
+                    "border:0px;"
+                    //"selection-background-color: rgba(206,206,206,40);"
+                    "}"
+                    "QTableWidget::item"
+                    "{"
+                    "color: #7E8CB1;"
+                    "}"
+                    "QTableWidget::item::selected"
+                    "{"
+                    "background-color: rgba(206,206,206,40);"
+                    "color: #7E8CB1;"
                     "}"
                     "QTableView QTableCornerButton::section{"
                     "background: rgba(206,206,206,20);"
-                    "}"
-                    "QHeaderView{"
-                    "background-color: rgba(206,206,206,20);"
-                    "}"
-                    "QHeaderView::section{"
-                    "color: #7E8CB1;"
-                    "background-color: rgba(206,206,206,40);"
                     "}");
+        m_tableW->horizontalHeader()->setStyleSheet("QHeaderView{"
+                                                    "background-color: #41495C;"
+                                                    "}"
+                                                    "QHeaderView::section{"
+                                                    "background-color: transparent;"
+                                                    "color:#7E8CB1;;"
+                                                    "}");
         m_tableW->verticalScrollBar()->setStyleSheet(
                                                     "QScrollBar:vertical{"
-                                                    "background: transparent;"
+                                                    "background: #383F4F;"
                                                     "border-radius: 10px;"
                                                     "border: none;"
                                                     "width: 13px;"
@@ -149,15 +159,23 @@ void MultipleFaceAnalysis::setUserStyle(int style)
         m_pageIndicator->setUserStyle();
 
         m_pBtnSearch->setStyleSheet("QPushButton{"
-                                   "border: 0px;min-width:160px;"
+                                   "border: 0px;"
                                    "color:white;"
-                                   "font-size:12px;width:99px;height:34px;font-family:PingFang SC Regular;"
+                                   "font-size:12px;width:99px;height:34px;font-family:Regular;"
                                    "border-image:url(images/portraitlibrary/search.png);"
                                    "}"
                                    "QPushButton:pressed{"
                                    "padding: 1px;"
                                    "}");
-        m_pBtnUploadFolder->setStyleSheet(m_pBtnSearch->styleSheet());
+        m_pBtnUploadFolder->setStyleSheet("QPushButton{"
+                                          "border: 0px;"
+                                          "color:white;"
+                                          "font-size:12px;width:120px;height:34px;font-family:Regular;"
+                                          "border-image:url(images/portraitlibrary/search.png);"
+                                          "}"
+                                          "QPushButton:pressed{"
+                                          "padding: 1px;"
+                                          "}");
 
         m_pDataTip->setUserStyle(style);
     }
@@ -320,6 +338,7 @@ void MultipleFaceAnalysis::onBtnOperationClicked()
 void MultipleFaceAnalysis::init()
 {
     QVBoxLayout *mainLay = new QVBoxLayout;
+    mainLay->setSpacing(20);
 
     // top area
     QVBoxLayout *topVLay = new QVBoxLayout;
@@ -427,6 +446,7 @@ void MultipleFaceAnalysis::init()
     m_tableW->setHorizontalHeaderLabels(QStringList() << tr("Upload Photo") << tr("Comparison result 1") << tr("Comparison result 2") << tr("Comparison result 3") << tr("Comparison result 4") << tr("Comparison result 5"));
     m_tableW->setColumnWidth(UploadImgCol, 180);
     m_tableW->horizontalHeader()->setSortIndicatorShown(false);
+    m_tableW->horizontalHeader()->setMinimumHeight(60);
     //connect(m_tableW->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(onSectionClicked(int)));
     m_pageIndicator = new PageIndicator;
     m_pageIndicator->setPageInfo(0,0);

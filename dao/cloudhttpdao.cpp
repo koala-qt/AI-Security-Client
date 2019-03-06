@@ -1029,15 +1029,12 @@ QString DLL::CloudHttpDao::portraitLibCompSearch(RestServiceI::PortraitLibCompAr
     imgBuf.open(QIODevice::WriteOnly);
     args.image.save(&imgBuf,"jpg");
     QString base64Str(imgStr.toBase64(QByteArray::Base64UrlEncoding));
-    QString postData = QObject::tr("similarity=%1&limit=%2&picture=%3&requireBase64=%4&personTypes=%5&token=%6")
+    QString postData = QObject::tr("similarity=%1&limit=%2&picture=%3&requireBase64=%4&personTypes=%5")
             .arg(args.similarity)
             .arg(args.limit)
             .arg(base64Str)
             .arg(args.bRequireBase64)
-            .arg(args.libType)
-            //.arg(args.nPersonId)
-            //.arg(args.strPersonName)
-            .arg("7d1e52d3cf0142e19b5901eb1ef91372");
+            .arg(args.libType);
     if (args.nPersonId > 0)
     {
         postData.append(QString("&personId=%1").arg(args.nPersonId));
@@ -1113,11 +1110,7 @@ QString DLL::CloudHttpDao::queryPersonTypes(QVector<RestServiceI::PersonType> *r
 
 QString DLL::CloudHttpDao::mnFaceAnalysisSearch(RestServiceI::MNFaceAnalysisArgs &args, QVector<RestServiceI::MNFaceAnalysisItem> *resVec)
 {
-#if 1
     QString urlStr = host_ +  QObject::tr("api/v2/cmcc/portrait/m-compare-n");
-#else
-    QString urlStr = QObject::tr("http://192.168.2.145:8080/api/v2/cmcc/portrait/m-compare-n");
-#endif
 #if 1
     QDir dir(args.strFolderPath);
     dir.setFilter(QDir::Files);
@@ -1143,8 +1136,6 @@ QString DLL::CloudHttpDao::mnFaceAnalysisSearch(RestServiceI::MNFaceAnalysisArgs
             .arg(args.limit)
             .arg(args.bRequireBase64)
             .arg(args.libType)
-            //.arg(args.nPersonId)
-            //.arg(args.strPersonName)
             .arg(imgsBase64StrList.join(','));
     if (args.nPersonId > 0)
     {
@@ -1155,11 +1146,7 @@ QString DLL::CloudHttpDao::mnFaceAnalysisSearch(RestServiceI::MNFaceAnalysisArgs
         postData.append(QString("&personName=%1").arg(args.strPersonName));
     }
 #endif
-#if 0
-    int resCode = sendMultPic(args.strFolderPath, args.startTime.toString("yyyy-MM-dd HH:mm:ss"),args.endTime.toString("yyyy-MM-dd HH:mm:ss"),QString::number(args.cameraId));
-#else
     int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),60);
-#endif
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
