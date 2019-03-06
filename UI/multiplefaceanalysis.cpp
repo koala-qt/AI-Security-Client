@@ -114,7 +114,7 @@ void MultipleFaceAnalysis::setUserStyle(int style)
                                                     "}"
                                                     "QHeaderView::section{"
                                                     "background-color: transparent;"
-                                                    "color:#7E8CB1;;"
+                                                    "color:#7E8CB1;font-size:14px;font:bold;"
                                                     "}");
         m_tableW->verticalScrollBar()->setStyleSheet(
                                                     "QScrollBar:vertical{"
