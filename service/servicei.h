@@ -310,6 +310,16 @@ public:
         QImage image;
     };
 
+    // 3.6 add PersonType's children
+    struct ChildNoteItem
+    {
+        int nId;
+        QString strNo;
+        QString strName;
+        QString strDescription;
+        QString strNoteHierarchy;
+        QString strNoteRequired;
+    };
     /**
      * Added by aihc for Portrait library comparison.
      * @brief The PersonType struct
@@ -320,6 +330,7 @@ public:
         QString strTypeNo;
         QString strTypeName;
         QString groupNo;
+        QList<ChildNoteItem> lstChildren;
     };
     /**
      * Added by aihc for Portrait library comparison.

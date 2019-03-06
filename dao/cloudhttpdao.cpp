@@ -1076,7 +1076,7 @@ QString DLL::CloudHttpDao::portraitLibCompSearch(RestServiceI::PortraitLibCompAr
 
 QString DLL::CloudHttpDao::queryPersonTypes(QVector<RestServiceI::PersonType> *resVec)
 {
-    QString urlStr = host_ +  QObject::tr("api/v2/person/type/find?token=7d1e52d3cf0142e19b5901eb1ef91372");
+    QString urlStr = host_ +  QObject::tr("api/v2/person/type/find");
 
     int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),2);
     if(resCode != CURLE_OK){
@@ -1103,6 +1103,26 @@ QString DLL::CloudHttpDao::queryPersonTypes(QVector<RestServiceI::PersonType> *r
         sitem.strTypeNo = itemObj.value("no").toString();
         QJsonDocument jsValueDoc = QJsonDocument::fromJson(itemObj.value("value").toString().toLatin1());
         sitem.groupNo = jsValueDoc.object().value("group").toString();
+        // 3.6 add parsing children
+        if (itemObj.contains("children"))
+        {
+            QJsonArray jsArray = itemObj.value("children").toArray();
+            QList<RestServiceI::ChildNoteItem> lstChildren;
+            for (const QJsonValue &jsVal : jsArray)
+            {
+                RestServiceI::ChildNoteItem childItem;
+                QJsonObject childObj = jsVal.toObject();
+                childItem.nId = childObj.value("id").toInt();
+                childItem.strName = childObj.value("name").toString();
+                childItem.strDescription = childObj.value("description").toString();
+                childItem.strNo = childObj.value("no").toString();
+                QJsonObject noteObj = childObj.value("note").toObject();
+                childItem.strNoteHierarchy = noteObj.value("hierarchy").toString();
+                childItem.strNoteRequired = noteObj.value("required").toString();
+                lstChildren.push_back(childItem);
+            }
+            sitem.lstChildren = lstChildren;
+        }
         return sitem;
     });
     return QString();
