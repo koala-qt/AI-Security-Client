@@ -564,7 +564,7 @@ QString DLL::CloudHttpDao::captureSearch(RestServiceI::CaptureSearchArgs &args, 
             .arg(args.pageCount);
     qDebug() << urlStr;
     qDebug() << postData;
-    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),5);
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),8);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -919,7 +919,7 @@ QString DLL::CloudHttpDao::searchAvailableAttribute(RestServiceI::SearchAttrsArg
 {
     QString urlStr = host_ + QObject::tr("api/v2/external/monitor-detail/query/face-attributes?mode=%1&faceAttrs=%2&startTime=%3&finishTime=%4&cameraId=%5")
             .arg(args.model,args.faceAttrs.join(','),args.startT.toString("yyyy-MM-dd%20HH:mm:ss"),args.endT.toString("yyyy-MM-dd%20HH:mm:ss"),args.cameraId);
-    int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),4);
+    int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),30);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }

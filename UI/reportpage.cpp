@@ -16,7 +16,7 @@ ReportPage::ReportPage(WidgetI *parent):
 
     QSettings configSetting("config.ini",QSettings::IniFormat);
     webHost_ = configSetting.value("Http/Javahost").toString();
-    webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/report/report.html"));
+    webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/report/index.html"));
     webBridge_ = new ReportWebBridge(webView_);
     QWebChannel *channel = new QWebChannel(webBridge_);
     webView_->page()->setWebChannel(channel);
