@@ -79,86 +79,91 @@ void PortraitSearch::setUserStyle(int s)
 color: white; \
 }");
 #endif
-m_pFaceTypesWgt->setStyleSheet(".QWidget{border-image:url(images/portraitlibrary/barbg.png);background-color:transparent;min-width:400px;height:45px;max-height:45px;}");
-// border:1px solid #CECECE;
-m_tableW->setStyleSheet(
-        "QTableView{"
-        "color: #7E8CB1;"
-        "font-size: 12px;"
-        "background-color: transparent;"
-        "selection-background-color: rgba(206,206,206,40);"
-        "}"
-        "QTableWidget::item"
-        "{"
-        "color: #7E8CB1;"
-        "}"
-        "QTableWidget::item::selected"
-        "{"
-        "color: #7E8CB1;"
-        "}"
-        "QTableView QTableCornerButton::section{"
-        "background: rgba(206,206,206,20);"
-        "}"
-        "QHeaderView{"
-        "background-color: rgba(206,206,206,20);"
-        "}"
-        "QHeaderView::section{"
-        "color: #7E8CB1;"
-        "background-color: rgba(206,206,206,40);"
-        "}");
-m_tableW->verticalScrollBar()->setStyleSheet(
-        "QScrollBar:vertical{"
-        "background: transparent;"
-        "border-radius: 10px;"
-        "border: none;"
-        "width: 13px;"
-        "}"
-        "QScrollBar::handle:vertical{"
-        "background: rgba(255,255,255,0.5);"
-        "border-radius: 5px;"
-        "}"
-        "QScrollBar::add-line:vertical{"
-        "background: transparent;"
-        "border:0px solid #274168;"
-        "border-radius: 5px;"
-        "min-height: 10px;"
-        "width: 13px;"
-        "}"
-        "QScrollBar::sub-line:vertical{"
-        "background: transparent;"
-        "border:0px solid #274168;"
-        "min-height: 10px;"
-        "width: 13px;"
-        "}"
-        "QScrollBar::up-arrow:vertical{"
-        "subcontrol-origin: margin;"
-        "height: 0px;"
-        "border:0 0 0 0;"
-        "visible:false;"
-        "}"
-        "QScrollBar::down-arrow:vertical{"
-        "subcontrol-origin: margin;"
-        "height: 0px;"
-        "visible:false;"
-        "}"
-        "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
-        "background: transparent;"
-        "border-radius: 10px;"
-        "}");
+        m_pFaceTypesWgt->setStyleSheet(".QWidget{border-image:url(images/portraitlibrary/barbg.png);background-color:transparent;min-width:400px;height:45px;max-height:45px;}");
+        // border:1px solid #CECECE;
+        m_tableW->setStyleSheet(
+                "QTableView{"
+                "color: #7E8CB1;"
+                "font-size: 12px;"
+                "background-color: #383F4F;"
+                "border:0px;"
+                //"selection-background-color: rgba(206,206,206,40);"
+                "}"
+                "QTableWidget::item"
+                "{"
+                "color: #7E8CB1;"
+                "}"
+                "QTableWidget::item::selected"
+                "{"
+                "background-color: rgba(206,206,206,40);"
+                "color: #7E8CB1;"
+                "}"
+                "QTableView QTableCornerButton{"
+                "background: #41495C;border:0px;"
+                "}"
+                "QTableView QTableCornerButton::section{"
+                "background: #41495C;border:0px;"
+                "}");
+        m_tableW->horizontalHeader()->setStyleSheet("QHeaderView{"
+                                                    "background-color: #41495C;"
+                                                    "}"
+                                                    "QHeaderView::section{"
+                                                    "background-color: transparent;"
+                                                    "color:#7E8CB1;font-size:14px;font:bold;"
+                                                    "}");
+        m_tableW->verticalScrollBar()->setStyleSheet(
+                "QScrollBar:vertical{"
+                "background: transparent;"
+                "border-radius: 10px;"
+                "border: none;"
+                "width: 13px;"
+                "}"
+                "QScrollBar::handle:vertical{"
+                "background: rgba(255,255,255,0.5);"
+                "border-radius: 5px;"
+                "}"
+                "QScrollBar::add-line:vertical{"
+                "background: transparent;"
+                "border:0px solid #274168;"
+                "border-radius: 5px;"
+                "min-height: 10px;"
+                "width: 13px;"
+                "}"
+                "QScrollBar::sub-line:vertical{"
+                "background: transparent;"
+                "border:0px solid #274168;"
+                "min-height: 10px;"
+                "width: 13px;"
+                "}"
+                "QScrollBar::up-arrow:vertical{"
+                "subcontrol-origin: margin;"
+                "height: 0px;"
+                "border:0 0 0 0;"
+                "visible:false;"
+                "}"
+                "QScrollBar::down-arrow:vertical{"
+                "subcontrol-origin: margin;"
+                "height: 0px;"
+                "visible:false;"
+                "}"
+                "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
+                "background: transparent;"
+                "border-radius: 10px;"
+                "}");
 
-m_pageIndicator->setUserStyle();
+        m_pageIndicator->setUserStyle();
 
-m_pBtnSearch->setStyleSheet("QPushButton{"
-                            "border: 0px;"
-                            "color:white;"
-                            "font-size:12px;width:99px;height:34px;font-family:PingFang SC Regular;"
-                            "border-image:url(images/portraitlibrary/search.png);"
-                            "}"
-                            "QPushButton:pressed{"
-                            "padding: 1px;"
-                            "}");
+        m_pBtnSearch->setStyleSheet("QPushButton{"
+                                    "border: 0px;"
+                                    "color:white;"
+                                    "font-size:12px;width:99px;height:34px;font-family:Regular;"
+                                    "border-image:url(images/portraitlibrary/search.png);"
+                                    "}"
+                                    "QPushButton:pressed{"
+                                    "padding: 1px;"
+                                    "}");
 
-m_pDataTip->setUserStyle(s);
+        m_pDataTip->setUserStyle(s);
 }
 }
 
@@ -324,11 +329,13 @@ void PortraitSearch::init()
     m_mapFaceLibTypes.insert(IDCenter, tr("ID center"));
 #endif
     QVBoxLayout *mainLay = new QVBoxLayout;
+    mainLay->setSpacing(20);
     QHBoxLayout *hlay = new QHBoxLayout;
+    hlay->setMargin(0);
     m_btnImg = new QPushButton;
     connect(m_btnImg, SIGNAL(clicked(bool)), this, SLOT(onBtnImgClicked()));
     m_btnImg->setToolTip(tr("Add pictures"));
-    m_btnImg->setFixedSize(84, 84);
+    m_btnImg->setFixedSize(100, 100);
     m_btnImg->setIconSize(QSize(m_btnImg->size()));
     m_btnImg->setFocusPolicy(Qt::NoFocus);
     QPixmap imgPix("images/portraitlibrary/uploadbg.png");
@@ -343,6 +350,7 @@ void PortraitSearch::init()
     QWidget *topRigWgt = new QWidget;
     hlay->addWidget(topRigWgt);
     QVBoxLayout *topRighVlay = new QVBoxLayout;
+    topRighVlay->setMargin(0);
     topRigWgt->setLayout(topRighVlay);
     QHBoxLayout *topHlay = new QHBoxLayout;
     topHlay->setSpacing(0);
@@ -370,7 +378,7 @@ void PortraitSearch::init()
     topHlay->addWidget(m_pFaceTypesWgt);
     topHlay->addStretch();
     QHBoxLayout *bottomHlay = new QHBoxLayout;
-    bottomHlay->setSpacing(10);
+    bottomHlay->setSpacing(15);
     topRighVlay->addLayout(bottomHlay);
     m_pLabID = new QLabel(tr("ID"));
     bottomHlay->addWidget(m_pLabID);
@@ -423,6 +431,7 @@ void PortraitSearch::init()
     m_tableW->setHorizontalHeaderLabels(QStringList() << tr("Photo") << tr("Name") << tr("ID") << tr("Similarity") << tr("Type") << tr("Type")); // Big type and small type.  << tr("Type"))
     m_tableW->setColumnWidth(ImageCol, 180);
     m_tableW->horizontalHeader()->setSortIndicatorShown(true);
+    m_tableW->horizontalHeader()->setMinimumHeight(60);
      connect(m_tableW->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(onSectionClicked(int)));
     m_pageIndicator = new PageIndicator;
     m_pageIndicator->setPageInfo(0,0);
@@ -454,7 +463,7 @@ void PortraitSearch::slotAddRow(QVector<RestServiceI::PortraitLibCompItem> info)
         m_tableW->setItem(m_tableW->rowCount() - 1,ImageCol,item);
 #else
         QLabel *tempLab = new QLabel;
-        tempLab->setPixmap(QPixmap::fromImage(itemData.faceImg).scaled(112, 112));
+        tempLab->setPixmap(QPixmap::fromImage(itemData.faceImg).scaled(80, 80));
         tempLab->setAlignment(Qt::AlignCenter);
         m_tableW->setCellWidget(m_tableW->rowCount() - 1, ImageCol, tempLab);
 #endif
@@ -534,7 +543,6 @@ void PortraitSearch::queryPersonTypes()
             m_lstFaceLibTypes.append(m_btnFaceType);
         }
         m_pFaceTypesHLay->addStretch();
-        //slotAddRow(value);
     });
     serviceI->queryPersonTypes();
     label->show(500);
