@@ -49,10 +49,10 @@ void PortraitSearch::setUserStyle(int s)
         QString commStyle = "font:16px;color:#7E8CB1;font-family:PingFang SC Regular;";
         m_pLabID->setStyleSheet(commStyle);
         m_txtID->setStyleSheet("width:150px;max-width:250px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;");
-        m_pLabName->setStyleSheet(commStyle);
+        m_pLabName->setStyleSheet("font:16px;color:#7E8CB1;font-family:PingFang SC Regular;width:40px;");
         m_pTxtName->setStyleSheet(m_txtID->styleSheet());
         // 3.1 add
-        m_pLabLimit->setStyleSheet(commStyle);
+        m_pLabLimit->setStyleSheet("font:16px;color:#7E8CB1;font-family:PingFang SC Regular;width:32px;");
         m_pLabSimilary->setStyleSheet(commStyle);
         m_pLimitCombo->setStyleSheet("QComboBox{width:70px;max-width:250px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;}"
                                      "QComboBox::drop-down{"
