@@ -404,7 +404,6 @@ void MultipleFaceAnalysis::init()
     connect(m_pBtnSearch, SIGNAL(clicked(bool)),
             this, SLOT(onBtnSearchClicked()));
     bottomHlay->setAlignment(Qt::AlignLeft);
-    mainLay->addLayout(bottomHlay);
 
 #if 0
     // old version.

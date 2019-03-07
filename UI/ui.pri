@@ -54,7 +54,10 @@ HEADERS += \
     $$PWD/personitemwidget.h \
     $$PWD/multiplefaceanalysis.h \
     $$PWD/personmark.h \
-    $$PWD/golbalviewwidget.h
+    $$PWD/golbalviewwidget.h \
+    $$PWD/globalview/leftstatisticswebview.h \
+    $$PWD/globalview/bottomstatisticswebview.h \
+    $$PWD/rightstatisticswebview.h
 
 SOURCES += \
     $$PWD/videoplayback.cpp \
@@ -109,4 +112,7 @@ SOURCES += \
     $$PWD/personitemwidget.cpp \
     $$PWD/multiplefaceanalysis.cpp \
     $$PWD/personmark.cpp \
-    $$PWD/golbalviewwidget.cpp
+    $$PWD/golbalviewwidget.cpp \
+    $$PWD/globalview/leftstatisticswebview.cpp \
+    $$PWD/globalview/bottomstatisticswebview.cpp \
+    $$PWD/globalview/rightstatisticswebview.cpp
