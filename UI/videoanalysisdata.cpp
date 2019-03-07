@@ -95,7 +95,7 @@ void VideoAnalysisData::slotVideoAnalysisData(QString personId, QImage img)
         PersonInfo *personInfoW = new PersonInfo;
         dataListW_->setItemWidget(item,personInfoW);
         personInfoMap_.insert(personId,personInfoW);
-        item->setSizeHint(QSize(dataListW_->width(),500));
+        item->setSizeHint(QSize(dataListW_->width() - style()->pixelMetric(QStyle::PM_ScrollBarSliderMin),500));
     }
     personInfoMap_.value(personId)->addItem(personId,img);
 }
@@ -213,11 +213,59 @@ PersonInfo::PersonInfo(WidgetI *parent):
     imgListW_->setMovement(QListWidget::Static);
     imgListW_->setViewMode(QListWidget::IconMode);
     imgListW_->setIconSize(QSize(112,112));
+    imgListW_->setFrameStyle(QFrame::NoFrame);
+    setUserStyle(userStyle());
 }
 
 void PersonInfo::setUserStyle(int s)
 {
-
+    if(s == 0){
+        imgListW_->verticalScrollBar()->setStyleSheet(
+                    "QScrollBar:vertical{"
+                    "background: transparent;"
+                    "border: 0px solid gray;"
+                    "width: 13px;"
+                    "}"
+                    "QScrollBar::handle:vertical{"
+                    "background: rgba(255,255,255,0.5);"
+                    "border-radius: 5px;"
+                    "}"
+                    "QScrollBar::add-line:vertical{"
+                    "background: transparent;"
+                    "border:0px solid #274168;"
+                    "border-radius: 5px;"
+                    "min-height: 10px;"
+                    "width: 13px;"
+                    "}"
+                    "QScrollBar::sub-line:vertical{"
+                    "background: transparent;"
+                    "border:0px solid #274168;"
+                    "min-height: 10px;"
+                    "width: 13px;"
+                    "}"
+                    "QScrollBar::up-arrow:vertical{"
+                    "subcontrol-origin: margin;"
+                    "height: 0px;"
+                    "border:0 0 0 0;"
+                    "visible:false;"
+                    "}"
+                    "QScrollBar::down-arrow:vertical{"
+                    "subcontrol-origin: margin;"
+                    "height: 0px;"
+                    "visible:false;"
+                    "}"
+                    "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
+                    "background: transparent;"
+                    "border: none;"
+                    "border-radius: 0px;"
+                    "}");
+        menu_->setStyleSheet("QMenu{"
+                             "background-color: rgb(75,75,75);"
+                             "}"
+                             "QMenu::item:selected{"
+                             "background-color: rgba(255,255,255,0.4);"
+                             "}");
+    }
 }
 
 void PersonInfo::addItem(QString s, QImage img)

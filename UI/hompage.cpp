@@ -50,6 +50,7 @@ HomPage::HomPage(WidgetI *parent):
     setUserStyle(userStyle());
 
     slotEventComboxIndexChanged(0);
+    eventBackW_->hide();
 }
 
 void HomPage::setUserStyle(int s)

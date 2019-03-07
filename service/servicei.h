@@ -302,6 +302,7 @@ public:
     {
         QString name;
         QString id;
+        QString taggingKey;
         QString personTypeNo;
         QString personTypeName;
         QString groupNo;

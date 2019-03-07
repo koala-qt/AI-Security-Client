@@ -14,6 +14,9 @@ public:
     VideoAnalysis(WidgetI *parent = nullptr);
     void setUserStyle(int s) override;
 
+protected:
+    bool eventFilter(QObject *watched, QEvent *event) override;
+
 private:
     RestServiceI *upLoadVideoService_{nullptr};
     QStackedWidget *stackedW_{nullptr};

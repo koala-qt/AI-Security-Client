@@ -3,7 +3,6 @@
 #include <QVBoxLayout>
 #include <QFileDialog>
 #include <QStandardPaths>
-#include <QPainter>
 #include "selectuploadvide.h"
 #include "service/servicei.h"
 #include "informationdialog.h"
@@ -66,15 +65,6 @@ void SelectUploadVide::setUserStyle(int s)
                                    "color: rgb(126,140,177);"
                                    "}");
     }
-}
-
-void SelectUploadVide::paintEvent(QPaintEvent *event)
-{
-    Q_UNUSED(event)
-    QPainter p(this);
-    p.setPen(Qt::NoPen);
-    p.setBrush(QColor(48,54,68));
-    p.drawRoundedRect(rect().adjusted(0,0,-p.pen().width(),-p.pen().width()),4,4);
 }
 
 void SelectUploadVide::slotUploadBtnClicked()

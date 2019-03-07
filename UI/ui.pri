@@ -53,7 +53,8 @@ HEADERS += \
     $$PWD/uploadvideoprogress.h \
     $$PWD/personitemwidget.h \
     $$PWD/multiplefaceanalysis.h \
-    $$PWD/personmark.h
+    $$PWD/personmark.h \
+    $$PWD/golbalviewwidget.h
 
 SOURCES += \
     $$PWD/videoplayback.cpp \
@@ -107,4 +108,5 @@ SOURCES += \
     $$PWD/uploadvideoprogress.cpp \
     $$PWD/personitemwidget.cpp \
     $$PWD/multiplefaceanalysis.cpp \
-    $$PWD/personmark.cpp
+    $$PWD/personmark.cpp \
+    $$PWD/golbalviewwidget.cpp

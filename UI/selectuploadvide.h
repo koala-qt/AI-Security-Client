@@ -11,9 +11,6 @@ public:
     SelectUploadVide(WidgetI *parent = nullptr);
     void setUserStyle(int s) override;
 
-protected:
-    void paintEvent(QPaintEvent *event) override;
-
 signals:
     void sigVideoSelected(QString);
 

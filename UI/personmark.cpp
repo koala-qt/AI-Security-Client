@@ -82,6 +82,12 @@ void PersonMark::slotOnPersonType(QVector<RestServiceI::PersonType> data)
     for(RestServiceI::PersonType &value :data){
         typeCombox_->addItem(value.strTypeName,value.strTypeNo);
         typeCombox_->setItemData(typeCombox_->count()-1,value.groupNo,Qt::UserRole + 1);
+        for(int j = 0; j < value.lstChildren.count(); j++){
+            if(value.lstChildren.at(j).strDescription == "tagging"){
+                typeCombox_->setItemData(typeCombox_->count()-1,value.lstChildren.at(j).strName,Qt::UserRole + 2);
+                break;
+            }
+        }
         QString groupNo = value.groupNo;
 
         ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
@@ -143,6 +149,7 @@ void PersonMark::slotSubmitBtnClicked()
     args.name = nameEdit_->text();
     args.personTypeName = typeCombox_->currentText();
     args.personTypeNo = typeCombox_->currentData().toString();
+    args.taggingKey = typeCombox_->currentData(Qt::UserRole + 2).toString();
     serviceI->personRegist(args);
     label->show(500);
 }

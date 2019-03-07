@@ -229,17 +229,17 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
             infoDialog.exec();
         }
     });
-//    dataMenu_->addAction(tr("Test register"),[this]{
-//        PersonMark markDialog;
-//        markDialog.setPhoto(dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>());
-//        QDialog::DialogCode returnCode = QDialog::DialogCode(markDialog.exec());
-//        if(returnCode == QDialog::Accepted){
-//            InformationDialog infoDialog(this);
-//            infoDialog.setUserStyle(0);
-//            infoDialog.setMessage(tr("Successed"));
-//            infoDialog.exec();
-//        }
-//    });
+    dataMenu_->addAction(tr("Test register"),[this]{
+        PersonMark markDialog;
+        markDialog.setPhoto(dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>());
+        QDialog::DialogCode returnCode = QDialog::DialogCode(markDialog.exec());
+        if(returnCode == QDialog::Accepted){
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(0);
+            infoDialog.setMessage(tr("Successed"));
+            infoDialog.exec();
+        }
+    });
     dataListW_->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(dataListW_,&QListWidget::customContextMenuRequested,this,[&](QPoint p){
         if(!dataListW_->itemAt(p))return;
@@ -299,7 +299,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     endTimeEdit_->setMinimumWidth(160);
     searchBtn_->setMinimumSize(120,44);
     pageIndicator_->setPageInfo(0,0);
-    personTypeVec_ << qMakePair(QString("All"),QVector<int>() << 1 << 2 << 3 << 6);
+    personTypeVec_ << qMakePair(QString("All"),QVector<int>() << 1 << 2 << 3 << 6 << 7);
     personTypeVec_ << qMakePair(QString("Semantic"),QVector<int>() << 0 << 1 << 2 << 3 << 5 << 6);
     personTypeVec_ << qMakePair(QString("Facelink"),QVector<int>() << 0 << 1 << 2 << 3 << 4 << 5 << 6);
     for(auto &v : personTypeVec_){

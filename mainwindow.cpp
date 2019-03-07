@@ -19,6 +19,7 @@
 #include "UI/eventsearch.h"
 #include "UI/reportpage.h"
 #include "UI/resourcemanagepage.h"
+#include "UI/golbalviewwidget.h"
 #include "UI/hompage.h"
 #include <QDebug>
 
@@ -44,6 +45,7 @@ MainWindow::MainWindow(WidgetI *parent)
     setUserStyle(userStyle());
 
     ResourceManagePage *resouPage = new ResourceManagePage;
+    m_centerW->addWidget(new GolbalViewWidget());
     m_centerW->addWidget(new HomPage());
     m_centerW->addWidget(new RealtimeMonitoring());
     m_centerW->addWidget(new EventSearch());
@@ -108,9 +110,9 @@ MainWindow::MainWindow(WidgetI *parent)
     setLayout(mainLay);
     connect(m_topList,SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(slotItemClicked(QListWidgetItem*)));
     connect(m_topList,SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),this,SLOT(slotCurentItemChanged(QListWidgetItem*,QListWidgetItem*)));
-    m_topList->itemClicked(m_topList->item(1));
-    m_topList->setCurrentRow(1);
-    m_topList->currentItemChanged(m_topList->item(1),nullptr);
+    m_topList->itemClicked(m_topList->item(0));
+    m_topList->setCurrentRow(0);
+    m_topList->currentItemChanged(m_topList->item(0),nullptr);
 }
 
 MainWindow::~MainWindow()

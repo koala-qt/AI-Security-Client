@@ -386,12 +386,14 @@ void PortraitSearch::init()
     m_txtID->setValidator(new QIntValidator(0, 500000, this));
     bottomHlay->addWidget(m_txtID);
     m_pLabName = new QLabel(tr("Name"));
+    m_pLabName->setMinimumWidth(47);
     bottomHlay->addWidget(m_pLabName);
     m_pTxtName = new QLineEdit;
     m_pTxtName->setMaxLength(50);
     bottomHlay->addWidget(m_pTxtName);
     // 3.1 add
     m_pLabLimit = new QLabel(tr("Top"));
+    m_pLabLimit->setMinimumWidth(38);
     bottomHlay->addWidget(m_pLabLimit);
     m_pLimitCombo = new QComboBox;
     bottomHlay->addWidget(m_pLimitCombo);
