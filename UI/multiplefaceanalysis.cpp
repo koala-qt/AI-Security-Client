@@ -50,7 +50,7 @@ void MultipleFaceAnalysis::setUserStyle(int style)
         QString commStyle = "font:16px;color:#7E8CB1;font-family:PingFang SC Regular;";
         m_pLabID->setStyleSheet(commStyle);
         m_txtID->setStyleSheet("width:150px;max-width:250px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;");
-        m_pLabName->setStyleSheet(commStyle);
+        m_pLabName->setStyleSheet("font:16px;color:#7E8CB1;font-family:PingFang SC Regular;width:40px;");
         m_pTxtName->setStyleSheet(m_txtID->styleSheet());
         m_pLabSimilary->setStyleSheet(commStyle);
         m_pTxtSimilary->setStyleSheet("width:70px;max-width:250px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;");
