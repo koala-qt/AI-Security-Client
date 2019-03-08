@@ -2,6 +2,7 @@
 #define GOLBALVIEWWIDGET_H
 
 #include "widgetinterface.h"
+#include "service/servicei.h"
 
 QT_FORWARD_DECLARE_CLASS(QWidget)
 QT_FORWARD_DECLARE_CLASS(QLabel)
@@ -18,8 +19,13 @@ public:
     GolbalViewWidget(WidgetI *parent = nullptr);
     void setUserStyle(int style) override;
 
+protected:
+    bool event(QEvent *event) override;
+
 private:
     void init();
+
+    void queryTopStatistics();
 
 private:
     QWidget *m_topWgt{nullptr};

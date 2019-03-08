@@ -7,10 +7,13 @@
 #include <QPushButton>
 #include <QGridLayout>
 #include <QWidget>
+#include <QApplication>
 
-#include <UI/globalview/bottomstatisticswebview.h>
-#include <UI/globalview/leftstatisticswebview.h>
-#include <UI/globalview/rightstatisticswebview.h>
+#include "UI/globalview/bottomstatisticswebview.h"
+#include "UI/globalview/leftstatisticswebview.h"
+#include "UI/globalview/rightstatisticswebview.h"
+#include "waitinglabel.h"
+#include "informationdialog.h"
 
 GolbalViewWidget::GolbalViewWidget(WidgetI *parent):
     WidgetI(parent)
@@ -29,6 +32,16 @@ void GolbalViewWidget::setUserStyle(int style)
         //m_btnDate->setStyleSheet("background-color:#41495C;");
         m_pMidWgt->setStyleSheet("background-color:#41495C;min-height:600px;");
     }
+}
+
+bool GolbalViewWidget::event(QEvent *event)
+{
+    if ((event->type() == QEvent::Show))
+    {
+        queryTopStatistics();
+        return true;
+    }
+    return WidgetI::event(event);
 }
 
 void GolbalViewWidget::init()
@@ -95,4 +108,30 @@ void GolbalViewWidget::init()
     hLay->addWidget(m_pRightWeb);
     mainVLay->addStretch();
 
+}
+
+void GolbalViewWidget::queryTopStatistics()
+{
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
+    WaitingLabel *label = new WaitingLabel(this);
+    connect(serviceI, &RestServiceI::sigError, this, [this, label](const QString str){
+        label->close();
+        delete label;
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(userStyle());
+        infoDialog.setMessage(str);
+        infoDialog.exec();
+    });
+    connect(serviceI, &RestServiceI::sigGLViewTopStatisResult, this, [&, label](const RestServiceI::GLViewTopStatistics value){
+        m_labLocationAccess->setText(value.strLocationAccess);
+        m_labCameraAccess->setText(value.strCameraAccess);
+        m_labIDNumbers->setText(value.strTotalIDNumbers);
+        m_labDataStorage->setText(value.strDataStorage);
+        label->close();
+        delete label;
+
+    });
+    serviceI->queryGLViewTopStatistics("2019-03-02");
+    label->show(500);
 }

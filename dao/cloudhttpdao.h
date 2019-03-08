@@ -43,6 +43,8 @@ public:
     // M:N Added by aihc
     QString mnFaceAnalysisSearch(RestServiceI::MNFaceAnalysisArgs &args, QVector<RestServiceI::MNFaceAnalysisItem> *resVec);
 
+    QString queryGLViewTopStatistics(QString &strDay, RestServiceI::GLViewTopStatistics *resVec);
+
 protected:
     int progress(double totalDownLoad,double downloaded,double totalUpload, double uploaded) override;
 
