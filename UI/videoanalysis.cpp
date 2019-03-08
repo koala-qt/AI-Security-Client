@@ -32,11 +32,15 @@ VideoAnalysis::VideoAnalysis(WidgetI *parent):
     videoDataW_->installEventFilter(this);
     connect(selectVideoW_,SIGNAL(sigVideoSelected(QString)),this,SLOT(slotFileSelected(QString)));
     connect(progressW_,SIGNAL(sigCancelBtnClicked()),this,SLOT(slotCancelUPload()));
+    connect(stackedW_,SIGNAL(currentChanged(int)),this,SLOT(slotCurrenIndexChanged(int)));
+    setUserStyle(userStyle());
 }
 
 void VideoAnalysis::setUserStyle(int s)
 {
+    if(s == 0){
 
+    }
 }
 
 bool VideoAnalysis::eventFilter(QObject *watched, QEvent *event)
@@ -87,5 +91,13 @@ void VideoAnalysis::slotCancelUPload()
 {
     if(upLoadVideoService_){
         upLoadVideoService_->cancelRequest();
+    }
+}
+
+void VideoAnalysis::slotCurrenIndexChanged(int index)
+{
+    if(index == 2){
+        NotifyServiceI* notifyServiceI_ = reinterpret_cast<NotifyServiceI*>(qApp->property("NotifyServiceI").toULongLong());
+        connect(notifyServiceI_,SIGNAL(sigVideoFacePicture(QString,QImage)),videoDataW_,SLOT(slotVideoAnalysisData(QString,QImage)));
     }
 }

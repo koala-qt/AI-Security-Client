@@ -229,7 +229,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
             infoDialog.exec();
         }
     });
-    dataMenu_->addAction(tr("Test register"),[this]{
+    dataMenu_->addAction(tr("Register portrait"),[this]{
         PersonMark markDialog;
         markDialog.setPhoto(dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>());
         QDialog::DialogCode returnCode = QDialog::DialogCode(markDialog.exec());

@@ -43,13 +43,23 @@ UploadVideoProgress::UploadVideoProgress(WidgetI *parent):
 
 void UploadVideoProgress::setUserStyle(int s)
 {
+    QPalette pal;
     if(s == 0){
+        pal = videoNameL_->palette();
+        pal.setColor(QPalette::Foreground,QColor(126,140,177));
+        videoNameL_->setPalette(pal);
+        progressL_->setPalette(pal);
+
+        cancelBtn_->setStyleSheet("QPushButton{"
+                                  "background: transparent;"
+                                  "color: rgb(126,140,177);"
+                                  "}");
         progressBar_->setStyleSheet("QProgressBar {"
-                                    "border: 2px solid grey;"
-                                    "border-radius: 5px;"
+                                    "border: none;"
+                                    "border-radius: 0px;"
                                     "}"
                                     "QProgressBar::chunk {"
-                                    "background-color: #05B8CC;"
+                                    "background-color: #4741F2;"
                                     "width: 20px;}");
     }
 }

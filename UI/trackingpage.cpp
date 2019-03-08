@@ -152,7 +152,7 @@ void TrackingPage::setImgageOid(QImage img, QString oid)
     curOid_ = oid;
     QPixmap pix = QPixmap::fromImage(img.scaled(imgBtn_->iconSize()));
     imgBtn_->setIcon(pix);
-    imgBtn_->setProperty("pixmap",pix);
+    imgBtn_->setProperty("pixmap",QPixmap::fromImage(img));
 }
 
 void TrackingPage::getCameraInfo()

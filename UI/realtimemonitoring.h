@@ -26,8 +26,6 @@ public:
     void setUserStyle(int s) override;
 
 protected:
-//    bool event(QEvent *event) override;
-    void resizeEvent(QResizeEvent *event) override;
     bool eventFilter(QObject *watched, QEvent *event)override;
 
 private:
@@ -43,7 +41,7 @@ private:
 
     QSize eventItemSize_;
     QString faceItemStyleSheet_;
-    QSize m_faceItemSize,m_eventItemSize;
+    QSize m_faceItemSize;
     QMenu *faceItemMenu_{nullptr},*eventItemMenu_{nullptr};
     NotifyServiceI *notifyServiceI_{nullptr};
     QMap<QString,QString> curCameraMap_;

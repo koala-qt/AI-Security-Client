@@ -44,13 +44,13 @@ MainWindow::MainWindow(WidgetI *parent)
     m_topList->setFlow(QListWidget::LeftToRight);
     setUserStyle(userStyle());
 
-    ResourceManagePage *resouPage = new ResourceManagePage;
     m_centerW->addWidget(new GolbalViewWidget());
     m_centerW->addWidget(new HomPage());
     m_centerW->addWidget(new RealtimeMonitoring());
     m_centerW->addWidget(new EventSearch());
     m_centerW->addWidget(new TargetSearch());
     m_centerW->addWidget(new ReportPage());
+    ResourceManagePage *resouPage = new ResourceManagePage;
     m_centerW->addWidget(resouPage);
 
     int viewW = 0;
@@ -77,22 +77,33 @@ MainWindow::MainWindow(WidgetI *parent)
         item->setData(Qt::UserRole + 1,QPixmap::fromImage(iconSelectedImage));
         item->setIcon(QPixmap::fromImage(iconDefaultImage));
         item->setTextAlignment(Qt::AlignLeft + Qt::AlignVCenter);
-        item->setSizeHint(QSize(topListfs.width(item->text()) + 40 + m_topList->iconSize().width(),80));
+        item->setSizeHint(QSize(topListfs.width(item->text()) + 40 + m_topList->iconSize().width(),-1));
         viewW += item->sizeHint().width();
         m_topList->addItem(item);
     }
     resourceXialaMenu_->setMinimumWidth(m_topList->item(m_topList->count() - 1)->sizeHint().width());
-    m_topList->setFixedWidth(viewW + (m_topList->count() + 1) * m_topList->spacing() + 2 * m_topList->frameWidth());
-    QAction *ac = resourceXialaMenu_->addAction(tr("Devices"),[this,resouPage,ac]{
-        m_centerW->setCurrentIndex(5);
+    m_topList->setMinimumWidth(viewW + (m_topList->count() + 1) * m_topList->spacing() + 2 * m_topList->frameWidth());
+    QAction *ac = new QAction(tr("Devices"),resourceXialaMenu_);
+    ac->setData(m_centerW->count() - 1);
+    connect(ac,&QAction::triggered,resourceXialaMenu_,[this,ac,resouPage]{
+        m_centerW->setCurrentIndex(ac->data().toInt());
         resouPage->loadWebPage(0);
     });
+    resourceXialaMenu_->addAction(ac);
+    ac = new QAction(tr("Persons"),resourceXialaMenu_);
     ac->setData(m_centerW->count() - 1);
-    ac = resourceXialaMenu_->addAction(tr("Persons"),[this,resouPage,ac]{
-        m_centerW->setCurrentIndex(5);
+    connect(ac,&QAction::triggered,resourceXialaMenu_,[this,ac,resouPage]{
+        m_centerW->setCurrentIndex(ac->data().toInt());
         resouPage->loadWebPage(1);
     });
+    resourceXialaMenu_->addAction(ac);
+    ac = new QAction(tr("Mark"),resourceXialaMenu_);
     ac->setData(m_centerW->count() - 1);
+    connect(ac,&QAction::triggered,resourceXialaMenu_,[this,ac,resouPage]{
+        m_centerW->setCurrentIndex(ac->data().toInt());
+        resouPage->loadWebPage(2);
+    });
+    resourceXialaMenu_->addAction(ac);
 
     QHBoxLayout *hlay = new QHBoxLayout;
     hlay->addWidget(logoLabel_);
@@ -101,7 +112,6 @@ MainWindow::MainWindow(WidgetI *parent)
     hlay->addWidget(m_topList);
     hlay->setContentsMargins(15, 0, 0, 0);
     topWgt_->setLayout(hlay);
-    topWgt_->setMaximumHeight(80);
     mainLay->addWidget(topWgt_,1);
     mainLay->addWidget(topBorderLine_);
     mainLay->addWidget(m_centerW,16);
@@ -187,28 +197,13 @@ void MainWindow::setUserStyle(int s)
     }
 }
 
-#ifdef USERESIZE
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
-    Q_UNUSED(event)
-#ifdef FULLTOP
     for(int i = 0; i < m_topList->count(); i++){
-        QListWidgetItem *item = m_topList->item(i);
-        item->setSizeHint(QSize((m_topList->width() - m_topList->frameWidth() * 2) / m_topList->count(),m_topList->height() - m_topList->frameWidth() * 2));
+        m_topList->item(i)->setSizeHint(QSize(m_topList->item(i)->sizeHint().width(),m_topList->height() - 2 * m_topList->frameWidth()));
     }
-#else
-
-    int itemW = m_topList->width() * 0.75 / m_topList->count();
-    resourceXialaMenu_->setMinimumWidth(itemW);
-    for(int i = 0; i < m_topList->count(); i++){
-        QListWidgetItem *item = m_topList->item(i);
-        item->setSizeHint(QSize(itemW,m_topList->height() - 2 * m_topList->frameWidth() - 2 * m_topList->spacing()));
-        qDebug() << item->sizeHint().height() << "ttttttttttttttttttttttttttttttttttt";
-    }
-    qDebug() << m_topList->height() << "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
-#endif
+    return WidgetI::resizeEvent(event);
 }
-#endif
 
 void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
 {
@@ -223,7 +218,7 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
 void MainWindow::slotItemClicked(QListWidgetItem *item)
 {
     int index = m_topList->row(item);
-    if(index == 5){
+    if(index == m_topList->count() - 1){
         resourceXialaMenu_->move(m_topList->mapToGlobal(QPoint(m_topList->width() - m_topList->item(m_topList->count() - 1)->sizeHint().width(),m_topList->height())));
         resourceXialaMenu_->show();
     }else{

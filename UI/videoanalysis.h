@@ -27,6 +27,7 @@ private:
 private slots:
     void slotFileSelected(QString);
     void slotCancelUPload();
+    void slotCurrenIndexChanged(int);
 };
 
 #endif // VIDEOANALYSIS_H

@@ -113,15 +113,18 @@ void SceneImageDialog::setSceneInfo(const RestServiceI::SceneInfo &sinfo)
 #ifdef USERECTIMAGE
     curScenInfo_ = sinfo;
     rectesImgArea_->setInfos(curScenInfo_.image,sinfo.faceRectVec,sinfo.bodyRectVec);
+    if(sinfo.faceRectVec.isEmpty()){
+        searchBtn_->hide();
+    }
 #else
     selectAreaW_->setBackImage(sinfo.image);
 #endif
 }
 
-void SceneImageDialog::setRectLinePen(QColor c)
+void SceneImageDialog::setRectLinePen(QColor c, QColor b)
 {
 #ifdef USERECTIMAGE
-    rectesImgArea_->setRectLineColor(c);
+    rectesImgArea_->setRectLineColor(c,b);
 #else
     QPalette pal = selectAreaW_->palette();
     pal.setColor(QPalette::Foreground,c);

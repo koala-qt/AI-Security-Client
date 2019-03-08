@@ -21,9 +21,7 @@ public:
     void setUserStyle(int s = 0);
 
 protected:
-#ifdef USERESIZE
-    void resizeEvent(QResizeEvent *event) override;
-#endif
+    void resizeEvent(QResizeEvent *event)override;
     void mouseDoubleClickEvent(QMouseEvent *event) override;
 
 private:

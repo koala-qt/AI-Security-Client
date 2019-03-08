@@ -7,9 +7,9 @@
 #include <QStandardPaths>
 #include <QFileDialog>
 #include <QScrollBar>
+#include <QPainter>
 #include "videoanalysisdata.h"
 #include "personmark.h"
-#include "service/servicei.h"
 #include "informationdialog.h"
 #include "facelinkpage.h"
 #include "trackingpage.h"
@@ -28,76 +28,91 @@ VideoAnalysisData::VideoAnalysisData(WidgetI *parent):
     topVLay->addWidget(titleTextL_);
     topVLay->addWidget(countTextL_);
     topVLay->setAlignment(Qt::AlignLeft);
+    topVLay->setContentsMargins(40,40,0,10);
     mainLay->addLayout(topVLay);
     mainLay->addWidget(dataListW_);
+    dataListW_->setSpacing(20);
+    mainLay->setContentsMargins(0,0,0,0);
     setLayout(mainLay);
 
+    dataListW_->setFrameStyle(QFrame::NoFrame);
     setUserStyle(userStyle());
-    NotifyServiceI* notifyServiceI_ = reinterpret_cast<NotifyServiceI*>(qApp->property("NotifyServiceI").toULongLong());
-    connect(notifyServiceI_,SIGNAL(sigVideoFacePicture(QString,QImage)),this,SLOT(slotVideoAnalysisData(QString,QImage)));
 }
 
 void VideoAnalysisData::setUserStyle(int s)
 {
+    QPalette pal;
     if(s == 0){
+        pal = titleTextL_->palette();
+        pal.setColor(QPalette::Foreground,QColor(126,140,177));
+        titleTextL_->setPalette(pal);
+        countTextL_->setPalette(pal);
+
         dataListW_->setStyleSheet("QListWidget{"
                                   "background: transparent;"
                                   "font: 11px;"
                                   "color: white;"
                                   "}");
-        dataListW_->verticalScrollBar()->setStyleSheet(
-                                                    "QScrollBar:vertical{"
-                                                    "background: transparent;"
-                                                    "border: 0px solid gray;"
-                                                    "width: 13px;"
-                                                    "}"
-                                                    "QScrollBar::handle:vertical{"
-                                                    "background: rgba(255,255,255,0.5);"
-                                                    "border-radius: 5px;"
-                                                    "}"
-                                                    "QScrollBar::add-line:vertical{"
-                                                    "background: transparent;"
-                                                    "border:0px solid #274168;"
-                                                    "border-radius: 5px;"
-                                                    "min-height: 10px;"
-                                                    "width: 13px;"
-                                                    "}"
-                                                    "QScrollBar::sub-line:vertical{"
-                                                    "background: transparent;"
-                                                    "border:0px solid #274168;"
-                                                    "min-height: 10px;"
-                                                    "width: 13px;"
-                                                    "}"
-                                                    "QScrollBar::up-arrow:vertical{"
-                                                    "subcontrol-origin: margin;"
-                                                    "height: 0px;"
-                                                    "border:0 0 0 0;"
-                                                    "visible:false;"
-                                                    "}"
-                                                    "QScrollBar::down-arrow:vertical{"
-                                                    "subcontrol-origin: margin;"
-                                                    "height: 0px;"
-                                                    "visible:false;"
-                                                    "}"
-                                                    "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
-                                                    "background: transparent;"
-                                                    "border: none;"
-                                                    "border-radius: 0px;"
-                                                    "}");
+        dataListW_->verticalScrollBar()->setStyleSheet("QScrollBar:vertical{"
+                                                       "background: transparent;"
+                                                       "border: 0px solid gray;"
+                                                       "width: 13px;"
+                                                       "}"
+                                                       "QScrollBar::handle:vertical{"
+                                                       "background: rgba(255,255,255,0.5);"
+                                                       "border-radius: 5px;"
+                                                       "}"
+                                                       "QScrollBar::add-line:vertical{"
+                                                       "background: transparent;"
+                                                       "border:0px solid #274168;"
+                                                       "border-radius: 5px;"
+                                                       "min-height: 10px;"
+                                                       "width: 13px;"
+                                                       "}"
+                                                       "QScrollBar::sub-line:vertical{"
+                                                       "background: transparent;"
+                                                       "border:0px solid #274168;"
+                                                       "min-height: 10px;"
+                                                       "width: 13px;"
+                                                       "}"
+                                                       "QScrollBar::up-arrow:vertical{"
+                                                       "subcontrol-origin: margin;"
+                                                       "height: 0px;"
+                                                       "border:0 0 0 0;"
+                                                       "visible:false;"
+                                                       "}"
+                                                       "QScrollBar::down-arrow:vertical{"
+                                                       "subcontrol-origin: margin;"
+                                                       "height: 0px;"
+                                                       "visible:false;"
+                                                       "}"
+                                                       "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
+                                                       "background: transparent;"
+                                                       "border: none;"
+                                                       "border-radius: 0px;"
+                                                       "}");
     }
 }
-
+#include <QDebug>
 void VideoAnalysisData::slotVideoAnalysisData(QString personId, QImage img)
 {
-    if(!personInfoMap_.contains(personId)){
-        QListWidgetItem *item = new QListWidgetItem;
+    QList<QListWidgetItem*> itemsList = dataListW_->findItems(personId,Qt::MatchFixedString);
+    QListWidgetItem *item = nullptr;
+    if(itemsList.isEmpty()){
+        item = new QListWidgetItem;
+        item->setText(personId);
+        item->setForeground(Qt::transparent);
         dataListW_->addItem(item);
         PersonInfo *personInfoW = new PersonInfo;
         dataListW_->setItemWidget(item,personInfoW);
-        personInfoMap_.insert(personId,personInfoW);
-        item->setSizeHint(QSize(dataListW_->width() - style()->pixelMetric(QStyle::PM_ScrollBarSliderMin),500));
+    }else{
+        item = itemsList.first();
     }
-    personInfoMap_.value(personId)->addItem(personId,img);
+
+    countTextL_->setText(tr("Alerady analyzed %1 persons").arg(dataListW_->count()));
+    PersonInfo *itemW = qobject_cast<PersonInfo*>(dataListW_->itemWidget(item));
+    itemW->addItem(personId,img);
+    item->setSizeHint(QSize(dataListW_->width() - style()->pixelMetric(QStyle::PM_ScrollBarSliderMin) - dataListW_->spacing() * 2,itemW->dynamicHeight()));
 }
 
 PersonInfo::PersonInfo(WidgetI *parent):
@@ -113,7 +128,10 @@ PersonInfo::PersonInfo(WidgetI *parent):
     gridLay->addWidget(personOrderL_,0,1,1,1);
     gridLay->addWidget(personImgCountL_,1,1,1,1);
     gridLay->setAlignment(Qt::AlignLeft);
+    gridLay->setContentsMargins(20,30,0,12);
     mainLay->addLayout(gridLay);
+    imgListW_->setContentsMargins(0,0,0,0);
+    imgListW_->setSpacing(18);
     mainLay->addWidget(imgListW_);
     setLayout(mainLay);
 
@@ -174,7 +192,7 @@ PersonInfo::PersonInfo(WidgetI *parent):
         view->setWindowFlags(Qt::Window | Qt::Dialog);
         view->setWindowModality(Qt::ApplicationModal);
         view->setMinimumSize(1655,924);
-        view->setImgageOid(imgListW_->currentItem()->data(Qt::UserRole).value<QImage>(),"");
+        view->setImgageOid(imgListW_->currentItem()->data(Qt::UserRole).value<QImage>(),QString());
         view->show();
     });
 
@@ -212,53 +230,63 @@ PersonInfo::PersonInfo(WidgetI *parent):
     imgListW_->setFlow(QListWidget::LeftToRight);
     imgListW_->setMovement(QListWidget::Static);
     imgListW_->setViewMode(QListWidget::IconMode);
+    imgListW_->setResizeMode(QListWidget::Adjust);
     imgListW_->setIconSize(QSize(112,112));
     imgListW_->setFrameStyle(QFrame::NoFrame);
+    imgListW_->installEventFilter(this);
     setUserStyle(userStyle());
 }
 
 void PersonInfo::setUserStyle(int s)
 {
     if(s == 0){
-        imgListW_->verticalScrollBar()->setStyleSheet(
-                    "QScrollBar:vertical{"
-                    "background: transparent;"
-                    "border: 0px solid gray;"
-                    "width: 13px;"
-                    "}"
-                    "QScrollBar::handle:vertical{"
-                    "background: rgba(255,255,255,0.5);"
-                    "border-radius: 5px;"
-                    "}"
-                    "QScrollBar::add-line:vertical{"
-                    "background: transparent;"
-                    "border:0px solid #274168;"
-                    "border-radius: 5px;"
-                    "min-height: 10px;"
-                    "width: 13px;"
-                    "}"
-                    "QScrollBar::sub-line:vertical{"
-                    "background: transparent;"
-                    "border:0px solid #274168;"
-                    "min-height: 10px;"
-                    "width: 13px;"
-                    "}"
-                    "QScrollBar::up-arrow:vertical{"
-                    "subcontrol-origin: margin;"
-                    "height: 0px;"
-                    "border:0 0 0 0;"
-                    "visible:false;"
-                    "}"
-                    "QScrollBar::down-arrow:vertical{"
-                    "subcontrol-origin: margin;"
-                    "height: 0px;"
-                    "visible:false;"
-                    "}"
-                    "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
-                    "background: transparent;"
-                    "border: none;"
-                    "border-radius: 0px;"
-                    "}");
+        personOrderL_->setStyleSheet("QLabel{"
+                                     "color: rgb(126,140,177);"
+                                     "}");
+        personImgCountL_->setStyleSheet("QLabel{"
+                                        "color: rgb(126,140,177);"
+                                        "}");
+        imgListW_->setStyleSheet("QListWidget{"
+                                 "color: rgb(126,140,177);"
+                                 "}");
+        imgListW_->verticalScrollBar()->setStyleSheet("QScrollBar:vertical{"
+                                                      "background: transparent;"
+                                                      "border: 0px solid gray;"
+                                                      "width: 13px;"
+                                                      "}"
+                                                      "QScrollBar::handle:vertical{"
+                                                      "background: rgba(255,255,255,0.5);"
+                                                      "border-radius: 5px;"
+                                                      "}"
+                                                      "QScrollBar::add-line:vertical{"
+                                                      "background: transparent;"
+                                                      "border:0px solid #274168;"
+                                                      "border-radius: 5px;"
+                                                      "min-height: 10px;"
+                                                      "width: 13px;"
+                                                      "}"
+                                                      "QScrollBar::sub-line:vertical{"
+                                                      "background: transparent;"
+                                                      "border:0px solid #274168;"
+                                                      "min-height: 10px;"
+                                                      "width: 13px;"
+                                                      "}"
+                                                      "QScrollBar::up-arrow:vertical{"
+                                                      "subcontrol-origin: margin;"
+                                                      "height: 0px;"
+                                                      "border:0 0 0 0;"
+                                                      "visible:false;"
+                                                      "}"
+                                                      "QScrollBar::down-arrow:vertical{"
+                                                      "subcontrol-origin: margin;"
+                                                      "height: 0px;"
+                                                      "visible:false;"
+                                                      "}"
+                                                      "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
+                                                      "background: transparent;"
+                                                      "border: none;"
+                                                      "border-radius: 0px;"
+                                                      "}");
         menu_->setStyleSheet("QMenu{"
                              "background-color: rgb(75,75,75);"
                              "}"
@@ -266,6 +294,19 @@ void PersonInfo::setUserStyle(int s)
                              "background-color: rgba(255,255,255,0.4);"
                              "}");
     }
+}
+
+int PersonInfo::dynamicHeight()
+{
+    int mHeight = height();
+    int rowCount = imgListW_->count() / itemCount_ + 1;
+    if(rowCount > 1 && (lastRowCount_ != rowCount)){
+        mHeight = height() + itemH_ + imgListW_->spacing();
+    }
+    lastRowCount_ = rowCount;
+    if(mHeight < 365)
+        mHeight = 365;
+    return mHeight;
 }
 
 void PersonInfo::addItem(QString s, QImage img)
@@ -276,6 +317,10 @@ void PersonInfo::addItem(QString s, QImage img)
     item->setIcon(QPixmap::fromImage(img));
     item->setData(Qt::UserRole,img);
     imgListW_->addItem(item);
+
+    if(!itemH_){
+        itemH_ = imgListW_->sizeHintForRow(0);
+    }
 
     if(!headImgL_->pixmap()){
         headImgL_->setPixmap(QPixmap::fromImage(img));
@@ -290,4 +335,21 @@ void PersonInfo::clearItems()
     personImgCountL_->clear();
     personOrderL_->clear();
     imgListW_->clear();
+}
+
+void PersonInfo::paintEvent(QPaintEvent *event)
+{
+    Q_UNUSED(event)
+    QPainter p(this);
+    p.setPen(QColor(194,207,249,51));
+    p.drawRoundedRect(rect().adjusted(0,0,-p.pen().width(),-p.pen().width()),4,4);
+}
+
+bool PersonInfo::eventFilter(QObject *watched, QEvent *event)
+{
+    QWidget *watchW = qobject_cast<QWidget*>(watched);
+    if(watchW == imgListW_ && event->type() == QEvent::Resize){
+        itemCount_ = (imgListW_->width() -  imgListW_->spacing() - 2 * imgListW_->frameWidth()) / (imgListW_->sizeHintForColumn(0) + imgListW_->spacing());
+    }
+    return WidgetI::eventFilter(watched,event);
 }

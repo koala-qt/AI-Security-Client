@@ -19,7 +19,7 @@ public:
     SceneImageDialog(QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
     void setShowRect(bool face, bool body);
     void setSceneInfo(const RestServiceI::SceneInfo &sinfo);
-    void setRectLinePen(QColor);
+    void setRectLinePen(QColor, QColor b = QColor(255,0,255));
     void setUserStyle(int);
 
 signals:

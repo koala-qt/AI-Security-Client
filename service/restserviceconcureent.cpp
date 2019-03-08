@@ -39,7 +39,7 @@ void RestConcurrent::combinationSearch(CombinationSearchArgs &args)
     fwatcher->setFuture(QtConcurrent::run(curlRest_,&DLL::CloudHttpDao::combinationSearch,args,resData));
 }
 
-void RestConcurrent::getSceneInfo(const QString old)
+void RestConcurrent::getSceneInfo(const QString oid, const QString alarmBoyId)
 {
     SceneInfo *sceneInfo = new SceneInfo;
     QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>(this);
@@ -52,7 +52,7 @@ void RestConcurrent::getSceneInfo(const QString old)
         delete sceneInfo;
     });
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
-    fwatcher->setFuture(QtConcurrent::run(curlRest_,&DLL::CloudHttpDao::getSceneInfo,old,sceneInfo));
+    fwatcher->setFuture(QtConcurrent::run(curlRest_,&DLL::CloudHttpDao::getSceneInfo,oid,alarmBoyId,sceneInfo));
 }
 
 void RestConcurrent::getFaceLinkDataColl(FaceLinkDataCollArgs &args)

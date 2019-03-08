@@ -89,7 +89,7 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
         faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
         faceDialog->setWindowModality(Qt::ApplicationModal);
         QPalette pal = faceDialog->palette();
-        pal.setColor(QPalette::Background,QColor(112,110,119));
+        pal.setColor(QPalette::Background,QColor(37,41,52));
         faceDialog->setPalette(pal);
         faceDialog->setAutoFillBackground(true);
         faceDialog->setUserStyle(userStyle());
@@ -136,9 +136,15 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
         ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
         RestServiceI *serviceI = factoryI->makeRestServiceI();
         WaitingLabel *label = new WaitingLabel(this);
-        connect(serviceI,&RestServiceI::sigSceneInfo,this,[this,label](RestServiceI::SceneInfo sinfo){
+        QPolygonF zone = eventList_->currentItem()->data(Qt::UserRole + 2).value<QPolygonF>();
+        QColor co = eventList_->currentItem()->data(Qt::UserRole + 3).value<QColor>();
+        connect(serviceI,&RestServiceI::sigSceneInfo,this,[=](RestServiceI::SceneInfo sinfo){
             label->close();
             delete label;
+            QPainter p(&sinfo.image);
+            p.setPen(Qt::NoPen);
+            p.setBrush(co);
+            p.drawPolygon(zone);
             slotOnSceneInfo(sinfo);
             faceItemMenu_->setEnabled(true);
         });
@@ -153,7 +159,7 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
         });
         label->show(800);
         faceItemMenu_->setEnabled(false);
-        serviceI->getSceneInfo(eventList_->currentItem()->data(Qt::UserRole + 1).toString());
+        serviceI->getSceneInfo(eventList_->currentItem()->data(Qt::UserRole + 1).toString(),eventList_->currentItem()->data(Qt::UserRole + 4).toString());
     });
     eventList_->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(eventList_,&QListWidget::customContextMenuRequested,this,[&](const QPoint &p){
@@ -189,13 +195,14 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
     complterModel_->setColumnCount(1);
     cpter->setModel(complterModel_);
     cpter->setCompletionColumn(0);
-//    cpter->setFilterMode(Qt::MatchStartsWith);
-//    cpter->setModelSorting(QCompleter::CaseSensitivelySortedModel);
+    cpter->setCaseSensitivity(Qt::CaseInsensitive);
+    cpter->setFilterMode(Qt::MatchContains);
     connect(cpter, static_cast<void(QCompleter::*)(const QModelIndex &)>(&QCompleter::activated),[=](const QModelIndex &index){
         QTreeWidgetItem *item = reinterpret_cast<QTreeWidgetItem*>(index.data(Qt::UserRole + 1).toULongLong());
         m_treeW->scrollToItem(item);
         m_treeW->setCurrentItem(item);
     });
+    m_treeW->setFocusPolicy(Qt::NoFocus);
     posEdit_->setCompleter(cpter);
     posEdit_->setMinimumHeight(36);
     posEdit_->setPlaceholderText(tr("Search"));
@@ -220,8 +227,6 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
     getCameraDevice(nullptr,"1005");
     getCameraGroup(nullptr,"1005");
 #endif
-//    eventItemSize_.setWidth(640);
-//    eventItemSize_.setHeight(960);
     slotEventComboxIndexChanged(0);
 }
 
@@ -254,9 +259,16 @@ void RealtimeMonitoring::setUserStyle(int s)
                                "font-size: 16px;"
                                "color: #CECECE;"
                                "border-radius: 10px;"
-                               "background-color: rgb(46,52,65);}");
-        m_treeW->verticalScrollBar()->setStyleSheet(
-                                                    "QScrollBar:vertical{"
+                               "background-color: rgb(46,52,65);}"
+                               "QTreeView::item{"
+                               "color: rgb(126,140,177);"
+                               "border:none;"
+                               "}"
+                               "QTreeView::item:selected:!active {"
+                               "color: white;"
+                               "background: rgb(71,65,242);"
+                               "}");
+        m_treeW->verticalScrollBar()->setStyleSheet("QScrollBar:vertical{"
                                                     "background: transparent;"
                                                     "border-radius: 10px;"
                                                     "border: none;"
@@ -411,52 +423,6 @@ void RealtimeMonitoring::setUserStyle(int s)
     }
 }
 
-//bool RealtimeMonitoring::event(QEvent *event)
-//{
-//    if(event->type() == QEvent::Show){
-//        int imgItemH = (eventList_->height() - (EVENTITEMCOUNT + 1) * eventList_->spacing() - eventList_->frameWidth() * 2) / EVENTITEMCOUNT;
-//        int imgItemW = eventList_->width() - 2 * eventList_->spacing() - 2 * eventList_->frameWidth();
-//        eventItemSize_.setHeight(imgItemH);
-//        eventItemSize_.setWidth(imgItemW);
-//        for(int i = 0; i < eventList_->count(); i++){
-//            QListWidgetItem *item = eventList_->item(i);
-//            item->setSizeHint(eventItemSize_);
-//        }
-
-//        int faceItemW = (m_faceList->width() - (FACEITEMCOUNT + 1) * m_faceList->spacing() - m_faceList->frameWidth() * 2) / FACEITEMCOUNT;
-//        int faceItemH = m_faceList->height() - m_faceList->spacing() * 2 - m_faceList->frameWidth() * 2;
-//        m_faceItemSize = QSize(faceItemW,faceItemH);
-//        for(int i = 0; i < m_faceList->count(); i++){
-//            QListWidgetItem *item = m_faceList->item(i);
-//            item->setSizeHint(m_faceItemSize);
-//        }
-//    }
-
-//    return WidgetI::event(event);
-//}
-
-void RealtimeMonitoring::resizeEvent(QResizeEvent *event)
-{
-    int imgItemH = (eventList_->height() - (EVENTITEMCOUNT + 1) * eventList_->spacing() - eventList_->frameWidth() * 2) / EVENTITEMCOUNT;
-    int imgItemW = eventList_->width() - 2 * eventList_->spacing() - 2 * eventList_->frameWidth();
-    eventItemSize_.setHeight(imgItemH);
-    eventItemSize_.setWidth(imgItemW);
-    for(int i = 0; i < eventList_->count(); i++){
-        QListWidgetItem *item = eventList_->item(i);
-        item->setSizeHint(eventItemSize_);
-    }
-
-    int faceItemW = (m_faceList->width() - (FACEITEMCOUNT + 1) * m_faceList->spacing() - m_faceList->frameWidth() * 2) / FACEITEMCOUNT;
-    int faceItemH = m_faceList->height() - m_faceList->spacing() * 2 - m_faceList->frameWidth() * 2;
-    m_faceItemSize = QSize(faceItemW,faceItemH);
-    for(int i = 0; i < m_faceList->count(); i++){
-        QListWidgetItem *item = m_faceList->item(i);
-        item->setSizeHint(m_faceItemSize);
-    }
-
-    return  WidgetI::resizeEvent(event);
-}
-
 bool RealtimeMonitoring::eventFilter(QObject *watched, QEvent *event)
 {
     QWidget *watchWid = qobject_cast<QWidget*>(watched);
@@ -466,6 +432,23 @@ bool RealtimeMonitoring::eventFilter(QObject *watched, QEvent *event)
         p.setBrush(QColor(48,54,68));
         p.setRenderHint(QPainter::Antialiasing);
         p.drawRoundedRect(p.window().adjusted(0,0,-p.pen().width(),-p.pen().width()),4,4);
+    }else if(watchWid == eventBackW_ && event->type() == QEvent::Resize){
+        int imgItemH = (eventList_->height() - (EVENTITEMCOUNT + 1) * eventList_->spacing() - eventList_->frameWidth() * 2) / EVENTITEMCOUNT;
+        int imgItemW = eventList_->width() - 2 * eventList_->spacing() - 2 * eventList_->frameWidth();
+        eventItemSize_.setHeight(imgItemH);
+        eventItemSize_.setWidth(imgItemW);
+        for(int i = 0; i < eventList_->count(); i++){
+            QListWidgetItem *item = eventList_->item(i);
+            item->setSizeHint(eventItemSize_);
+        }
+    }else if(watchWid == faceCaptureBackW_ && event->type() == QEvent::Resize){
+        int faceItemW = (m_faceList->width() - (FACEITEMCOUNT + 1) * m_faceList->spacing() - m_faceList->frameWidth() * 2) / FACEITEMCOUNT;
+        int faceItemH = m_faceList->height() - m_faceList->spacing() * 2 - m_faceList->frameWidth() * 2;
+        m_faceItemSize = QSize(faceItemW,faceItemH);
+        for(int i = 0; i < m_faceList->count(); i++){
+            QListWidgetItem *item = m_faceList->item(i);
+            item->setSizeHint(m_faceItemSize);
+        }
     }
     return WidgetI::eventFilter(watched,event);
 }
@@ -513,6 +496,9 @@ void RealtimeMonitoring::getCameraDevice(QTreeWidgetItem *item, QString groupNo)
                 camera = new QTreeWidgetItem(m_treeW, QStringList() << info.cameraPos,1);
             }else{
                 camera = new QTreeWidgetItem(item, QStringList() << info.cameraPos,1);
+            }
+            if(info.isMonitor){
+                camera->setIcon(0,QPixmap("images/2.png"));
             }
             camera->setData(0,Qt::UserRole + 1, info.cameraId);
             camera->setData(0,Qt::UserRole + 2, info.rtsp);
@@ -597,6 +583,7 @@ void RealtimeMonitoring::slotTreeItemDoubleClicked(QTreeWidgetItem *item, int co
 
 void RealtimeMonitoring::slotAddFaceitem(NotifyPersonI::FaceSnapEventData faceEvData)
 {
+    if(!m_faceItemSize.isValid())return;
     if(m_faceList->count() >= FACEITEMCOUNT){
         QListWidgetItem *delItem = m_faceList->takeItem(FACEITEMCOUNT - 1);
         m_faceList->removeItemWidget(delItem);
@@ -637,6 +624,7 @@ void RealtimeMonitoring::slotAddFaceitem(NotifyPersonI::FaceSnapEventData faceEv
 
 void RealtimeMonitoring::slotOnIntruderEvent(NotifyEventI::IntruderEventData evData)
 {
+    if(!eventItemSize_.isValid())return;
     if(eventList_->count() >= EVENTITEMCOUNT){
         QListWidgetItem *delItem = eventList_->takeItem(EVENTITEMCOUNT - 1);
         eventList_->removeItemWidget(delItem);
@@ -647,6 +635,9 @@ void RealtimeMonitoring::slotOnIntruderEvent(NotifyEventI::IntruderEventData evD
     p.setBrush(QColor(200,0,0,100));
     p.drawPolygon(evData.warnZone);
     item->setData(Qt::UserRole + 1,evData.sceneId);
+    item->setData(Qt::UserRole + 2,evData.warnZone);
+    item->setData(Qt::UserRole + 3,QColor(200,0,0,100));
+    item->setData(Qt::UserRole + 4,evData.bodyId);
     item->setSizeHint(eventItemSize_);
     eventList_->insertItem(0,item);
     QWidget *itemW = new QWidget;
@@ -660,6 +651,7 @@ void RealtimeMonitoring::slotOnIntruderEvent(NotifyEventI::IntruderEventData evD
 
 void RealtimeMonitoring::slotOnPersonEvent(NotifyEventI::PersonEventData evData)
 {
+    if(!eventItemSize_.isValid())return;
     if(eventList_->count() >= EVENTITEMCOUNT){
         QListWidgetItem *delItem = eventList_->takeItem(EVENTITEMCOUNT - 1);
         eventList_->removeItemWidget(delItem);
@@ -682,6 +674,7 @@ void RealtimeMonitoring::slotOnPersonEvent(NotifyEventI::PersonEventData evData)
 
 void RealtimeMonitoring::slotOnAbDoorEvent(NotifyEventI::ABDoorEventData evData)
 {
+    if(!eventItemSize_.isValid())return;
     if(eventList_->count() >= EVENTITEMCOUNT){
         QListWidgetItem *delItem = eventList_->takeItem(EVENTITEMCOUNT - 1);
         eventList_->removeItemWidget(delItem);
@@ -689,9 +682,12 @@ void RealtimeMonitoring::slotOnAbDoorEvent(NotifyEventI::ABDoorEventData evData)
     }
     QListWidgetItem *item = new QListWidgetItem(nullptr,0);
     QPainter p(&evData.sceneImg);
-    p.setBrush(QColor(200,100,0,100));
+    p.setBrush(QColor(0,200,0,100));
     p.drawPolygon(evData.warnZone);
     item->setData(Qt::UserRole + 1,evData.sceneId);
+    item->setData(Qt::UserRole + 2,evData.warnZone);
+    item->setData(Qt::UserRole + 3,QColor(0,200,0,100));
+    item->setData(Qt::UserRole + 4,evData.bodyId);
     item->setSizeHint(eventItemSize_);
     eventList_->insertItem(0,item);
     QWidget *itemW = new QWidget;
@@ -705,6 +701,7 @@ void RealtimeMonitoring::slotOnAbDoorEvent(NotifyEventI::ABDoorEventData evData)
 
 void RealtimeMonitoring::slotOnClimbEvent(NotifyEventI::ClimbEventData evData)
 {
+    if(!eventItemSize_.isValid())return;
     if(eventList_->count() >= EVENTITEMCOUNT){
         QListWidgetItem *delItem = eventList_->takeItem(EVENTITEMCOUNT - 1);
         eventList_->removeItemWidget(delItem);
@@ -712,9 +709,12 @@ void RealtimeMonitoring::slotOnClimbEvent(NotifyEventI::ClimbEventData evData)
     }
     QListWidgetItem *item = new QListWidgetItem(nullptr,0);
     QPainter p(&evData.sceneImg);
-    p.setBrush(QColor(200,100,0,100));
+    p.setBrush(QColor(100,100,0,100));
     p.drawPolygon(evData.warnZone);
     item->setData(Qt::UserRole + 1,evData.sceneId);
+    item->setData(Qt::UserRole + 2,evData.warnZone);
+    item->setData(Qt::UserRole + 3,QColor(100,100,0,100));
+    item->setData(Qt::UserRole + 4,evData.bodyId);
     item->setSizeHint(eventItemSize_);
     eventList_->insertItem(0,item);
     QWidget *itemW = new QWidget;
@@ -728,6 +728,7 @@ void RealtimeMonitoring::slotOnClimbEvent(NotifyEventI::ClimbEventData evData)
 
 void RealtimeMonitoring::slotOngGatherEvent(NotifyEventI::GatherEventData evData)
 {
+    if(!eventItemSize_.isValid())return;
     if(eventList_->count() >= EVENTITEMCOUNT){
         QListWidgetItem *delItem = eventList_->takeItem(EVENTITEMCOUNT - 1);
         eventList_->removeItemWidget(delItem);
@@ -786,6 +787,7 @@ void RealtimeMonitoring::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
     dialog.setUserStyle(userStyle());
     dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
     dialog.setSceneInfo(sinfo);
+    dialog.setShowRect(true,true);
     connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
         if(!images.count()){
             return;
@@ -795,7 +797,7 @@ void RealtimeMonitoring::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
         faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
         faceDialog->setWindowModality(Qt::ApplicationModal);
         QPalette pal = faceDialog->palette();
-        pal.setColor(QPalette::Background,QColor(112,110,119));
+        pal.setColor(QPalette::Background,QColor(37,41,52));
         faceDialog->setPalette(pal);
         faceDialog->setAutoFillBackground(true);
         faceDialog->setUserStyle(userStyle());

@@ -19,17 +19,24 @@ public:
         QString name;
         QString description;
     };
-    PersonMark(PersonMark *parent = nullptr);
+    PersonMark(QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
     void setPhoto(QImage &);
     void setUserStyle(int s);
 
+protected:
+    void paintEvent(QPaintEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+
 private:
-    QLabel *nameL_{nullptr},*idL_{nullptr},*phontoL_{nullptr},*imgL_{nullptr},*typeL_{nullptr},*statusL_{nullptr},*customL_{nullptr};
+    QLabel *nameL_{nullptr},*idL_{nullptr},*phontoL_{nullptr},*imgL_{nullptr},*typeL_{nullptr},*statusL_{nullptr},*customL_{nullptr},*titleL_{nullptr};
     QLineEdit *nameEdit_{nullptr},*idEdit_{nullptr},*customEdit_{nullptr};
     QComboBox *typeCombox_{nullptr},*statusCombox_{nullptr};
     QDialogButtonBox *btnBox_{nullptr};
     QPushButton *sumitBtn_{nullptr},*cancelBtn_{nullptr};
 
+    QPoint startP_;
     QMap<QString,QVector<PersonGroup>> personTypeGroupMap_;
     void parseGroupToVec(RestServiceI::PersonGroupInfo &datas, QVector<PersonGroup> &Vec);
 

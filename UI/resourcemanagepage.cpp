@@ -38,9 +38,11 @@ void ResourceManagePage::setUserStyle(int s)
 void ResourceManagePage::loadWebPage(int index)
 {
     if(index == 0){
-        webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + tr("/jsHtml/resource/device_page/index.html")));
+        webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + tr("/jsHtml/resource/device/index.html")));
     }else if(index == 1){
-        webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + tr("/jsHtml/resource/person_page/index.html")));
+        webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + tr("/jsHtml/resource/person/index.html")));
+    }else if(index == 2){
+        webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + tr("/jsHtml/resource/markperson/index.html")));
     }
 }
 
@@ -48,6 +50,7 @@ void ResourceManagePage::slotLoadRequest(QWebEngineDownloadItem *download)
 {
     QString filenName = QFileDialog::getSaveFileName(this,tr("download"),download->path());
     if(filenName.isEmpty())return;
+    download->setPath(filenName);
     download->accept();
 }
 

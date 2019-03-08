@@ -68,6 +68,7 @@ public:
     };
     struct CameraInfo
     {
+        int isMonitor;
         QString cameraId;
         QString cameraPos;
         QString rtsp;
@@ -433,7 +434,7 @@ public:
         qRegisterMetaType<QVector<RestServiceI::MNFaceAnalysisItem>>("QVector<RestServiceI::MNFaceAnalysisItem>");
         // Added by aihc end
     }
-    virtual void getSceneInfo(const QString old) = 0;
+    virtual void getSceneInfo(const QString old,const QString alarmBoyId = QString()) = 0;
     virtual void faceTracking(FaceTrackingArgs) = 0;
     virtual void getFaceLinkDataColl(FaceLinkDataCollArgs &args) = 0;
     virtual void getPersonDetails(QString &) = 0;

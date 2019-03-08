@@ -18,7 +18,7 @@ public:
     QString getPersonNumbers(RestServiceI::PersonsStayArgs &args, int &num, int &times);
     QString getPeronAverageTime(RestServiceI::AveragePersonTimeArgs &args);
     QString getPersonDetailes(QString &objId, RestServiceI::PortraitReturnData *resDatas);
-    QString getSceneInfo(QString &scenId,RestServiceI::SceneInfo *sceneInfo);
+    QString getSceneInfo(QString &scenId, QString &alarmBodyId, RestServiceI::SceneInfo *sceneInfo);
     QString getImageByUrl(QString &url,QImage *image);
     QImage getImageByUrl(QString url);
     QString captureSearch(RestServiceI::CaptureSearchArgs&, RestServiceI::CaptureSearchReturnData *resDatas);

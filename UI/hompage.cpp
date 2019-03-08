@@ -126,39 +126,6 @@ void HomPage::setUserStyle(int s)
     }
 }
 
-//bool HomPage::event(QEvent *event)
-//{
-//    if(event->type() == QEvent::Show){
-//        int imgItemH = (eventListW_->height() - (eventItemCount + 1) * eventListW_->spacing() - eventListW_->frameWidth() * 2) / eventItemCount;
-//        int imgItemW = eventListW_->width() - 2 * eventListW_->spacing() - 2 * eventListW_->frameWidth();
-//        eventItemSize_.setHeight(imgItemH);
-//        eventItemSize_.setWidth(imgItemW);
-//        for(int i = 0; i < eventListW_->count(); i++){
-//            QListWidgetItem *item = eventListW_->item(i);
-//            item->setSizeHint(eventItemSize_);
-//        }
-//    }
-
-//    return WidgetI::event(event);
-//}
-
-void HomPage::resizeEvent(QResizeEvent *event)
-{
-    int imgItemH = (eventListW_->height() - (eventItemCount + 1) * eventListW_->spacing() - eventListW_->frameWidth() * 2) / eventItemCount;
-    int imgItemW = eventListW_->width() - 2 * eventListW_->spacing() - 2 * eventListW_->frameWidth();
-    eventItemSize_.setHeight(imgItemH);
-    eventItemSize_.setWidth(imgItemW);
-
-    eventItemSize_.setHeight(251);
-    eventItemSize_.setWidth(456);
-    for(int i = 0; i < eventListW_->count(); i++){
-        QListWidgetItem *item = eventListW_->item(i);
-        item->setSizeHint(eventItemSize_);
-    }
-
-    return WidgetI::resizeEvent(event);
-}
-
 bool HomPage::eventFilter(QObject *watched, QEvent *event)
 {
     QWidget *watchWid = qobject_cast<QWidget*>(watched);
@@ -168,6 +135,15 @@ bool HomPage::eventFilter(QObject *watched, QEvent *event)
         p.setBrush(QColor(48,54,68));
         p.setRenderHint(QPainter::Antialiasing);
         p.drawRoundedRect(p.window().adjusted(0,0,-p.pen().width(),-p.pen().width()),4,4);
+    }else if(watchWid == eventBackW_ && event->type() == QEvent::Resize){
+        int imgItemH = (eventListW_->height() - (eventItemCount + 1) * eventListW_->spacing() - eventListW_->frameWidth() * 2) / eventItemCount;
+        int imgItemW = eventListW_->width() - 2 * eventListW_->spacing() - 2 * eventListW_->frameWidth();
+        eventItemSize_.setHeight(imgItemH);
+        eventItemSize_.setWidth(imgItemW);
+        for(int i = 0; i < eventListW_->count(); i++){
+            QListWidgetItem *item = eventListW_->item(i);
+            item->setSizeHint(eventItemSize_);
+        }
     }
     return WidgetI::eventFilter(watched,event);
 }
@@ -200,6 +176,7 @@ void HomPage::slotEventComboxIndexChanged(int index)
 
 void HomPage::slotOnIntruderEvent(NotifyEventI::IntruderEventData evData)
 {
+    if(!eventItemSize_.isValid())return;
     if(eventListW_->count() >= eventItemCount){
         QListWidgetItem *delItem = eventListW_->takeItem(eventItemCount - 1);
         eventListW_->removeItemWidget(delItem);
@@ -223,6 +200,7 @@ void HomPage::slotOnIntruderEvent(NotifyEventI::IntruderEventData evData)
 
 void HomPage::slotOnPersonEvent(NotifyEventI::PersonEventData evData)
 {
+    if(!eventItemSize_.isValid())return;
     if(eventListW_->count() >= eventItemCount){
         QListWidgetItem *delItem = eventListW_->takeItem(eventItemCount - 1);
         eventListW_->removeItemWidget(delItem);
@@ -245,6 +223,7 @@ void HomPage::slotOnPersonEvent(NotifyEventI::PersonEventData evData)
 
 void HomPage::slotOnAbDoorEvent(NotifyEventI::ABDoorEventData evData)
 {
+    if(!eventItemSize_.isValid())return;
     if(eventListW_->count() >= eventItemCount){
         QListWidgetItem *delItem = eventListW_->takeItem(eventItemCount - 1);
         eventListW_->removeItemWidget(delItem);
@@ -252,7 +231,7 @@ void HomPage::slotOnAbDoorEvent(NotifyEventI::ABDoorEventData evData)
     }
     QListWidgetItem *item = new QListWidgetItem(nullptr,0);
     QPainter p(&evData.sceneImg);
-    p.setBrush(QColor(200,100,0,100));
+    p.setBrush(QColor(0,200,0,100));
     p.drawPolygon(evData.warnZone);
     item->setData(Qt::UserRole + 1,evData.sceneId);
     item->setSizeHint(eventItemSize_);
@@ -268,6 +247,7 @@ void HomPage::slotOnAbDoorEvent(NotifyEventI::ABDoorEventData evData)
 
 void HomPage::slotOnClimbEvent(NotifyEventI::ClimbEventData evData)
 {
+    if(!eventItemSize_.isValid())return;
     if(eventListW_->count() >= eventItemCount){
         QListWidgetItem *delItem = eventListW_->takeItem(eventItemCount - 1);
         eventListW_->removeItemWidget(delItem);
@@ -275,7 +255,7 @@ void HomPage::slotOnClimbEvent(NotifyEventI::ClimbEventData evData)
     }
     QListWidgetItem *item = new QListWidgetItem(nullptr,0);
     QPainter p(&evData.sceneImg);
-    p.setBrush(QColor(200,100,0,100));
+    p.setBrush(QColor(100,100,0,100));
     p.drawPolygon(evData.warnZone);
     item->setData(Qt::UserRole + 1,evData.sceneId);
     item->setSizeHint(eventItemSize_);
@@ -291,6 +271,7 @@ void HomPage::slotOnClimbEvent(NotifyEventI::ClimbEventData evData)
 
 void HomPage::slotOngGatherEvent(NotifyEventI::GatherEventData evData)
 {
+    if(!eventItemSize_.isValid())return;
     if(eventListW_->count() >= eventItemCount){
         QListWidgetItem *delItem = eventListW_->takeItem(eventItemCount - 1);
         eventListW_->removeItemWidget(delItem);

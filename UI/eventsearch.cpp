@@ -15,6 +15,7 @@
 #include <QApplication>
 #include <QMessageBox>
 #include <QSettings>
+#include <QDebug>
 #include "pageindicator.h"
 #include "waitinglabel.h"
 #include "sceneimagedialog.h"
@@ -109,7 +110,7 @@ EventSearch::EventSearch( WidgetI *parent):
             slotOnSceneInfo(sinfo);
             menu_->setEnabled(true);
         });
-        serviceI->getSceneInfo(m_tableW->item(curRowIndex,1)->text());
+        serviceI->getSceneInfo(m_tableW->item(curRowIndex,1)->text(),m_tableW->item(curRowIndex,0)->data(Qt::UserRole + 1).toString());
         label->show(500);
         menu_->setEnabled(false);
     });
@@ -442,6 +443,7 @@ void EventSearch::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
     dialog.setUserStyle(userStyle());
     dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
     dialog.setSceneInfo(sinfo);
+    dialog.setShowRect(true,true);
     connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
         if(!images.count()){
             return;
@@ -498,6 +500,7 @@ void EventSearch::slotAlarmHistory(RestServiceI::EventSearchReturn data)
         m_tableW->insertRow(m_tableW->rowCount());
         QTableWidgetItem *item = new QTableWidgetItem;
         item->setData(Qt::UserRole,itemData.warnZong);
+        item->setData(Qt::UserRole + 1,itemData.bodyId);
         m_tableW->setItem(m_tableW->rowCount() - 1,0,item);
         QLabel *label = new QLabel;
         label->setScaledContents(true);

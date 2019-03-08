@@ -50,6 +50,7 @@ void NotifyPersonByMqtt::run()
         QThread::msleep(1);
     }
     mosqpp::lib_cleanup();
+    mosqpp::mosquittopp::disconnect();
 }
 
 void NotifyPersonByMqtt::on_connect(int rc)
@@ -58,8 +59,9 @@ void NotifyPersonByMqtt::on_connect(int rc)
     if(timer_->isActive()){
         QMetaObject::invokeMethod(timer_,"stop");
     }
+    int intmid = 0;
     foreach (const QString str, topticList_) {
-        int resCode = subscribe(nullptr,str.toStdString().data());
+        int resCode = subscribe(&intmid,str.toStdString().data());
         qDebug() << "mqtt subscribe" << str << "return" << resCode;
     }
 }
@@ -74,7 +76,7 @@ void NotifyPersonByMqtt::on_disconnect(int rc)
 
 void NotifyPersonByMqtt::on_subscribe(int mid, int qos_count, const int *granted_qos)
 {
-    qDebug() << "Subscription successed";
+    qDebug() << "Subscription successed" << "mid" << mid << "qos_count" << qos_count;
 }
 
 void NotifyPersonByMqtt::on_message(const mosquitto_message *message)

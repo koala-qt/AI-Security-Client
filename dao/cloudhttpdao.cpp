@@ -117,6 +117,7 @@ QString DLL::CloudHttpDao::getDevice(QString groupNo, QVector<RestServiceI::Came
         int spiteIndex = rtspStr.lastIndexOf('/');
         camera.cameraId = rtspStr.mid(spiteIndex+1);
         camera.cameraPos = cameraObj.value("name").toString();
+        camera.isMonitor = cameraObj.value("isMonitor").toInt();
         return camera;
     });
     return QString();
@@ -429,14 +430,14 @@ QString DLL::CloudHttpDao::getPersonDetailes(QString &objId, RestServiceI::Portr
     return QString();
 }
 
-QString DLL::CloudHttpDao::getSceneInfo(QString &scenId, RestServiceI::SceneInfo *sceneInfo)
+QString DLL::CloudHttpDao::getSceneInfo(QString &scenId,QString &alarmBodyId, RestServiceI::SceneInfo *sceneInfo)
 {
     QStringList requiredFileds;
     requiredFileds << "face_bbox" << "face_id" << "body_bbox" << "body_id" << "snapshot";
     QString urlStr = host_ + QObject::tr("api/v2/external/monitor-detail/find-document?collection=snap_scene&requiredFields=%1&objId=%2")
             .arg(requiredFileds.join(','))
             .arg(scenId);
-    int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),10);
+    int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),5);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -483,6 +484,7 @@ QString DLL::CloudHttpDao::getSceneInfo(QString &scenId, RestServiceI::SceneInfo
     }
     sceneInfo->sceneId = scenId;
 
+#if 0 //all body rect
     QJsonArray jsArray = jsObj.value("bodyId").toArray();
     QStringList bodyIdList;
     std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(bodyIdList),[](QJsonValue jsVal){return jsVal.toString();});
@@ -505,6 +507,40 @@ QString DLL::CloudHttpDao::getSceneInfo(QString &scenId, RestServiceI::SceneInfo
         }
         sceneInfo->bodyRectVec << qMakePair(QRect(x,y,rWidth,rHeight),bodyImage);
     }
+#else //alarm body rect
+    if(alarmBodyId.isEmpty())return QString();
+    QString bodyInfoUrl = host_ + "api/v2/external/monitor-detail/find-document?collection=snap_body&requiredFields=bbox&objId=" + alarmBodyId;
+    resCode = send(DLL::GET,bodyInfoUrl.toStdString(),std::string(),5);
+    if(resCode != CURLE_OK){
+        return curl_easy_strerror(CURLcode(resCode));
+    }
+
+    jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
+    if(jsError.error != QJsonParseError::NoError){
+        return jsError.errorString();
+    }
+    jsObj = jsDoc.object();
+    status = jsObj.value("status").toInt();
+    if(status != 200){
+        return jsObj.value("message").toString();
+    }
+    jsObj = jsObj.value("data").toObject();
+    QJsonArray jsArray = jsObj.value("bbox").toArray();
+    if(jsArray.count() < 4)return "alarm rect point less than 4";
+    qreal xPer = 0.5,yPer = 0.5;
+    int x = jsArray.first().toInt() * xPer;
+    int y = jsArray.at(1).toInt() * yPer;
+    int rWidth = jsArray.at(2).toInt() * xPer;
+    int rHeight = jsArray.at(3).toInt() * yPer;
+    QString bodyImgUrl = jsObj.value("url").toString().mid(1);
+    QImage bodyImg;
+    bodyImgUrl = host_ + bodyImgUrl;
+    QString qerrorStr = getImageByUrl(bodyImgUrl,&bodyImg);
+    if(!qerrorStr.isEmpty()){
+        return qerrorStr;
+    }
+    sceneInfo->bodyRectVec << qMakePair(QRect(x,y,rWidth,rHeight),bodyImg);
+#endif
     return QString();
 }
 
@@ -991,6 +1027,7 @@ QString DLL::CloudHttpDao::registerPerson(RestServiceI::PersonRegisterArgs &args
     args.image.save(&imgBuf,"jpg");
     imgArray << QJsonObject{{"name",args.name +".jpg"},{"base64",QString(imgStr.toBase64())}};
     QJsonObject argObj;
+    argObj["type"] = "1";
     argObj["name"] = args.name;
     argObj["code"] = args.id;
     argObj["groupNo"] = args.groupNo;
@@ -998,6 +1035,9 @@ QString DLL::CloudHttpDao::registerPerson(RestServiceI::PersonRegisterArgs &args
     argObj["typeNo"] = args.personTypeNo;
     argObj["typeName"] = args.personTypeName;
     argObj["isSnap"] = true;
+    if(!args.taggingKey.isEmpty()){
+        argObj[args.taggingKey] = "yes";
+    }
     argObj["pictures"] = imgArray;
     QJsonDocument jsDoc(argObj);
     QByteArray argsByteArray = jsDoc.toJson();

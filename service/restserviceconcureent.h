@@ -11,7 +11,7 @@ public:
     RestConcurrent(QObject*parent = nullptr);
     ~RestConcurrent();
     void combinationSearch(CombinationSearchArgs &) override;
-    void getSceneInfo(const QString old) override;
+    void getSceneInfo(const QString oid, const QString alarmBoyId = QString()) override;
     void getFaceLinkDataColl(FaceLinkDataCollArgs &args) override;
     void faceTracking(FaceTrackingArgs) override;
     void multipleSearch(MultipleSearchArgs &) override;
