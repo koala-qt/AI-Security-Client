@@ -12,13 +12,13 @@ public:
     void setHostName(QString);
 
 signals:
-    void  sigHostNameChanged(QString);
+    void sigHostNameChanged(QString);
 
 public slots:
     void onInitsized();
 
 private:
-    QString hostName_;
+    QString host_;
 };
 
 class ReportPage : public WidgetI

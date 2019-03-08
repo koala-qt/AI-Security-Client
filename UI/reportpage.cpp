@@ -18,7 +18,9 @@ ReportPage::ReportPage(WidgetI *parent):
     webHost_ = configSetting.value("Http/Javahost").toString();
     webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/report/index.html"));
     webBridge_ = new ReportWebBridge(webView_);
+    webBridge_->setHostName(webHost_);
     QWebChannel *channel = new QWebChannel(webBridge_);
+    channel->registerObject(QString("Bridge"),webBridge_);
     webView_->page()->setWebChannel(channel);
     webView_->page()->setBackgroundColor(Qt::transparent);
     webView_->setContextMenuPolicy(Qt::NoContextMenu);
@@ -37,10 +39,14 @@ ReportWebBridge::ReportWebBridge(QObject *parent):
 
 void ReportWebBridge::setHostName(QString s)
 {
-    hostName_ = s;
+    if(s.isEmpty())return;
+    if(!s.isEmpty() && s.right(1) == '/'){
+        s.remove(s.count() - 1, 1);
+    }
+    host_ = s;
 }
 
 void ReportWebBridge::onInitsized()
 {
-    emit sigHostNameChanged(hostName_);
+    emit sigHostNameChanged(host_);
 }
