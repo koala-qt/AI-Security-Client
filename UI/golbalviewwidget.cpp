@@ -8,6 +8,10 @@
 #include <QGridLayout>
 #include <QWidget>
 
+#include <UI/globalview/bottomstatisticswebview.h>
+#include <UI/globalview/leftstatisticswebview.h>
+#include <UI/globalview/rightstatisticswebview.h>
+
 GolbalViewWidget::GolbalViewWidget(WidgetI *parent):
     WidgetI(parent)
 {
@@ -20,8 +24,10 @@ void GolbalViewWidget::setUserStyle(int style)
 {
     if (0 == style)
     {
-        m_topWgt->setStyleSheet("background-color:#41495C;max-height:100px;min-height:60px;color:white;");
-        m_btnDate->setStyleSheet("width:100px;");
+        m_topWgt->setStyleSheet("QWidget{color:white;background-color:#41495C;}"
+                                ".QWidget{max-height:100px;min-height:80px;}");
+        //m_btnDate->setStyleSheet("background-color:#41495C;");
+        m_pMidWgt->setStyleSheet("background-color:#41495C;min-height:600px;");
     }
 }
 
@@ -31,13 +37,18 @@ void GolbalViewWidget::init()
     mainVLay->setMargin(5);
     this->setLayout(mainVLay);
     m_topWgt = new QWidget;
+    m_topWgt->setContentsMargins(5, 5, 5, 5);
     mainVLay->addWidget(m_topWgt);
     QGridLayout *topGridLay = new QGridLayout;
     topGridLay->setMargin(0);
+    topGridLay->setVerticalSpacing(0);
     topGridLay->setColumnStretch(0, 1);
     topGridLay->setColumnStretch(1, 1);
     topGridLay->setColumnStretch(2, 1);
     topGridLay->setColumnStretch(3, 1);
+    topGridLay->setRowStretch(0, 1);
+    topGridLay->setRowStretch(1, 1);
+    topGridLay->setSizeConstraint(QLayout::SetDefaultConstraint);
     m_topWgt->setLayout(topGridLay);
     QLabel *labTitle = new QLabel(tr("Location Access"));
     labTitle->setAlignment(Qt::AlignCenter);
@@ -66,5 +77,22 @@ void GolbalViewWidget::init()
     topGridLay->setAlignment(Qt::AlignCenter);
     m_btnDate = new QPushButton(tr("2019-3-15"));
     topGridLay->addWidget(m_btnDate, 0, 4, 1, 1);
+    topGridLay->addWidget(new QLabel, 1, 4, 1, 1);
+
+    //
+    QHBoxLayout *hLay = new QHBoxLayout;
+    hLay->setMargin(0);
+    mainVLay->addLayout(hLay);
+    m_pLeftWeb = new LeftStatisticsWebView;
+    hLay->addWidget(m_pLeftWeb);
+    QVBoxLayout *midVLay = new QVBoxLayout;
+    hLay->addLayout(midVLay);
+    m_pMidWgt = new QWidget;
+    midVLay->addWidget(m_pMidWgt);
+    m_pBottomWeb = new BottomStatisticsWebView;
+    midVLay->addWidget(m_pBottomWeb);
+    m_pRightWeb = new RightStatisticsWebView;
+    hLay->addWidget(m_pRightWeb);
     mainVLay->addStretch();
+
 }

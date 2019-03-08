@@ -7,6 +7,10 @@ QT_FORWARD_DECLARE_CLASS(QWidget)
 QT_FORWARD_DECLARE_CLASS(QLabel)
 QT_FORWARD_DECLARE_CLASS(QPushButton)
 
+class LeftStatisticsWebView;
+class BottomStatisticsWebView;
+class RightStatisticsWebView;
+
 class GolbalViewWidget : public WidgetI
 {
     Q_OBJECT
@@ -27,7 +31,13 @@ private:
     QLabel *m_labDataStorage{nullptr};
     QPushButton *m_btnDate{nullptr};
 
+    // web
+    LeftStatisticsWebView *m_pLeftWeb{nullptr};
+    BottomStatisticsWebView *m_pBottomWeb{nullptr};
+    RightStatisticsWebView *m_pRightWeb{nullptr};
 
+    // middle content
+    QWidget *m_pMidWgt{nullptr};
 
 };
 

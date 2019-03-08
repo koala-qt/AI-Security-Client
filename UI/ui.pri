@@ -57,7 +57,7 @@ HEADERS += \
     $$PWD/golbalviewwidget.h \
     $$PWD/globalview/leftstatisticswebview.h \
     $$PWD/globalview/bottomstatisticswebview.h \
-    $$PWD/rightstatisticswebview.h
+    $$PWD/globalview/rightstatisticswebview.h
 
 SOURCES += \
     $$PWD/videoplayback.cpp \
