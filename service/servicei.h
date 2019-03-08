@@ -404,6 +404,16 @@ public:
         QList<MNCaptureItem> captureItems;
     };
     // m:n end
+
+    // global view top statistics
+    struct GLViewTopStatistics
+    {
+        QString strLocationAccess;
+        QString strCameraAccess;
+        QString strTotalIDNumbers;
+        QString strDataStorage;
+    };
+
     RestServiceI(QObject *parent = nullptr):QObject(parent){
         qRegisterMetaType<QVector<RestServiceI::CameraInfo>>("QVector<RestServiceI::CameraInfo>");
         qRegisterMetaType<PagedSnapFaceHis>("PagedSnapFaceHis");
@@ -432,6 +442,7 @@ public:
         qRegisterMetaType<QVector<RestServiceI::PortraitLibCompItem>>("QVector<RestServiceI::PortraitLibCompItem>");
         qRegisterMetaType<QVector<RestServiceI::PersonType>>("QVector<RestServiceI::PersonType>");
         qRegisterMetaType<QVector<RestServiceI::MNFaceAnalysisItem>>("QVector<RestServiceI::MNFaceAnalysisItem>");
+        qRegisterMetaType<GLViewTopStatistics>("GLViewTopStatistics");
         // Added by aihc end
     }
     virtual void getSceneInfo(const QString old,const QString alarmBoyId = QString()) = 0;
@@ -479,6 +490,8 @@ public:
      */
     virtual void mnFaceAnalysisSearch(MNFaceAnalysisArgs &) = 0;
 
+    virtual void queryGLViewTopStatistics(QString strDay) = 0;
+
 signals:
     void sigFaceLinkFinished(QString);
     void sigTracking(QVector<SearchFace>);
@@ -519,6 +532,8 @@ signals:
      */
     void sigPersonTypesResult(QVector<RestServiceI::PersonType>);
     void sigMNFaceAnalysisResult(QVector<RestServiceI::MNFaceAnalysisItem>);
+
+    void sigGLViewTopStatisResult(GLViewTopStatistics);
 };
 
 class NotifyPersonI : public QThread

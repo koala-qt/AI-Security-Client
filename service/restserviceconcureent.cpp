@@ -509,6 +509,22 @@ void RestConcurrent::mnFaceAnalysisSearch(RestServiceI::MNFaceAnalysisArgs &args
     fwatcher->setFuture(QtConcurrent::run(curlRest_,&DLL::CloudHttpDao::mnFaceAnalysisSearch,args,resVec));
 }
 
+void RestConcurrent::queryGLViewTopStatistics(QString strDay)
+{
+    GLViewTopStatistics *resVec = new GLViewTopStatistics;
+    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>(this);
+    connect(fwatcher,&QFutureWatcher<QString>::finished,this,[this,resVec,fwatcher]{
+        if(fwatcher->result().isEmpty()){
+            emit sigGLViewTopStatisResult(*resVec);
+        }else{
+            emit sigError(fwatcher->result());
+        }
+        delete resVec;
+    });
+    connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
+    fwatcher->setFuture(QtConcurrent::run(curlRest_,&DLL::CloudHttpDao::queryGLViewTopStatistics,strDay,resVec));
+}
+
 void RestConcurrent::queryPersonTypes()
 {
     QVector<PersonType> *resVec = new QVector<PersonType>;

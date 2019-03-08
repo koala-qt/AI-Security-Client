@@ -1263,6 +1263,41 @@ QString DLL::CloudHttpDao::mnFaceAnalysisSearch(RestServiceI::MNFaceAnalysisArgs
     return QString();
 }
 
+QString DLL::CloudHttpDao::queryGLViewTopStatistics(QString &strDay, RestServiceI::GLViewTopStatistics *resVec)
+{
+#if 0
+    QString urlStr = host_ +  QObject::tr("api/v2/cmcc/index/top_statistics");
+#else
+    QString urlStr = "http://192.168.2.126:8080/api/v2/cmcc/index/top_statistics";
+#endif
+    QString strCondition = QString("endTime=%1").arg(strDay);
+    int resCode = send(DLL::GET,urlStr.toStdString(),strCondition.toStdString(),10);
+    if(resCode != CURLE_OK){
+        return curl_easy_strerror(CURLcode(resCode));
+    }
+
+    QJsonParseError jsError;
+    QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
+    if(jsError.error != QJsonParseError::NoError){
+        return jsError.errorString();
+    }
+
+    QJsonObject jsObj = jsDoc.object();
+    int status = jsObj.value("status").toInt();
+    if(status != 200){
+        return jsObj.value("message").toString();
+    }
+    RestServiceI::GLViewTopStatistics sitem;
+    QJsonObject dataObj = jsObj.value("data").toObject();
+    sitem.strLocationAccess = dataObj.value("locationAccess").toString();
+    sitem.strCameraAccess = dataObj.value("cameraAccess").toString();
+    sitem.strTotalIDNumbers = dataObj.value("totalIDNumbers").toString();
+    sitem.strDataStorage = dataObj.value("dataStorage").toString();
+
+    *resVec = sitem;
+    return QString();
+}
+
 int DLL::CloudHttpDao::progress(double totalDownLoad, double downloaded, double totalUpload, double uploaded)
 {
     return 0;

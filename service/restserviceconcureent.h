@@ -55,6 +55,8 @@ public:
      */
     void mnFaceAnalysisSearch(MNFaceAnalysisArgs &args) override;
 
+    void queryGLViewTopStatistics(QString strDay) override;
+
 private:
     ThriftDao thriftDao_;
     DLL::CloudHttpDao *curlRest_{nullptr};
