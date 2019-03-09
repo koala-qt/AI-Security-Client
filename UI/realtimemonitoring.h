@@ -26,6 +26,7 @@ public:
     void setUserStyle(int s) override;
 
 protected:
+    void paintEvent(QPaintEvent *event) override;
     bool eventFilter(QObject *watched, QEvent *event)override;
 
 private:
@@ -39,6 +40,7 @@ private:
     QLineEdit *posEdit_{nullptr};
     QStandardItemModel *complterModel_{nullptr};
 
+    QImage backImg_;
     QSize eventItemSize_;
     QString faceItemStyleSheet_;
     QSize m_faceItemSize;

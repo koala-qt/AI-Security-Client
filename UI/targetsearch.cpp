@@ -20,6 +20,7 @@ TargetSearch::TargetSearch( WidgetI *parent):
     WidgetI(parent)
 {
     setObjectName(tr("Target search"));
+    backImg_.load(tr("images/Mask.png"));
     treeW_ = new QTreeWidget;
     stackedW_ = new QStackedWidget;
     semanticSearchPage_ = new SemanticSearchPage;
@@ -97,7 +98,7 @@ void TargetSearch::setUserStyle(int s)
                                "font-size: 16px;"
                                "color: #CECECE;"
                                "border-radius: 10px;"
-                               "background-color: rgb(46,52,65);}");
+                               "background-color: rgba(0,0,0,0.4);}");
         treeW_->verticalScrollBar()->setStyleSheet(
                                                     "QScrollBar:vertical{"
                                                     "background: transparent;"
@@ -150,6 +151,13 @@ void TargetSearch::setUserStyle(int s)
     }
 }
 
+void TargetSearch::paintEvent(QPaintEvent *event)
+{
+    QPainter p(this);
+    p.setPen(Qt::NoPen);
+    p.drawImage(rect().adjusted(0,0,-p.pen().width(),-p.pen().width()),backImg_);
+}
+
 void TargetSearch::createTreeItem(QTreeWidget *treeW, QTreeWidgetItem *parentItem, TargetSearch::itemData &items)
 {
     QTreeWidgetItem *item{nullptr};
@@ -189,7 +197,7 @@ bool TargetSearch::eventFilter(QObject *watched, QEvent *event)
     if(isIn && event->type() == QEvent::Paint){
         QPainter p(watchedWid);
         p.setPen(Qt::NoPen);
-        p.setBrush(QColor(48,54,68));
+        p.setBrush(QColor(0,0,0,102));
         p.drawRoundedRect(stackedW_->rect().adjusted(0,0,-p.pen().width(),-p.pen().width()),4,4);
     }
 

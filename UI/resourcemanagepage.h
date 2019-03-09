@@ -30,10 +30,15 @@ public:
     void setUserStyle(int s = 0) override;
     void loadWebPage(int index);
 
+protected:
+    void paintEvent(QPaintEvent *event) override;
+
 private:
     QWebEngineView *webView_{nullptr};
     ResourceWebBridge *webBridge_{nullptr};
     QString webHost_;
+
+    QImage backImg_;
 
 private slots:
     void slotLoadRequest(QWebEngineDownloadItem*download);

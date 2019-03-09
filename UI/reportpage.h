@@ -3,7 +3,7 @@
 
 #include "widgetinterface.h"
 QT_FORWARD_DECLARE_CLASS(QWebEngineView)
-
+QT_FORWARD_DECLARE_CLASS(QWebEngineDownloadItem)
 class ReportWebBridge : public QObject
 {
     Q_OBJECT
@@ -28,10 +28,18 @@ public:
     ReportPage(WidgetI *parent = nullptr);
     void setUserStyle(int s = 0) override;
 
+protected:
+    void paintEvent(QPaintEvent *event) override;
+
 private:
     QWebEngineView *webView_{nullptr};
     ReportWebBridge *webBridge_{nullptr};
     QString webHost_;
+
+    QImage backImg_;
+
+private slots:
+    void slotLoadRequest(QWebEngineDownloadItem*);
 };
 
 #endif // REPORTPAGE_H

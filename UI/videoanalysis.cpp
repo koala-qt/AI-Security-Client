@@ -56,7 +56,7 @@ bool VideoAnalysis::eventFilter(QObject *watched, QEvent *event)
     if(isIn && event->type() == QEvent::Paint){
         QPainter p(watchedWid);
         p.setPen(Qt::NoPen);
-        p.setBrush(QColor(48,54,68));
+        p.setBrush(QColor(0,0,0,102));
         p.drawRoundedRect(stackedW_->rect().adjusted(0,0,-p.pen().width(),-p.pen().width()),4,4);
     }
     return WidgetI::eventFilter(watched,event);

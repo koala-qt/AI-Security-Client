@@ -36,6 +36,7 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
     WidgetI(parent)
 {
     setObjectName(tr("Real-time surveillance"));
+    backImg_.load(tr("images/Mask.png"));
     QVBoxLayout *mainLay = new QVBoxLayout;
     QHBoxLayout *hboxLay = new QHBoxLayout;
     m_settingBtn = new QPushButton(tr("设置"));
@@ -142,6 +143,7 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
             label->close();
             delete label;
             QPainter p(&sinfo.image);
+            p.setRenderHint(QPainter::Antialiasing);
             p.setPen(Qt::NoPen);
             p.setBrush(co);
             p.drawPolygon(zone);
@@ -240,7 +242,7 @@ void RealtimeMonitoring::setUserStyle(int s)
     QFont f;
     if(s == 0){
         cameraGoupBackW_->setStyleSheet("QWidget{"
-                                        "background-color: rgb(46,52,65);"
+                                        "background-color: rgba(0,0,0,0.4);"
                                         "border-radius: 4px;"
                                         "}");
         posEdit_->setStyleSheet("QLineEdit{"
@@ -258,8 +260,8 @@ void RealtimeMonitoring::setUserStyle(int s)
                                "border-radius:0px;"
                                "font-size: 16px;"
                                "color: #CECECE;"
-                               "border-radius: 10px;"
-                               "background-color: rgb(46,52,65);}"
+                               "border-radius: 0px;"
+                               "background-color: transparent;}"
                                "QTreeView::item{"
                                "color: rgb(126,140,177);"
                                "border:none;"
@@ -423,13 +425,20 @@ void RealtimeMonitoring::setUserStyle(int s)
     }
 }
 
+void RealtimeMonitoring::paintEvent(QPaintEvent *event)
+{
+    QPainter p(this);
+    p.setPen(Qt::NoPen);
+    p.drawImage(rect().adjusted(0,0,-p.pen().width(),-p.pen().width()),backImg_);
+}
+
 bool RealtimeMonitoring::eventFilter(QObject *watched, QEvent *event)
 {
     QWidget *watchWid = qobject_cast<QWidget*>(watched);
     if((watchWid == faceCaptureBackW_ || watchWid == eventBackW_) && event->type() == QEvent::Paint){
         QPainter p(watchWid);
         p.setPen(Qt::NoPen);
-        p.setBrush(QColor(48,54,68));
+        p.setBrush(QColor(0,0,0,102));
         p.setRenderHint(QPainter::Antialiasing);
         p.drawRoundedRect(p.window().adjusted(0,0,-p.pen().width(),-p.pen().width()),4,4);
     }else if(watchWid == eventBackW_ && event->type() == QEvent::Resize){
@@ -632,6 +641,8 @@ void RealtimeMonitoring::slotOnIntruderEvent(NotifyEventI::IntruderEventData evD
     }
     QListWidgetItem *item = new QListWidgetItem(nullptr,0);
     QPainter p(&evData.sceneImg);
+    p.setRenderHint(QPainter::Antialiasing);
+    p.setPen(Qt::NoPen);
     p.setBrush(QColor(200,0,0,100));
     p.drawPolygon(evData.warnZone);
     item->setData(Qt::UserRole + 1,evData.sceneId);
@@ -682,6 +693,8 @@ void RealtimeMonitoring::slotOnAbDoorEvent(NotifyEventI::ABDoorEventData evData)
     }
     QListWidgetItem *item = new QListWidgetItem(nullptr,0);
     QPainter p(&evData.sceneImg);
+    p.setRenderHint(QPainter::Antialiasing);
+    p.setPen(Qt::NoPen);
     p.setBrush(QColor(0,200,0,100));
     p.drawPolygon(evData.warnZone);
     item->setData(Qt::UserRole + 1,evData.sceneId);
@@ -709,6 +722,8 @@ void RealtimeMonitoring::slotOnClimbEvent(NotifyEventI::ClimbEventData evData)
     }
     QListWidgetItem *item = new QListWidgetItem(nullptr,0);
     QPainter p(&evData.sceneImg);
+    p.setRenderHint(QPainter::Antialiasing);
+    p.setPen(Qt::NoPen);
     p.setBrush(QColor(100,100,0,100));
     p.drawPolygon(evData.warnZone);
     item->setData(Qt::UserRole + 1,evData.sceneId);
