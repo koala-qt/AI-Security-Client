@@ -20,6 +20,9 @@ protected:
     void paintEvent(QPaintEvent *event) override;
     bool event(QEvent *event) override;
 
+private slots:
+    void slotOnIntruderEvent(NotifyEventI::IntruderEventData info);
+
 private:
     void init();
 
@@ -33,6 +36,8 @@ private:
     QLabel *m_labCameraAccess{nullptr};
     QLabel *m_labIDNumbers{nullptr};
     QLabel *m_labDataStorage{nullptr};
+
+    NotifyServiceI *notifyServiceI_{nullptr};
 
 };
 
