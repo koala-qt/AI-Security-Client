@@ -1,11 +1,9 @@
 #ifndef GLVIEWMAPWIDGET_H
 #define GLVIEWMAPWIDGET_H
 
-#include "../widgetinterface.h"
+#include "widgetinterface.h"
 #include "service/servicei.h"
-
 #include <QPaintEvent>
-
 QT_FORWARD_DECLARE_CLASS(QLabel)
 
 class GlViewMapWidget : public WidgetI

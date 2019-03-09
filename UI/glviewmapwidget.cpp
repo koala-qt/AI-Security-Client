@@ -1,15 +1,12 @@
-#include "glviewmapwidget.h"
-
 #include <random>
 #include <QLabel>
 #include <QPainter>
 #include <QVBoxLayout>
 #include <QApplication>
-
-#include "../waitinglabel.h"
-#include "../informationdialog.h"
-
-#include <UI/movielabel.h>
+#include "glviewmapwidget.h"
+#include "waitinglabel.h"
+#include "informationdialog.h"
+#include "movielabel.h"
 
 GlViewMapWidget::GlViewMapWidget(WidgetI *parent):
     WidgetI(parent)
@@ -55,7 +52,7 @@ bool GlViewMapWidget::event(QEvent *event)
 {
     if ((event->type() == QEvent::Show))
     {
-        queryTopStatistics();
+//        queryTopStatistics();
         return true;
     }
     return WidgetI::event(event);
@@ -83,9 +80,8 @@ void GlViewMapWidget::slotOnIntruderEvent(NotifyEventI::IntruderEventData info)
 
 void GlViewMapWidget::init()
 {
-    this->setFixedSize(1055, 926);
     m_backgroundImg.load("images/glview/map.png");
-
+    setFixedSize(m_backgroundImg.size());
 #if 1
     QHBoxLayout *mainHlay = new QHBoxLayout;
     this->setLayout(mainHlay);
