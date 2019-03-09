@@ -28,7 +28,7 @@
 CombinationPage::CombinationPage( WidgetI *parent):
     WidgetI(parent)
 {
-    setObjectName(tr("Combination search"));
+    setObjectName(tr("Federated Search"));
     imageBtn_ = new QPushButton;
     searchBtn_ = new QPushButton(tr("Search"));
     similarityL_ = new QLabel(tr("Similarity"));

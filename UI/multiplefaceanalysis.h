@@ -17,6 +17,8 @@ QT_FORWARD_DECLARE_CLASS(QComboBox)
 QT_FORWARD_DECLARE_CLASS(QLineEdit)
 QT_FORWARD_DECLARE_CLASS(QTableWidget)
 QT_FORWARD_DECLARE_CLASS(QHBoxLayout)
+QT_FORWARD_DECLARE_CLASS(QGroupBox)
+QT_FORWARD_DECLARE_CLASS(QRadioButton)
 
 class NoDataTip;
 class PageIndicator;
@@ -64,6 +66,9 @@ private:
     void slotAddRow(QVector<RestServiceI::MNFaceAnalysisItem> info);
 
 private:
+    QGroupBox *libGroupBox_{nullptr};
+    QRadioButton *markRadiuBtn_{nullptr},*registRadiuBtn_{nullptr};
+
     QPushButton *m_pBtnUploadFolder{nullptr};
     QLineEdit *m_pTxtFolderPath{nullptr};
 
@@ -96,8 +101,6 @@ private:
     QPushButton *m_pBtnOperation{nullptr};
     QList<QPushButton *> m_lstFaceLibTypes;
     QHBoxLayout *m_pFaceTypesHLay{nullptr};
-
-
 };
 
 #endif // MULTIPLEFACEANALYSIS_H

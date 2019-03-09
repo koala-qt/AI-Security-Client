@@ -46,8 +46,8 @@ TargetSearch::TargetSearch( WidgetI *parent):
     stackedW_->addWidget(multiPleSearchPage_);
     stackedW_->addWidget(facelinkPage_);
     stackedW_->addWidget(trackingPage_);
-    stackedW_->addWidget(m_pMultFaceAnalysis);
     stackedW_->addWidget(portraitSearchPage_);
+    stackedW_->addWidget(m_pMultFaceAnalysis);
     stackedW_->addWidget(videoAnalysisPage_);
     semanticSearchPage_->installEventFilter(this);
     faceSearchPage_->installEventFilter(this);
@@ -60,17 +60,14 @@ TargetSearch::TargetSearch( WidgetI *parent):
     itemData items;
     items.name = tr("Capture search");
     items.value = 0;
-    items.childrens << itemData{semanticSearchPage_->objectName(),0,QVector<itemData>()} << itemData{"Upload",1,QVector<itemData>()
+    items.childrens << itemData{semanticSearchPage_->objectName(),0,QVector<itemData>()} << itemData{tr("Upload Search"),1,QVector<itemData>()
                                                                                   << itemData{faceSearchPage_->objectName(),1,QVector<itemData>()}
                                                                                   << itemData{combinationPage_->objectName(),2,QVector<itemData>()}
                                                                                   << itemData{multiPleSearchPage_->objectName(),3,QVector<itemData>()}
                                                                                   << itemData{facelinkPage_->objectName(),4,QVector<itemData>()}
-                                                                                  << itemData{trackingPage_->objectName(),5,QVector<itemData>()}
-                                                                                  << itemData{m_pMultFaceAnalysis->objectName(),6,QVector<itemData>()}};
-    devicesVec << items;
-    items.childrens.clear();
-    items.name = portraitSearchPage_->objectName();
-    items.value = 7;
+                                                                                  << itemData{trackingPage_->objectName(),5,QVector<itemData>()}};
+    items.childrens << itemData{tr("Face Database Search"),6,QVector<itemData>() << itemData{portraitSearchPage_->objectName(),6,QVector<itemData>()}
+                                                                                 << itemData{m_pMultFaceAnalysis->objectName(),7,QVector<itemData>()}};
     devicesVec << items;
     items.childrens.clear();
     items.name = videoAnalysisPage_->objectName();

@@ -1069,12 +1069,13 @@ QString DLL::CloudHttpDao::portraitLibCompSearch(RestServiceI::PortraitLibCompAr
     imgBuf.open(QIODevice::WriteOnly);
     args.image.save(&imgBuf,"jpg");
     QString base64Str(imgStr.toBase64(QByteArray::Base64UrlEncoding));
-    QString postData = QObject::tr("similarity=%1&limit=%2&picture=%3&requireBase64=%4&personTypes=%5")
+    QString postData = QObject::tr("similarity=%1&limit=%2&picture=%3&requireBase64=%4&personTypes=%5&type=%6")
             .arg(args.similarity)
             .arg(args.limit)
             .arg(base64Str)
             .arg(args.bRequireBase64)
-            .arg(args.libType);
+            .arg(args.libType)
+            .arg(args.sourceType);
     if (args.nPersonId > 0)
     {
         postData.append(QString("&personId=%1").arg(args.nPersonId));
@@ -1191,12 +1192,13 @@ QString DLL::CloudHttpDao::mnFaceAnalysisSearch(RestServiceI::MNFaceAnalysisArgs
          imgsBase64StrList << imgStr.toBase64(QByteArray::Base64UrlEncoding);
      }
 
-    QString postData = QObject::tr("similarity=%1&limit=%2&requireBase64=%3&personTypes=%4&pictures=%5")
+    QString postData = QObject::tr("similarity=%1&limit=%2&requireBase64=%3&personTypes=%4&pictures=%5&type=%6")
             .arg(args.similarity)
             .arg(args.limit)
             .arg(args.bRequireBase64)
             .arg(args.libType)
-            .arg(imgsBase64StrList.join(','));
+            .arg(imgsBase64StrList.join(','))
+            .arg(args.sourceType);
     if (args.nPersonId > 0)
     {
         postData.append(QString("&personId=%1").arg(args.nPersonId));

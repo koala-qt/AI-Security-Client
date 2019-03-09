@@ -29,7 +29,7 @@
 FaceSearch::FaceSearch(WidgetI *parent):
     WidgetI(parent)
 {
-    setObjectName(tr("Search using an image"));
+    setObjectName(tr("Facial Images Search"));
     QVBoxLayout *mainLay = new QVBoxLayout;
     QHBoxLayout *hlay = new QHBoxLayout;
     m_imgBtn = new QPushButton;

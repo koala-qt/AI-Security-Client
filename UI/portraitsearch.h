@@ -14,6 +14,8 @@ QT_FORWARD_DECLARE_CLASS(QLineEdit)
 QT_FORWARD_DECLARE_CLASS(QCheckBox)
 QT_FORWARD_DECLARE_CLASS(QTabBar)
 QT_FORWARD_DECLARE_CLASS(QComboBox)
+QT_FORWARD_DECLARE_CLASS(QGroupBox)
+QT_FORWARD_DECLARE_CLASS(QRadioButton)
 QT_FORWARD_DECLARE_CLASS(QHBoxLayout)
 
 class PageIndicator;
@@ -95,5 +97,9 @@ private:
     QPushButton *m_pBtnOperation{nullptr};
     QList<QPushButton *> m_lstFaceLibTypes;
     QHBoxLayout *m_pFaceTypesHLay{nullptr};
+
+    //wang hualin
+    QGroupBox *libGroupbox_{nullptr};
+    QRadioButton *markLibRadiuBtn_{nullptr},*registRadiusBtn_{nullptr};
 };
 #endif // PORTRAITSEARCH_H

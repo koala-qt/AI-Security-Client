@@ -36,7 +36,7 @@
 SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     WidgetI(parent)
 {
-    setObjectName(tr("Capture History"));
+    setObjectName(tr("Historical Capture"));
     personTypeL_ = new QLabel(tr("Person Type"));
     personTypeCombox_ = new QComboBox;
     posL_ = new QLabel(tr("Position"));

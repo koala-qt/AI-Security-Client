@@ -14,6 +14,8 @@
 #include <QLineEdit>
 #include <QDateTimeEdit>
 #include <QComboBox>
+#include <QGroupBox>
+#include <QRadioButton>
 #include <QCursor>
 #include <QPainter>
 
@@ -28,7 +30,7 @@ const char* MNFaceTypeCheckedTag = "FaceTypeChecked";
 MultipleFaceAnalysis::MultipleFaceAnalysis(WidgetI *parent):
     WidgetI(parent)
 {
-    setObjectName(tr("Multiple face analysis"));
+    setObjectName(tr("Multiple Search"));
     init();
     setUserStyle(userStyle());
     getCameraInfo();
@@ -278,6 +280,7 @@ void MultipleFaceAnalysis::onBtnSearchClicked()
         }
     });
     RestServiceI::MNFaceAnalysisArgs args;
+    args.sourceType = markRadiuBtn_->isChecked() ? tr("1") : tr("2");
     args.strFolderPath = m_pTxtFolderPath->text();
     args.bRequireBase64 = true;
 #if 0
@@ -337,6 +340,15 @@ void MultipleFaceAnalysis::onBtnOperationClicked()
 
 void MultipleFaceAnalysis::init()
 {
+    libGroupBox_ = new QGroupBox;
+    markRadiuBtn_ = new QRadioButton(tr("mark"));
+    registRadiuBtn_ = new QRadioButton(tr("regist"));
+    markRadiuBtn_->setChecked(true);
+    QHBoxLayout *hlay = new QHBoxLayout;
+    hlay->addWidget(markRadiuBtn_);
+    hlay->addWidget(registRadiuBtn_);
+    libGroupBox_->setLayout(hlay);
+
     QVBoxLayout *mainLay = new QVBoxLayout;
     mainLay->setSpacing(20);
 
@@ -344,7 +356,7 @@ void MultipleFaceAnalysis::init()
     QVBoxLayout *topVLay = new QVBoxLayout;
     mainLay->addLayout(topVLay);
 
-    QHBoxLayout *hlay = new QHBoxLayout;
+    hlay = new QHBoxLayout;
     topVLay->addLayout(hlay);
     m_pBtnUploadFolder = new QPushButton(tr("Upload folder"));
     m_pBtnUploadFolder->setIcon(QIcon("images/m_n/uploadico.png"));
@@ -354,6 +366,7 @@ void MultipleFaceAnalysis::init()
     m_pTxtFolderPath = new QLineEdit;
     m_pTxtFolderPath->setReadOnly(true);
     hlay->addWidget(m_pTxtFolderPath);
+    hlay->addWidget(libGroupBox_);
     hlay->addStretch();
 
     m_pFaceTypesWgt = new QWidget;

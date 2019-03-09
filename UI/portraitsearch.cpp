@@ -6,6 +6,8 @@
 #include <QDebug>
 #include <QPushButton>
 #include <QCheckBox>
+#include <QRadioButton>
+#include <QGroupBox>
 #include <QTableWidget>
 #include <QLabel>
 #include <QLineEdit>
@@ -24,7 +26,7 @@ const char* FaceTypeCheckedTag = "FaceTypeChecked";
 PortraitSearch::PortraitSearch(WidgetI *parent):
     WidgetI(parent)
 {
-    setObjectName(tr("Portrait search"));
+    setObjectName(tr("Single Search"));
 
     init(); // init ui
     setUserStyle(userStyle());
@@ -265,6 +267,7 @@ void PortraitSearch::onBtnSearchClicked()
         args.nPersonId = 0;
     }
     args.strPersonName = m_pTxtName->text();
+    args.sourceType = markLibRadiuBtn_->isChecked() ? tr("1") : tr("2");
     serviceI->portraitLibCompSearch(args);
     label->show(500);
     //m_faceLibBar->setEnabled(false);
@@ -328,9 +331,22 @@ void PortraitSearch::init()
     m_mapFaceLibTypes.insert(ImmigrationLibrary, tr("Immigration"));
     m_mapFaceLibTypes.insert(IDCenter, tr("ID center"));
 #endif
+    //add wang hua lin
+    libGroupbox_ = new QGroupBox;
+    QPalette pal = libGroupbox_->palette();
+    pal.setColor(QPalette::Base,Qt::transparent);
+    libGroupbox_->setPalette(pal);
+    QHBoxLayout *hlay = new QHBoxLayout;
+    markLibRadiuBtn_ = new QRadioButton(tr("mark"));
+    registRadiusBtn_ = new QRadioButton(tr("regist"));
+    markLibRadiuBtn_->setChecked(true);
+    hlay->addWidget(markLibRadiuBtn_);
+    hlay->addWidget(registRadiusBtn_);
+    libGroupbox_->setLayout(hlay);
+
     QVBoxLayout *mainLay = new QVBoxLayout;
     mainLay->setSpacing(20);
-    QHBoxLayout *hlay = new QHBoxLayout;
+    hlay = new QHBoxLayout;
     hlay->setMargin(0);
     m_btnImg = new QPushButton;
     connect(m_btnImg, SIGNAL(clicked(bool)), this, SLOT(onBtnImgClicked()));
@@ -376,6 +392,7 @@ void PortraitSearch::init()
     m_pFaceTypesHLay->setMargin(2);
     m_pFaceTypesWgt->setLayout(m_pFaceTypesHLay);
     topHlay->addWidget(m_pFaceTypesWgt);
+    topHlay->addWidget(libGroupbox_);
     topHlay->addStretch();
     QHBoxLayout *bottomHlay = new QHBoxLayout;
     bottomHlay->setSpacing(15);

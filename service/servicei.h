@@ -340,15 +340,16 @@ public:
      */
     struct PortraitLibCompArgs
     {
+        QString sourceType; //从哪里注册的，证件库，标注库
         //int pageNo;
         //int pageSize;
-        QImage image;
         QString libType; // Not ID.This is the field no.
         int nPersonId;
         QString strPersonName; // Name
         float similarity;
         int limit;
         bool bRequireBase64; // Whether to return image data.
+        QImage image;
     };
     /**
      * Added by aihc for Portrait library comparison.
@@ -356,12 +357,12 @@ public:
      */
     struct PortraitLibCompItem
     {
-        QImage faceImg; // picture
         QString strPersonName;
         int nPersonId;
         double dSimilarity;
         QString strBigType;
         QString strSubType;
+        QImage faceImg; // picture
     };
 
     // m:n start
@@ -371,6 +372,7 @@ public:
      */
     struct MNFaceAnalysisArgs
     {
+        QString sourceType;
         QString strFolderPath;
         int cameraId;
         QDateTime startTime;
