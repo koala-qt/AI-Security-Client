@@ -600,7 +600,7 @@ QString DLL::CloudHttpDao::captureSearch(RestServiceI::CaptureSearchArgs &args, 
             .arg(args.pageCount);
     qDebug() << urlStr;
     qDebug() << postData;
-    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),8);
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),30);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -649,7 +649,7 @@ QString DLL::CloudHttpDao::semanticSearch(RestServiceI::SemanticSearchArgs &args
             .arg(args.pageSize);
     qDebug() << urlStr;
     qDebug() << postData;
-    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),5);
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),30);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }

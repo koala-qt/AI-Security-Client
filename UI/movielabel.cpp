@@ -120,7 +120,7 @@ void MovieLabel::paintEvent(QPaintEvent *event)
 #if 1
     QPainter p(this);
     QRect imgRect(50, 50, 100, 100);
-    p.drawImage(60, 0, m_info.sceneImg, 0, 0, m_geometry, m_geometry);
+    p.drawImage(60, 0, m_info.sceneImg.scaled(100,100), 0, 0, m_geometry, m_geometry);
 #endif
     QWidget::paintEvent(event);
 }
@@ -185,7 +185,6 @@ void MovieLabel::setGeometry(const qreal geometry)
         emit geometryChanged();
     }
     update();
-
 }
 
 qreal MovieLabel::getGeometry()

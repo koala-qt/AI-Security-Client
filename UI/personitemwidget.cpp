@@ -61,6 +61,11 @@ PersonItemWidget::PersonItemWidget(WidgetI *parent):
 
     f.setPixelSize(18);
     similrityL_->setFont(f);
+
+    captredImgL_->setFixedSize(35,35);
+    captredImgL_->setScaledContents(true);
+    registedImgL_->setFixedSize(captredImgL_->size());
+    registedImgL_->setScaledContents(true);
 }
 
 PersonItemWidget::~PersonItemWidget()
@@ -102,7 +107,6 @@ void PersonItemWidget::setInfos(const NotifyEventI::PersonEventData &data)
 void PersonItemWidget::setUserStyle(int s)
 {
     if(s == 0){
-        qDebug() << "0000000000000000000000000000000000000000000000000";
         personTypeL_->setStyleSheet("QLabel{"
                                     "color: rgb(126,140,177);"
                                     "background-color: transparent"
