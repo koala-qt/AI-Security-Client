@@ -1,0 +1,115 @@
+#include "glviewmapwidget.h"
+
+#include <QLabel>
+#include <QPainter>
+#include <QVBoxLayout>
+#include <QApplication>
+
+#include "../waitinglabel.h"
+#include "../informationdialog.h"
+
+GlViewMapWidget::GlViewMapWidget(WidgetI *parent):
+    WidgetI(parent)
+{
+    init();
+}
+
+void GlViewMapWidget::setUserStyle(int style)
+{
+    if (0 == style)
+    {
+        QString strCommStyle = "font-size:56px;color:white;font:bold;";
+        m_labLocationAccess->setStyleSheet(strCommStyle);
+        m_labIDNumbers->setStyleSheet(strCommStyle);
+        m_labCameraAccess->setStyleSheet(strCommStyle);
+        m_labDataStorage->setStyleSheet(strCommStyle);
+    }
+}
+
+void GlViewMapWidget::paintEvent(QPaintEvent *event)
+{
+    Q_UNUSED(event)
+    QPainter p(this);
+    p.drawImage(rect(), m_backgroundImg);
+}
+
+bool GlViewMapWidget::event(QEvent *event)
+{
+    if ((event->type() == QEvent::Show))
+    {
+        queryTopStatistics();
+        return true;
+    }
+    return WidgetI::event(event);
+}
+
+void GlViewMapWidget::init()
+{
+    //this->setFixedSize(1055, 926);
+    m_backgroundImg.load("images/glview/map.png");
+
+#if 1
+    QHBoxLayout *mainHlay = new QHBoxLayout;
+    this->setLayout(mainHlay);
+    mainHlay->addSpacing(this->width() - 200);
+    QVBoxLayout *pMidVlay = new QVBoxLayout;
+    pMidVlay->addSpacing(300);
+    mainHlay->addLayout(pMidVlay);
+    QString strTitleStyle = "font-size:18px;color:white;font:bold;";
+    QLabel *labTitle = new QLabel(tr("Location Access"));
+    labTitle->setStyleSheet(strTitleStyle);
+    labTitle->setAlignment(Qt::AlignRight);
+    pMidVlay->addWidget(labTitle);
+    m_labLocationAccess = new QLabel(tr("100"));
+    m_labLocationAccess->setAlignment(Qt::AlignRight);
+    pMidVlay->addWidget(m_labLocationAccess);
+    labTitle = new QLabel(tr("Camera Access"));
+    labTitle->setStyleSheet(strTitleStyle);
+    labTitle->setAlignment(Qt::AlignRight);
+    pMidVlay->addWidget(labTitle);
+    m_labCameraAccess = new QLabel(tr("1200"));
+    m_labCameraAccess->setAlignment(Qt::AlignRight);
+    pMidVlay->addWidget(m_labCameraAccess);
+    labTitle = new QLabel(tr("Total ID Numbers"));
+    labTitle->setStyleSheet(strTitleStyle);
+    labTitle->setAlignment(Qt::AlignRight);
+    pMidVlay->addWidget(labTitle);
+    m_labIDNumbers = new QLabel(tr("710"));
+    m_labIDNumbers->setAlignment(Qt::AlignRight);
+    pMidVlay->addWidget(m_labIDNumbers);
+    labTitle = new QLabel(tr("Data Storage"));
+    labTitle->setStyleSheet(strTitleStyle);
+    labTitle->setAlignment(Qt::AlignRight);
+    pMidVlay->addWidget(labTitle);
+    m_labDataStorage = new QLabel(tr("10GB"));
+    m_labDataStorage->setAlignment(Qt::AlignRight);
+    pMidVlay->addWidget(m_labDataStorage);
+
+#endif 0
+}
+
+void GlViewMapWidget::queryTopStatistics()
+{
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
+    WaitingLabel *label = new WaitingLabel(this);
+    connect(serviceI, &RestServiceI::sigError, this, [this, label](const QString str){
+        label->close();
+        delete label;
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(userStyle());
+        infoDialog.setMessage(str);
+        infoDialog.exec();
+    });
+    connect(serviceI, &RestServiceI::sigGLViewTopStatisResult, this, [&, label](const RestServiceI::GLViewTopStatistics value){
+        m_labLocationAccess->setText(value.strLocationAccess);
+        m_labCameraAccess->setText(value.strCameraAccess);
+        m_labIDNumbers->setText(value.strTotalIDNumbers);
+        m_labDataStorage->setText(value.strDataStorage);
+        label->close();
+        delete label;
+
+    });
+    serviceI->queryGLViewTopStatistics("2019-03-02");
+    label->show(500);
+}
