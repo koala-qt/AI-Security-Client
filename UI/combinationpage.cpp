@@ -271,7 +271,7 @@ bool CombinationPage::eventFilter(QObject *watched, QEvent *event)
     if((backW == faceDataBackW_ || backW == bodyDataBackW_ || backW == conditionBackW_) && event->type() == QEvent::Paint){
         QPainter p(backW);
         p.setPen(Qt::NoPen);
-        p.setBrush(QColor(48,54,68));
+        p.setBrush(QColor(0,0,0,102));
         p.drawRoundedRect(backW->rect().adjusted(0,0,-p.pen().width(),-p.pen().width()),4,4);
     }
 

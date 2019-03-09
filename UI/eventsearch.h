@@ -21,6 +21,7 @@ public:
     void setUserStyle(int s) override;
 
 protected:
+    void paintEvent(QPaintEvent *event) override;
     bool eventFilter(QObject *watched, QEvent *event)override;
     bool event(QEvent *event) override;
 
@@ -33,6 +34,7 @@ private:
     QComboBox *m_positionCombox{nullptr},*m_waringTyleCombox{nullptr};
     QWidget *centerBack_{nullptr};
 
+    QImage backImg_;
     QString javaHost_;
     QString curCameraid_,curWaringType_;
     QDateTime curStartDateTime_,curEndDateTime_;

@@ -25,6 +25,7 @@ public:
     void setUserStyle(int s) override;
 
 protected:
+    void paintEvent(QPaintEvent *event) override;
     bool eventFilter(QObject *watched, QEvent *event) override;
 
 private:
@@ -48,6 +49,8 @@ private:
     // Added by aihc for Multiple face analysis.
     MultipleFaceAnalysis *m_pMultFaceAnalysis = Q_NULLPTR;
     void createTreeItem(QTreeWidget *treeW,QTreeWidgetItem *parentItem,itemData &items);
+
+    QImage backImg_;
 
 private slots:
     void slotTreeWidgetItemClicked(QTreeWidgetItem*,int column);

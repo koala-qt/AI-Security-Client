@@ -12,6 +12,7 @@
 #include <QDesktopWidget>
 #include <QPushButton>
 #include <QMenu>
+#include <QLinearGradient>
 #include <QDynamicPropertyChangeEvent>
 #include "UI/targetsearch.h"
 #include "UI/videoplayback.h"
@@ -105,6 +106,7 @@ MainWindow::MainWindow(WidgetI *parent)
     });
     resourceXialaMenu_->addAction(ac);
 
+    topWgt_->setFixedHeight(60);
     QHBoxLayout *hlay = new QHBoxLayout;
     hlay->addWidget(logoLabel_);
     hlay->addWidget(appNameL_);
@@ -112,9 +114,9 @@ MainWindow::MainWindow(WidgetI *parent)
     hlay->addWidget(m_topList);
     hlay->setContentsMargins(15, 0, 0, 0);
     topWgt_->setLayout(hlay);
-    mainLay->addWidget(topWgt_,1);
+    mainLay->addWidget(topWgt_);//1
     mainLay->addWidget(topBorderLine_);
-    mainLay->addWidget(m_centerW,16);
+    mainLay->addWidget(m_centerW);//16
     mainLay->setMargin(0);
     mainLay->setSpacing(0);
     setLayout(mainLay);
@@ -123,6 +125,7 @@ MainWindow::MainWindow(WidgetI *parent)
     m_topList->itemClicked(m_topList->item(0));
     m_topList->setCurrentRow(0);
     m_topList->currentItemChanged(m_topList->item(0),nullptr);
+    appNameL_->hide();
 }
 
 MainWindow::~MainWindow()
@@ -134,12 +137,12 @@ void MainWindow::setUserStyle(int s)
 {
     QPalette pal;
     QFont f = font();
-    f.setFamily("Arial"); //DINCond-Bold、PingFang SC Regular、微软雅黑 Microsoft YaHei UI
+    f.setFamily("SF Pro Text"); //DINCond-Bold、PingFang SC Regular、微软雅黑 Microsoft YaHei UI
     setFont(f);
 
     f = m_topList->font();
-    f.setFamily(font().family());
-    f.setPixelSize(25);
+    f.setFamily(tr("SF Pro Text"));
+    f.setPixelSize(16);
     m_topList->setFont(f);
 
     f = appNameL_->font();
@@ -156,11 +159,6 @@ void MainWindow::setUserStyle(int s)
         pal.setColor(QPalette::Background,QColor(37,41,52));
         m_centerW->setPalette(pal);
         m_centerW->setAutoFillBackground(true);
-
-        pal = topWgt_->palette();
-        pal.setColor(QPalette::Background,QColor(48,54,68));
-        topWgt_->setPalette(pal);
-        topWgt_->setAutoFillBackground(true);
 
         pal = topBorderLine_->palette();
         topBorderLine_->setLineWidth(topBorderLine_->height());
@@ -201,6 +199,20 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 {
     for(int i = 0; i < m_topList->count(); i++){
         m_topList->item(i)->setSizeHint(QSize(m_topList->item(i)->sizeHint().width(),m_topList->height() - 2 * m_topList->frameWidth()));
+    }
+    if(userStyle() == 0){
+        QPalette pal = topWgt_->palette();
+        QLinearGradient backGradient;
+        backGradient.setColorAt(0.0,QColor(70,95,122));
+        backGradient.setColorAt(0.46,QColor(40,55,73));
+        backGradient.setColorAt(0.49,QColor(28,40,52));
+        backGradient.setColorAt(1.0,QColor(43,62,83));
+        backGradient.setStart(topWgt_->rect().topLeft());
+        backGradient.setFinalStop(topWgt_->rect().bottomLeft());
+        backGradient.setSpread(QGradient::RepeatSpread);
+        pal.setBrush(QPalette::Background,backGradient);
+        topWgt_->setPalette(pal);
+        topWgt_->setAutoFillBackground(true);
     }
     return WidgetI::resizeEvent(event);
 }

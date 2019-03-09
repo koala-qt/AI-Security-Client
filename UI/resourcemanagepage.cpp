@@ -12,6 +12,7 @@ ResourceManagePage::ResourceManagePage(WidgetI *parent):
     WidgetI(parent)
 {
     setObjectName(tr("Resource"));
+    backImg_.load(tr("images/Mask.png"));
     QHBoxLayout *mainLay = new QHBoxLayout;
     webView_ = new QWebEngineView;
     mainLay->addWidget(webView_);
@@ -44,6 +45,13 @@ void ResourceManagePage::loadWebPage(int index)
     }else if(index == 2){
         webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + tr("/jsHtml/resource/markperson/index.html")));
     }
+}
+
+void ResourceManagePage::paintEvent(QPaintEvent *event)
+{
+    QPainter p(this);
+    p.setPen(Qt::NoPen);
+    p.drawImage(rect().adjusted(0,0,-p.pen().width(),-p.pen().width()),backImg_);
 }
 
 void ResourceManagePage::slotLoadRequest(QWebEngineDownloadItem *download)

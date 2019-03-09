@@ -28,31 +28,32 @@ EventSearch::EventSearch( WidgetI *parent):
     WidgetI(parent)
 {
     setObjectName(tr("事件检索"));
+    backImg_.load(tr("images/Mask.png"));
     QVBoxLayout *mainLay = new QVBoxLayout;
     QHBoxLayout *hlay = new QHBoxLayout;
     hlay->setSpacing(15);
-    m_positionL = new QLabel(tr("区域位置"));
+    m_positionL = new QLabel(tr("Regional location"));
     m_positionCombox = new QComboBox;
     m_positionCombox->setMinimumSize(90,40);
     m_positionCombox->setIconSize(QSize(1,30));
     m_positionCombox->setFixedHeight(40);
     m_positionCombox->setFocusPolicy(Qt::NoFocus);
-    m_waringTyleL = new QLabel(tr("报警类型"));
+    m_waringTyleL = new QLabel(tr("Alarm type"));
     m_waringTyleCombox = new QComboBox;
     m_waringTyleCombox->setIconSize(QSize(1,30));
     m_waringTyleCombox->setFixedHeight(40);
     m_waringTyleCombox->setFocusPolicy(Qt::NoFocus);
-    m_startTimeL = new QLabel(tr("开始时间"));
+    m_startTimeL = new QLabel(tr("Starting time"));
     m_startTimeEdit = new QDateTimeEdit;
     m_startTimeEdit->setDisplayFormat("yyyy-MM-dd HH:mm:ss");
     m_startTimeEdit->setDate(QDateTime::currentDateTime().addDays(-1).date());
     m_startTimeEdit->setMinimumSize(160,40);
-    m_endTimeL = new QLabel(tr("结束时间"));
+    m_endTimeL = new QLabel(tr("Ending time"));
     m_endTimeEdit = new QDateTimeEdit;
     m_endTimeEdit->setDisplayFormat("yyyy-MM-dd HH:mm:ss");
     m_endTimeEdit->setDate(QDateTime::currentDateTime().addDays(1).date());
     m_endTimeEdit->setMinimumSize(160,40);
-    m_searchBtn = new QPushButton(tr("检索"));
+    m_searchBtn = new QPushButton(tr("Search"));
     m_searchBtn->setFixedSize(90,40);
     hlay->addWidget(m_positionL);
     hlay->addWidget(m_positionCombox);
@@ -165,9 +166,6 @@ void EventSearch::setUserStyle(int s)
     QPalette pal;
     QFont f;
     if(s == 0){
-        f = font();
-        f.setFamily("Arial");
-        setFont(f);
         f = m_positionL->font();
         f.setPixelSize(18);
         m_positionL->setFont(f);
@@ -354,6 +352,13 @@ void EventSearch::setUserStyle(int s)
         m_pageindicator->setUserStyle();
         noDataTipW_->setUserStyle(s);
     }
+}
+
+void EventSearch::paintEvent(QPaintEvent *event)
+{
+    QPainter p(this);
+    p.setPen(Qt::NoPen);
+    p.drawImage(rect().adjusted(0,0,-p.pen().width(),-p.pen().width()),backImg_);
 }
 
 bool EventSearch::eventFilter(QObject *watched, QEvent *event)
