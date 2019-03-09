@@ -17,7 +17,7 @@
 #include "UI/globalview/rightstatisticswebview.h"
 #include "waitinglabel.h"
 #include "informationdialog.h"
-#include "UI/globalview/movielabel.h"
+#include "UI/movielabel.h"
 
 GolbalViewWidget::GolbalViewWidget(WidgetI *parent):
     WidgetI(parent)
@@ -26,28 +26,15 @@ GolbalViewWidget::GolbalViewWidget(WidgetI *parent):
     init();
     setUserStyle(userStyle());
     getCameraInfo();
-    notifyServiceI_ = reinterpret_cast<NotifyServiceI*>(qApp->property("NotifyServiceI").toULongLong());
-    connect(notifyServiceI_,SIGNAL(sigIntruderEvent(NotifyEventI::IntruderEventData)),this,SLOT(slotOnIntruderEvent(NotifyEventI::IntruderEventData)),Qt::UniqueConnection);
+
 }
 
 void GolbalViewWidget::setUserStyle(int style)
 {
     if (0 == style)
     {
-#if 0
-        m_topWgt->setStyleSheet("QWidget{color:white;background-color:#41495C;}"
-                                ".QWidget{max-height:100px;min-height:80px;}");
-#endif
         this->setStyleSheet(".QWidget{background-image:url(images/glview/glviewbg.png);}");
-        //m_btnDate->setStyleSheet("background-color:#41495C;");
-#if 0
-        m_pMidWgt->setStyleSheet("background-color:transparent;min-height:600px;color:white;");
-        QString strCommStyle = "font-size:56px;color:white;font:bold;";
-        m_labLocationAccess->setStyleSheet(strCommStyle);
-        m_labIDNumbers->setStyleSheet(strCommStyle);
-        m_labCameraAccess->setStyleSheet(strCommStyle);
-        m_labDataStorage->setStyleSheet(strCommStyle);
-#endif
+
     }
 }
 
@@ -85,17 +72,24 @@ void GolbalViewWidget::init()
 {
     m_backgroundImg.load("images/glview/bg1.png");
 
-    QHBoxLayout *mainHLay = new QHBoxLayout;
-    mainHLay->setMargin(46);
-    this->setLayout(mainHLay);
+    m_mapWgt = new GlViewMapWidget(this);
+    m_mapWgt->move(450, 0);
 
-    mainHLay->addSpacing(400);
-    QVBoxLayout *pMidVlay = new QVBoxLayout;
-    mainHLay->addLayout(pMidVlay);
-    m_mapWgt = new GlViewMapWidget;
-    pMidVlay->addWidget(m_mapWgt);
-    pMidVlay->addSpacing(228);
-    mainHLay->addSpacing(400);
+    // web
+    m_pBottomWeb = new BottomStatisticsWebView(this);
+    m_pBottomWeb->move(0, 0);
+
+    //    QHBoxLayout *mainHLay = new QHBoxLayout;
+    //    mainHLay->setMargin(46);
+    //    this->setLayout(mainHLay);
+
+    //    mainHLay->addSpacing(400);
+    //    QVBoxLayout *pMidVlay = new QVBoxLayout;
+    //    mainHLay->addLayout(pMidVlay);
+    //    m_mapWgt = new GlViewMapWidget;
+    //    pMidVlay->addWidget(m_mapWgt);
+    //    pMidVlay->addSpacing(228);
+    //    mainHLay->addSpacing(400);
     //
 #if 0
     QHBoxLayout *hLay = new QHBoxLayout;
