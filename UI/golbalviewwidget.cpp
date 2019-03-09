@@ -1,5 +1,6 @@
 #include "golbalviewwidget.h"
 
+#include <random>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QDebug>
@@ -8,12 +9,15 @@
 #include <QGridLayout>
 #include <QWidget>
 #include <QApplication>
+#include <QSettings>
+#include <QFile>
 
 #include "UI/globalview/bottomstatisticswebview.h"
 #include "UI/globalview/leftstatisticswebview.h"
 #include "UI/globalview/rightstatisticswebview.h"
 #include "waitinglabel.h"
 #include "informationdialog.h"
+#include "UI/globalview/movielabel.h"
 
 GolbalViewWidget::GolbalViewWidget(WidgetI *parent):
     WidgetI(parent)
@@ -21,93 +25,102 @@ GolbalViewWidget::GolbalViewWidget(WidgetI *parent):
     setObjectName(tr("Golbal View"));
     init();
     setUserStyle(userStyle());
+    getCameraInfo();
+    notifyServiceI_ = reinterpret_cast<NotifyServiceI*>(qApp->property("NotifyServiceI").toULongLong());
+    connect(notifyServiceI_,SIGNAL(sigIntruderEvent(NotifyEventI::IntruderEventData)),this,SLOT(slotOnIntruderEvent(NotifyEventI::IntruderEventData)),Qt::UniqueConnection);
 }
 
 void GolbalViewWidget::setUserStyle(int style)
 {
     if (0 == style)
     {
+#if 0
         m_topWgt->setStyleSheet("QWidget{color:white;background-color:#41495C;}"
                                 ".QWidget{max-height:100px;min-height:80px;}");
+#endif
+        this->setStyleSheet(".QWidget{background-image:url(images/glview/glviewbg.png);}");
         //m_btnDate->setStyleSheet("background-color:#41495C;");
-        m_pMidWgt->setStyleSheet("background-color:#41495C;min-height:600px;");
+#if 0
+        m_pMidWgt->setStyleSheet("background-color:transparent;min-height:600px;color:white;");
+        QString strCommStyle = "font-size:56px;color:white;font:bold;";
+        m_labLocationAccess->setStyleSheet(strCommStyle);
+        m_labIDNumbers->setStyleSheet(strCommStyle);
+        m_labCameraAccess->setStyleSheet(strCommStyle);
+        m_labDataStorage->setStyleSheet(strCommStyle);
+#endif
     }
+}
+
+void GolbalViewWidget::paintEvent(QPaintEvent *event)
+{
+    Q_UNUSED(event)
+    QPainter p(this);
+    p.drawImage(rect(), m_backgroundImg);
 }
 
 bool GolbalViewWidget::event(QEvent *event)
 {
     if ((event->type() == QEvent::Show))
     {
-        queryTopStatistics();
+        //queryTopStatistics();
         return true;
     }
     return WidgetI::event(event);
 }
 
+void GolbalViewWidget::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)
+{
+    for (RestServiceI::CameraInfo &info : data)
+    {
+        addDevice(info);
+    }
+}
+
+void GolbalViewWidget::slotOnIntruderEvent(NotifyEventI::IntruderEventData)
+{
+
+}
+
 void GolbalViewWidget::init()
 {
-    QVBoxLayout *mainVLay = new QVBoxLayout;
-    mainVLay->setMargin(5);
-    this->setLayout(mainVLay);
-    m_topWgt = new QWidget;
-    m_topWgt->setContentsMargins(5, 5, 5, 5);
-    mainVLay->addWidget(m_topWgt);
-    QGridLayout *topGridLay = new QGridLayout;
-    topGridLay->setMargin(0);
-    topGridLay->setVerticalSpacing(0);
-    topGridLay->setColumnStretch(0, 1);
-    topGridLay->setColumnStretch(1, 1);
-    topGridLay->setColumnStretch(2, 1);
-    topGridLay->setColumnStretch(3, 1);
-    topGridLay->setRowStretch(0, 1);
-    topGridLay->setRowStretch(1, 1);
-    topGridLay->setSizeConstraint(QLayout::SetDefaultConstraint);
-    m_topWgt->setLayout(topGridLay);
-    QLabel *labTitle = new QLabel(tr("Location Access"));
-    labTitle->setAlignment(Qt::AlignCenter);
-    topGridLay->addWidget(labTitle, 0, 0, 1, 1);
-    m_labLocationAccess = new QLabel(tr("100"));
-    m_labLocationAccess->setAlignment(Qt::AlignCenter);
-    topGridLay->addWidget(m_labLocationAccess, 1, 0, 1, 1);
-    labTitle = new QLabel(tr("Camera Access"));
-    labTitle->setAlignment(Qt::AlignCenter);
-    topGridLay->addWidget(labTitle, 0 , 1, 1, 1);
-    m_labCameraAccess = new QLabel(tr("1200"));
-    m_labCameraAccess->setAlignment(Qt::AlignCenter);
-    topGridLay->addWidget(m_labCameraAccess, 1, 1, 1, 1);
-    labTitle = new QLabel(tr("Total ID Numbers"));
-    labTitle->setAlignment(Qt::AlignCenter);
-    topGridLay->addWidget(labTitle, 0, 2, 1, 1);
-    m_labIDNumbers = new QLabel(tr("710"));
-    m_labIDNumbers->setAlignment(Qt::AlignCenter);
-    topGridLay->addWidget(m_labIDNumbers, 1, 2, 1, 1);
-    labTitle = new QLabel(tr("Data Storage"));
-    labTitle->setAlignment(Qt::AlignCenter);
-    topGridLay->addWidget(labTitle, 0, 3, 1, 1);
-    m_labDataStorage = new QLabel(tr("10GB"));
-    m_labDataStorage->setAlignment(Qt::AlignCenter);
-    topGridLay->addWidget(m_labDataStorage, 1, 3, 1, 1);
-    topGridLay->setAlignment(Qt::AlignCenter);
-    m_btnDate = new QPushButton(tr("2019-3-15"));
-    topGridLay->addWidget(m_btnDate, 0, 4, 1, 1);
-    topGridLay->addWidget(new QLabel, 1, 4, 1, 1);
+    m_backgroundImg.load("images/glview/bg1.png");
 
+    QHBoxLayout *mainHLay = new QHBoxLayout;
+    mainHLay->setMargin(46);
+    this->setLayout(mainHLay);
+
+    mainHLay->addSpacing(400);
+    QVBoxLayout *pMidVlay = new QVBoxLayout;
+    mainHLay->addLayout(pMidVlay);
+    m_mapWgt = new GlViewMapWidget;
+    pMidVlay->addWidget(m_mapWgt);
+    pMidVlay->addSpacing(228);
+    mainHLay->addSpacing(400);
     //
+#if 0
     QHBoxLayout *hLay = new QHBoxLayout;
     hLay->setMargin(0);
-    mainVLay->addLayout(hLay);
-    m_pLeftWeb = new LeftStatisticsWebView;
+    mainHLay->addLayout(hLay);
     hLay->addWidget(m_pLeftWeb);
     QVBoxLayout *midVLay = new QVBoxLayout;
     hLay->addLayout(midVLay);
     m_pMidWgt = new QWidget;
-    midVLay->addWidget(m_pMidWgt);
+    // mid part
+    QHBoxLayout *pMidHlay = new QHBoxLayout;
+    m_pMidWgt->setLayout(pMidHlay);
+    pMidHlay->addStretch();
+    QVBoxLayout *pMidVlay = new QVBoxLayout;
+    pMidHlay->addLayout(pMidVlay);
+    pMidVlay->addSpacing(600);
+    QString strTitleStyle = "font-size:18px;color:white;font:bold;";
+
     m_pBottomWeb = new BottomStatisticsWebView;
+    m_pBottomWeb->setFixedHeight(228);
     midVLay->addWidget(m_pBottomWeb);
     m_pRightWeb = new RightStatisticsWebView;
+    m_pRightWeb->setFixedWidth(400);
     hLay->addWidget(m_pRightWeb);
-    mainVLay->addStretch();
-
+#endif
 }
 
 void GolbalViewWidget::queryTopStatistics()
@@ -134,4 +147,45 @@ void GolbalViewWidget::queryTopStatistics()
     });
     serviceI->queryGLViewTopStatistics("2019-03-02");
     label->show(500);
+}
+
+void GolbalViewWidget::getCameraInfo()
+{
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
+    connect(serviceI,SIGNAL(sigCameraInfo(QVector<RestServiceI::CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<RestServiceI::CameraInfo>)));
+    serviceI->getCameraInfo();
+}
+
+void GolbalViewWidget::addDevice(RestServiceI::CameraInfo &info)
+{
+#if 0
+    std::random_device device;
+    std::mt19937 gen(device());
+    std::uniform_int_distribution<int> dis(-50, 50);
+
+    MovieLabel *ml = new MovieLabel(info, m_pMidWgt); // 更改父级轻松搞定
+    ml->setFixedSize(80, 65);
+    QRect cr = ml->geometry();
+    QString filePath = qApp->applicationDirPath() + "/position/"
+            + info.cameraId + ".ini";
+    if (QFile::exists(filePath))
+    {
+        QSettings fileCfg(filePath, QSettings::IniFormat);
+        QPoint point = fileCfg.value("point").toPoint();
+        ml->move(point);
+    }
+    else
+    {
+        //cr.moveCenter(rect().center());
+        cr.moveCenter(m_pMidWgt->rect().center());
+        ml->move(cr.topLeft() + QPoint(dis(gen), dis(gen)));
+    }
+    ml->setInfo(info.cameraPos);
+    QPalette pal = ml->palette();
+    pal.setColor(QPalette::Foreground, Qt::white);
+    ml->setPalette(pal);
+    ml->show();
+    m_hashDevices.insert(info.cameraPos, ml);
+#endif
 }

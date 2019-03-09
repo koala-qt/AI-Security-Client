@@ -15,6 +15,6 @@ RightStatisticsWebView::RightStatisticsWebView(QWidget *parent)
     channel->registerObject("Bridge", qobject_cast<QObject*>(m_pWebBridge));
     page()->setWebChannel(channel);
     //load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/tree.html"));
-    page()->setBackgroundColor(QColor(66,66,66,20));
+    page()->setBackgroundColor(Qt::transparent);
     setContextMenuPolicy(Qt::NoContextMenu);
 }
