@@ -175,7 +175,7 @@ void MultipleFaceAnalysis::setUserStyle(int style)
         m_pBtnSearch->setStyleSheet("QPushButton{"
                                    "border: 0px;"
                                    "color:white;"
-                                   "font-size:12px;width:156px;height:34px;font-family:Regular;"
+                                   "font-size:12px;width:156px;height:42px;font-family:Regular;"
                                    "border-image:url(images/portraitlibrary/search.png);"
                                    "}"
                                    "QPushButton:pressed{"
