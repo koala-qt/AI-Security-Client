@@ -101,5 +101,8 @@ private:
     //wang hualin
     QGroupBox *libGroupbox_{nullptr};
     QRadioButton *markLibRadiuBtn_{nullptr},*registRadiusBtn_{nullptr};
+
+    QLabel *m_pLabDbTitle{nullptr};
+    QComboBox *m_pDbType{nullptr};
 };
 #endif // PORTRAITSEARCH_H

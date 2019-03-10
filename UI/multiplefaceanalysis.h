@@ -101,6 +101,8 @@ private:
     QPushButton *m_pBtnOperation{nullptr};
     QList<QPushButton *> m_lstFaceLibTypes;
     QHBoxLayout *m_pFaceTypesHLay{nullptr};
+    QLabel *m_pLabDbTitle{nullptr};
+    QComboBox *m_pDbType{nullptr};
 };
 
 #endif // MULTIPLEFACEANALYSIS_H

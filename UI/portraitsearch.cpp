@@ -50,6 +50,7 @@ void PortraitSearch::setUserStyle(int s)
                                 "}");
         QString commStyle = "font:16px;color:#7E8CB1;font-family:PingFang SC Regular;";
         m_pLabID->setStyleSheet(commStyle);
+        m_pLabSimilary->setStyleSheet(commStyle);
         m_txtID->setStyleSheet("width:150px;max-width:250px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;");
         m_pLabName->setStyleSheet("font:16px;color:#7E8CB1;font-family:PingFang SC Regular;width:40px;");
         m_pTxtName->setStyleSheet(m_txtID->styleSheet());
@@ -66,7 +67,7 @@ void PortraitSearch::setUserStyle(int s)
                                      "outline: 0px;color:white;"
                                      "selection-background-color: #4741F2;"
                                      "}");
-        m_pTxtSimilary->setStyleSheet("width:70px;max-width:250px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;");
+        m_pTxtSimilary->setStyleSheet("width:180px;max-width:250px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;");
 #if 0
         m_faceLibBar->setStyleSheet("QTabBar{border-image:url(images/portraitlibrary/barbg.png);font-size:12px;background-color:transparent;}"
                                     "QTabBar::tab{border-image:url(images/portraitlibrary/tab-noselected.png);width:120px;height:40px;color:#7E8CB1;"
@@ -82,6 +83,17 @@ color: white; \
 }");
 #endif
         m_pFaceTypesWgt->setStyleSheet(".QWidget{border-image:url(images/portraitlibrary/barbg.png);background-color:transparent;min-width:400px;height:45px;max-height:45px;}");
+        m_pDbType->setStyleSheet("QComboBox{width:180px;max-width:180px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;font-size:12px;}"
+                                 "QComboBox::drop-down{"
+                                 "subcontrol-position: center right;border-image: url(images/portraitlibrary/icon_arrow.png);width:8px;height:10px;subcontrol-origin: padding;margin-right:5px;"
+                                 "}"
+                                 "QComboBox QAbstractItemView{"
+                                 "background-color:#282D38;"
+                                 "selection-color: white;"
+                                 "outline: 0px;"
+                                 "selection-background-color: #4741F2;"
+                                 "}"
+                                 "QComboBox QAbstractItemView::item {height:25px; min-height: 25px; }");
         // border:1px solid #CECECE;
         m_tableW->setStyleSheet(
                 "QTableView{"
@@ -258,6 +270,7 @@ void PortraitSearch::onBtnSearchClicked()
     //m_strBigPersonType = m_faceLibBar->tabText(m_faceLibBar->currentIndex());
     args.similarity = m_pTxtSimilary->text().toDouble();
     args.limit = m_pLimitCombo->currentText().toInt();
+#if 0
     if (!m_txtID->text().isEmpty())
     {
         args.nPersonId = m_txtID->text().toInt();
@@ -267,7 +280,8 @@ void PortraitSearch::onBtnSearchClicked()
         args.nPersonId = 0;
     }
     args.strPersonName = m_pTxtName->text();
-    args.sourceType = markLibRadiuBtn_->isChecked() ? tr("1") : tr("2");
+#endif
+    args.sourceType = (0 == m_pDbType->currentIndex()) ? tr("1") : tr("2");
     serviceI->portraitLibCompSearch(args);
     label->show(500);
     //m_faceLibBar->setEnabled(false);
@@ -370,7 +384,6 @@ void PortraitSearch::init()
     topRigWgt->setLayout(topRighVlay);
     QHBoxLayout *topHlay = new QHBoxLayout;
     topHlay->setSpacing(0);
-    topRighVlay->addLayout(topHlay);
     //int nTypeCount = m_mapFaceLibTypes.size();
 #if 0
     m_faceLibBar = new QTabBar;
@@ -392,28 +405,34 @@ void PortraitSearch::init()
     m_pFaceTypesHLay->setMargin(2);
     m_pFaceTypesWgt->setLayout(m_pFaceTypesHLay);
     topHlay->addWidget(m_pFaceTypesWgt);
-    topHlay->addWidget(libGroupbox_);
+    m_pBtnSearch = new QPushButton(tr("Search"));
+    connect(m_pBtnSearch, SIGNAL(clicked(bool)),
+            this, SLOT(onBtnSearchClicked()));
+    topHlay->addSpacing(10);
+    topHlay->addWidget(m_pBtnSearch);
+    //topHlay->addWidget(libGroupbox_);
     topHlay->addStretch();
     QHBoxLayout *bottomHlay = new QHBoxLayout;
     bottomHlay->setSpacing(15);
     topRighVlay->addLayout(bottomHlay);
+    topRighVlay->addLayout(topHlay);
     m_pLabID = new QLabel(tr("ID"));
-    bottomHlay->addWidget(m_pLabID);
+    //bottomHlay->addWidget(m_pLabID);
     m_txtID = new QLineEdit;
     m_txtID->setValidator(new QIntValidator(0, 500000, this));
-    bottomHlay->addWidget(m_txtID);
+    //bottomHlay->addWidget(m_txtID);
     m_pLabName = new QLabel(tr("Name"));
     m_pLabName->setMinimumWidth(47);
-    bottomHlay->addWidget(m_pLabName);
+    //bottomHlay->addWidget(m_pLabName);
     m_pTxtName = new QLineEdit;
     m_pTxtName->setMaxLength(50);
-    bottomHlay->addWidget(m_pTxtName);
+    //bottomHlay->addWidget(m_pTxtName);
     // 3.1 add
     m_pLabLimit = new QLabel(tr("Top"));
     m_pLabLimit->setMinimumWidth(38);
-    bottomHlay->addWidget(m_pLabLimit);
+    //bottomHlay->addWidget(m_pLabLimit);
     m_pLimitCombo = new QComboBox;
-    bottomHlay->addWidget(m_pLimitCombo);
+    //bottomHlay->addWidget(m_pLimitCombo);
     m_pLimitCombo->addItem(tr("10"));
     m_pLimitCombo->addItem(tr("20"));
     m_pLimitCombo->addItem(tr("30"));
@@ -424,10 +443,14 @@ void PortraitSearch::init()
     m_pTxtSimilary = new QLineEdit(tr("0.3"));
     m_pTxtSimilary->setValidator(new QDoubleValidator(1, 0.1, 2, this));
     bottomHlay->addWidget(m_pTxtSimilary);
-    m_pBtnSearch = new QPushButton(tr("Search"));
-    connect(m_pBtnSearch, SIGNAL(clicked(bool)),
-            this, SLOT(onBtnSearchClicked()));
-    bottomHlay->addWidget(m_pBtnSearch);
+    m_pLabDbTitle = new QLabel(tr("Database"));
+    bottomHlay->addWidget(m_pLabDbTitle);
+    m_pDbType = new QComboBox;
+    bottomHlay->addWidget(m_pDbType);
+    m_pDbType->addItem(tr("mark"));
+    m_pDbType->addItem(tr("regist"));
+    bottomHlay->addStretch();
+
     bottomHlay->addStretch();
     hlay->setAlignment(Qt::AlignLeft);
     mainLay->addLayout(hlay);
