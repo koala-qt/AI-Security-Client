@@ -49,16 +49,16 @@ void MultipleFaceAnalysis::setUserStyle(int style)
         pal = this->palette();
         pal.setColor(QPalette::Foreground, QColor("#313745"));
 
-        QString commStyle = "font:16px;color:#7E8CB1;font-family:PingFang SC Regular;";
+        QString commStyle = "font-size:16px;color:#7E8CB1;font-family:PingFang SC Regular;";
         m_pLabDbTitle->setStyleSheet(commStyle);
         m_pLabID->setStyleSheet(commStyle);
         m_txtID->setStyleSheet("width:150px;max-width:250px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;");
         m_pLabName->setStyleSheet("font:16px;color:#7E8CB1;font-family:PingFang SC Regular;width:40px;");
         m_pTxtName->setStyleSheet(m_txtID->styleSheet());
         m_pLabSimilary->setStyleSheet(commStyle);
-        m_pTxtSimilary->setStyleSheet("width:180px;max-width:250px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-size:12px;font-family:PingFang SC Regular;");
+        m_pTxtSimilary->setStyleSheet("width:180px;max-width:250px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-size:16px;font-family:PingFang SC Regular;");
         m_pFaceTypesWgt->setStyleSheet(".QWidget{border-image:url(images/portraitlibrary/barbg.png);background-color:transparent;min-width:400px;height:45px;max-height:45px;}");
-        m_pDbType->setStyleSheet("QComboBox{width:180px;max-width:180px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;font-size:12px;}"
+        m_pDbType->setStyleSheet(".QComboBox{width:180px;max-width:180px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;font-size:16px;}"
                                  "QComboBox::drop-down{"
                                  "subcontrol-position: center right;border-image: url(images/portraitlibrary/icon_arrow.png);width:8px;height:10px;subcontrol-origin: padding;margin-right:5px;"
                                  "}"
@@ -66,7 +66,7 @@ void MultipleFaceAnalysis::setUserStyle(int style)
                                  "background-color:#282D38;"
                                  "selection-color: white;"
                                  "outline: 0px;"
-                                 "selection-background-color: #4741F2;"
+                                 "selection-background-color: #4741F2;height:50px;"
                                  "}"
                                  "QComboBox QAbstractItemView::item {height:25px; min-height: 25px; }");
 #if 0

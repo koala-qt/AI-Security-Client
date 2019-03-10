@@ -16,17 +16,6 @@ GlViewMapWidget::GlViewMapWidget(WidgetI *parent):
     notifyServiceI_ = reinterpret_cast<NotifyServiceI*>(qApp->property("NotifyServiceI").toULongLong());
     connect(notifyServiceI_,SIGNAL(sigIntruderEvent(NotifyEventI::IntruderEventData)),this,SLOT(slotOnIntruderEvent(NotifyEventI::IntruderEventData)),Qt::UniqueConnection);
 
-#if 0
-    for (int i = 0; i < 10; ++i)
-    {
-        NotifyEventI::IntruderEventData info;
-        info.deviceName = "test";
-        QImage tmpImg("C:/Users/kl/Desktop/Img/22.jpg");
-        tmpImg.scaled(100, 100);
-        info.sceneImg = tmpImg.scaled(100, 100);
-        slotOnIntruderEvent(info);
-    }
-#endif
 }
 
 void GlViewMapWidget::setUserStyle(int style)
@@ -52,6 +41,18 @@ bool GlViewMapWidget::event(QEvent *event)
 {
     if ((event->type() == QEvent::Show))
     {
+#if 0
+    for (int i = 0; i < 10; ++i)
+    {
+        NotifyEventI::IntruderEventData info;
+        info.deviceName = "test";
+        QImage tmpImg("C:/Users/kl/Desktop/Img/22.jpg");
+        tmpImg.scaled(100, 100);
+        info.sceneImg = tmpImg.scaled(100, 100);
+        slotOnIntruderEvent(info);
+    }
+#endif
+
 //        queryTopStatistics();
         return true;
     }
@@ -62,14 +63,15 @@ void GlViewMapWidget::slotOnIntruderEvent(NotifyEventI::IntruderEventData info)
 {
     std::random_device device;
     std::mt19937 gen(device());
-    std::uniform_int_distribution<int> dis(-200, 200);
+    std::uniform_int_distribution<int> dis(-150, 100);
+    std::uniform_int_distribution<int> dis2(-300, 100);
 
     MovieLabel *ml = new MovieLabel(info, this); // 更改父级轻松搞定
     ml->setFixedSize(180, 100);
     QRect cr = ml->geometry();
 
     cr.moveCenter(this->rect().center());
-    ml->move(cr.topLeft() + QPoint(dis(gen), dis(gen)));
+    ml->move(cr.topLeft() + QPoint(dis2(gen), dis(gen)) + QPoint(250 / 2, 360 / 2));
     ml->setInfo(info.deviceName);
     QPalette pal = ml->palette();
     pal.setColor(QPalette::Foreground, Qt::white);

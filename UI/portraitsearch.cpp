@@ -48,13 +48,14 @@ void PortraitSearch::setUserStyle(int s)
         m_btnImg->setStyleSheet("QPushButton{"
                                 "background-color: transparent;"
                                 "}");
-        QString commStyle = "font:16px;color:#7E8CB1;font-family:PingFang SC Regular;";
+        QString commStyle = "font-size:16px;color:#7E8CB1;font-family:PingFang SC Regular;";
         m_pLabID->setStyleSheet(commStyle);
         m_pLabSimilary->setStyleSheet(commStyle);
         m_txtID->setStyleSheet("width:150px;max-width:250px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;");
         m_pLabName->setStyleSheet("font:16px;color:#7E8CB1;font-family:PingFang SC Regular;width:40px;");
         m_pTxtName->setStyleSheet(m_txtID->styleSheet());
         // 3.1 add
+        m_pLabDbTitle->setStyleSheet(commStyle);
         m_pLabLimit->setStyleSheet("font:16px;color:#7E8CB1;font-family:PingFang SC Regular;width:32px;");
         m_pLabSimilary->setStyleSheet(commStyle);
         m_pLimitCombo->setStyleSheet("QComboBox{width:70px;max-width:250px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;}"
@@ -67,7 +68,7 @@ void PortraitSearch::setUserStyle(int s)
                                      "outline: 0px;color:white;"
                                      "selection-background-color: #4741F2;"
                                      "}");
-        m_pTxtSimilary->setStyleSheet("width:180px;max-width:250px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;");
+        m_pTxtSimilary->setStyleSheet("width:180px;max-width:250px;height:34px;border-image:url(images/portraitlibrary/text.png);font-size:16px;color:white;font-family:PingFang SC Regular;");
 #if 0
         m_faceLibBar->setStyleSheet("QTabBar{border-image:url(images/portraitlibrary/barbg.png);font-size:12px;background-color:transparent;}"
                                     "QTabBar::tab{border-image:url(images/portraitlibrary/tab-noselected.png);width:120px;height:40px;color:#7E8CB1;"
@@ -83,7 +84,7 @@ color: white; \
 }");
 #endif
         m_pFaceTypesWgt->setStyleSheet(".QWidget{border-image:url(images/portraitlibrary/barbg.png);background-color:transparent;min-width:400px;height:45px;max-height:45px;}");
-        m_pDbType->setStyleSheet("QComboBox{width:180px;max-width:180px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;font-size:12px;}"
+        m_pDbType->setStyleSheet("QComboBox{width:180px;max-width:180px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;font-size:16px;}"
                                  "QComboBox::drop-down{"
                                  "subcontrol-position: center right;border-image: url(images/portraitlibrary/icon_arrow.png);width:8px;height:10px;subcontrol-origin: padding;margin-right:5px;"
                                  "}"
