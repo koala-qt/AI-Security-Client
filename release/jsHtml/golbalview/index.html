@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <!-- import CSS -->
+  <link rel="stylesheet" href="./css/element.css">
+  <!-- <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"> -->
+  <link rel="stylesheet" href="./css/main.css">
+  <script src="./js/echarts.min.js"></script>
+</head>
+
+<body style="background: transparent">
+  <!-- <img class="bg-img" src="./img/1.jpg" alt=""> -->
+  <div id="app" class="app" style="background: transparent">
+    <div class="app-left">
+        <div class="date-block">
+            <el-date-picker
+                v-model="dateValue"
+                type="date"
+                placeholder="select date">
+            </el-date-picker>
+        </div>
+        <div class="cap-alarm">
+           <div class="today-cap">
+               <div class="img-class">
+                    <img src="./img/cap.png">
+               </div>
+               <div>
+                    <div class="cap-tro">Today Captures</div>
+                    <div class="cap-num">
+                         200000
+                     </div>
+               </div>
+               
+           </div>
+           <div class="today-alarm">
+                <div class="img-class">
+                    <img src="./img/cap.png">
+                </div>
+                <div>
+                    <div class="cap-tro">Today Alarms</div>
+                    <div class="cap-num">
+                        200000
+                    </div>
+                </div>
+                
+           </div>
+        </div>
+        <div class="cap-static" id="capStatic">
+
+        </div>
+        <div class="alarm-prop" id="alarmProp">
+
+        </div>
+    </div>
+    <div class="app-center">
+        <div class="new-data"></div>
+    </div>
+    <div class="app-right">
+        <div class="new-ids" id="idsC">
+
+        </div>
+        <div class="new-cameras" id="camerasC">
+
+        </div>
+        <div class="new-location" id="locationC">
+
+        </div>
+    </div>
+    
+  </div>
+</body>
+  <!-- import Vue before Element -->
+  <script src="./js/vue.js"></script>
+  <!-- import JavaScript -->
+  <script src="./js/element-index.js"></script>
+  <script src="./js/en.js"></script>
+  <script>
+    let ip = 'http://192.168.23.1:8080'
+    ELEMENT.locale(ELEMENT.lang.en)
+    new Vue({
+      el: '#app',
+      data: function() {
+        return {
+            dateValue: '',
+            interfaces: {
+              topSta: `${ip}/api/v2/cmcc/index/top_statistics`, //
+              capTure: `${ip}/api/v2/cmcc/index/capture_statistics`, //
+              alarmProp: `${ip}/api/v2/cmcc/index/today_statistics`, //
+              newData: `${ip}/api/v2/cmcc/index/alarm_statistics`, // 30天
+              newIds:  `${ip}/api/v2/cmcc/index/newids`, // 注册
+              newCam: `${ip}/api/v2/cmcc/index/newcameras`, // 摄像头
+              newLoc: `${ip}/api/v2/cmcc/index/newlocation` //场所
+            },
+            dataTest: [{
+                  count: 1,
+                  showName: '2019-02-07'
+                },
+                {
+                    count: 0,
+                    showName: '2019-02-08'
+                },
+
+                {
+                    count: 20,
+                    showName: '2019-02-09'
+                },
+                {
+                    count: 0,
+                    showName: '2019-02-10'
+                },
+                {
+                    count: 0,
+                    showName: '2019-02-11'
+                },
+                {
+                    count: 0,
+                    showName: '2019-02-12'
+                },
+                {
+                    count: 0,
+                    showName: '2019-02-13'
+                },
+                {
+                    count: 0,
+                    showName: '2019-02-14'
+                },
+                {
+                    count: 30,
+                    showName: '2019-02-15'
+                },
+                {
+                    count: 20,
+                    showName: '2019-02-16'
+                },
+                {
+                    count: 0,
+                    showName: '2019-02-17'
+                },
+                {
+                    count: 40,
+                    showName: '2019-02-18'
+                },
+            ]
+        }
+      },
+      methods: {
+        transferTime(time) {
+            var a = time.split('-')
+            var newtime
+
+            if (a[1].indexOf('0') == 0) {
+                // console.log(a[1].slice(1))
+                newtime = a[1].slice(1) + '/'
+            } else {
+                newtime = a[1] + '/'
+            }
+            if (a[2].indexOf('0') == 0) {
+                // console.log(a[1].slice(1))
+                newtime = newtime + a[2].slice(1)
+            } else {
+                newtime = newtime + a[2]
+            }
+            return newtime
+
+        },
+        transferData(data) {
+            var finalData = []
+
+             header = Object.keys(data[0])
+            finalData.push(header)
+            for (let index = 0; index < data.length; index++) {
+                const element = data[index];
+                var item = [element[header[0]], this.transferTime(element[header[1]])]
+                if (data.length > 7) {
+                    if (index > data.length - 8) {
+                        finalData.push(item)
+                    }
+                } else {
+                    finalData.push(item)
+                }
+
+            }
+            console.log(finalData)
+            return finalData
+        },
+        getLocation() {
+            var datas = this.transferData(this.dataTest)
+            var mychart = echarts.init(document.getElementById('locationC'))
+            var option = {
+                title: {
+                   text: 'New location in the last 30 days',
+                   textStyle: {
+                     color: '#fff',//坐标值得具体的颜色
+                     fontSize: '18'
+                   },
+                   left: '3%',
+                   top: '5%'
+                },
+                dataset: {
+                    source: datas
+                },
+                grid: {
+                    top: "20%",
+                    left: "12%",
+                    bottom: '3%'
+                },
+                xAxis: {
+                    splitLine: {
+                        show: false
+                    },
+                    show: false,
+
+
+                },
+                yAxis: {
+                    splitLine: {
+                        show: false
+                    },
+                    type: 'category',
+                    axisLine: {
+                        show: false
+                    },
+                    nameTextStyle: {
+
+                    },
+                    axisLabel: {
+                        textStyle: {
+                            color: 'rgba(255,255,255,0.75)', //坐标值得具体的颜色
+                            fontSize: 10
+                        }
+                    },
+                    axisTick: {
+                        show: false
+                    }
+                },
+
+                series: [{
+                    type: 'bar',
+                    encode: {
+                        // Map the "amount" column to X axis.
+                        x: header[0],
+                        // Map the "product" column to Y axis
+                        y: header[1]
+                    },
+                    itemStyle: {
+                        normal: {
+                            label: {
+                                show: true, //开启显示
+                                position: 'right', //在上方显示
+                                textStyle: { //数值样式
+                                    color: 'rgba(255,255,255,0.75)',
+                                    fontSize: 12
+                                }
+                            },
+                            color: '#4CF8DC',
+
+                        }
+
+
+                    },
+
+                }]
+            };
+            mychart.setOption(option);
+        },
+        capStatic() {
+            var myChart = echarts.init(document.getElementById('capStatic'));
+            option = {
+                title: {
+                   text: 'Capture Statistics',
+                   textStyle: {
+                    color: '#fff',//坐标值得具体的颜色
+                   },
+                   left: '3%',
+                   top: '10'
+                },
+                grid: {
+                    left: '3%',
+                    bottom: '6%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    axisLabel: {
+                        textStyle: {
+                            color: '#fff',//坐标值得具体的颜色
+                        }
+                    },
+                    splitLine:{
+                　　　　show:false
+                　　}
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLabel: {
+                        textStyle: {
+                            color: '#fff',//坐标值得具体的颜色
+                        }
+                    },
+                    splitLine:{
+                　　　　show:false
+                　　}
+                },
+                color: '#4CF8DC',
+                series: [{
+                    data: [820, 932, 901, 934, 1290, 1330, 1320],
+                    type: 'line',
+                    areaStyle: {normal: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                            offset: 0,
+                            color: '#4CF8DC'
+                        }, {
+                            offset: 1,
+                            color: '#000'
+                        }]),
+                    }}
+                }]
+            };
+            myChart.setOption(option);
+        },
+        alarmProp() {
+            var myChart = echarts.init(document.getElementById('alarmProp'));
+            option = {
+                title: {
+                   text: 'Alarm Proportion Analysis',
+                   textStyle: {
+                    color: '#fff',//坐标值得具体的颜色
+                   },
+                   left: '3%',
+                   top: '10'
+                },
+                tooltip: {
+                    show: false,
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b}: {c} ({d}%)",
+                   
+                },
+                legend: {
+                    itemWidth: 8,
+                    itemHeight: 16,
+                    itemGap: 8,
+                    icon: 'circle',
+                    type: 'scroll',
+                    orient: 'vertical',
+                    right: 10,
+                    bottom: 20,
+                    selectedMode:false,
+                    data:['Blacklist alarm','Blacklist alarm','Blacklist3 alarm','Blacklist4 alarm','Blacklist5 alarm'],
+                    textStyle: {
+                        color: '#CECECE',
+                        fontSize: 12,
+                    }
+                },
+                series: [
+                    {
+                        name:'访问来源',
+                        type:'pie',
+                        hoverAnimation:false,
+                        center: ['30%', '60%'],
+                        radius: ['40%', '60%'],
+                        avoidLabelOverlap: false,
+                        label: {
+                            show: false
+                        },
+                        labelLine: {
+                            normal: {
+                                show: false
+                            }
+                        },
+                        clickable:false,
+                        data:[
+                            {value:335, name:'Blacklist alarm'},
+                            {value:310, name:'Blacklist2 alarm'},
+                            {value:234, name:'Blacklist3 alarm'},
+                            {value:135, name:'Blacklist4 alarm'},
+                            {value:1548, name:'Blacklist5 alarm'}
+                        ]
+                    }
+                ]
+            };
+
+            myChart.setOption(option);
+        },
+        getNowTime() {
+            this.dateValue = new Date()
+        }
+      },
+      mounted() {
+        this.capStatic()
+        this.alarmProp()
+        this.getNowTime()
+        this.getLocation()
+      }
+    })
+  </script>
+</html>
