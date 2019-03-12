@@ -583,7 +583,8 @@ QImage DLL::CloudHttpDao::getImageByUrl(QString url)
     setheader(headers);
 
     QImage image;
-    send(DLL::GET,url.toStdString(),std::string(),2);
+    qDebug() << "get image url" << url;
+    send(DLL::GET,QUrl(url).toEncoded().toStdString(),std::string(),5);
     image.loadFromData(QByteArray::fromStdString(responseData()));
     return image;
 }
@@ -860,9 +861,7 @@ QString DLL::CloudHttpDao::getFaceLinkDataColl(RestServiceI::FaceLinkDataCollArg
             .arg(args.cameraId,args.faceAttrs.join(','),args.startT.toString("yyyy-MM-dd HH:mm:ss"),args.endT.toString("yyyy-MM-dd HH:mm:ss"))
             .arg(args.pageNo)
             .arg(args.pageSize);
-    qDebug() << urlStr;
-    qDebug() << postData;
-    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),5);
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),30);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -943,6 +942,7 @@ QString DLL::CloudHttpDao::eventSearch(RestServiceI::EventSearchArgs &args, Rest
         item.eventType = itemObj.value("eventType").toString();
         item.sceneId = itemObj.value("sceneId").toString();
         item.bodyId = itemObj.value("bodyId").toString();
+        item.persontypNo = itemObj.value("personType").toString();
         QJsonArray jsArray = itemObj.value("warnZone").toArray();
         QVector<int> pointVec;
         std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(pointVec),[](QJsonValue jsVal){
@@ -1068,6 +1068,44 @@ QString DLL::CloudHttpDao::registerPerson(RestServiceI::PersonRegisterArgs &args
     if(status != 200){
         return jsObj.value("message").toString();
     }
+    return QString();
+}
+
+QString DLL::CloudHttpDao::searchPesonTypeDetail(QString &persontypeNo, RestServiceI::PersonTypeDetail *resData)
+{
+    QString urlStr = host_ + QObject::tr("api/v2/person/type/detail?type=%1").arg(persontypeNo);
+    int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),5);
+    if(resCode != CURLE_OK){
+        return curl_easy_strerror(CURLcode(resCode));
+    }
+
+    QJsonParseError jsError;
+    QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
+    if(jsError.error != QJsonParseError::NoError){
+        return jsError.errorString();
+    }
+
+    QJsonObject jsObj = jsDoc.object();
+    int status = jsObj.value("status").toInt();
+    if(status != 200){
+        return jsObj.value("message").toString();
+    }
+
+    jsObj = jsObj.value("data").toObject();
+    resData->id = jsObj.value("id").toInt();
+    resData->no = jsObj.value("no").toString();
+    resData->name = jsObj.value("name").toString();
+    resData->parentNo = jsObj.value("parentNo").toString();
+    resData->description = jsObj.value("description").toString();
+
+    jsDoc = QJsonDocument::fromJson(jsObj.value("value").toString().toLatin1(),&jsError);
+    if(jsError.error != QJsonParseError::NoError){
+        return jsError.errorString();
+    }
+
+    jsObj = jsDoc.object();
+    resData->hierarchy = jsObj.value("hierarchy").toString();
+    resData->group = jsObj.value("group").toString();
     return QString();
 }
 

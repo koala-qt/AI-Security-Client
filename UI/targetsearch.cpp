@@ -67,8 +67,12 @@ TargetSearch::TargetSearch( WidgetI *parent):
                                                                                   << itemData{multiPleSearchPage_->objectName(),3,QVector<itemData>()}
                                                                                   << itemData{facelinkPage_->objectName(),4,QVector<itemData>()}
                                                                                   << itemData{trackingPage_->objectName(),5,QVector<itemData>()}};
-    items.childrens << itemData{tr("Face Database Search"),6,QVector<itemData>() << itemData{portraitSearchPage_->objectName(),6,QVector<itemData>()}
-                                                                                 << itemData{m_pMultFaceAnalysis->objectName(),7,QVector<itemData>()}};
+    devicesVec << items;
+    items.childrens.clear();
+    items.name = tr("Face Database Search");
+    items.value = 6;
+    items.childrens << itemData{portraitSearchPage_->objectName(),6,QVector<itemData>()}
+                                                                                 << itemData{m_pMultFaceAnalysis->objectName(),7,QVector<itemData>()};
     devicesVec << items;
     items.childrens.clear();
     items.name = videoAnalysisPage_->objectName();
@@ -99,6 +103,7 @@ void TargetSearch::setUserStyle(int s)
         treeW_->setStyleSheet("QTreeView{"
                               "border:none;"
                               "font-size: 14px;"
+                              "font-weight:bold;"
                               "color: #CECECE;"
                               "border-radius: 4px;"
                               "background-color: rgba(0,0,0,0.4);"
@@ -117,12 +122,12 @@ void TargetSearch::setUserStyle(int s)
                               "QTreeView::branch:has-children:!has-siblings:closed,"
                               "QTreeView::branch:closed:has-children:has-siblings{"
                               "border-image: none;"
-                              "image: url(images/tree_expand.png);"
+                              "image: url(images/tree_unexpand.png);"
                               "}"
                               "QTreeView::branch:open:has-children:!has-siblings,"
                               "QTreeView::branch:open:has-children:has-siblings  {"
                               "border-image: none;"
-                              "image: url(images/tree_unexpand.png);"
+                              "image: url(images/tree_expand.png);"
                               "}");
         treeW_->verticalScrollBar()->setStyleSheet("QScrollBar:vertical{"
                                                     "background: transparent;"

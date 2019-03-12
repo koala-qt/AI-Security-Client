@@ -22,10 +22,12 @@ PersonItemWidget::PersonItemWidget(WidgetI *parent):
 
     QVBoxLayout *mainLay = new QVBoxLayout;
     personTypeL_->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    personTypeL_->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     mainLay->addWidget(personTypeL_);
     QHBoxLayout *centerHlay = new QHBoxLayout;
     QVBoxLayout *vlay = new QVBoxLayout;
     captureTextL_->setAlignment(Qt::AlignCenter);
+    captureTextL_->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     captredImgL_->setAlignment(Qt::AlignCenter);
     vlay->addWidget(captureTextL_);
     vlay->addWidget(captredImgL_);
@@ -35,6 +37,7 @@ PersonItemWidget::PersonItemWidget(WidgetI *parent):
     centerHlay->addWidget(similrityL_);
     vlay = new QVBoxLayout;
     registeredTextL_->setAlignment(Qt::AlignCenter);
+    registeredTextL_->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     registedImgL_->setAlignment(Qt::AlignCenter);
     vlay->addWidget(registeredTextL_);
     vlay->addWidget(registedImgL_);
@@ -51,17 +54,27 @@ PersonItemWidget::PersonItemWidget(WidgetI *parent):
     hlay->addWidget(posTextL_);
     hlay->setAlignment(Qt::AlignLeft);
     mainLay->addLayout(hlay);
+    mainLay->setContentsMargins(0,5,0,5);
     setLayout(mainLay);
 
     timeIconL_->setPixmap(QPixmap("images/tipIcon.png"));
     posIconL_->setPixmap(QPixmap("images/cameraIcon.png"));
 
     QFont f = font();
-    f.setPixelSize(16);
+    f.setPixelSize(12);
+    f.setBold(true);
     personTypeL_->setFont(f);
 
-    f.setPixelSize(18);
+    f.setPixelSize(12);
     similrityL_->setFont(f);
+
+    f.setBold(false);
+    captredImgL_->setFont(f);
+    registedImgL_->setFont(f);
+    posIconL_->hide();
+    timeIconL_->hide();
+    timeTextL_->hide();
+    posTextL_->hide();
 }
 
 PersonItemWidget::~PersonItemWidget()

@@ -159,7 +159,7 @@ void RestConcurrent::getImagesByUrlList(QStringList &urlList)
         emit sigDownloadImages(QVector<QImage>::fromList(fwatcher->future().results()));
     });
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
-    std::function<QImage(QString)> f = [this](QString url)->QImage{return curlRest_->getImageByUrl(url);};
+    std::function<QImage(QString)> f = [this](QString url){return curlRest_->getImageByUrl(url);};
     fwatcher->setFuture(QtConcurrent::mapped(urlList,f));
 }
 
@@ -475,6 +475,22 @@ void RestConcurrent::personRegist(RestServiceI::PersonRegisterArgs &args)
     });
     connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
     fwatcher->setFuture(QtConcurrent::run(curlRest_,&DLL::CloudHttpDao::registerPerson,args));
+}
+
+void RestConcurrent::searchPesonTypeDetail(QString &typeNo)
+{
+    PersonTypeDetail *resData = new PersonTypeDetail;
+    QFutureWatcher<QString> *fwatcher = new QFutureWatcher<QString>(this);
+    connect(fwatcher,&QFutureWatcher<QString>::finished,this,[this,resData,fwatcher]{
+        if(fwatcher->result().isEmpty()){
+            emit sigPersonTypeDetailes(*resData);
+        }else{
+            emit sigError(fwatcher->result());
+        }
+        delete resData;
+    });
+    connect(fwatcher,SIGNAL(finished()),this,SLOT(deleteLater()));
+    fwatcher->setFuture(QtConcurrent::run(curlRest_,&DLL::CloudHttpDao::searchPesonTypeDetail,typeNo,resData));
 }
 
 void RestConcurrent::portraitLibCompSearch(RestServiceI::PortraitLibCompArgs &args)

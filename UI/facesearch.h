@@ -14,6 +14,7 @@ QT_FORWARD_DECLARE_CLASS(QComboBox)
 QT_FORWARD_DECLARE_CLASS(QSpinBox)
 QT_FORWARD_DECLARE_CLASS(QMenu)
 QT_FORWARD_DECLARE_CLASS(NoDataTip)
+QT_FORWARD_DECLARE_CLASS(WindowTitleBar)
 
 class FaceSearch : public WidgetI
 {
@@ -43,6 +44,7 @@ private:
     PageIndicator *m_pageIndicator{nullptr};
     QMap<QString,QString> cameraMap_;
     NoDataTip *noDataW_{nullptr};
+    WindowTitleBar *titleBar_{nullptr};
 
     void getCameraInfo();
 

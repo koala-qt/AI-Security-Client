@@ -39,6 +39,7 @@ public:
     void getPersonGoupInfos(QString &groupNo) override;
     void cancelRequest() override;
     void personRegist(PersonRegisterArgs &) override;
+    void searchPesonTypeDetail(QString &typeNo) override;
     /**
      * Added by aihc for Portrait library comparison.
      * @brief portraitLibCompSearch

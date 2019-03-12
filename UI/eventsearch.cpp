@@ -215,86 +215,82 @@ EventSearch::EventSearch( WidgetI *parent):
 #else
     QVector<std::tuple<QString,QString,QColor>> waringTypeTupleVec;
     waringTypeTupleVec << std::make_tuple(tr(""),tr("Unlimited"),Qt::transparent)
-                       << std::make_tuple(tr("smsr_alarm_intruder"),tr("Intrusion Alarm"),QColor(200,0,0,100))
-                       << std::make_tuple(tr("smsr_alarm_abdoor"),tr("Trailing Alarm"),QColor(0,200,0,100))
-                       << std::make_tuple(tr("smsr_alarm_climb"),tr("Climbing Alarm"),QColor(100,100,0,100))
-                       << std::make_tuple(tr("smsr_alarm_gather"),tr("Aggregate Alarm"),QColor(100,0,100,100))
-                       << std::make_tuple(tr("smsr_alarm_face"),tr("Blacklist Alarm"),Qt::transparent)
-                       << std::make_tuple(tr("smsr_alarm_face"),tr("Whitelist Alarm"),QColor(100,0,100,100));
+                       << std::make_tuple(tr("smsr_alarm_intruder"),tr("Intrusion"),QColor(200,0,0,100))
+                       << std::make_tuple(tr("smsr_alarm_abdoor"),tr("Trailing"),QColor(0,200,0,100))
+                       << std::make_tuple(tr("smsr_alarm_climb"),tr("Climbing"),QColor(100,100,0,100))
+                       << std::make_tuple(tr("smsr_alarm_gather"),tr("Gathering"),QColor(100,0,100,100));
     for(int i = 0; i < waringTypeTupleVec.count(); i++){
-        QString groupNoOrAlarm = std::get<0>(waringTypeTupleVec.at(i));
+        QString alarmType = std::get<0>(waringTypeTupleVec.at(i));
         waringColorMap_.insert(std::get<0>(waringTypeTupleVec.at(i)),std::get<2>(waringTypeTupleVec.at(i)));
-        if(i < waringTypeTupleVec.count() - 2){
-            QAction *act = new QAction(std::get<1>(waringTypeTupleVec.at(i)));
+        originalEventMap_.insert(std::get<0>(waringTypeTupleVec.at(i)),std::get<1>(waringTypeTupleVec.at(i)));
+        QAction *act = new QAction(std::get<1>(waringTypeTupleVec.at(i)));
+        connect(act,&QAction::triggered,waringTypeMenu_,[this,alarmType,act]{
             waringTypeBtn_->setText(act->text());
-            connect(act,&QAction::triggered,waringTypeMenu_,[this,groupNoOrAlarm,act]{
-                waringTypeBtn_->setText(act->text());
-                waringTypeBtn_->setProperty("alarm type",groupNoOrAlarm);
-                waringTypeBtn_->setProperty("groupNo","");
-                waringTypeBtn_->setProperty("personType","");
-            });
-            waringTypeMenu_->addAction(act);
-        }else if(i == waringTypeTupleVec.count() - 2){
-            QMenu *typeMenu = new QMenu(std::get<1>(waringTypeTupleVec.at(i)));
-            typeMenu->setProperty("groupNo","100010021148");
-            typeMenu->setProperty("personType","100010001008");
-            connect(typeMenu,&QMenu::aboutToShow,typeMenu,[typeMenu,this]{
-                ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
-                RestServiceI *serviceI = factoryI->makeRestServiceI();
-                connect(serviceI,&RestServiceI::sigPersonGroupInfos,typeMenu,[typeMenu,this](QVector<RestServiceI::PersonGroupInfo> infos){
-                    QVector<PersonGroup> dataVec;
-                    for(RestServiceI::PersonGroupInfo &value : infos){
-                        parseGroupToVec(value,dataVec);
-                    }
-                    for(int i = 0; i < dataVec.count(); i++){
-                        QAction *act = new QAction(dataVec.at(i).name);
-                        act->setData(dataVec.at(i).no);
-                        connect(act,&QAction::triggered,act,[this,act,typeMenu]{
-                            waringTypeBtn_->setProperty("personType",typeMenu->property("personType").toString());
-                            waringTypeBtn_->setProperty("groupNo",act->data().toString());
-                            waringTypeBtn_->setProperty("alarm type","");
-                        });
-                        typeMenu->addAction(act);
-                    }
-                });
-                connect(serviceI,&RestServiceI::sigError,typeMenu,[typeMenu](QString str){
-                    qDebug() << str;
-                });
-                serviceI->getPersonGoupInfos(typeMenu->property("groupNo").toString());
-            });
-            connect(typeMenu,&QMenu::aboutToHide,typeMenu,[typeMenu]{typeMenu->clear();});
-            waringTypeMenu_->addMenu(typeMenu);
-        }else if(i == waringTypeTupleVec.count() - 1){
-            QMenu *typeMenu = new QMenu(std::get<1>(waringTypeTupleVec.at(i)));
-            typeMenu->setProperty("groupNo","100010021149");
-            typeMenu->setProperty("personType","100010001007");
-            connect(typeMenu,&QMenu::aboutToShow,typeMenu,[typeMenu,this]{
-                ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
-                RestServiceI *serviceI = factoryI->makeRestServiceI();
-                connect(serviceI,&RestServiceI::sigPersonGroupInfos,typeMenu,[typeMenu,this](QVector<RestServiceI::PersonGroupInfo> infos){
-                    QVector<PersonGroup> dataVec;
-                    for(RestServiceI::PersonGroupInfo &value : infos){
-                        parseGroupToVec(value,dataVec);
-                    }
-                    for(int i = 0; i < dataVec.count(); i++){
-                        QAction *act = new QAction(dataVec.at(i).name);
-                        act->setData(dataVec.at(i).no);
-                        connect(act,&QAction::triggered,act,[this,act,typeMenu]{
-                            waringTypeBtn_->setProperty("personType",typeMenu->property("personType").toString());
-                            waringTypeBtn_->setProperty("groupNo",act->data().toString());
-                            waringTypeBtn_->setProperty("alarm type","");
-                        });
-                        typeMenu->addAction(act);
-                    }
-                });
-                connect(serviceI,&RestServiceI::sigError,typeMenu,[typeMenu](QString str){
-                    qDebug() << str;
-                });
-                serviceI->getPersonGoupInfos(typeMenu->property("groupNo").toString());
-            });
-            connect(typeMenu,&QMenu::aboutToHide,typeMenu,[typeMenu]{typeMenu->clear();});
-            waringTypeMenu_->addMenu(typeMenu);
+            waringTypeBtn_->setProperty("alarm type",alarmType);
+            waringTypeBtn_->setProperty("groupNo","");
+            waringTypeBtn_->setProperty("personType","");
+        });
+        waringTypeMenu_->addAction(act);
+        if(i == 0){
+            waringTypeBtn_->setText(act->text());
         }
+    }
+
+    QVector<std::tuple<QString,QString,QString,QColor>> subTypeAlarmVec;
+    subTypeAlarmVec << std::make_tuple(tr("smsr_alarm_black"),tr("Blacklist"),tr("100010001008"),Qt::transparent)
+                    << std::make_tuple(tr("smsr_alarm_vip"),tr("VIP"),tr("100010001007"),QColor(100,0,100,100));
+    for(int i = 0; i < subTypeAlarmVec.count(); i++){
+        QString personTypeNo = std::get<2>(subTypeAlarmVec.at(i));
+        waringColorMap_.insert(std::get<0>(subTypeAlarmVec.at(i)),std::get<3>(subTypeAlarmVec.at(i)));
+        faceAlarmMap_.insert(std::get<2>(subTypeAlarmVec.at(i)),std::get<1>(subTypeAlarmVec.at(i)));
+        QMenu *typeMenu = new QMenu(std::get<1>(subTypeAlarmVec.at(i)));
+        typeMenu->setProperty("personType",personTypeNo);
+        ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+        RestServiceI *serviceI = factoryI->makeRestServiceI();
+        connect(serviceI,&RestServiceI::sigPersonTypeDetailes,typeMenu,[typeMenu,this](RestServiceI::PersonTypeDetail data){
+            typeMenu->setProperty("groupNo",data.group);
+            connect(typeMenu,&QMenu::aboutToShow,typeMenu,[typeMenu,this]{
+                ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+                RestServiceI *serviceI = factoryI->makeRestServiceI();
+                connect(serviceI,&RestServiceI::sigPersonGroupInfos,typeMenu,[typeMenu,this](QVector<RestServiceI::PersonGroupInfo> infos){
+                    QAction *act = new QAction(tr("All"));
+                    act->setData("");
+                    connect(act,&QAction::triggered,act,[this,act,typeMenu]{
+                        waringTypeBtn_->setProperty("personType",typeMenu->property("personType").toString());
+                        waringTypeBtn_->setProperty("groupNo","");
+                        waringTypeBtn_->setProperty("alarm type","");
+                        waringTypeBtn_->setText(typeMenu->title());
+                    });
+                    typeMenu->addAction(act);
+
+                    QVector<PersonGroup> dataVec;
+                    for(RestServiceI::PersonGroupInfo &value : infos){
+                        parseGroupToVec(value,dataVec);
+                    }
+                    for(int i = 0; i < dataVec.count(); i++){
+                        QAction *act = new QAction(dataVec.at(i).name);
+                        act->setData(dataVec.at(i).no);
+                        connect(act,&QAction::triggered,act,[this,act,typeMenu]{
+                            waringTypeBtn_->setProperty("personType",typeMenu->property("personType").toString());
+                            waringTypeBtn_->setProperty("groupNo",act->data().toString());
+                            waringTypeBtn_->setProperty("alarm type","");
+                            waringTypeBtn_->setText(typeMenu->title() + ": " + act->text());
+                        });
+                        typeMenu->addAction(act);
+                    }
+                });
+                connect(serviceI,&RestServiceI::sigError,typeMenu,[typeMenu,this](QString str){
+                    qDebug() << str;
+                });
+                serviceI->getPersonGoupInfos(typeMenu->property("groupNo").toString());
+            });
+            connect(typeMenu,&QMenu::aboutToHide,typeMenu,[typeMenu]{typeMenu->clear();});
+        });
+        connect(serviceI,&RestServiceI::sigError,typeMenu,[typeMenu,this](QString str){
+            qDebug() << str;
+        });
+        waringTypeMenu_->addMenu(typeMenu);
+        serviceI->searchPesonTypeDetail(personTypeNo);
     }
 #endif
     waringTypeBtn_->setMenu(waringTypeMenu_);
@@ -697,7 +693,11 @@ void EventSearch::slotAlarmHistory(RestServiceI::EventSearchReturn data)
         m_tableW->setItem(m_tableW->rowCount() - 1,2,item);
 
         item = new QTableWidgetItem;
-        item->setText(itemData.eventType);
+        if(itemData.eventType == "smsr_alarm_face"){
+            item->setText(faceAlarmMap_.value(itemData.persontypNo));
+        }else{
+            item->setText(originalEventMap_.value(itemData.eventType));
+        }
         item->setTextAlignment(Qt::AlignCenter);
         m_tableW->setItem(m_tableW->rowCount() - 1,3,item);
 

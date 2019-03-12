@@ -38,12 +38,13 @@ HomPage::HomPage(WidgetI *parent):
     eventCombox_->addItem(tr("Gather evetns"));
     eventCombox_->addItem(tr("Blacklist events"));
     eventBackW_->installEventFilter(this);
-    webView_->installEventFilter(this);
     webView_->page()->setBackgroundColor(Qt::transparent);
+    webView_->setContextMenuPolicy(Qt::NoContextMenu);
     QWebChannel *channel = new QWebChannel(webView_);
     webBridge_ = new HomePageWebBridge(channel);
     channel->registerObject("Bridge", webBridge_);
     webView_->page()->setWebChannel(channel);
+    webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/index.html"));
 
     connect(eventCombox_,SIGNAL(currentIndexChanged(int)),this,SLOT(slotEventComboxIndexChanged(int)));
     connect(webBridge_,SIGNAL(sigCameraClicked(QString)),this,SLOT(slotOnCameraClicked(QString)));
@@ -145,10 +146,6 @@ bool HomPage::eventFilter(QObject *watched, QEvent *event)
         for(int i = 0; i < eventListW_->count(); i++){
             QListWidgetItem *item = eventListW_->item(i);
             item->setSizeHint(eventItemSize_);
-        }
-    }else if(watchWid == webView_ && event->type() == QEvent::Show){
-        if(webView_->url().isEmpty()){
-            webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/index.html"));
         }
     }
     return WidgetI::eventFilter(watched,event);

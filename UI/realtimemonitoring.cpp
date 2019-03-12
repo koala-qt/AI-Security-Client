@@ -80,7 +80,7 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
     vboxLay->setMargin(0);
     centerHboxL->addLayout(vboxLay,1176);
 
-    switchToMap_ = new QPushButton(tr("Map View"));
+    switchToMap_ = new QPushButton(tr("Switch View"));
     eventCombox_ = new QComboBox;
     eventList_ = new QListWidget;
     eventBackW_ = new QWidget;
@@ -226,12 +226,12 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
     posEdit_->setMinimumHeight(36);
     posEdit_->setPlaceholderText(tr("Search"));
     switchToMap_->setIcon(QPixmap("images/switch_icon.png"));
-    eventCombox_->addItem(tr("All events"));
-    eventCombox_->addItem(tr("Intruder events"));
-    eventCombox_->addItem(tr("AB-Door evetns"));
-    eventCombox_->addItem(tr("Climb evetns"));
-    eventCombox_->addItem(tr("Gather evetns"));
-    eventCombox_->addItem(tr("Blacklist events"));
+    eventCombox_->addItem(tr("All Alarm"));
+    eventCombox_->addItem(tr("Intruder Alarm"));
+    eventCombox_->addItem(tr("Trailing Alarm"));
+    eventCombox_->addItem(tr("Climb Alarm"));
+    eventCombox_->addItem(tr("Gather Alarm"));
+    eventCombox_->addItem(tr("Blacklist Alarm"));
     faceCaptureBackW_->installEventFilter(this);
     eventBackW_->installEventFilter(this);
     eventList_->installEventFilter(this);
@@ -378,7 +378,7 @@ void RealtimeMonitoring::setUserStyle(int s)
                                     "}"
                                     "QComboBox{"
                                     "color: rgba(255,255,255,0.75);"
-                                    "font-size: 18px;"
+                                    "font-size: 14px;"
                                     "background-color: transparent;"
                                     "border: none;"
                                     "border-radius: 0px;"
@@ -688,6 +688,7 @@ void RealtimeMonitoring::slotOnIntruderEvent(NotifyEventI::IntruderEventData evD
     mainLay->addWidget(imgL);
     itemW->setLayout(mainLay);
     imgL->setPixmap(QPixmap::fromImage(evData.sceneImg.scaled(item->sizeHint())));
+    mainLay->setContentsMargins(0,5,0,5);
     eventList_->setItemWidget(item,itemW);
 }
 
@@ -740,6 +741,7 @@ void RealtimeMonitoring::slotOnAbDoorEvent(NotifyEventI::ABDoorEventData evData)
     mainLay->addWidget(imgL);
     itemW->setLayout(mainLay);
     imgL->setPixmap(QPixmap::fromImage(evData.sceneImg.scaled(item->sizeHint())));
+    mainLay->setContentsMargins(0,5,0,5);
     eventList_->setItemWidget(item,itemW);
 }
 
@@ -769,6 +771,7 @@ void RealtimeMonitoring::slotOnClimbEvent(NotifyEventI::ClimbEventData evData)
     mainLay->addWidget(imgL);
     itemW->setLayout(mainLay);
     imgL->setPixmap(QPixmap::fromImage(evData.sceneImg.scaled(item->sizeHint())));
+    mainLay->setContentsMargins(0,5,0,5);
     eventList_->setItemWidget(item,itemW);
 }
 
@@ -790,6 +793,7 @@ void RealtimeMonitoring::slotOngGatherEvent(NotifyEventI::GatherEventData evData
     mainLay->addWidget(imgL);
     itemW->setLayout(mainLay);
     imgL->setPixmap(QPixmap::fromImage(evData.sceneImg.scaled(item->sizeHint())));
+    mainLay->setContentsMargins(0,5,0,5);
     eventList_->setItemWidget(item,itemW);
 }
 

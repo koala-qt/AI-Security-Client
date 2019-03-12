@@ -24,12 +24,13 @@
 #include "sceneimagedialog.h"
 #include "informationdialog.h"
 #include "nodatatip.h"
+#include "windowtitlebar.h"
 
 #pragma execution_character_set("utf-8")
 FaceSearch::FaceSearch(WidgetI *parent):
     WidgetI(parent)
 {
-    setObjectName(tr("Facial Images Search"));
+    setObjectName(tr("Face Search"));
     QVBoxLayout *mainLay = new QVBoxLayout;
     QHBoxLayout *hlay = new QHBoxLayout;
     m_imgBtn = new QPushButton;
@@ -114,6 +115,11 @@ FaceSearch::FaceSearch(WidgetI *parent):
     mainLay->addWidget(m_pageIndicator);
     mainLay->setContentsMargins(40,40,40,40);
     mainLay->setSpacing(20);
+
+//    titleBar_ = new WindowTitleBar;
+//    QVBoxLayout *winLay = new QVBoxLayout;
+//    winLay->addLayout(mainLay);
+//    winLay->addWidget(titleBar_);
     setLayout(mainLay);
 
     menu_ = new QMenu(this);

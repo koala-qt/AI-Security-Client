@@ -37,13 +37,13 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     WidgetI(parent)
 {
     setObjectName(tr("Historical Capture"));
-    personTypeL_ = new QLabel(tr("Person Type"));
+    personTypeL_ = new QLabel(tr("Source"));
     personTypeCombox_ = new QComboBox;
-    posL_ = new QLabel(tr("Position"));
+    posL_ = new QLabel(tr("    Position"));
     posCombox_ = new QComboBox;
-    startTimeL_ = new QLabel(tr("Starting time"));
+    startTimeL_ = new QLabel(tr("Starting Time"));
     startTimeEdit_ = new QDateTimeEdit;
-    endTimeL_ = new QLabel(tr("Ending time"));
+    endTimeL_ = new QLabel(tr("    Ending Time"));
     endTimeEdit_ = new QDateTimeEdit;
     searchBtn_ = new QPushButton(tr("Search"));
     attributTreeW_ = new QTreeWidget;
@@ -98,13 +98,13 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
             delete label;
             Portrait *detailsW = new Portrait(this);
             detailsW->setAttribute(Qt::WA_DeleteOnClose);
-            detailsW->setWindowFlags(Qt::Window | Qt::Dialog);
+            detailsW->setWindowFlags(Qt::Dialog);
             detailsW->setWindowModality(Qt::ApplicationModal);
             detailsW->setUserStyle(userStyle());
             detailsW->slotSetData(resData);
             detailsW->setMinimumSize(582,514);
             detailsW->show();
-            QPoint r = dataListW_->mapToGlobal(dataListW_->rect().center());
+            QPoint r = detailsW->mapToGlobal(detailsW->rect().center());
             QRect dr = detailsW->rect();
             dr.moveCenter(r);
             detailsW->move(dr.topLeft());
@@ -139,7 +139,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
                 }
                 FaceSearch *faceDialog = new FaceSearch(this);
                 faceDialog->setAttribute(Qt::WA_DeleteOnClose);
-                faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+                faceDialog->setWindowFlags(Qt::Dialog);
                 faceDialog->setWindowModality(Qt::ApplicationModal);
                 QPalette pal = faceDialog->palette();
                 pal.setColor(QPalette::Background,QColor(37,41,52));
@@ -150,6 +150,11 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
                 faceDialog->setFaceImage(images.first());
                 faceDialog->setMinimumHeight(700);
                 faceDialog->show();
+
+                QPoint r = faceDialog->mapToGlobal(faceDialog->rect().center());
+                QRect dr = faceDialog->rect();
+                dr.moveCenter(r);
+                faceDialog->move(dr.topLeft());
             });
             dialog.exec();
             dataMenu_->setEnabled(true);
@@ -161,7 +166,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     dataMenu_->addAction(tr("Capture Search"),[this]{
         FaceSearch *faceDialog = new FaceSearch(this);
         faceDialog->setAttribute(Qt::WA_DeleteOnClose);
-        faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+        faceDialog->setWindowFlags(Qt::Dialog);
         faceDialog->setWindowModality(Qt::ApplicationModal);
         QPalette pal = faceDialog->palette();
         pal.setColor(QPalette::Background,QColor(37,41,52));
@@ -173,6 +178,10 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
         faceDialog->setOid(dataListW_->currentItem()->data(Qt::UserRole + 2).toString());
         faceDialog->setMinimumHeight(700);
         faceDialog->show();
+        QPoint r = mapToGlobal(faceDialog->rect().center());
+        QRect dr = faceDialog->rect();
+        dr.moveCenter(r);
+        faceDialog->move(dr.topLeft());
     });
     dataMenu_->addAction(tr("Registeration Search"),[this]{
         PortraitSearch *portSearchDialog = new PortraitSearch(this);
@@ -197,12 +206,16 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
         faceLinkP->setPalette(pal);
         faceLinkP->setAutoFillBackground(true);
         faceLinkP->setAttribute(Qt::WA_DeleteOnClose);
-        faceLinkP->setWindowFlags(Qt::Window | Qt::Dialog);
+        faceLinkP->setWindowFlags(Qt::Dialog);
         faceLinkP->setWindowModality(Qt::ApplicationModal);
         QPixmap pix = QPixmap::fromImage(dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>());
         faceLinkP->setFaceLinkOidAndImg(dataListW_->currentItem()->data(Qt::UserRole + 4).toString(),pix);
         faceLinkP->resize(1200,900);
         faceLinkP->show();
+        QPoint r = faceLinkP->mapToGlobal(faceLinkP->rect().center());
+        QRect dr = faceLinkP->rect();
+        dr.moveCenter(r);
+        faceLinkP->move(dr.topLeft());
     });
     dataMenu_->addAction(tr("Trajectory"),[this]{
         TrackingPage *view = new TrackingPage(this);
@@ -212,12 +225,16 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
         view->setAutoFillBackground(true);
         view->setUserStyle(userStyle());
         view->setAttribute(Qt::WA_DeleteOnClose);
-        view->setWindowFlags(Qt::Window | Qt::Dialog);
+        view->setWindowFlags(Qt::Dialog);
         view->setWindowModality(Qt::ApplicationModal);
         view->setMinimumSize(1655,924);
         view->setImgageOid(dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>(),
                            dataListW_->currentItem()->data(Qt::UserRole + 4).toString());
         view->show();
+        QPoint r = view->mapToGlobal(view->rect().center());
+        QRect dr = view->rect();
+        dr.moveCenter(r);
+        view->move(dr.topLeft());
     });
     dataMenu_->addAction(tr("Register"),[this]{
         PersonMark markDialog;
@@ -257,7 +274,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     centeVSplieL_->setFixedWidth(1);
     QVector<itemData> devicesVec;
     itemData items;
-    items.name = tr("faceAttribute");
+    items.name = tr("Face Attributes");
     items.value = 0;
     items.childrens << itemData{tr("5_o_Clock_Shadow "),0,QVector<itemData>()} << itemData{tr("Arched_Eyebrows"),0,QVector<itemData>()}
                     << itemData{tr("Attractive"),0,QVector<itemData>()} << itemData{tr("Bags_Under_Eyes"),0,QVector<itemData>()}
@@ -284,12 +301,13 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
         createTreeItem(attributTreeW_,nullptr,value);
     }
     attributTreeW_->expandItem(attributTreeW_->topLevelItem(0));
-    attributTreeW_->setHeaderLabel(tr("Attribule labels"));
+    attributTreeW_->setHeaderLabel(tr("Attributes"));
     attributTreeW_->headerItem()->setTextAlignment(0,Qt::AlignCenter);
     attributTreeW_->header()->setStretchLastSection(true);
     attributTreeW_->header()->setIconSize(QSize(50,50));
+    attributTreeW_->setFocusPolicy(Qt::NoFocus);
     QSize s = attributTreeW_->headerItem()->sizeHint(0);
-    attributTreeW_->headerItem()->setSizeHint(0,QSize(s.width(),30));
+    attributTreeW_->headerItem()->setSizeHint(0,QSize(s.width(),50));
     personTypeCombox_->setFixedSize(200,34);
     posCombox_->setFixedSize(200,34);
     startTimeEdit_->setFixedSize(200,34);
@@ -461,24 +479,12 @@ void SemanticSearchPage::setUserStyle(int s)
                                   "border: none;"
                                   "border-radius: 0px;"
                                   "}");
-        startTimeL_->setStyleSheet("QLabel{"
-                                   "background-color: transparent;"
-                                   "color: rgba(206, 206, 206, 1);"
-                                   "font-size: 16px;"
-                                   "border-radius: none;"
-                                   "}");
         startTimeEdit_->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
                                       "color: rgba(255,255,255,0.75);"
                                       "border-radius:4px;"
                                       "background-color: rgba(255,255,255,0.1);"
                                       "padding-left: 10px;"
                                       "}");
-        endTimeL_->setStyleSheet("QLabel{"
-                                 "background-color: transparent;"
-                                 "color: rgba(206, 206, 206, 1);"
-                                 "font-size: 16px;"
-                                 "border-radius: none;"
-                                 "}");
         endTimeEdit_->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
                                     "color: rgba(255,255,255,0.75);"
                                     "border-radius:4px;"
@@ -543,12 +549,20 @@ void SemanticSearchPage::setUserStyle(int s)
                                      "}");
         attributTreeW_->setStyleSheet("QTreeView{"
                                       "border:none;"
-                                      "font-size: 16px;"
+                                      "font-size: 14px;"
                                       "color: rgba(255,255,255,0.75);"
                                       "border-radius: 10px;"
                                       "background-color: transparent;}"
                                       "QTreeView::item:disabled{"
                                       "color:gray;"
+                                      "}"
+                                      "QTreeView::item{"
+                                      "color: rgba(255,255,255,0.75);"
+                                      "border:none;"
+                                      "}"
+                                      "QTreeView::item:selected{"
+                                      "color: rgba(255,255,255,0.75);"
+                                      "border:none;"
                                       "}"
                                       "QTreeWidget::indicator:disabled {"
                                       "background:gray;"
@@ -593,15 +607,17 @@ void SemanticSearchPage::setUserStyle(int s)
                                                     "border-radius: 10px;"
                                                     "}");
         attributTreeW_->header()->setStyleSheet("QHeaderView{"
-                                         "background-color: transparent;"
-                                         "border-radius:10px;"
-                                         "}"
-                                         "QHeaderView::section{"
-                                         "color: #CECECE;"
-                                         "font-size:16px;"
-                                         "border:none;"
-                                         "background-color: transparent;"
-                                         "}");
+                                                "background-color: transparent;"
+                                                "border-radius:10px;"
+                                                "}"
+                                                "QHeaderView::section{"
+                                                "color: rgba(255,255,255,0.75);"
+                                                "border: none;"
+                                                "font-size: 14px;"
+                                                "font-weight: bold;"
+                                                "background-color: transparent;"
+                                                "}");
+
         noDataW_->setUserStyle(s);
     }
     pageIndicator_->setUserStyle();

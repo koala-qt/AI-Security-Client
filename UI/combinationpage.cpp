@@ -28,7 +28,7 @@
 CombinationPage::CombinationPage( WidgetI *parent):
     WidgetI(parent)
 {
-    setObjectName(tr("Federated Search"));
+    setObjectName(tr("Body Search"));
     imageBtn_ = new QPushButton;
     searchBtn_ = new QPushButton(tr("Search"));
     similarityL_ = new QLabel(tr("Similarity"));
@@ -246,6 +246,7 @@ CombinationPage::CombinationPage( WidgetI *parent):
     faceTable_->horizontalHeader()->setSortIndicatorShown(true);
     faceTable_->setShowGrid(false);
     faceTable_->setFrameStyle(QFrame::NoFrame);
+    faceTable_->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     bodyTable_->setIconSize(QSize(112,112));
     bodyTable_->setFocusPolicy(Qt::NoFocus);
@@ -262,6 +263,7 @@ CombinationPage::CombinationPage( WidgetI *parent):
     bodyTable_->horizontalHeader()->setSortIndicatorShown(true);
     bodyTable_->setShowGrid(false);
     bodyTable_->setFrameStyle(QFrame::NoFrame);
+    bodyTable_->setEditTriggers(QAbstractItemView::NoEditTriggers);
     noFaceDataW_ = new NoDataTip(faceTable_);
     noBodyDataW_ = new NoDataTip(bodyTable_);
 

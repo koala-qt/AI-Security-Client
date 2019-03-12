@@ -20,7 +20,7 @@
 TrackingPage::TrackingPage( WidgetI *parent):
     WidgetI(parent)
 {
-    setObjectName(tr("Tracking"));
+    setObjectName(tr("Trajectory"));
     imgBtn_ = new QPushButton;
     searchBtn_ = new QPushButton(tr("Search"));
     startTimeL_ = new QLabel(tr("Starting time"));

@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <!-- import CSS -->
-  <link rel="stylesheet" href="./css/element.css">
+  <!-- <link rel="stylesheet" href="./css/element.css"> -->
+  <link rel="stylesheet" href="./css/vue-datepicker-local.css">
   <!-- <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"> -->
   <link rel="stylesheet" href="./css/main.css">
   <script src="./js/echarts.min.js"></script>
@@ -11,13 +12,18 @@
 </head>
 
 <body style="background: transparent">
-  <!-- <img class="bg-img" src="./img/1.jpg" alt=""> -->
+        <!-- <img class="bg-img" src="./img/1.jpg" alt=""> -->
+  <!-- <img class="bg-img" src="./img/1.jpg" alt="">
+  <img class="bg-img2" src="./img/2.png" alt=""> -->
   <div id="app" class="app" style="background: transparent" v-cloak>
     <div class="app-left">
         <div class="date-block">
             <img src="./img/x.png">
-            <div @click="focusInput" class="focus-input"></div>
-            <el-date-picker
+            <div class="meng-del-ceng"></div>
+            <div class="meng-ceng"></div>
+            <vue-datepicker-local v-model="dateValue" clearable></vue-datepicker-local>
+            <!-- <div @click="focusInput" class="focus-input"></div> -->
+            <!-- <el-date-picker
                 id="elDatePicker"
                 v-model="dateValue"
                 type="date"
@@ -27,7 +33,12 @@
                 :picker-options="pickerOptions1"
             
                 value-format='yyyy-MM-dd'>
-            </el-date-picker>
+            </el-date-picker> -->
+            <!-- <el-date-picker
+                v-model="dateValue1"
+                type="date"
+                placeholder="选择日期">
+            </el-date-picker> -->
         </div>
         
         <div class="cap-alarm">
@@ -59,6 +70,7 @@
         </div>
 
         <div class="echarts-box">
+           <div class="m-h"></div>
             <div class="box-title">
                 Capture Statistics
             </div>
@@ -67,7 +79,7 @@
         </div>
 
         <div class="alarm-prop">
-            <div class="box-title">
+            <div class="box-title" style="top: 11px;">
                 Alarm Proportion Analysis
             </div>
             <div  id="alarmProp">
@@ -90,12 +102,14 @@
   </div>
 </body>
   <script src="./js/vue.js"></script>
-  <script src="./js/element-index.js"></script>
-  <script src="./js/en.js"></script>
+  <!-- <script src="./js/element-index.js"></script> -->
+  <script src="./js/vue-datepicker-local.js"></script>
+  <script src="./js/highlight.js"></script>
+  <!-- <script src="./js/en.js"></script> -->
   <script src="./js/axios.min.js"></script>
   <script>
     let ip = 'http://192.168.100.65:18082'
-    ELEMENT.locale(ELEMENT.lang.en)
+    // ELEMENT.locale(ELEMENT.lang.en)
     if(typeof qt != "undefined") {
         new QWebChannel(qt.webChannelTransport, function(channel) {
             window.Bridge = channel.objects.Bridge;
@@ -119,6 +133,7 @@
                 countAlarm: 0,
                 countCaptures: 0,
                 dateValue: '',
+                dateValue1: '',
                 interfaces: {
                 topSta: `${ip}/api/v2/cmcc/index/top_statistics`, //
                 capTure: `${ip}/api/v2/cmcc/index/capture_statistics`, //
@@ -135,6 +150,24 @@
                     }
                 },
                 mouthEn: ['January', 'February', 'March', 'April','May','June','July','August','September','October','November','December']
+            }
+        },
+        watch: {
+            dateValue(newVal) {
+            //   console.log(newVal)
+            //   console.log(newVal.getFullYear())
+                try {
+                    let y = newVal.getFullYear()
+                    let m = newVal.getMonth() < 10 ? `0${newVal.getMonth() + 1}` : (newVal.getMonth() + 1)
+                    let d = newVal.getDate() < 10 ? `0${newVal.getDate()}` : newVal.getDate()
+                    let t = `${y}-${m}-${d}`
+                    this.dateValue = t
+                    console.log(t)
+                    this.getData()
+                } catch (error) {
+                    
+                }
+                
             }
         },
         methods: {
@@ -155,11 +188,11 @@
                 }
             
             },
-            focusInput() {
-            //   Vue.$refs('elDatePicker').focus()
-            document.getElementById('elDatePicker').focus()
-            this.showDate = !this.showDate
-            },
+            // focusInput() {
+            // //   Vue.$refs('elDatePicker').focus()
+            // document.getElementById('elDatePicker').focus()
+            // this.showDate = !this.showDate
+            // },
             getAlarm(data) {
                 var xArray = []
                 var yArray = []
@@ -226,7 +259,7 @@
                     series: [{
                         data: yArray,
                         type: 'bar',
-                        barWidth: 5,
+                        barWidth: 10,
                         itemStyle: {
                             normal: {
                                 
@@ -395,8 +428,7 @@
                                 color: 'rgba(255,255,255,0.75)',
                             },
                             formatter:function (value, index) {
-                            console.log(value)
-                            return `${parseFloat((value / 1000).toFixed(1))}k`
+                              return `${parseFloat((value / 1000).toFixed(1))}k`
                             }
                         },
                         splitLine:{
@@ -416,10 +448,10 @@
                         areaStyle: {normal: {
                         color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
                                 offset: 0,
-                                color: '#4CF8DC'
+                                color: 'rgba(76,248,220,0.43)'
                             }, {
                                 offset: 1,
-                                color: '#000'
+                                color: 'rgba(76,248,220,0)'
                             }]),
                         }}
                     }]
@@ -438,9 +470,9 @@
                     //    top: '10'
                     // },
                     tooltip: {
-                        show: false,
+                        show: true,
                         trigger: 'item',
-                        formatter: "{a} <br/>{b}: {c} ({d}%)",
+                        formatter: "{a} <br/>{b}: {c}",
                     
                     },
                     legend: {
@@ -456,14 +488,14 @@
                         data:legendArr,
                         textStyle: {
                             color: '#CECECE',
-                            fontSize: 12,
+                            fontSize: 14,
                         }
                     },
                     series: [
                         {
-                            name:'访问来源',
+                            name:'source',
                             type:'pie',
-                            hoverAnimation:false,
+                            hoverAnimation:true,
                             center: ['30%', '60%'],
                             radius: ['40%', '60%'],
                             avoidLabelOverlap: false,

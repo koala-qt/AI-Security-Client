@@ -55,7 +55,8 @@ HEADERS += \
     $$PWD/multiplefaceanalysis.h \
     $$PWD/personmark.h \
     $$PWD/golbalviewwidget.h \
-    $$PWD/glviewmapwidget.h
+    $$PWD/glviewmapwidget.h \
+    $$PWD/windowtitlebar.h
 
 SOURCES += \
     $$PWD/videoplayback.cpp \
@@ -111,4 +112,5 @@ SOURCES += \
     $$PWD/multiplefaceanalysis.cpp \
     $$PWD/personmark.cpp \
     $$PWD/golbalviewwidget.cpp \
-    $$PWD/glviewmapwidget.cpp
+    $$PWD/glviewmapwidget.cpp \
+    $$PWD/windowtitlebar.cpp

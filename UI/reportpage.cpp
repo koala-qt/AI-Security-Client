@@ -3,7 +3,7 @@
 #include <QWebChannel>
 #include <QSettings>
 #include <QPainter>
-#include <QFileDialog>
+#include <QMessageBox>
 #include <QWebEngineProfile>
 #include <QApplication>
 #include "reportpage.h"
@@ -16,6 +16,7 @@ ReportPage::ReportPage(WidgetI *parent):
     webView_ = new QWebEngineView;
     QHBoxLayout *mainLay = new QHBoxLayout;
     mainLay->addWidget(webView_);
+    mainLay->setMargin(0);
     setLayout(mainLay);
 
     QSettings configSetting("config.ini",QSettings::IniFormat);
@@ -39,7 +40,9 @@ void ReportPage::setUserStyle(int s)
 bool ReportPage::event(QEvent *event)
 {
     if(event->type() == QEvent::Show){
-        webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/report/index.html"));
+        if(webView_->url().isEmpty()){
+            webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/report/index.html"));
+        }
     }
     return WidgetI::event(event);
 }
@@ -53,10 +56,12 @@ void ReportPage::paintEvent(QPaintEvent *event)
 
 void ReportPage::slotLoadRequest(QWebEngineDownloadItem *download)
 {
-    QString filenName = QFileDialog::getSaveFileName(this,tr("download"),download->path());
-    if(filenName.isEmpty())return;
-    download->setPath(filenName);
-    download->accept();
+    QMessageBox::StandardButton btn = QMessageBox::information(this,tr("download"),download->path(),QMessageBox::Ok,QMessageBox::Cancel);
+    if(btn == QMessageBox::Ok){
+        download->accept();
+    }else{
+        download->cancel();
+    }
 }
 
 ReportWebBridge::ReportWebBridge(QObject *parent):

@@ -50,6 +50,7 @@ private:
     bool needUpdatePageInfo_ = true;
     NoDataTip *noDataTipW_{nullptr};
     QMap<QString,QColor> waringColorMap_;
+    QMap<QString,QString> originalEventMap_,faceAlarmMap_;
 
     void getCameraInfo();
     void parseGroupToVec(RestServiceI::PersonGroupInfo &datas, QVector<PersonGroup> &Vec);

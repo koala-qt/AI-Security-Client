@@ -31,6 +31,7 @@ public:
     QString searchAvailableAttribute(RestServiceI::SearchAttrsArgs &args, QStringList *resData);
     QString getPersonGroupInfo(QString &groupNo, QVector<RestServiceI::PersonGroupInfo> *resData);
     QString registerPerson(RestServiceI::PersonRegisterArgs &args);
+    QString searchPesonTypeDetail(QString &persontypeNo,RestServiceI::PersonTypeDetail *resData);
     /**
      * Added by aihc for Portrait library comparison.
      * @brief portraitLibCompSearch

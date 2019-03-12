@@ -72,9 +72,15 @@ body {
     width: 100%;
     height: 100%;
 }
+.bg-img2 {
+    position: absolute;
+    width: 1021px;
+    height: 775px;
+    left: 394px;
+}
 .el-input__inner {
-    border-bottom-left-radius: 0 !important;
-    border-bottom-right-radius: 0 !important;
+    /* border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important; */
 }
 .el-picker-panel {
     background: #000 !important;
@@ -217,11 +223,13 @@ body {
     height: 30px;
 }
 .cap-static {
+    position: absolute;
     border-radius: 4px;
     width: 400px;
     height: 300px;
     background: rgba(0,0,0,0.2);
     margin-top: 40px;
+    z-index: 100;
 }
 .alarm-prop {
     position: absolute;
@@ -241,7 +249,7 @@ body {
     width: 8px;
     height: 5px;
     z-index: 11;
-    right: 22px;
+    right: 46px;
     top: 29px;
 }
 .focus-input {
@@ -261,7 +269,7 @@ body {
 .box-title {
     color: rgba(255,255,255,0.7);
     position: absolute;
-    top: 16px;
+    top: 52px;
     left: 16px;
     font-size: 18px;
     font-weight: bold;
@@ -269,6 +277,117 @@ body {
 #alarmProp {
     height: 250px;
 }
+.m-h {
+    display: none;
+    top: 40px;
+    position: absolute;
+    width: 100%;
+    height: 300px;
+    z-index: 10;
+    filter: blur(3px);
+    background: rgba(0,0,0,0.2);
+}
 [v-cloak] {
 	display: none !important;
+}
+
+/* 时间控件覆盖 */
+.calendar-date-selected, .calendar-date-selected:hover {
+    border-radius: 36px;
+    /* width: 36px !important;
+    height: 36px !important;
+    margin-top: 10px; */
+}
+
+.datepicker-close, .datepicker:before {
+    display: none;
+}
+.datepicker-close:before {
+    /* display: none; */
+    position: absolute;
+    left: -3000px;
+}
+.datepicker>input {
+    border: 0;
+    border-radius: 4px;
+    width: 200px !important;
+    height: 62px;
+    padding: 0 !important;
+    text-indent: 42px;
+    font-size: 18px;
+    color: #fff;
+    background-color: #3A3BC1;
+}
+
+.calendar-days {
+    background: rgb(0,0,0,0.8) !important;
+}
+.calendar {
+    width: 400px;
+}
+.calendar-body {
+    /* background: rgb(1,3,33, 0.7); */
+    width: 400px !important;
+    height: 344px !important;
+}
+.datepicker-popup {
+    
+    margin-top: 20px;
+    border-radius: 4px;
+    width: 400px;
+    border: 0 !important;
+    padding: 0 !important;
+}
+.calendar-head a {
+    font-weight: 100 !important;
+    color: #fff !important;
+}
+.calendar-head {
+    height: 54px !important;
+    line-height: 54px !important;
+    background: #3A3BC1;
+}
+.calendar-head .calendar-month-select, .calendar-head .calendar-year-select {
+    font-size: 18px !important;
+}
+.calendar-date-selected, .calendar-date-selected:hover {
+    background: #3A3BC1 !important;
+}
+.calendar-date, .calendar-week {
+    position: relative;
+    margin-left: 13px;
+    margin-top: 12px;
+    color: #fff !important;
+    width: 36px;
+    height: 36px;
+}
+.calendar-date-on, .calendar-date:hover {
+    background: rgb(1,3,33);
+    width: 36px;
+    height: 36px;
+}
+.calendar-prev-decade-btn, .calendar-prev-year-btn, .calendar-next-year-btn {
+    display: none !important;
+}
+.calendar-hours, .calendar-minutes, .calendar-months, .calendar-seconds, .calendar-years {
+    background: rgb(1,3,33) !important;
+}
+.meng-del-ceng {
+    position: absolute;
+    width: 38px;
+    top: 0px;
+    left: 162px;
+    opacity: 0;
+    height: 62px;
+    z-index: 10000;
+}
+.meng-ceng {
+    position: absolute;
+    width: 109px;
+    left: 146px;
+    opacity: 0;
+    height: 53px;
+    z-index: 10000;
+    top: 82px;
+   
 }

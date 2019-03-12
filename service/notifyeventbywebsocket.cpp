@@ -38,14 +38,15 @@ NotifyEventByWebSocket::~NotifyEventByWebSocket()
 
 void NotifyEventByWebSocket::slotTimeout()
 {
-    websocket_->open(curUrl_);
+    QMetaObject::invokeMethod(websocket_,"open",Q_ARG(QUrl, curUrl_));
 }
 
 void NotifyEventByWebSocket::onConnected()
 {
     connect(websocket_, SIGNAL(textMessageReceived(QString)),this, SLOT(onTextMessageReceived(QString)),Qt::UniqueConnection);
+    connect(websocket_, SIGNAL(disconnected()),this,SLOT(onDisconnected()),Qt::UniqueConnection);
     if(timer_->isActive()){
-        timer_->start(5000);
+        timer_->stop();
     }
 }
 
@@ -194,6 +195,7 @@ void NotifyEventByWebSocket::onTextMessageReceived(QString message)
         std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(faceUrlList),[](QJsonValue jsVal){
             return jsVal.toString();
         });
+
         RestServiceI *serviceI = serFactory_->makeRestServiceI();
         connect(serviceI,&RestServiceI::sigDownloadImages,this,[this,evData,faceUrl](QVector<QImage> imgs){
             PersonEventData newData = evData;

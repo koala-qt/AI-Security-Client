@@ -21,7 +21,7 @@ void GlViewMapWidget::setUserStyle(int style)
 {
     if (0 == style)
     {
-        QString strCommStyle = "font-size:56px;color:white;font:bold;";
+        QString strCommStyle = "font-size:56px;color:white;font-weight: bold;";
         m_labLocationAccess->setStyleSheet(strCommStyle);
         m_labIDNumbers->setStyleSheet(strCommStyle);
         m_labCameraAccess->setStyleSheet(strCommStyle);
@@ -90,7 +90,7 @@ void GlViewMapWidget::init()
     QVBoxLayout *pMidVlay = new QVBoxLayout;
     pMidVlay->addSpacing(300);
     mainHlay->addLayout(pMidVlay);
-    QString strTitleStyle = "font-size:18px;color:white;font:bold;";
+    QString strTitleStyle = "font-size:18px;color:white;font-weight: bold;";
     QLabel *labTitle = new QLabel(tr("Location Access"));
     labTitle->setStyleSheet(strTitleStyle);
     labTitle->setAlignment(Qt::AlignRight);

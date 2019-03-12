@@ -7,7 +7,8 @@ class WidgetI : public QWidget
 {
     Q_OBJECT
 public:
-    WidgetI(QWidget *parent = nullptr):QWidget(parent){}
+    WidgetI(QWidget *parent = nullptr):QWidget(parent){
+    }
     virtual void setUserStyle(int s = 0) = 0;
     virtual int userStyle() const{return curStyle_;}
 

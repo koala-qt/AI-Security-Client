@@ -36,7 +36,7 @@ SelectUploadVide::SelectUploadVide(WidgetI *parent):
     upLoadBtn_->setIcon(QPixmap("images/cameraIcon.png"));
     tipIconL_->setPixmap(QPixmap("images/tipIcon.png"));
     upLoadBtn_->setMinimumHeight(44);
-    upLoadBtn_->setMinimumWidth(198);
+    upLoadBtn_->setMinimumWidth(210);
     QCursor curSor = upLoadBtn_->cursor();
     curSor.setShape(Qt::PointingHandCursor);
     upLoadBtn_->setCursor(curSor);

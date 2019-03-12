@@ -4,7 +4,7 @@
 #include <QSettings>
 #include <QApplication>
 #include <QWebEngineProfile>
-#include <QFileDialog>
+#include <QMessageBox>
 #include <QStandardPaths>
 #include "resourcemanagepage.h"
 
@@ -16,6 +16,7 @@ ResourceManagePage::ResourceManagePage(WidgetI *parent):
     QHBoxLayout *mainLay = new QHBoxLayout;
     webView_ = new QWebEngineView;
     mainLay->addWidget(webView_);
+    mainLay->setMargin(0);
     setLayout(mainLay);
 
     QSettings configSetting("config.ini",QSettings::IniFormat);
@@ -56,10 +57,12 @@ void ResourceManagePage::paintEvent(QPaintEvent *event)
 
 void ResourceManagePage::slotLoadRequest(QWebEngineDownloadItem *download)
 {
-    QString filenName = QFileDialog::getSaveFileName(this,tr("download"),download->path());
-    if(filenName.isEmpty())return;
-    download->setPath(filenName);
-    download->accept();
+    QMessageBox::StandardButton btn = QMessageBox::information(this,tr("download"),download->path(),QMessageBox::Ok,QMessageBox::Cancel);
+    if(btn == QMessageBox::Ok){
+        download->accept();
+    }else{
+        download->cancel();
+    }
 }
 
 ResourceWebBridge::ResourceWebBridge(QObject *parent):

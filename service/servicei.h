@@ -273,6 +273,7 @@ public:
         QString sourceId;
         QString sourceName;
         QString eventType;
+        QString persontypNo;
         QString sceneId;
         QString bodyId;
         QPolygonF warnZong;
@@ -312,6 +313,17 @@ public:
         QString groupName;
         QString describ;
         QImage image;
+    };
+
+    struct PersonTypeDetail
+    {
+        int id;
+        QString no;
+        QString name;
+        QString parentNo;
+        QString description;
+        QString hierarchy;
+        QString group;
     };
 
     // 3.6 add PersonType's children
@@ -447,6 +459,7 @@ public:
         qRegisterMetaType<QVector<RestServiceI::PersonType>>("QVector<RestServiceI::PersonType>");
         qRegisterMetaType<QVector<RestServiceI::MNFaceAnalysisItem>>("QVector<RestServiceI::MNFaceAnalysisItem>");
         qRegisterMetaType<GLViewTopStatistics>("GLViewTopStatistics");
+        qRegisterMetaType<RestServiceI::PersonTypeDetail>("RestServiceI::PersonTypeDetail");
         // Added by aihc end
     }
     virtual void getSceneInfo(const QString old,const QString alarmBoyId = QString()) = 0;
@@ -478,6 +491,7 @@ public:
     virtual void personRegist(PersonRegisterArgs &) = 0;
     virtual void getPersonGoupInfos(QString &groupNo) = 0;
     virtual void cancelRequest() = 0;
+    virtual void searchPesonTypeDetail(QString &typeNo) = 0;
     /**
      * Added by aihc for Portrait library comparison.
      * @brief portraitLibCompSearch
@@ -525,6 +539,7 @@ signals:
     void sigVideoUploadProgress(double,double);
     void sigAvailableAttrs(QStringList);
     void sigPersonGroupInfos(QVector<RestServiceI::PersonGroupInfo>);
+    void sigPersonTypeDetailes(RestServiceI::PersonTypeDetail);
     /**
      * Added by aihc for Portrait library comparison.
      * @brief sigPortraitLibCompResult
