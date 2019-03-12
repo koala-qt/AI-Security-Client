@@ -177,7 +177,7 @@ PersonInfo::PersonInfo(WidgetI *parent):
             infoDialog.exec();
         }
     });
-    menu_->addAction(tr("Capture search"),[this]{
+    menu_->addAction(tr("Capture Search"),[this]{
         FaceSearch *faceDialog = new FaceSearch(this);
         faceDialog->setAttribute(Qt::WA_DeleteOnClose);
         faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
@@ -194,7 +194,7 @@ PersonInfo::PersonInfo(WidgetI *parent):
         faceDialog->show();
     });
 
-    menu_->addAction(tr("Portrait search"),[this]{
+    menu_->addAction(tr("Registeration Search"),[this]{
         PortraitSearch *portSearchDialog = new PortraitSearch(this);
         portSearchDialog->setAttribute(Qt::WA_DeleteOnClose);
         portSearchDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
@@ -211,7 +211,7 @@ PersonInfo::PersonInfo(WidgetI *parent):
         portSearchDialog->show();
     });
 
-    menu_->addAction(tr("tracking"),[this]{
+    menu_->addAction(tr("Trajectory"),[this]{
         TrackingPage *view = new TrackingPage(this);
         QPalette pal = view->palette();
         pal.setColor(QPalette::Background,QColor(37,41,52));
@@ -226,7 +226,7 @@ PersonInfo::PersonInfo(WidgetI *parent):
         view->show();
     });
 
-    menu_->addAction(tr("face link"),[this]{
+    menu_->addAction(tr("Facelink"),[this]{
         FaceLinkPage *faceLinkP = new FaceLinkPage(this);
         QPalette pal = faceLinkP->palette();
         pal.setColor(QPalette::Background,QColor(37,41,52));
@@ -239,7 +239,7 @@ PersonInfo::PersonInfo(WidgetI *parent):
         faceLinkP->resize(1200,900);
         faceLinkP->show();
     });
-    menu_->addAction(tr("save"),[this]{
+    menu_->addAction(tr("Save Image"),[this]{
         QString personId = imgListW_->currentItem()->text();
         QString filePath =  QFileDialog::getSaveFileName(this,tr("Save face image"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/" + personId + ".jpg",tr("Images (*.png *.jpg)"));
         if(filePath.isEmpty()){

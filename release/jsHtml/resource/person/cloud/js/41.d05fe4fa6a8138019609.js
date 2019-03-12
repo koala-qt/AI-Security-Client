@@ -1,0 +1,2 @@
+webpackJsonp([41],{bCxh:function(e,t){},wb01:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var a={render:function(){var e=this.$createElement,t=this._self._c||e;return t("div",{staticClass:"page-content"},[t("div",{staticClass:"page-content-style"},[t("router-view")],1)])},staticRenderFns:[]};var c=n("VU/8")({name:"device_manage",components:{},data:function(){return{navber:[]}}},a,!1,function(e){n("bCxh")},"data-v-0dc24717",null);t.default=c.exports}});
+//# sourceMappingURL=41.d05fe4fa6a8138019609.js.map
