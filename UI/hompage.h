@@ -17,10 +17,12 @@ public:
 signals:
     void sigHostNameChanged(QString);
     void sigCameraClicked(QString);
+    void sigWebSwitchClicked();
 
 public slots:
     void onInitsized();
     void onCameraClicked(QString);
+    void onSwitchToVideoClicked();
 
 private:
     QString hostName_;
@@ -32,6 +34,9 @@ class HomPage : public WidgetI
 public:
     HomPage(WidgetI *parent = nullptr);
     void setUserStyle(int s = 0) override;
+
+signals:
+    void sigSwitchBtnClicked();
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event)override;

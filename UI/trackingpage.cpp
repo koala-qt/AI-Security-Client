@@ -42,26 +42,31 @@ TrackingPage::TrackingPage( WidgetI *parent):
     gridLay->addWidget(endTimeL_,1,2,1,1);
     gridLay->addWidget(endTimeEdit_,1,3,1,1);
     gridLay->addWidget(searchBtn_,1,4,1,1);
+    gridLay->setSpacing(20);
+    gridLay->setMargin(0);
     topHLay->addLayout(gridLay);
     topHLay->setAlignment(Qt::AlignLeft);
+    topHLay->setSpacing(20);
+    topHLay->setMargin(0);
     mainLay->addLayout(topHLay);
     mainLay->addWidget(dataView_);
+    mainLay->setMargin(40);
+    mainLay->setSpacing(20);
     setLayout(mainLay);
 
     threshSpin_->setRange(0,100);
     threshSpin_->setSuffix("%");
-    threshSpin_->setMinimumHeight(40);
-    startTimeEdit_->setMinimumSize(250,44);
-    endTimeEdit_->setMinimumSize(250,44);
+    threshSpin_->setFixedSize(200,34);
+    startTimeEdit_->setFixedSize(200,34);
     startTimeEdit_->setDisplayFormat("yyyy/MM/dd HH:mm:ss");
     endTimeEdit_->setDisplayFormat("yyyy/MM/dd HH:mm:ss");
     startTimeEdit_->setDateTime(QDateTime::currentDateTime().addDays(-1));
     endTimeEdit_->setDateTime(QDateTime::currentDateTime());
-    threshSpin_->setValue(40);
-    searchBtn_->setMinimumSize(120,44);
-    imgBtn_->setFixedSize(95,95);
-    imgBtn_->setIconSize(imgBtn_->size());
+    threshSpin_->setValue(53);
+    endTimeEdit_->setFixedSize(200,34);
     QPixmap defaultPersonBackPix("images/person-face-back.png");
+    imgBtn_->setFixedSize(defaultPersonBackPix.size());
+    imgBtn_->setIconSize(imgBtn_->size());
     imgBtn_->setIcon(defaultPersonBackPix.scaled(imgBtn_->iconSize()));
     imgBtn_->setProperty("default-pix",defaultPersonBackPix);
     QCursor imgBtnCoursor = imgBtn_->cursor();
@@ -76,6 +81,7 @@ TrackingPage::TrackingPage( WidgetI *parent):
     hostname_ = configSetting.value("Http/Javahost").toString();
 
     connect(dataView_,SIGNAL(sigCameraClicked(QString)),this,SLOT(slotOnCameraClicked(QString)));
+    connect(dataView_,SIGNAL(sigWebError(QString)),this,SLOT(slotOnWebError(QString)));
     setUserStyle(userStyle());
     getCameraInfo();
 }
@@ -87,22 +93,32 @@ void TrackingPage::setUserStyle(int s)
         imgBtn_->setStyleSheet("QPushButton{"
                                "background-color: transparent;"
                                "}");
-        pal = palette();
-        pal.setColor(QPalette::Foreground,Qt::white);
-        setPalette(pal);
-
+        threshL_->setStyleSheet("QLabel{"
+                                "color: rgba(255,255,255,191);"
+                                "font-size: 14px;"
+                                "}");
+        startTimeL_->setStyleSheet("QLabel{"
+                                   "color: rgba(255,255,255,191);"
+                                   "font-size: 14px;"
+                                   "}");
+        endTimeL_->setStyleSheet("QLabel{"
+                                 "color: rgba(255,255,255,191);"
+                                 "font-size: 14px;"
+                                 "}");
         endTimeEdit_->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
-            "color: rgba(206, 206, 206, 1);"
-            "border:1px solid white;"
-            "border-radius:4px;"
-            "background-color: transparent;"
-            "}");
+                                    "color: rgba(255,255,255,191);"
+                                    "background-color: rgba(255,255,255,0.1);"
+                                    "border-radius: 4px;"
+                                    "padding-left: 10px;"
+                                    "font-size: 14px;"
+                                    "}");
         startTimeEdit_->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
-            "color: rgba(206, 206, 206, 1);"
-            "border:1px solid white;"
-            "border-radius:4px;"
-            "background-color: transparent;"
-            "}");
+                                      "color: rgba(255,255,255,191);"
+                                      "background-color: rgba(255,255,255,0.1);"
+                                      "border-radius: 4px;"
+                                      "padding-left: 10px;"
+                                      "font-size: 14px;"
+                                      "}");
         searchBtn_->setStyleSheet("QPushButton{"
                                   "background-color: rgb(83,77,251);"
                                   "color: white;"
@@ -114,31 +130,19 @@ void TrackingPage::setUserStyle(int s)
                                   "background-color: #312DA6;"
                                   "}");
         threshSpin_->setStyleSheet("QSpinBox{"
-                                 "padding-right: 15px;"
-                                 "border-width: 3;"
-                                 "background-color: transparent;"
-                                 "border:1px solid #CECECE;"
-                                    "border-radius:6px;"
-                                 "color: white;"
-                                 "font-size: 18px;"
-                                 "}"
-                                 "QSpinBox::up-button{"
-                                 "subcontrol-origin: border;"
-                                 "subcontrol-position: top right;"
-                                 "width: 16px;"
-                                 "border-image: url(images/on.png) 1;"
-                                 "}"
-                                 "QSpinBox::down-button{"
-                                 "subcontrol-origin: border;"
-                                 "subcontrol-position: bottom right;"
-                                 "width: 16px;"
-                                 "border-image: url(images/under.png) 1;"
-                                 "}");
+                                   "color: rgba(255,255,255,191);"
+                                   "background-color: rgba(255,255,255,0.1);"
+                                   "border-radius: 4px;"
+                                   "padding-left: 10px;"
+                                   "font-size: 14px;"
+                                   "}");
         searchBtn_->setStyleSheet("QPushButton{"
                                   "background-color: rgb(83,77,251);"
                                   "color: white;"
                                   "border-radius: 6px;"
-                                  "font-size: 18px;"
+                                  "width: 99px;"
+                                  "height: 34px;"
+                                  "font-size: 14px;"
                                   "}"
                                   "QPushButton:pressed{"
                                   "padding: 2px;"
@@ -234,7 +238,8 @@ void TrackingPage::slotTrackingNew(QVector<RestServiceI::TrackingReturnData> dat
         pointData.grabTime = value.timeIn.toString("yyyy-MM-dd HH:mm:ss");
         int holdTime = (value.timeOut.toMSecsSinceEpoch() - value.timeIn.toMSecsSinceEpoch())/1000;
         pointData.holdTime.setNum(holdTime < 1 ? 1 : holdTime);
-        pointData.personImgUr = hostname_ + "graph/node/picture/" + value.objId;
+//        pointData.personImgUr = hostname_ + "graph/node/picture/" + value.objId;
+        pointData.personImgUr = hostname_ + "api/v2/cmcc/monitor/alarm/query/sms-face/" + value.objId;
         pointData.lat = value.lat;
         pointData.lng = value.lng;
         pointData.sceneId = value.sceneId;
@@ -266,4 +271,12 @@ void TrackingPage::slotOnCameraClicked(QString cameraId)
     player->setMinimumSize(960,540);
     player->startPlay(curCameraMap_.value(cameraId).rtsp,"fmg_decoder");
     player->show();
+}
+
+void TrackingPage::slotOnWebError(QString str)
+{
+    InformationDialog infoDialog(this);
+    infoDialog.setUserStyle(userStyle());
+    infoDialog.setMessage(str);
+    infoDialog.exec();
 }

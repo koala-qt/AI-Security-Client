@@ -26,17 +26,25 @@ protected:
     bool event(QEvent *event) override;
 
 private:
+    struct PersonGroup
+    {
+        int id = -1;
+        QString no;
+        QString name;
+        QString description;
+    };
     QLabel *m_startTimeL{nullptr},*m_endTimeL{nullptr},*m_positionL{nullptr},*m_waringTyleL{nullptr};
     QDateTimeEdit *m_startTimeEdit{nullptr},*m_endTimeEdit{nullptr};
     QTableWidget *m_tableW{nullptr};
-    QPushButton *m_searchBtn{nullptr};
+    QPushButton *m_searchBtn{nullptr},*waringTypeBtn_{nullptr};
     PageIndicator *m_pageindicator{nullptr};
-    QComboBox *m_positionCombox{nullptr},*m_waringTyleCombox{nullptr};
+    QComboBox *m_positionCombox{nullptr};
+    QMenu *waringTypeMenu_{nullptr};
     QWidget *centerBack_{nullptr};
 
     QImage backImg_;
     QString javaHost_;
-    QString curCameraid_,curWaringType_;
+    QString curCameraid_,curWaringType_,curPersonType_,curGroupNo_;
     QDateTime curStartDateTime_,curEndDateTime_;
     QMenu *menu_{nullptr};
     bool needUpdatePageInfo_ = true;
@@ -44,6 +52,7 @@ private:
     QMap<QString,QColor> waringColorMap_;
 
     void getCameraInfo();
+    void parseGroupToVec(RestServiceI::PersonGroupInfo &datas, QVector<PersonGroup> &Vec);
 
 private slots:
     void slotOnCameraInfo(QVector<RestServiceI::CameraInfo>);

@@ -5,6 +5,7 @@
 #include "service/servicei.h"
 QT_FORWARD_DECLARE_CLASS(SelectUploadVide)
 QT_FORWARD_DECLARE_CLASS(QStackedWidget)
+QT_FORWARD_DECLARE_CLASS(QPushButton)
 QT_FORWARD_DECLARE_CLASS(VideoAnalysisData)
 QT_FORWARD_DECLARE_CLASS(UploadVideoProgress)
 class VideoAnalysis : public WidgetI
@@ -28,6 +29,7 @@ private slots:
     void slotFileSelected(QString);
     void slotCancelUPload();
     void slotCurrenIndexChanged(int);
+    void slotBackClicked();
 };
 
 #endif // VIDEOANALYSIS_H

@@ -149,12 +149,6 @@ VideoPlayer::VideoPlayer(QWidget *parent):
             qDebug() << "rejected";
         }
     });
-    menu_->setStyleSheet("QMenu{"
-                             "background-color: rgb(75,75,75);"
-                             "}"
-                             "QMenu::item:selected{"
-                             "background-color: rgba(255,255,255,0.4);"
-                             "}");
     setContextMenuPolicy(Qt::CustomContextMenu);
 
     connect(this,SIGNAL(sigVideoStart(int,int)),this,SLOT(slotOnStarted(int,int)));

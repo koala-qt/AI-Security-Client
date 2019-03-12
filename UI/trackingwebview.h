@@ -20,10 +20,12 @@ signals:
     void sigMovieingStart();
     void sigMovieStop();
     void sigCameraClicked(QString);
+    void sigWebError(QString);
 
 public slots:
     void onInitsized();
     void onCameraClicked(QString cameraId);
+    void alertNoPoint(QString);
 
 private:
     bool isInitsized_ = false;
@@ -54,6 +56,7 @@ public:
 
 signals:
     void sigCameraClicked(QString);
+    void sigWebError(QString);
 
 private:
     TrackingBridge *webBridge_{nullptr};

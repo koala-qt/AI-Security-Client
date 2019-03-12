@@ -14,6 +14,11 @@ public:
     Portrait( WidgetI *parent = nullptr);
     void setUserStyle(int s) override;
 
+protected:
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+
 public slots:
     void slotSetData(RestServiceI::PortraitReturnData &data);
 
@@ -23,6 +28,7 @@ private:
     FlowLayout *flowLayFace_{nullptr},*flowLayBody_{nullptr};
     QPushButton *saveBtn_{nullptr};
 
+    QPoint startP_;
     QString curObjId_;
     QImage curFaceImg_,curBodyImg_;
 

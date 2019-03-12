@@ -44,20 +44,24 @@ private:
     QLabel *centeVSplieL_{nullptr};
     QMenu *dataMenu_{nullptr};
 
-    QString curCameraId_;
-    QStringList curfaceAttrList_;
+    QString curCameraId_,curDataErrorStr_,curEnableAttrErrorStr_;
+    QStringList curfaceAttrList_,curEnableAttrList_;
     QDateTime curStartTime_,curEndTime_;
     int curMode_;
     bool needUpdatePageInfo_ = true;
     bool preIsSearch_ = false;
+    bool dataGeted_ = false, availabelAttrGeted_ = false;
     int dataRows_;
     int dataCols_;
+    int curTotalPage_,curTotalRecords_;
     QSize itemSize_,iconSize_;
     QMap<QString,QString> cameraMapInfo_;
+    QVector<RestServiceI::DataRectureItem> curDataVec_;
     QVector<QPair<QString,QVector<int>>> personTypeVec_;
     NoDataTip *noDataW_{nullptr};
 
     void getCameraInfo();
+    void setEnableAttrs(const QStringList &);
     void setTableData(QVector<RestServiceI::DataRectureItem> &data);
     QStringList checkedAttrbute(QTreeWidgetItem*);
     void getAvailableAttrs(WaitingLabel *);

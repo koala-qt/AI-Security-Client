@@ -33,6 +33,7 @@ int main(int argc, char *argv[])
 //    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 //    qputenv("QT_AUTO_SCREEN_SCALE_FACTOR","1");
 #endif
+    qputenv("QTWEBENGINE_REMOTE_DEBUGGING", "9223");
     QApplication a(argc, argv);
     installTranslators();
 

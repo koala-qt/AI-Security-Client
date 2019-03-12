@@ -15,7 +15,6 @@ GlViewMapWidget::GlViewMapWidget(WidgetI *parent):
     setUserStyle(userStyle());
     notifyServiceI_ = reinterpret_cast<NotifyServiceI*>(qApp->property("NotifyServiceI").toULongLong());
     connect(notifyServiceI_,SIGNAL(sigIntruderEvent(NotifyEventI::IntruderEventData)),this,SLOT(slotOnIntruderEvent(NotifyEventI::IntruderEventData)),Qt::UniqueConnection);
-
 }
 
 void GlViewMapWidget::setUserStyle(int style)

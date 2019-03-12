@@ -42,7 +42,8 @@ MultipleSearch::MultipleSearch( WidgetI *parent):
     hlay->addStretch(4);
 #else
     hlay->addWidget(imgList_);
-    hlay->addStretch();
+    hlay->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    hlay->setMargin(0);
 #endif
     mainLay->addLayout(hlay,1);
     QGridLayout *gridLay = new QGridLayout;
@@ -54,8 +55,12 @@ MultipleSearch::MultipleSearch( WidgetI *parent):
     gridLay->addWidget(endTimeEdit_,1,3,1,1);
     gridLay->addWidget(searchBtn_,1,6,1,1);
     gridLay->setAlignment(Qt::AlignLeft);
+    gridLay->setSpacing(20);
+    gridLay->setMargin(0);
     mainLay->addLayout(gridLay,1);
     mainLay->addWidget(dataList_,7);
+    mainLay->setContentsMargins(37,39,40,40);
+    mainLay->setSpacing(20);
     setLayout(mainLay);
 
     dataMenu_->addAction(tr("Scene analysis"),[this]{
@@ -110,26 +115,28 @@ MultipleSearch::MultipleSearch( WidgetI *parent):
         dataMenu_->show();
     });
     imgList_->setFlow(QListWidget::LeftToRight);
+    imgList_->setFrameStyle(QFrame::NoFrame);
     dataList_->setFlow(QListWidget::LeftToRight);
     dataList_->setViewMode(QListWidget::IconMode);
     dataList_->setMovement(QListWidget::Static);
-    dataList_->setIconSize(QSize(192,108));
-    posCombox_->setMaximumWidth(290);
-    posCombox_->setMinimumHeight(44);
-    startTimeEdit_->setMinimumSize(250,44);
+    dataList_->setIconSize(QSize(340,191));
+    dataList_->setFrameStyle(QFrame::NoFrame);
+    posCombox_->setFixedSize(200,34);
+    startTimeEdit_->setFixedSize(200,34);
     startTimeEdit_->setDateTime(QDateTime::currentDateTime().addDays(-1));
-    endTimeEdit_->setMinimumSize(250,44);
+    endTimeEdit_->setFixedSize(200,34);
     endTimeEdit_->setDateTime(QDateTime::currentDateTime());
-    searchBtn_->setMinimumSize(120,44);
+    searchBtn_->setFixedSize(99,34);
 #ifndef MULTIPSEARCHUSEMOVESIZE
-    imgList_->setIconSize(QSize(140,140));
+    QPixmap iconPix("images/person-face-back.png");
+    imgList_->setIconSize(iconPix.size());
     int listWidth = imgList_->iconSize().width() * itemCount_ + (itemCount_ + 1 )* imgList_->spacing() + imgList_->frameWidth() * 2;
     int listHeight = imgList_->iconSize().height() + imgList_->frameWidth() * 2 + imgList_->spacing() * 2;
     imgList_->setFixedSize(listWidth,listHeight);
     for(int i = 0; i < itemCount_; i++){
         QListWidgetItem *item = new QListWidgetItem;
         item->setSizeHint(imgList_->iconSize());
-        item->setIcon(QPixmap("images/person-face-back.png").scaled(imgList_->iconSize()));
+        item->setIcon(iconPix);
         item->setData(Qt::UserRole,false);
         imgList_->addItem(item);
     }
@@ -146,93 +153,104 @@ MultipleSearch::MultipleSearch( WidgetI *parent):
 void MultipleSearch::setUserStyle(int style)
 {
     QPalette pal;
+    QFont f;
     if(0 == style){
         imgList_->setStyleSheet("QListWidget{"
                                 "background-color: transparent;"
                                 "}");
         pal = positionL_->palette();
-        pal.setColor(QPalette::Foreground,Qt::white);
+        pal.setColor(QPalette::Foreground,QColor(255,255,255,191));
         positionL_->setPalette(pal);
         startTimeL_->setPalette(pal);
         endTimeL_->setPalette(pal);
 
-        posCombox_->setStyleSheet(
-                    "QComboBoxListView{"
-                    "color: #CECECE;"
-                    "background-color: #525964;"
-                    "}"
-                    "QComboBox{"
-                    "color: white;"
-                    "font-size: 16px;"
-                    "background-color: transparent;"
-                    "border: 1px solid rgba(255, 255, 255, 1);"
-                    "border-radius: 4px;"
-                    "}"
-                    "QComboBox QAbstractItemView{"
-                    "selection-color: white;"
-                    "outline: 0px;"
-                    "selection-background-color: #CECECE;"
-                    "}"
-                    "QComboBox::drop-down{"
-                    "subcontrol-position: center right;border-image: url(images/dropdown2.png);width:11px;height:8px;subcontrol-origin: padding;margin-right:5px;"
-                    "}"
-                    "QScrollBar:vertical{"
-                    "background: transparent;"
-                    "border: 0px solid gray;"
-                    "width: 13px;"
-                    "}"
-                    "QScrollBar::handle:vertical{"
-                    "background: rgba(255,255,255,0.5);"
-                    "border-radius: 5px;"
-                    "}"
-                    "QScrollBar::add-line:vertical{"
-                    "background: transparent;"
-                    "border:0px solid #274168;"
-                    "border-radius: 5px;"
-                    "min-height: 10px;"
-                    "width: 13px;"
-                    "}"
-                    "QScrollBar::sub-line:vertical{"
-                    "background: transparent;"
-                    "border:0px solid #274168;"
-                    "min-height: 10px;"
-                    "width: 13px;"
-                    "}"
-                    "QScrollBar::up-arrow:vertical{"
-                    "subcontrol-origin: margin;"
-                    "height: 0px;"
-                    "border:0 0 0 0;"
-                    "visible:false;"
-                    "}"
-                    "QScrollBar::down-arrow:vertical{"
-                    "subcontrol-origin: margin;"
-                    "height: 0px;"
-                    "visible:false;"
-                    "}"
-                    "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
-                    "background: transparent;"
-                    "border: none;"
-                    "border-radius: 0px;"
-                    "}");
+        f = font();
+        f.setPixelSize(14);
+        positionL_->setFont(f);
+        startTimeL_->setFont(f);
+        endTimeL_->setFont(f);
+        startTimeEdit_->setFont(f);
+        endTimeEdit_->setFont(f);
+        searchBtn_->setFont(f);
+
+        posCombox_->setStyleSheet("QComboBoxListView{"
+                                  "color: #CECECE;"
+                                  "background-color: transparent;"
+                                  "border-radius: 0px;"
+                                  "border: none;"
+                                  "}"
+                                  "QComboBox{"
+                                  "color: rgba(255,255,255,0.75);"
+                                  "font-size: 14px;"
+                                  "background-color: rgba(255,255,255,0.1);"
+                                  "border: none;"
+                                  "border-radius: 0px;"
+                                  "}"
+                                  "QComboBox QAbstractItemView{"
+                                  "background-color: rgb(43,49,61);"
+                                  "border-radius: 6px;"
+                                  "selection-color: white;"
+                                  "outline: 0px;"
+                                  "selection-background-color: #CECECE;"
+                                  "}"
+                                  "QComboBox::drop-down{"
+                                  "subcontrol-position: center right;"
+                                  "border-image: url(images/dropdown2.png);"
+                                  "width:11px;height:8px;"
+                                  "subcontrol-origin: padding;"
+                                  "margin-right:5px;"
+                                  "}"
+                                  "QScrollBar::handle:vertical{"
+                                  "background: rgba(255,255,255,0.5);"
+                                  "border-radius: 5px;"
+                                  "}"
+                                  "QScrollBar::add-line:vertical{"
+                                  "background: transparent;"
+                                  "border:0px solid #274168;"
+                                  "border-radius: 5px;"
+                                  "min-height: 10px;"
+                                  "width: 13px;"
+                                  "}"
+                                  "QScrollBar::sub-line:vertical{"
+                                  "background: transparent;"
+                                  "border:0px solid #274168;"
+                                  "min-height: 10px;"
+                                  "width: 13px;"
+                                  "}"
+                                  "QScrollBar::up-arrow:vertical{"
+                                  "subcontrol-origin: margin;"
+                                  "height: 0px;"
+                                  "border:0 0 0 0;"
+                                  "visible:false;"
+                                  "}"
+                                  "QScrollBar::down-arrow:vertical{"
+                                  "subcontrol-origin: margin;"
+                                  "height: 0px;"
+                                  "visible:false;"
+                                  "}"
+                                  "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
+                                  "background: transparent;"
+                                  "border: none;"
+                                  "border-radius: 0px;"
+                                  "}");
         startTimeEdit_->setDisplayFormat("yyyy/MM/dd HH:mm:ss");
         startTimeEdit_->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
-            "color: rgba(206, 206, 206, 1);"
-            "border:1px solid white;"
-            "border-radius:4px;"
-            "background-color: transparent;"
-            "}");
+                                      "color: rgba(255,255,255,0.75);"
+                                      "background-color: rgba(255,255,255,0.1);"
+                                      "border-radius: 4px;"
+                                      "padding-left: 10px;"
+                                      "}");
         endTimeEdit_->setDisplayFormat("yyyy/MM/dd HH:mm:ss");
         endTimeEdit_->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
-            "color: rgba(206, 206, 206, 1);"
-            "border:1px solid white;"
-            "border-radius:4px;"
-            "background-color: transparent;"
-            "}");
+                                    "color: rgba(255,255,255,0.75);"
+                                    "background-color: rgba(255,255,255,0.1);"
+                                    "border-radius: 4px;"
+                                    "padding-left: 10px;"
+                                    "}");
         searchBtn_->setStyleSheet("QPushButton{"
                                   "background-color: rgb(83,77,251);"
                                   "color: white;"
-                                  "border-radius: 6px;"
-                                  "font-size: 18px;"
+                                  "border-radius: 4px;"
                                   "}"
                                   "QPushButton:pressed{"
                                   "padding: 2px;"
@@ -241,12 +259,6 @@ void MultipleSearch::setUserStyle(int style)
         dataList_->setStyleSheet("QListWidget{"
                                  "background-color: transparent;"
                                  "color: white;"
-                                 "}");
-        dataMenu_->setStyleSheet("QMenu{"
-                                 "background-color: rgb(75,75,75);"
-                                 "}"
-                                 "QMenu::item:selected{"
-                                 "background-color: rgba(255,255,255,0.4);"
                                  "}");
         QCursor imgListCursor = imgList_->cursor();
         imgListCursor.setShape(Qt::PointingHandCursor);

@@ -11,7 +11,7 @@ InformationDialog::InformationDialog(QWidget *parent, Qt::WindowFlags f):
 {
     closeBtn_ = new QPushButton("×");
     textL_ = new QLabel;
-    okBtn_ = new QPushButton(tr("Okay"));
+    okBtn_ = new QPushButton(tr("Ok"));
 
     QVBoxLayout *mainLay = new QVBoxLayout;
     QHBoxLayout *hlay = new QHBoxLayout;
@@ -65,6 +65,8 @@ void InformationDialog::setUserStyle(int styleIndex)
                                  "color: white;"
                                  "border-radius: 6px;"
                                  "font-size: 18px;"
+                                 "width: 24px;"
+                                 "height: 24px;"
                                  "}"
                                  "QPushButton:pressed{"
                                  "padding: 2px;"

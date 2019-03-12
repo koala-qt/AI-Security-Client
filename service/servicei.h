@@ -120,8 +120,8 @@ public:
     };
     struct TrackingReturnData
     {
-        qreal lat;
-        qreal lng;
+        qreal lat = 0.0;
+        qreal lng = 0.0;
         QString cameraId;
         QString objId;
         QString sceneId;
@@ -262,6 +262,8 @@ public:
         int pageSize;
         QString cameraId;
         QString alarmType;
+        QString personType;
+        QString groupNo;
         QDateTime start;
         QDateTime end;
     };

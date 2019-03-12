@@ -6,6 +6,7 @@
 #include <QFileDialog>
 #include <QBoxLayout>
 #include <QStandardPaths>
+#include <QMouseEvent>
 #include "portrait.h"
 #include "cornerwidget.h"
 #include "flowlayout.h"
@@ -63,19 +64,19 @@ void Portrait::setUserStyle(int s)
             setFont(f);
         }
         pal = palette();
-        pal.setColor(QPalette::Background,QColor("#4B4B4B"));
+        pal.setColor(QPalette::Background,QColor(48,54,68));
         setPalette(pal);
         setAutoFillBackground(true);
 
         pal = idL_->palette();
-        pal.setColor(QPalette::Foreground,QColor(126,140,177));
+        pal.setColor(QPalette::Foreground,QColor(255,255,255,191));
         idL_->setPalette(pal);
         nameL_->setPalette(pal);
         personType_->setPalette(pal);
 
         saveBtn_->setStyleSheet("QPushButton{"
-                                "background-color: rgb(83,77,251);"
-                                "color: white;"
+                                "background-color: rgb(63,70,87);"
+                                "color: rgba(255,255,255,0.75);"
                                 "border-radius: 6px;"
                                 "font-size: 18px;"
                                 "}"
@@ -84,6 +85,27 @@ void Portrait::setUserStyle(int s)
                                 "background-color: #312DA6;"
                                 "}");
     }
+}
+
+void Portrait::mousePressEvent(QMouseEvent *event)
+{
+    if(event->button() != Qt::LeftButton)return;
+    startP_ = event->globalPos();
+    return WidgetI::mousePressEvent(event);
+}
+
+void Portrait::mouseReleaseEvent(QMouseEvent *event)
+{
+    qSwap(startP_,QPoint());
+    return WidgetI::mouseReleaseEvent(event);
+}
+
+void Portrait::mouseMoveEvent(QMouseEvent *event)
+{
+    if(event->button() != Qt::LeftButton)return;
+    move(pos() + event->globalPos() - startP_);
+    startP_ = event->globalPos();
+    return WidgetI::mouseReleaseEvent(event);
 }
 
 void Portrait::slotSetData(RestServiceI::PortraitReturnData &data)

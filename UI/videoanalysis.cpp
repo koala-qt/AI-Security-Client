@@ -1,6 +1,7 @@
 #include <QDebug>
 #include <QStackedWidget>
 #include <QApplication>
+#include <QPushButton>
 #include <QVBoxLayout>
 #include <QPainter>
 #include "service/servicei.h"
@@ -19,7 +20,7 @@ VideoAnalysis::VideoAnalysis(WidgetI *parent):
     progressW_ = new UploadVideoProgress;
     selectVideoW_ = new SelectUploadVide;
 
-    QHBoxLayout *mainLay = new QHBoxLayout;
+    QVBoxLayout *mainLay = new QVBoxLayout;
     mainLay->addWidget(stackedW_);
     mainLay->setMargin(0);
     setLayout(mainLay);
@@ -33,6 +34,7 @@ VideoAnalysis::VideoAnalysis(WidgetI *parent):
     connect(selectVideoW_,SIGNAL(sigVideoSelected(QString)),this,SLOT(slotFileSelected(QString)));
     connect(progressW_,SIGNAL(sigCancelBtnClicked()),this,SLOT(slotCancelUPload()));
     connect(stackedW_,SIGNAL(currentChanged(int)),this,SLOT(slotCurrenIndexChanged(int)));
+    connect(videoDataW_,SIGNAL(sigBackBtnClicked()),this,SLOT(slotBackClicked()));
     setUserStyle(userStyle());
 }
 
@@ -55,6 +57,7 @@ bool VideoAnalysis::eventFilter(QObject *watched, QEvent *event)
     }
     if(isIn && event->type() == QEvent::Paint){
         QPainter p(watchedWid);
+        p.setRenderHint(QPainter::Antialiasing);
         p.setPen(Qt::NoPen);
         p.setBrush(QColor(0,0,0,102));
         p.drawRoundedRect(stackedW_->rect().adjusted(0,0,-p.pen().width(),-p.pen().width()),4,4);
@@ -97,7 +100,13 @@ void VideoAnalysis::slotCancelUPload()
 void VideoAnalysis::slotCurrenIndexChanged(int index)
 {
     if(index == 2){
+        videoDataW_->initsize();
         NotifyServiceI* notifyServiceI_ = reinterpret_cast<NotifyServiceI*>(qApp->property("NotifyServiceI").toULongLong());
-        connect(notifyServiceI_,SIGNAL(sigVideoFacePicture(QString,QImage)),videoDataW_,SLOT(slotVideoAnalysisData(QString,QImage)));
+        connect(notifyServiceI_,SIGNAL(sigVideoFacePicture(QString,QImage)),videoDataW_,SLOT(slotVideoAnalysisData(QString,QImage)),Qt::UniqueConnection);
     }
+}
+
+void VideoAnalysis::slotBackClicked()
+{
+    stackedW_->setCurrentIndex(0);
 }

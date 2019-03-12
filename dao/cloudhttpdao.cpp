@@ -269,12 +269,12 @@ QString DLL::CloudHttpDao::tracking(RestServiceI::FaceTrackingArgs &args, QVecto
     QBuffer imgBuf(&imgArray);
     imgBuf.open(QIODevice::WriteOnly);
     args.faceImg.save(&imgBuf,"jpg");
-    QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/trajectory-tracking");
+    QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/trajectory-trajectory");//trajectory
     QString postData = QObject::tr("base64=%1&objId=%2&similarity=%3&startTime=%4&finishTime=%5&property=false")
             .arg(QString(imgArray.toBase64(QByteArray::Base64UrlEncoding)),args.oid)
             .arg(args.thresh)
             .arg(args.startT.toString("yyyy-MM-dd HH:mm:ss"),args.endT.toString("yyyy-MM-dd HH:mm:ss"));
-    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),15);
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),20);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -899,11 +899,21 @@ QString DLL::CloudHttpDao::getFaceLinkDataColl(RestServiceI::FaceLinkDataCollArg
 
 QString DLL::CloudHttpDao::eventSearch(RestServiceI::EventSearchArgs &args, RestServiceI::EventSearchReturn *resData)
 {
-    QString urlStr = host_ + QObject::tr("api/v2/cmcc/monitor/alarm/find?eventType=%1&sourceId=%2&pageNo=%3&pageSize=%4&startStamp=%5&endStamp=%6")
-            .arg(args.alarmType,args.cameraId)
-            .arg(args.pageNo)
-            .arg(args.pageSize)
-            .arg(args.start.toString("yyyy-MM-dd%20HH:mm:ss"),args.end.toString("yyyy-MM-dd%20HH:mm:ss"));
+    QString urlStr;
+    if(args.alarmType.isEmpty()){
+        urlStr = host_ + QObject::tr("api/v2/cmcc/monitor/alarm/find?personType=%1&groupNo=%2&sourceId=%3&pageNo=%4&pageSize=%5&startStamp=%6&endStamp=%7")
+                    .arg(args.personType,args.groupNo,args.cameraId)
+                    .arg(args.pageNo)
+                    .arg(args.pageSize)
+                    .arg(args.start.toString("yyyy-MM-dd%20HH:mm:ss"),args.end.toString("yyyy-MM-dd%20HH:mm:ss"));
+    }else{
+        urlStr = host_ + QObject::tr("api/v2/cmcc/monitor/alarm/find?eventType=%1&sourceId=%2&pageNo=%3&pageSize=%4&startStamp=%5&endStamp=%6")
+                    .arg(args.alarmType,args.cameraId)
+                    .arg(args.pageNo)
+                    .arg(args.pageSize)
+                    .arg(args.start.toString("yyyy-MM-dd%20HH:mm:ss"),args.end.toString("yyyy-MM-dd%20HH:mm:ss"));
+    }
+    qDebug() << urlStr;
     int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),4);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));

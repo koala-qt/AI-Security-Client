@@ -31,14 +31,15 @@ PersonMark::PersonMark(QWidget *parent, Qt::WindowFlags f):
     customL_ = new QLabel(tr("describ"));
     customEdit_ = new QLineEdit;
     btnBox_ = new QDialogButtonBox;
+    cancelBtn_ = btnBox_->addButton(tr("CANCEL"),QDialogButtonBox::RejectRole);
     sumitBtn_ = btnBox_->addButton(tr("Submit"),QDialogButtonBox::AcceptRole);
-    cancelBtn_ = btnBox_->addButton(tr("Cancel"),QDialogButtonBox::RejectRole);
 
     QVBoxLayout *mainLay = new QVBoxLayout;
     mainLay->addWidget(titleL_);
     QFormLayout *formLay = new QFormLayout;
     formLay->addRow(nameL_,nameEdit_);
     formLay->addRow(idL_,idEdit_);
+    imgL_->setAlignment(Qt::AlignTop);
     formLay->addRow(phontoL_,imgL_);
     formLay->addRow(typeL_,typeCombox_);
     formLay->addRow(statusL_,statusCombox_);
@@ -53,9 +54,6 @@ PersonMark::PersonMark(QWidget *parent, Qt::WindowFlags f):
     mainLay->setContentsMargins(40,40,40,40);
     setLayout(mainLay);
 
-    QPalette pal = palette();
-    pal.setColor(QPalette::Background,QColor(48,54,68));
-    setPalette(pal);
     imgL_->setFixedSize(180,180);
     nameEdit_->setMinimumHeight(34);
     idEdit_->setMinimumHeight(34);
@@ -63,6 +61,8 @@ PersonMark::PersonMark(QWidget *parent, Qt::WindowFlags f):
     statusCombox_->setMinimumHeight(34);
     customEdit_->setMinimumHeight(34);
     setMinimumWidth(510);
+    setMinimumHeight(619);
+    cancelBtn_->setDefault(true);
     setUserStyle(0);
     connect(cancelBtn_,SIGNAL(clicked(bool)),this,SLOT(reject()));
     connect(sumitBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSubmitBtnClicked()));
@@ -86,8 +86,12 @@ void PersonMark::setUserStyle(int s)
     QPalette pal;
     QFont f;
     if(s == 0){
+        pal = palette();
+        pal.setColor(QPalette::Background,QColor("#303644"));
+        setPalette(pal);
+
         pal = nameL_->palette();
-        pal.setColor(QPalette::Foreground,QColor(126,140,177));
+        pal.setColor(QPalette::Foreground,QColor(255,255,255,191));
         nameL_->setPalette(pal);
         idL_->setPalette(pal);
         phontoL_->setPalette(pal);
@@ -95,7 +99,7 @@ void PersonMark::setUserStyle(int s)
         statusL_->setPalette(pal);
         customL_->setPalette(pal);
 
-        pal.setColor(QPalette::Foreground,QColor(194,207,249));
+        pal.setColor(QPalette::Foreground,Qt::white);
         titleL_->setPalette(pal);
 
         f = titleL_->font();
@@ -112,29 +116,33 @@ void PersonMark::setUserStyle(int s)
         customL_->setFont(f);
 
         nameEdit_->setStyleSheet("QLineEdit{"
-                                 "color: rgb(194,207,249);"
-                                 "background: rgb(40,45,56);"
+                                 "color: rgba(255,255,255,0.75);"
+                                 "background: rgba(255,255,255,0.1);"
                                  "border: none;"
+                                 "border-radius: 4px;"
                                  "}");
         idEdit_->setStyleSheet("QLineEdit{"
-                               "color: rgb(194,207,249);"
-                               "background: rgb(40,45,56);"
+                               "color: rgba(255,255,255,0.75);"
+                               "background: rgba(255,255,255,0.1);"
                                "border: none;"
+                               "border-radius: 4px;"
                                "}");
         customEdit_->setStyleSheet("QLineEdit{"
-                                   "color: rgb(194,207,249);"
-                                   "background: rgb(40,45,56);"
+                                   "color: rgba(255,255,255,0.75);"
+                                   "background: rgba(255,255,255,0.1);"
                                    "border: none;"
+                                   "border-radius: 4px;"
                                    "}");
         statusCombox_->setStyleSheet("QComboBoxListView{"
                                      "color: #CECECE;"
                                      "background-color: rgb(43,49,61);"
                                      "}"
                                      "QComboBox{"
-                                     "color: rgb(126,140,177);"
-                                     "font-size: 18px;"
-                                     "background-color: rgb(40,45,56);"
+                                     "color: rgba(255,255,255,0.75);"
+                                     "font-size: 14px;"
+                                     "background: rgba(255,255,255,0.1);"
                                      "border: none;"
+                                     "border-radius: 4px;"
                                      //                    "box-shadow: 1px 1px 0px rgba(77,86,107,1);"
                                      "}"
                                      "QComboBox QAbstractItemView{"
@@ -188,10 +196,11 @@ void PersonMark::setUserStyle(int s)
                                    "background-color: rgb(43,49,61);"
                                    "}"
                                    "QComboBox{"
-                                   "color: rgb(126,140,177);"
-                                   "font-size: 18px;"
-                                   "background-color: rgb(40,45,56);"
+                                   "color: rgba(255,255,255,0.75);"
+                                   "font-size: 14px;"
+                                   "background: rgba(255,255,255,0.1);"
                                    "border: none;"
+                                   "border-radius: 4px;"
                                    //                    "box-shadow: 1px 1px 0px rgba(77,86,107,1);"
                                    "}"
                                    "QComboBox QAbstractItemView{"
@@ -244,13 +253,13 @@ void PersonMark::setUserStyle(int s)
                                   "color: white;"
                                   "width: 120px;"
                                   "height: 44px;"
-                                  "background-color: #4741F2;"
+                                  "background-color: rgba(71,65,242,0.3);"
                                   "border: none;"
                                   "border-radius: 4px;"
+                                  "border:1px solid rgba(71,65,242,1);"
                                   "}"
                                   "QPushButton:pressed{"
-                                  "background-color: rgba(71,65,242,0.3);"
-                                  "border:1px solid rgba(71,65,242,1);"
+                                  "background-color: #312DA6;"
                                   "padding: 2px;"
                                   "}");
         sumitBtn_->setStyleSheet("QPushButton{"
@@ -262,7 +271,7 @@ void PersonMark::setUserStyle(int s)
                                  "border-radius: 4px;"
                                  "}"
                                  "QPushButton:pressed{"
-                                 "background-color: rgba(71,65,242,0.3);"
+                                 "background-color: #312DA6;"
                                  "border:1px solid rgba(71,65,242,1);"
                                  "padding: 2px;"
                                  "}");

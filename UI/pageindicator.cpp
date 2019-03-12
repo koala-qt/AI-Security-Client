@@ -22,7 +22,7 @@ PageIndicator::PageIndicator(QWidget *parent):
     mainLay->addWidget(m_nextPageBtn);
     mainLay->addWidget(m_infoL);
     mainLay->setMargin(0);
-    mainLay->setAlignment(Qt::AlignCenter);
+    mainLay->setAlignment(Qt::AlignRight | Qt::AlignBottom);
     setLayout(mainLay);
 
     m_listW->setFixedHeight(48);
@@ -84,7 +84,7 @@ void PageIndicator::setUserStyle()
                            "background-color: transparent;"
                            "}"
                            "QListWidget::item{"
-                           "color: white;"
+                           "color: rgba(255,255,255,191);"
                            "background-color: transparent"
                            "}"
                            "QListWidget::item:hover{"
@@ -116,7 +116,7 @@ void PageIndicator::setUserStyle()
     f.setPixelSize(15);
     m_infoL->setFont(f);
     pal = m_infoL->palette();
-    pal.setColor(QPalette::Foreground,Qt::white);
+    pal.setColor(QPalette::Foreground,QColor(255,255,255,191));
     m_infoL->setPalette(pal);
 }
 #include <QDebug>

@@ -63,20 +63,24 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     topGridLay->addWidget(endTimeL_,1,2,1,1);
     topGridLay->addWidget(endTimeEdit_,1,3,1,1);
     topGridLay->addWidget(searchBtn_,1,4,1,1);
-    topGridLay->setAlignment(Qt::AlignLeft);
-    topGridLay->setSpacing(25);
-    topGridLay->setMargin(0);
+    topGridLay->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    topGridLay->setVerticalSpacing(20);
+    topGridLay->setHorizontalSpacing(10);
     vlay->addLayout(topGridLay);
+    vlay->addSpacing(40);
     vlay->addWidget(dataListW_);
     vlay->addWidget(pageIndicator_);
+    vlay->setSpacing(0);
     QHBoxLayout *mainLay = new QHBoxLayout;
     mainLay->addLayout(vlay);
     mainLay->addWidget(centeVSplieL_);
     mainLay->addWidget(attributTreeW_);
+    mainLay->setSpacing(20);
+    mainLay->setContentsMargins(40,40,40,40);
     setLayout(mainLay);
 
     attributTreeW_->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Preferred);
-    dataMenu_->addAction(tr("Details"),[this]{
+    dataMenu_->addAction(tr("Profile"),[this]{
         ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
         RestServiceI *serviceI = factoryI->makeRestServiceI();
         WaitingLabel *label = new WaitingLabel(this);
@@ -110,7 +114,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
         label->show(500);
         dataMenu_->setEnabled(false);
     });
-    dataMenu_->addAction(tr("Scene analysis"),[this]{
+    dataMenu_->addAction(tr("Scene Analysis"),[this]{
         ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
         RestServiceI *serviceI = factoryI->makeRestServiceI();
         WaitingLabel *label = new WaitingLabel(this);
@@ -128,7 +132,6 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
             delete label;
             SceneImageDialog dialog(dataListW_);
             dialog.setUserStyle(userStyle());
-            dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
             dialog.setSceneInfo(sinfo);
             connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
                 if(!images.count()){
@@ -155,7 +158,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
         label->show(500);
         dataMenu_->setEnabled(false);
     });
-    dataMenu_->addAction(tr("Capture search"),[this]{
+    dataMenu_->addAction(tr("Capture Search"),[this]{
         FaceSearch *faceDialog = new FaceSearch(this);
         faceDialog->setAttribute(Qt::WA_DeleteOnClose);
         faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
@@ -171,7 +174,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
         faceDialog->setMinimumHeight(700);
         faceDialog->show();
     });
-    dataMenu_->addAction(tr("Portrait search"),[this]{
+    dataMenu_->addAction(tr("Registeration Search"),[this]{
         PortraitSearch *portSearchDialog = new PortraitSearch(this);
         portSearchDialog->setAttribute(Qt::WA_DeleteOnClose);
         portSearchDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
@@ -187,7 +190,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
 //        portSearchDialog->setMinimumHeight(700);
         portSearchDialog->show();
     });
-    dataMenu_->addAction(tr("Face link"),[this]{
+    dataMenu_->addAction(tr("Facelink"),[this]{
         FaceLinkPage *faceLinkP = new FaceLinkPage(this);
         QPalette pal = faceLinkP->palette();
         pal.setColor(QPalette::Background,QColor(37,41,52));
@@ -201,7 +204,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
         faceLinkP->resize(1200,900);
         faceLinkP->show();
     });
-    dataMenu_->addAction(tr("Tracking"),[this]{
+    dataMenu_->addAction(tr("Trajectory"),[this]{
         TrackingPage *view = new TrackingPage(this);
         QPalette pal = view->palette();
         pal.setColor(QPalette::Background,QColor(37,41,52));
@@ -216,7 +219,18 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
                            dataListW_->currentItem()->data(Qt::UserRole + 4).toString());
         view->show();
     });
-    dataMenu_->addAction(tr("Save image"),[this]{
+    dataMenu_->addAction(tr("Register"),[this]{
+        PersonMark markDialog;
+        markDialog.setPhoto(dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>());
+        QDialog::DialogCode returnCode = QDialog::DialogCode(markDialog.exec());
+        if(returnCode == QDialog::Accepted){
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(0);
+            infoDialog.setMessage(tr("Successed"));
+            infoDialog.exec();
+        }
+    });
+    dataMenu_->addAction(tr("Save Image"),[this]{
         QString personId = dataListW_->currentItem()->data(Qt::UserRole + 4).toString();
         QString filePath =  QFileDialog::getSaveFileName(this,tr("Save face image"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/" + personId + ".jpg",tr("Images (*.png *.jpg)"));
         if(filePath.isEmpty()){
@@ -229,23 +243,13 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
             infoDialog.exec();
         }
     });
-    dataMenu_->addAction(tr("Register portrait"),[this]{
-        PersonMark markDialog;
-        markDialog.setPhoto(dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>());
-        QDialog::DialogCode returnCode = QDialog::DialogCode(markDialog.exec());
-        if(returnCode == QDialog::Accepted){
-            InformationDialog infoDialog(this);
-            infoDialog.setUserStyle(0);
-            infoDialog.setMessage(tr("Successed"));
-            infoDialog.exec();
-        }
-    });
     dataListW_->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(dataListW_,&QListWidget::customContextMenuRequested,this,[&](QPoint p){
         if(!dataListW_->itemAt(p))return;
         dataMenu_->move(QCursor::pos());
         dataMenu_->show();
     });
+    dataListW_->setFrameStyle(QFrame::NoFrame);
     dataListW_->setFocusPolicy(Qt::NoFocus);
     dataListW_->setMovement(QListWidget::Static);
     dataListW_->setResizeMode(QListWidget::Adjust);
@@ -265,7 +269,8 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
                     << itemData{tr("Double_Chin"),0,QVector<itemData>()} << itemData{tr("Eyeglasses"),0,QVector<itemData>()}
                     << itemData{tr("Goatee"),0,QVector<itemData>()} << itemData{tr("Gray_Hair"),0,QVector<itemData>()}
                     << itemData{tr("Heavy_Makeup"),0,QVector<itemData>()} << itemData{tr("High_Cheekbones"),0,QVector<itemData>()}
-                    << itemData{tr("Male/Female"),0,QVector<itemData>()} << itemData{tr("Mouth_Slightly_Open"),0,QVector<itemData>()}
+                    << itemData{tr("Male"),0,QVector<itemData>()} << itemData{tr("Female"),0,QVector<itemData>()}
+                    << itemData{tr("Mouth_Slightly_Open"),0,QVector<itemData>()}
                     << itemData{tr("Mustache"),0,QVector<itemData>()} << itemData{tr("Narrow_Eyes"),0,QVector<itemData>()}
                     << itemData{tr("No_Beard"),0,QVector<itemData>()} << itemData{tr("Oval_Face"),0,QVector<itemData>()}
                     << itemData{tr("Pale_Skin"),0,QVector<itemData>()} << itemData{tr("Pointy_Nose"),0,QVector<itemData>()}
@@ -285,23 +290,19 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     attributTreeW_->header()->setIconSize(QSize(50,50));
     QSize s = attributTreeW_->headerItem()->sizeHint(0);
     attributTreeW_->headerItem()->setSizeHint(0,QSize(s.width(),30));
-    personTypeCombox_->setMinimumHeight(44);
-    personTypeCombox_->setMaximumWidth(160);
-    posCombox_->setMinimumHeight(44);
-    posCombox_->setMaximumWidth(160);
-    startTimeEdit_->setMinimumHeight(44);
-    startTimeEdit_->setMinimumWidth(160);
+    personTypeCombox_->setFixedSize(200,34);
+    posCombox_->setFixedSize(200,34);
+    startTimeEdit_->setFixedSize(200,34);
     startTimeEdit_->setDisplayFormat("yyyy-MM-dd HH:mm:ss");
     startTimeEdit_->setDateTime(QDateTime::currentDateTime().addDays(-1));
-    endTimeEdit_->setMinimumHeight(44);
+    endTimeEdit_->setFixedSize(200,34);
     endTimeEdit_->setDisplayFormat("yyyy-MM-dd HH:mm:ss");
     endTimeEdit_->setDateTime(QDateTime::currentDateTime());
-    endTimeEdit_->setMinimumWidth(160);
-    searchBtn_->setMinimumSize(120,44);
+    searchBtn_->setMinimumSize(99,33);
     pageIndicator_->setPageInfo(0,0);
     personTypeVec_ << qMakePair(QString("All"),QVector<int>() << 1 << 2 << 3 << 6 << 7);
-    personTypeVec_ << qMakePair(QString("Semantic"),QVector<int>() << 0 << 1 << 2 << 3 << 5 << 6);
-    personTypeVec_ << qMakePair(QString("Facelink"),QVector<int>() << 0 << 1 << 2 << 3 << 4 << 5 << 6);
+    personTypeVec_ << qMakePair(QString("Semantic"),QVector<int>() << 0 << 1 << 2 << 3 << 5 << 6 << 7);
+    personTypeVec_ << qMakePair(QString("Facelink"),QVector<int>() << 0 << 1 << 2 << 3 << 4 << 5 << 6 << 7);
     for(auto &v : personTypeVec_){
         personTypeCombox_->addItem(v.first);
     }
@@ -320,165 +321,175 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
 
 void SemanticSearchPage::setUserStyle(int s)
 {
+    QFont f;
     if(0 == s){
-        QPalette pal = personTypeL_->palette();
-        pal.setColor(QPalette::Foreground,QColor(206,206,206));
-        personTypeL_->setPalette(pal);
-        QFont f = personTypeL_->font();
-        f.setPixelSize(16);
-        personTypeL_->setFont(f);
-        personTypeCombox_->setStyleSheet(
-                    "QComboBoxListView{"
-                    "color: #CECECE;"
-                    "background-color: #525964;"
-                    "}"
-                    "QComboBox{"
-                    "color: white;"
-                    "font-size: 16px;"
-                    "background-color: transparent;"
-                    "border: 1px solid rgba(255, 255, 255, 1);"
-                    "border-radius: 4px;"
-                    "}"
-                    "QComboBox QAbstractItemView{"
-                    "selection-color: white;"
-                    "outline: 0px;"
-                    "selection-background-color: #CECECE;"
-                    "}"
-                    "QComboBox::drop-down{"
-                    "subcontrol-position: center right;border-image: url(images/dropdown2.png);width:11px;height:8px;subcontrol-origin: padding;margin-right:5px;"
-                    "}"
-                    "QScrollBar:vertical{"
-                    "background: transparent;"
-                    "border: 0px solid gray;"
-                    "width: 13px;"
-                    "}"
-                    "QScrollBar::handle:vertical{"
-                    "background: rgba(255,255,255,0.5);"
-                    "border-radius: 5px;"
-                    "}"
-                    "QScrollBar::add-line:vertical{"
-                    "background: transparent;"
-                    "border:0px solid #274168;"
-                    "border-radius: 5px;"
-                    "min-height: 10px;"
-                    "width: 13px;"
-                    "}"
-                    "QScrollBar::sub-line:vertical{"
-                    "background: transparent;"
-                    "border:0px solid #274168;"
-                    "min-height: 10px;"
-                    "width: 13px;"
-                    "}"
-                    "QScrollBar::up-arrow:vertical{"
-                    "subcontrol-origin: margin;"
-                    "height: 0px;"
-                    "border:0 0 0 0;"
-                    "visible:false;"
-                    "}"
-                    "QScrollBar::down-arrow:vertical{"
-                    "subcontrol-origin: margin;"
-                    "height: 0px;"
-                    "visible:false;"
-                    "}"
-                    "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
-                    "background: transparent;"
-                    "border: none;"
-                    "border-radius: 0px;"
-                    "}");
-
+        personTypeL_->setStyleSheet("QLabel{"
+                                    "font-size: 14px;"
+                                    "color: rgba(255,255,255,0.75);"
+                                    "}");
         posL_->setStyleSheet("QLabel{"
-                                "background-color: transparent;"
-                                "color: rgba(206, 206, 206, 1);"
-                                "font-size: 16px;"
-                                "border-radius: none;"
-                                "}");
-        posCombox_->setStyleSheet(
-                    "QComboBoxListView{"
-                    "color: #CECECE;"
-                    "background-color: #525964;"
-                    "}"
-                    "QComboBox{"
-                    "color: white;"
-                    "font-size: 16px;"
-                    "background-color: transparent;"
-                    "border: 1px solid rgba(255, 255, 255, 1);"
-                    "border-radius: 4px;"
-                    "}"
-                    "QComboBox QAbstractItemView{"
-                    "selection-color: white;"
-                    "outline: 0px;"
-                    "selection-background-color: #CECECE;"
-                    "}"
-                    "QComboBox::drop-down{"
-                    "subcontrol-position: center right;border-image: url(images/dropdown2.png);width:11px;height:8px;subcontrol-origin: padding;margin-right:5px;"
-                    "}"
-                    "QScrollBar:vertical{"
-                    "background: transparent;"
-                    "border: 0px solid gray;"
-                    "width: 13px;"
-                    "}"
-                    "QScrollBar::handle:vertical{"
-                    "background: rgba(255,255,255,0.5);"
-                    "border-radius: 5px;"
-                    "}"
-                    "QScrollBar::add-line:vertical{"
-                    "background: transparent;"
-                    "border:0px solid #274168;"
-                    "border-radius: 5px;"
-                    "min-height: 10px;"
-                    "width: 13px;"
-                    "}"
-                    "QScrollBar::sub-line:vertical{"
-                    "background: transparent;"
-                    "border:0px solid #274168;"
-                    "min-height: 10px;"
-                    "width: 13px;"
-                    "}"
-                    "QScrollBar::up-arrow:vertical{"
-                    "subcontrol-origin: margin;"
-                    "height: 0px;"
-                    "border:0 0 0 0;"
-                    "visible:false;"
-                    "}"
-                    "QScrollBar::down-arrow:vertical{"
-                    "subcontrol-origin: margin;"
-                    "height: 0px;"
-                    "visible:false;"
-                    "}"
-                    "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
-                    "background: transparent;"
-                    "border: none;"
-                    "border-radius: 0px;"
-                    "}");
+                             "font-size: 14px;"
+                             "color: rgba(255,255,255,0.75);"
+                             "}");
         startTimeL_->setStyleSheet("QLabel{"
-                                "background-color: transparent;"
-                                "color: rgba(206, 206, 206, 1);"
-                                "font-size: 16px;"
-                                "border-radius: none;"
-                                "}");
-        startTimeEdit_->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
-            "color: rgba(206, 206, 206, 1);"
-            "border:1px solid white;"
-            "border-radius:4px;"
-            "background-color: transparent;"
-            "}");
+                                   "font-size: 14px;"
+                                   "color: rgba(255,255,255,0.75);"
+                                   "}");
         endTimeL_->setStyleSheet("QLabel{"
-                                "background-color: transparent;"
-                                "color: rgba(206, 206, 206, 1);"
-                                "font-size: 16px;"
-                                "border-radius: none;"
-                                "}");
+                                 "font-size: 14px;"
+                                 "color: rgba(255,255,255,0.75);"
+                                 "}");
+        personTypeCombox_->setStyleSheet("QComboBoxListView{"
+                                         "color: #CECECE;"
+                                         "background-color: transparent;"
+                                         "border-radius: 0px;"
+                                         "border: none;"
+                                         "}"
+                                         "QComboBox{"
+                                         "color: rgba(255,255,255,0.75);"
+                                         "font-size: 14px;"
+                                         "background-color: rgba(255,255,255,0.1);"
+                                         "border: none;"
+                                         "border-radius: 0px;"
+                                         "padding-left: 10px;"
+                                         "}"
+                                         "QComboBox QAbstractItemView{"
+                                         "background-color: rgb(43,49,61);"
+                                         "border-radius: 6px;"
+                                         "selection-color: white;"
+                                         "outline: 0px;"
+                                         "selection-background-color: #CECECE;"
+                                         "}"
+                                         "QComboBox::drop-down{"
+                                         "subcontrol-position: center right;"
+                                         "border-image: url(images/dropdown2.png);"
+                                         "width:11px;height:8px;"
+                                         "subcontrol-origin: padding;"
+                                         "margin-right:5px;"
+                                         "}"
+                                         "QScrollBar::handle:vertical{"
+                                         "background: rgba(255,255,255,0.5);"
+                                         "border-radius: 5px;"
+                                         "}"
+                                         "QScrollBar::add-line:vertical{"
+                                         "background: transparent;"
+                                         "border:0px solid #274168;"
+                                         "border-radius: 5px;"
+                                         "min-height: 10px;"
+                                         "width: 13px;"
+                                         "}"
+                                         "QScrollBar::sub-line:vertical{"
+                                         "background: transparent;"
+                                         "border:0px solid #274168;"
+                                         "min-height: 10px;"
+                                         "width: 13px;"
+                                         "}"
+                                         "QScrollBar::up-arrow:vertical{"
+                                         "subcontrol-origin: margin;"
+                                         "height: 0px;"
+                                         "border:0 0 0 0;"
+                                         "visible:false;"
+                                         "}"
+                                         "QScrollBar::down-arrow:vertical{"
+                                         "subcontrol-origin: margin;"
+                                         "height: 0px;"
+                                         "visible:false;"
+                                         "}"
+                                         "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
+                                         "background: transparent;"
+                                         "border: none;"
+                                         "border-radius: 0px;"
+                                         "}");
+
+        posCombox_->setStyleSheet("QComboBoxListView{"
+                                  "color: #CECECE;"
+                                  "background-color: transparent;"
+                                  "border-radius: 0px;"
+                                  "border: none;"
+                                  "}"
+                                  "QComboBox{"
+                                  "color: rgba(255,255,255,0.75);"
+                                  "font-size: 14px;"
+                                  "background-color: rgba(255,255,255,0.1);"
+                                  "border: none;"
+                                  "border-radius: 0px;"
+                                  "}"
+                                  "QComboBox QAbstractItemView{"
+                                  "background-color: rgb(43,49,61);"
+                                  "border-radius: 6px;"
+                                  "selection-color: white;"
+                                  "outline: 0px;"
+                                  "selection-background-color: #CECECE;"
+                                  "}"
+                                  "QComboBox::drop-down{"
+                                  "subcontrol-position: center right;"
+                                  "border-image: url(images/dropdown2.png);"
+                                  "width:11px;height:8px;"
+                                  "subcontrol-origin: padding;"
+                                  "margin-right:5px;"
+                                  "}"
+                                  "QScrollBar::handle:vertical{"
+                                  "background: rgba(255,255,255,0.5);"
+                                  "border-radius: 5px;"
+                                  "}"
+                                  "QScrollBar::add-line:vertical{"
+                                  "background: transparent;"
+                                  "border:0px solid #274168;"
+                                  "border-radius: 5px;"
+                                  "min-height: 10px;"
+                                  "width: 13px;"
+                                  "}"
+                                  "QScrollBar::sub-line:vertical{"
+                                  "background: transparent;"
+                                  "border:0px solid #274168;"
+                                  "min-height: 10px;"
+                                  "width: 13px;"
+                                  "}"
+                                  "QScrollBar::up-arrow:vertical{"
+                                  "subcontrol-origin: margin;"
+                                  "height: 0px;"
+                                  "border:0 0 0 0;"
+                                  "visible:false;"
+                                  "}"
+                                  "QScrollBar::down-arrow:vertical{"
+                                  "subcontrol-origin: margin;"
+                                  "height: 0px;"
+                                  "visible:false;"
+                                  "}"
+                                  "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
+                                  "background: transparent;"
+                                  "border: none;"
+                                  "border-radius: 0px;"
+                                  "}");
+        startTimeL_->setStyleSheet("QLabel{"
+                                   "background-color: transparent;"
+                                   "color: rgba(206, 206, 206, 1);"
+                                   "font-size: 16px;"
+                                   "border-radius: none;"
+                                   "}");
+        startTimeEdit_->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
+                                      "color: rgba(255,255,255,0.75);"
+                                      "border-radius:4px;"
+                                      "background-color: rgba(255,255,255,0.1);"
+                                      "padding-left: 10px;"
+                                      "}");
+        endTimeL_->setStyleSheet("QLabel{"
+                                 "background-color: transparent;"
+                                 "color: rgba(206, 206, 206, 1);"
+                                 "font-size: 16px;"
+                                 "border-radius: none;"
+                                 "}");
         endTimeEdit_->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
-            "color: rgba(206, 206, 206, 1);"
-            "border:1px solid white;"
-            "border-radius:4px;"
-            "background-color: transparent;"
-            "}");
+                                    "color: rgba(255,255,255,0.75);"
+                                    "border-radius:4px;"
+                                    "background-color: rgba(255,255,255,0.1);"
+                                    "padding-left: 10px;"
+                                    "}");
         searchBtn_->setStyleSheet("QPushButton{"
                                   "background-color: rgb(83,77,251);"
                                   "color: white;"
-                                  "border-radius: 6px;"
-                                  "font-size: 18px;"
+                                  "border-radius: 4px;"
+                                  "font-size: 14px;"
                                   "}"
                                   "QPushButton:pressed{"
                                   "padding: 2px;"
@@ -487,64 +498,60 @@ void SemanticSearchPage::setUserStyle(int s)
         dataListW_->setStyleSheet("QListWidget{"
                                   "background: transparent;"
                                   "font: 11px;"
-                                  "color: white;"
+                                  "color: rgba(255,255,255,0.75);"
                                   "}");
-        dataListW_->verticalScrollBar()->setStyleSheet(
-                                                    "QScrollBar:vertical{"
-                                                    "background: transparent;"
-                                                    "border: 0px solid gray;"
-                                                    "width: 13px;"
-                                                    "}"
-                                                    "QScrollBar::handle:vertical{"
-                                                    "background: rgba(255,255,255,0.5);"
-                                                    "border-radius: 5px;"
-                                                    "}"
-                                                    "QScrollBar::add-line:vertical{"
-                                                    "background: transparent;"
-                                                    "border:0px solid #274168;"
-                                                    "border-radius: 5px;"
-                                                    "min-height: 10px;"
-                                                    "width: 13px;"
-                                                    "}"
-                                                    "QScrollBar::sub-line:vertical{"
-                                                    "background: transparent;"
-                                                    "border:0px solid #274168;"
-                                                    "min-height: 10px;"
-                                                    "width: 13px;"
-                                                    "}"
-                                                    "QScrollBar::up-arrow:vertical{"
-                                                    "subcontrol-origin: margin;"
-                                                    "height: 0px;"
-                                                    "border:0 0 0 0;"
-                                                    "visible:false;"
-                                                    "}"
-                                                    "QScrollBar::down-arrow:vertical{"
-                                                    "subcontrol-origin: margin;"
-                                                    "height: 0px;"
-                                                    "visible:false;"
-                                                    "}"
-                                                    "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
-                                                    "background: transparent;"
-                                                    "border: none;"
-                                                    "border-radius: 0px;"
-                                                    "}");
+        dataListW_->verticalScrollBar()->setStyleSheet("QScrollBar:vertical{"
+                                                       "background: transparent;"
+                                                       "border: 0px solid gray;"
+                                                       "width: 13px;"
+                                                       "}"
+                                                       "QScrollBar::handle:vertical{"
+                                                       "background: rgba(255,255,255,0.5);"
+                                                       "border-radius: 5px;"
+                                                       "}"
+                                                       "QScrollBar::add-line:vertical{"
+                                                       "background: transparent;"
+                                                       "border:0px solid #274168;"
+                                                       "border-radius: 5px;"
+                                                       "min-height: 10px;"
+                                                       "width: 13px;"
+                                                       "}"
+                                                       "QScrollBar::sub-line:vertical{"
+                                                       "background: transparent;"
+                                                       "border:0px solid #274168;"
+                                                       "min-height: 10px;"
+                                                       "width: 13px;"
+                                                       "}"
+                                                       "QScrollBar::up-arrow:vertical{"
+                                                       "subcontrol-origin: margin;"
+                                                       "height: 0px;"
+                                                       "border:0 0 0 0;"
+                                                       "visible:false;"
+                                                       "}"
+                                                       "QScrollBar::down-arrow:vertical{"
+                                                       "subcontrol-origin: margin;"
+                                                       "height: 0px;"
+                                                       "visible:false;"
+                                                       "}"
+                                                       "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
+                                                       "background: transparent;"
+                                                       "border: none;"
+                                                       "border-radius: 0px;"
+                                                       "}");
         centeVSplieL_->setStyleSheet("QLabel{"
                                      "background-color: rgba(255,255,255,0.4);"
                                      "}");
-        dataMenu_->setStyleSheet("QMenu{"
-                                 "background-color: rgb(75,75,75);"
-                                 "}"
-                                 "QMenu::item:selected{"
-                                 "background-color: rgba(255,255,255,0.4);"
-                                 "}");
         attributTreeW_->setStyleSheet("QTreeView{"
                                       "border:none;"
                                       "font-size: 16px;"
-                                      "color: #CECECE;"
+                                      "color: rgba(255,255,255,0.75);"
                                       "border-radius: 10px;"
                                       "background-color: transparent;}"
-                                      "QTreeView::item::disabled{"
+                                      "QTreeView::item:disabled{"
                                       "color:gray;"
+                                      "}"
+                                      "QTreeWidget::indicator:disabled {"
+                                      "background:gray;"
                                       "}");
         attributTreeW_->verticalScrollBar()->setStyleSheet(
                                                     "QScrollBar:vertical{"
@@ -637,6 +644,21 @@ void SemanticSearchPage::getCameraInfo()
     serviceI->getCameraInfo();
 }
 
+void SemanticSearchPage::setEnableAttrs(const QStringList & attrs)
+{
+    for(int i = 0; i < attributTreeW_->topLevelItem(0)->childCount(); i++){
+        attributTreeW_->topLevelItem(0)->child(i)->setDisabled(true);
+    }
+    for(const QString attr : attrs){
+        for(int i = 0; i < attributTreeW_->topLevelItem(0)->childCount(); i++){
+            if(attributTreeW_->topLevelItem(0)->child(i)->text(0) == attr){
+                attributTreeW_->topLevelItem(0)->child(i)->setDisabled(false);
+                break;
+            }
+        }
+    }
+}
+
 void SemanticSearchPage::setTableData(QVector<RestServiceI::DataRectureItem> &data)
 {
     dataListW_->clear();
@@ -676,30 +698,89 @@ void SemanticSearchPage::slotSemanticSearch(int page)
     ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
     RestServiceI *serviceI = factoryI->makeRestServiceI();
     WaitingLabel *label = new WaitingLabel(dataListW_);
-    connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
-        label->close();
-        delete label;
-        InformationDialog infoDialog(this);
-        infoDialog.setUserStyle(userStyle());
-        infoDialog.setMessage(str);
-        infoDialog.exec();
-        pageIndicator_->setEnabled(true);
-        searchBtn_->setEnabled(true);
-        attributTreeW_->setEnabled(true);
-        noDataW_->show();
-    });
-    connect(serviceI,&RestServiceI::sigSemanticSearch,this,[this,label](RestServiceI::SemanticReturnData returnData){
+    if(page == 1){
+        connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
+            dataGeted_ = true;
+            curEnableAttrErrorStr_ = str;
+            if(availabelAttrGeted_){
+                label->close();
+                delete label;
+                InformationDialog infoDialog(this);
+                infoDialog.setUserStyle(userStyle());
+                if(curEnableAttrErrorStr_.isEmpty()){
+                    infoDialog.setMessage(tr("Data:%2").arg(str));
+                }else{
+                    infoDialog.setMessage(tr("Data:%1\nGetEnabledAttr:%2").arg(str,curEnableAttrErrorStr_));
+                }
+                infoDialog.exec();
+                noDataW_->show();
+                curEnableAttrErrorStr_.clear();
+                curDataErrorStr_.clear();
+                pageIndicator_->setEnabled(true);
+                searchBtn_->setEnabled(true);
+                attributTreeW_->setEnabled(true);
+                preIsSearch_ = false;
+            }
+        });
+        connect(serviceI,&RestServiceI::sigSemanticSearch,this,[this,label](RestServiceI::SemanticReturnData returnData){
+            dataGeted_ = true;
+            curTotalPage_ = returnData.totalPage;
+            curTotalRecords_ = returnData.toatal;
+            curDataVec_ = returnData.records;
+            if(availabelAttrGeted_){
+                label->close();
+                delete label;
+                if(!curEnableAttrErrorStr_.isEmpty()){
+                    InformationDialog infoDialog(this);
+                    infoDialog.setUserStyle(userStyle());
+                    infoDialog.setMessage(tr("GetEnabledAttr:%1").arg(curDataErrorStr_));
+                    infoDialog.exec();
+                    curEnableAttrErrorStr_.clear();
+                    return;
+                }
+                setEnableAttrs(curEnableAttrList_);
+                pageIndicator_->adjustRow();
+                pageIndicator_->setPageInfo(curTotalPage_,curTotalRecords_);
+                setTableData(curDataVec_);
+                pageIndicator_->setEnabled(true);
+                searchBtn_->setEnabled(true);
+                attributTreeW_->setEnabled(true);
+                preIsSearch_ = false;
+            }
+        });
         getAvailableAttrs(label);
-        pageIndicator_->adjustRow();
-        if(needUpdatePageInfo_){
-            pageIndicator_->setPageInfo(returnData.totalPage,returnData.toatal);
-            needUpdatePageInfo_ = false;
-        }
-        if(returnData.toatal == 0){
+    }else{
+        connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
+            label->close();
+            delete label;
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(userStyle());
+            infoDialog.setMessage(str);
+            infoDialog.exec();
+            pageIndicator_->setEnabled(true);
+            searchBtn_->setEnabled(true);
+            attributTreeW_->setEnabled(true);
             noDataW_->show();
-        }
-        setTableData(returnData.records);
-    });
+            preIsSearch_ = false;
+        });
+        connect(serviceI,&RestServiceI::sigSemanticSearch,this,[this,label](RestServiceI::SemanticReturnData returnData){
+            label->close();
+            delete label;
+            pageIndicator_->adjustRow();
+            if(needUpdatePageInfo_){
+                pageIndicator_->setPageInfo(returnData.totalPage,returnData.toatal);
+                needUpdatePageInfo_ = false;
+            }
+            if(returnData.toatal == 0){
+                noDataW_->show();
+            }
+            setTableData(returnData.records);
+            pageIndicator_->setEnabled(true);
+            searchBtn_->setEnabled(true);
+            attributTreeW_->setEnabled(true);
+            preIsSearch_ = false;
+        });
+    }
     RestServiceI::SemanticSearchArgs args;
     args.cameraId = curCameraId_;
     args.mode = 0;
@@ -716,6 +797,7 @@ void SemanticSearchPage::slotSemanticSearch(int page)
     noDataW_->hide();
     dataListW_->clear();
     preIsSearch_ = true;
+    dataGeted_ = false;
 }
 
 void SemanticSearchPage::slotSearchFaceLink(int page)
@@ -723,30 +805,89 @@ void SemanticSearchPage::slotSearchFaceLink(int page)
     ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
     RestServiceI *serviceI = factoryI->makeRestServiceI();
     WaitingLabel *label = new WaitingLabel(dataListW_);
-    connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
-        label->close();
-        delete label;
-        InformationDialog infoDialog(this);
-        infoDialog.setUserStyle(userStyle());
-        infoDialog.setMessage(str);
-        infoDialog.exec();
-        pageIndicator_->setEnabled(true);
-        searchBtn_->setEnabled(true);
-        attributTreeW_->setEnabled(true);
-        noDataW_->show();
-    });
-    connect(serviceI,&RestServiceI::sigFaceLinkDataColl,this,[this,label](RestServiceI::FaceLinkDataCollReturn &returnData){
+    if(page == 1){
+        connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
+            dataGeted_ = true;
+            curEnableAttrErrorStr_ = str;
+            if(availabelAttrGeted_){
+                label->close();
+                delete label;
+                InformationDialog infoDialog(this);
+                infoDialog.setUserStyle(userStyle());
+                if(curEnableAttrErrorStr_.isEmpty()){
+                    infoDialog.setMessage(tr("Data:%2").arg(str));
+                }else{
+                    infoDialog.setMessage(tr("Data:%1\nGetEnabledAttr:%2").arg(str,curEnableAttrErrorStr_));
+                }
+                infoDialog.exec();
+                noDataW_->show();
+                curEnableAttrErrorStr_.clear();
+                curDataErrorStr_.clear();
+                pageIndicator_->setEnabled(true);
+                searchBtn_->setEnabled(true);
+                attributTreeW_->setEnabled(true);
+                preIsSearch_ = false;
+            }
+        });
+        connect(serviceI,&RestServiceI::sigFaceLinkDataColl,this,[this,label](RestServiceI::FaceLinkDataCollReturn &returnData){
+            dataGeted_ = true;
+            curTotalPage_ = returnData.totalPage;
+            curTotalRecords_ = returnData.toatal;
+            curDataVec_ = returnData.records;
+            if(availabelAttrGeted_){
+                label->close();
+                delete label;
+                if(!curEnableAttrErrorStr_.isEmpty()){
+                    InformationDialog infoDialog(this);
+                    infoDialog.setUserStyle(userStyle());
+                    infoDialog.setMessage(tr("GetEnabledAttr:%1").arg(curDataErrorStr_));
+                    infoDialog.exec();
+                    curEnableAttrErrorStr_.clear();
+                    return;
+                }
+                setEnableAttrs(curEnableAttrList_);
+                pageIndicator_->adjustRow();
+                pageIndicator_->setPageInfo(curTotalPage_,curTotalRecords_);
+                setTableData(curDataVec_);
+                pageIndicator_->setEnabled(true);
+                searchBtn_->setEnabled(true);
+                attributTreeW_->setEnabled(true);
+                preIsSearch_ = false;
+            }
+        });
         getAvailableAttrs(label);
-        pageIndicator_->adjustRow();
-        if(needUpdatePageInfo_){
-            pageIndicator_->setPageInfo(returnData.totalPage,returnData.toatal);
-            needUpdatePageInfo_ = false;
-        }
-        if(returnData.toatal == 0){
+    }else{
+        connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
+            label->close();
+            delete label;
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(userStyle());
+            infoDialog.setMessage(str);
+            infoDialog.exec();
+            pageIndicator_->setEnabled(true);
+            searchBtn_->setEnabled(true);
+            attributTreeW_->setEnabled(true);
             noDataW_->show();
-        }
-        setTableData(returnData.records);
-    });
+            preIsSearch_ = false;
+        });
+        connect(serviceI,&RestServiceI::sigFaceLinkDataColl,this,[this,label](RestServiceI::FaceLinkDataCollReturn &returnData){
+            label->close();
+            delete label;
+            pageIndicator_->adjustRow();
+            if(needUpdatePageInfo_){
+                pageIndicator_->setPageInfo(returnData.totalPage,returnData.toatal);
+                needUpdatePageInfo_ = false;
+            }
+            if(returnData.toatal == 0){
+                noDataW_->show();
+            }
+            setTableData(returnData.records);
+            pageIndicator_->setEnabled(true);
+            searchBtn_->setEnabled(true);
+            attributTreeW_->setEnabled(true);
+            preIsSearch_ = false;
+        });
+    }
     RestServiceI::FaceLinkDataCollArgs args;
     args.cameraId = curCameraId_;
     args.faceAttrs = curfaceAttrList_;
@@ -762,6 +903,7 @@ void SemanticSearchPage::slotSearchFaceLink(int page)
     noDataW_->hide();
     dataListW_->clear();
     preIsSearch_ = true;
+    dataGeted_ = false;
 }
 
 QStringList SemanticSearchPage::checkedAttrbute(QTreeWidgetItem *item)
@@ -782,29 +924,51 @@ void SemanticSearchPage::getAvailableAttrs(WaitingLabel *label)
     ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
     RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI,&RestServiceI::sigAvailableAttrs,this,[this,label](QStringList attrs){
-        label->close();
-        delete label;
-        for(int i = 0; i < attributTreeW_->topLevelItem(0)->childCount(); i++){
-            attributTreeW_->topLevelItem(0)->child(i)->setDisabled(true);
-        }
-        for(const QString attr : attrs){
-            for(int i = 0; i < attributTreeW_->topLevelItem(0)->childCount(); i++){
-                if(attributTreeW_->topLevelItem(0)->child(i)->text(0) == attr){
-                    attributTreeW_->topLevelItem(0)->child(i)->setDisabled(false);
-                    break;
-                }
+        availabelAttrGeted_ = true;
+        curEnableAttrList_ = attrs;
+        if(dataGeted_){
+            label->close();
+            delete label;
+            if(!curDataErrorStr_.isEmpty()){
+                InformationDialog infoDialog(this);
+                infoDialog.setUserStyle(userStyle());
+                infoDialog.setMessage(tr("Data:%1").arg(curDataErrorStr_));
+                infoDialog.exec();
+                curDataErrorStr_.clear();
+                return;
             }
+            setEnableAttrs(attrs);
+            pageIndicator_->adjustRow();
+            pageIndicator_->setPageInfo(curTotalPage_,curTotalRecords_);
+            setTableData(curDataVec_);
+            pageIndicator_->setEnabled(true);
+            searchBtn_->setEnabled(true);
+            attributTreeW_->setEnabled(true);
+            preIsSearch_ = false;
         }
-        pageIndicator_->setEnabled(true);
-        searchBtn_->setEnabled(true);
-        attributTreeW_->setEnabled(true);
-        preIsSearch_ = false;
     });
     connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
-        InformationDialog infoDialog(this);
-        infoDialog.setUserStyle(userStyle());
-        infoDialog.setMessage(str);
-        infoDialog.exec();
+        availabelAttrGeted_ = true;
+        if(dataGeted_){
+            label->close();
+            delete label;
+            curEnableAttrErrorStr_ = str;
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(userStyle());
+            if(curDataErrorStr_.isEmpty()){
+                infoDialog.setMessage(tr("GetEnabledAttr:%2").arg(str));
+            }else{
+                infoDialog.setMessage(tr("Data:%1\nGetEnabledAttr:%2").arg(curDataErrorStr_,str));
+            }
+            infoDialog.exec();
+            noDataW_->show();
+            curEnableAttrErrorStr_.clear();
+            curDataErrorStr_.clear();
+            pageIndicator_->setEnabled(true);
+            searchBtn_->setEnabled(true);
+            attributTreeW_->setEnabled(true);
+            preIsSearch_ = false;
+        }
     });
     RestServiceI::SearchAttrsArgs args;
     args.cameraId = curCameraId_;
@@ -813,6 +977,7 @@ void SemanticSearchPage::getAvailableAttrs(WaitingLabel *label)
     args.startT = curStartTime_;
     args.endT = curEndTime_;
     serviceI->getAvailabelAttrs(args);
+    availabelAttrGeted_ = false;
 }
 
 void SemanticSearchPage::slotPageIndexChanged(int page)
@@ -831,30 +996,89 @@ void SemanticSearchPage::slotSearchAll(int page)
     ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
     RestServiceI *serviceI = factoryI->makeRestServiceI();
     WaitingLabel *label = new WaitingLabel(dataListW_);
-    connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
-        label->close();
-        delete label;
-        InformationDialog infoDialog(this);
-        infoDialog.setUserStyle(userStyle());
-        infoDialog.setMessage(str);
-        infoDialog.exec();
-        pageIndicator_->setEnabled(true);
-        searchBtn_->setEnabled(true);
-        attributTreeW_->setEnabled(true);
-        noDataW_->show();
-    });
-    connect(serviceI,&RestServiceI::sigCaptureSearch,this,[this,label](RestServiceI::CaptureSearchReturnData value){
+    if(page == 1){
+        connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
+            dataGeted_ = true;
+            curEnableAttrErrorStr_ = str;
+            if(availabelAttrGeted_){
+                label->close();
+                delete label;
+                InformationDialog infoDialog(this);
+                infoDialog.setUserStyle(userStyle());
+                if(curEnableAttrErrorStr_.isEmpty()){
+                    infoDialog.setMessage(tr("Data:%2").arg(str));
+                }else{
+                    infoDialog.setMessage(tr("Data:%1\nGetEnabledAttr:%2").arg(str,curEnableAttrErrorStr_));
+                }
+                infoDialog.exec();
+                noDataW_->show();
+                curEnableAttrErrorStr_.clear();
+                curDataErrorStr_.clear();
+                pageIndicator_->setEnabled(true);
+                searchBtn_->setEnabled(true);
+                attributTreeW_->setEnabled(true);
+                preIsSearch_ = false;
+            }
+        });
+        connect(serviceI,&RestServiceI::sigCaptureSearch,this,[this,label](RestServiceI::CaptureSearchReturnData value){
+            dataGeted_ = true;
+            curTotalPage_ = value.totalPage;
+            curTotalRecords_ = value.totalCount;
+            curDataVec_ = value.data;
+            if(availabelAttrGeted_){
+                label->close();
+                delete label;
+                if(!curEnableAttrErrorStr_.isEmpty()){
+                    InformationDialog infoDialog(this);
+                    infoDialog.setUserStyle(userStyle());
+                    infoDialog.setMessage(tr("GetEnabledAttr:%1").arg(curDataErrorStr_));
+                    infoDialog.exec();
+                    curEnableAttrErrorStr_.clear();
+                    return;
+                }
+                setEnableAttrs(curEnableAttrList_);
+                pageIndicator_->adjustRow();
+                pageIndicator_->setPageInfo(curTotalPage_,curTotalRecords_);
+                setTableData(curDataVec_);
+                pageIndicator_->setEnabled(true);
+                searchBtn_->setEnabled(true);
+                attributTreeW_->setEnabled(true);
+                preIsSearch_ = false;
+            }
+        });
         getAvailableAttrs(label);
-        pageIndicator_->adjustRow();
-        if(needUpdatePageInfo_){
-            pageIndicator_->setPageInfo(value.totalPage,value.totalCount);
-            needUpdatePageInfo_ = false;
-        }
-        if(value.totalCount == 0){
+    }else{
+        connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
+            label->close();
+            delete label;
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(userStyle());
+            infoDialog.setMessage(str);
+            infoDialog.exec();
+            pageIndicator_->setEnabled(true);
+            searchBtn_->setEnabled(true);
+            attributTreeW_->setEnabled(true);
             noDataW_->show();
-        }
-        setTableData(value.data);
-    });
+            preIsSearch_ = false;
+        });
+        connect(serviceI,&RestServiceI::sigCaptureSearch,this,[this,label](RestServiceI::CaptureSearchReturnData value){
+            label->close();
+            delete label;
+            pageIndicator_->adjustRow();
+            if(needUpdatePageInfo_){
+                pageIndicator_->setPageInfo(value.totalPage,value.totalCount);
+                needUpdatePageInfo_ = false;
+            }
+            if(value.totalCount == 0){
+                noDataW_->show();
+            }
+            setTableData(value.data);
+            pageIndicator_->setEnabled(true);
+            searchBtn_->setEnabled(true);
+            attributTreeW_->setEnabled(true);
+            preIsSearch_ = false;
+        });
+    }
     RestServiceI::CaptureSearchArgs args;
     args.page = page;
     args.pageCount = dataRows_ * dataCols_;
@@ -870,6 +1094,7 @@ void SemanticSearchPage::slotSearchAll(int page)
     noDataW_->hide();
     dataListW_->clear();
     preIsSearch_ = true;
+    dataGeted_ = false;
 }
 
 void SemanticSearchPage::slotSearchBtnClicked()

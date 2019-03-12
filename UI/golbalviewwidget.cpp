@@ -14,7 +14,7 @@
 GolbalViewWidget::GolbalViewWidget(WidgetI *parent):
     WidgetI(parent)
 {
-    setObjectName(tr("Golbal View"));
+    setObjectName(tr("Home"));
     m_backgroundImg.load("images/glview/bg.png");
 
     m_mapWgt = new GlViewMapWidget(this);

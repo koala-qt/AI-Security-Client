@@ -27,7 +27,7 @@
 EventSearch::EventSearch( WidgetI *parent):
     WidgetI(parent)
 {
-    setObjectName(tr("事件检索"));
+    setObjectName(tr("Event"));
     backImg_.load(tr("images/Mask.png"));
     QVBoxLayout *mainLay = new QVBoxLayout;
     QHBoxLayout *hlay = new QHBoxLayout;
@@ -38,11 +38,9 @@ EventSearch::EventSearch( WidgetI *parent):
     m_positionCombox->setIconSize(QSize(1,30));
     m_positionCombox->setFixedHeight(40);
     m_positionCombox->setFocusPolicy(Qt::NoFocus);
-    m_waringTyleL = new QLabel(tr("Alarm type"));
-    m_waringTyleCombox = new QComboBox;
-    m_waringTyleCombox->setIconSize(QSize(1,30));
-    m_waringTyleCombox->setFixedHeight(40);
-    m_waringTyleCombox->setFocusPolicy(Qt::NoFocus);
+    m_waringTyleL = new QLabel(tr("Alarm type "));
+    waringTypeMenu_ = new QMenu();
+    waringTypeBtn_ = new QPushButton;
     m_startTimeL = new QLabel(tr("Starting time"));
     m_startTimeEdit = new QDateTimeEdit;
     m_startTimeEdit->setDisplayFormat("yyyy-MM-dd HH:mm:ss");
@@ -58,7 +56,7 @@ EventSearch::EventSearch( WidgetI *parent):
     hlay->addWidget(m_positionL);
     hlay->addWidget(m_positionCombox);
     hlay->addWidget(m_waringTyleL);
-    hlay->addWidget(m_waringTyleCombox);
+    hlay->addWidget(waringTypeBtn_);
     hlay->addWidget(m_startTimeL);
     hlay->addWidget(m_startTimeEdit);
     hlay->addWidget(m_endTimeL);
@@ -106,6 +104,7 @@ EventSearch::EventSearch( WidgetI *parent):
             QPainter p(&sinfo.image);
             p.setBrush(waringColorMap_.value(m_tableW->item(curRowIndex,3)->text()));
             p.setPen(Qt::NoPen);
+            p.setRenderHint(QPainter::Antialiasing);
             p.drawPolygon(m_tableW->item(curRowIndex,0)->data(Qt::UserRole).value<QPolygonF>());
             p.end();
             slotOnSceneInfo(sinfo);
@@ -134,25 +133,172 @@ EventSearch::EventSearch( WidgetI *parent):
     m_tableW->horizontalHeader()->setHighlightSections(false);
     m_tableW->horizontalHeader()->setDefaultSectionSize(192);
     m_tableW->verticalHeader()->setDefaultSectionSize(108);
+    m_tableW->verticalHeader()->hide();
     m_tableW->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_tableW->setFocusPolicy(Qt::NoFocus);
     m_tableW->setEditTriggers(QTableWidget::NoEditTriggers);
     m_tableW->hideColumn(1);
     m_tableW->setShowGrid(false);
     m_pageindicator->setPageInfo(0,0);
-    QPixmap pix(1,m_waringTyleCombox->iconSize().height());
-    pix.fill(Qt::transparent);
+
+#if 0
     QVector<std::tuple<QString,QString,QColor>> waringTypeTupleVec;
     waringTypeTupleVec << std::make_tuple(tr(""),tr("Unlimited"),Qt::transparent)
-                       << std::make_tuple(tr("smsr_alarm_intruder"),tr("Intruder events"),QColor(200,0,0,100))
-                       << std::make_tuple(tr("smsr_alarm_abdoor"),tr("AB-Door events"),QColor(0,200,0,100))
-                       << std::make_tuple(tr("smsr_alarm_climb"),tr("Climb events"),QColor(100,100,0,100))
-                       << std::make_tuple(tr("smsr_alarm_gather"),tr("Gather events"),QColor(100,0,100,100))
-                       << std::make_tuple(tr("smsr_alarm_face"),tr("Blacklist events"),Qt::transparent);
-    for(const std::tuple<QString,QString,QColor> &tupleValue : waringTypeTupleVec) {
-        m_waringTyleCombox->addItem(pix,std::get<1>(tupleValue),std::get<0>(tupleValue));
-        waringColorMap_.insert(std::get<0>(tupleValue),std::get<2>(tupleValue));
+                       << std::make_tuple(tr("smsr_alarm_intruder"),tr("Intrusion Alarm"),QColor(200,0,0,100))
+                       << std::make_tuple(tr("smsr_alarm_abdoor"),tr("Trailing Alarm"),QColor(0,200,0,100))
+                       << std::make_tuple(tr("smsr_alarm_climb"),tr("Climbing Alarm"),QColor(100,100,0,100))
+                       << std::make_tuple(tr("smsr_alarm_gather"),tr("Aggregate Alarm"),QColor(100,0,100,100))
+                       << std::make_tuple(tr("smsr_face_gather"),tr("Blacklist Alarm"),Qt::transparent);
+    for(int i = 0; i < waringTypeTupleVec.count(); i++) {
+        if(i == waringTypeTupleVec.count() - 1){
+            QMenu *personTypeMenu = new QMenu(std::get<1>(waringTypeTupleVec.at(i)));
+            connect(personTypeMenu,&QMenu::aboutToShow,personTypeMenu,[this,personTypeMenu]{
+                ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+                RestServiceI *serviceI = factoryI->makeRestServiceI();
+                connect(serviceI,&RestServiceI::sigPersonTypesResult,personTypeMenu,[this,personTypeMenu](QVector<RestServiceI::PersonType> data){
+                    for(RestServiceI::PersonType &value : data){
+                        QMenu *typeMenu = new QMenu(value.strTypeName);
+                        typeMenu->setProperty("groupNo",value.groupNo);
+                        typeMenu->setProperty("personType",value.strTypeNo);
+                        personTypeMenu->addMenu(typeMenu);
+                        connect(typeMenu,&QMenu::aboutToShow,typeMenu,[typeMenu,this]{
+                            ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+                            RestServiceI *serviceI = factoryI->makeRestServiceI();
+                            connect(serviceI,&RestServiceI::sigPersonGroupInfos,typeMenu,[typeMenu,this](QVector<RestServiceI::PersonGroupInfo> infos){
+                                QVector<PersonGroup> dataVec;
+                                for(RestServiceI::PersonGroupInfo &value : infos){
+                                    parseGroupToVec(value,dataVec);
+                                }
+                                for(int i = 0; i < dataVec.count(); i++){
+                                    QAction *act = new QAction(dataVec.at(i).name);
+                                    act->setData(dataVec.at(i).no);
+                                    connect(act,&QAction::triggered,act,[this,act,typeMenu]{
+                                        waringTypeBtn_->setProperty("personType",typeMenu->property("personType").toString());
+                                        waringTypeBtn_->setProperty("groupNo",act->data().toString());
+                                        waringTypeBtn_->setProperty("alarm type","");
+                                    });
+                                    typeMenu->addAction(act);
+                                }
+                            });
+                            connect(serviceI,&RestServiceI::sigError,typeMenu,[typeMenu](QString str){
+                                qDebug() << str;
+                            });
+                            serviceI->getPersonGoupInfos(typeMenu->property("groupNo").toString());
+                        });
+                        connect(typeMenu,&QMenu::aboutToHide,typeMenu,[typeMenu]{typeMenu->clear();});
+                    }
+                });
+                connect(serviceI,&RestServiceI::sigError,this,[this](QString str){
+                    qDebug() << str;
+                });
+                serviceI->queryPersonTypes();
+            });
+            connect(personTypeMenu,&QMenu::aboutToHide,this,[this,personTypeMenu]{
+                personTypeMenu->clear();
+            });
+            waringTypeMenu_->addMenu(personTypeMenu);
+        }else{
+            QAction *acti = new QAction(std::get<1>(waringTypeTupleVec.at(i)));
+            if(i == 0){
+                waringTypeBtn_->setText(acti->text());
+            }
+            acti->setData(std::get<0>(waringTypeTupleVec.at(i)));
+            connect(acti,&QAction::triggered,waringTypeBtn_,[acti,this]{
+                waringTypeBtn_->setText(acti->text());
+                waringTypeBtn_->setProperty("alarm type",acti->data().toString());
+                waringTypeBtn_->setProperty("groupNo","");
+                waringTypeBtn_->setProperty("personType","");
+            });
+            waringTypeMenu_->addAction(acti);
+        }
     }
+#else
+    QVector<std::tuple<QString,QString,QColor>> waringTypeTupleVec;
+    waringTypeTupleVec << std::make_tuple(tr(""),tr("Unlimited"),Qt::transparent)
+                       << std::make_tuple(tr("smsr_alarm_intruder"),tr("Intrusion Alarm"),QColor(200,0,0,100))
+                       << std::make_tuple(tr("smsr_alarm_abdoor"),tr("Trailing Alarm"),QColor(0,200,0,100))
+                       << std::make_tuple(tr("smsr_alarm_climb"),tr("Climbing Alarm"),QColor(100,100,0,100))
+                       << std::make_tuple(tr("smsr_alarm_gather"),tr("Aggregate Alarm"),QColor(100,0,100,100))
+                       << std::make_tuple(tr("smsr_alarm_face"),tr("Blacklist Alarm"),Qt::transparent)
+                       << std::make_tuple(tr("smsr_alarm_face"),tr("Whitelist Alarm"),QColor(100,0,100,100));
+    for(int i = 0; i < waringTypeTupleVec.count(); i++){
+        QString groupNoOrAlarm = std::get<0>(waringTypeTupleVec.at(i));
+        waringColorMap_.insert(std::get<0>(waringTypeTupleVec.at(i)),std::get<2>(waringTypeTupleVec.at(i)));
+        if(i < waringTypeTupleVec.count() - 2){
+            QAction *act = new QAction(std::get<1>(waringTypeTupleVec.at(i)));
+            waringTypeBtn_->setText(act->text());
+            connect(act,&QAction::triggered,waringTypeMenu_,[this,groupNoOrAlarm,act]{
+                waringTypeBtn_->setText(act->text());
+                waringTypeBtn_->setProperty("alarm type",groupNoOrAlarm);
+                waringTypeBtn_->setProperty("groupNo","");
+                waringTypeBtn_->setProperty("personType","");
+            });
+            waringTypeMenu_->addAction(act);
+        }else if(i == waringTypeTupleVec.count() - 2){
+            QMenu *typeMenu = new QMenu(std::get<1>(waringTypeTupleVec.at(i)));
+            typeMenu->setProperty("groupNo","100010021148");
+            typeMenu->setProperty("personType","100010001008");
+            connect(typeMenu,&QMenu::aboutToShow,typeMenu,[typeMenu,this]{
+                ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+                RestServiceI *serviceI = factoryI->makeRestServiceI();
+                connect(serviceI,&RestServiceI::sigPersonGroupInfos,typeMenu,[typeMenu,this](QVector<RestServiceI::PersonGroupInfo> infos){
+                    QVector<PersonGroup> dataVec;
+                    for(RestServiceI::PersonGroupInfo &value : infos){
+                        parseGroupToVec(value,dataVec);
+                    }
+                    for(int i = 0; i < dataVec.count(); i++){
+                        QAction *act = new QAction(dataVec.at(i).name);
+                        act->setData(dataVec.at(i).no);
+                        connect(act,&QAction::triggered,act,[this,act,typeMenu]{
+                            waringTypeBtn_->setProperty("personType",typeMenu->property("personType").toString());
+                            waringTypeBtn_->setProperty("groupNo",act->data().toString());
+                            waringTypeBtn_->setProperty("alarm type","");
+                        });
+                        typeMenu->addAction(act);
+                    }
+                });
+                connect(serviceI,&RestServiceI::sigError,typeMenu,[typeMenu](QString str){
+                    qDebug() << str;
+                });
+                serviceI->getPersonGoupInfos(typeMenu->property("groupNo").toString());
+            });
+            connect(typeMenu,&QMenu::aboutToHide,typeMenu,[typeMenu]{typeMenu->clear();});
+            waringTypeMenu_->addMenu(typeMenu);
+        }else if(i == waringTypeTupleVec.count() - 1){
+            QMenu *typeMenu = new QMenu(std::get<1>(waringTypeTupleVec.at(i)));
+            typeMenu->setProperty("groupNo","100010021149");
+            typeMenu->setProperty("personType","100010001007");
+            connect(typeMenu,&QMenu::aboutToShow,typeMenu,[typeMenu,this]{
+                ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+                RestServiceI *serviceI = factoryI->makeRestServiceI();
+                connect(serviceI,&RestServiceI::sigPersonGroupInfos,typeMenu,[typeMenu,this](QVector<RestServiceI::PersonGroupInfo> infos){
+                    QVector<PersonGroup> dataVec;
+                    for(RestServiceI::PersonGroupInfo &value : infos){
+                        parseGroupToVec(value,dataVec);
+                    }
+                    for(int i = 0; i < dataVec.count(); i++){
+                        QAction *act = new QAction(dataVec.at(i).name);
+                        act->setData(dataVec.at(i).no);
+                        connect(act,&QAction::triggered,act,[this,act,typeMenu]{
+                            waringTypeBtn_->setProperty("personType",typeMenu->property("personType").toString());
+                            waringTypeBtn_->setProperty("groupNo",act->data().toString());
+                            waringTypeBtn_->setProperty("alarm type","");
+                        });
+                        typeMenu->addAction(act);
+                    }
+                });
+                connect(serviceI,&RestServiceI::sigError,typeMenu,[typeMenu](QString str){
+                    qDebug() << str;
+                });
+                serviceI->getPersonGoupInfos(typeMenu->property("groupNo").toString());
+            });
+            connect(typeMenu,&QMenu::aboutToHide,typeMenu,[typeMenu]{typeMenu->clear();});
+            waringTypeMenu_->addMenu(typeMenu);
+        }
+    }
+#endif
+    waringTypeBtn_->setMenu(waringTypeMenu_);
+
     noDataTipW_ = new NoDataTip(m_tableW);
     setUserStyle(userStyle());
     getCameraInfo();
@@ -167,33 +313,66 @@ void EventSearch::setUserStyle(int s)
     QFont f;
     if(s == 0){
         f = m_positionL->font();
-        f.setPixelSize(18);
+        f.setPixelSize(14);
         m_positionL->setFont(f);
         m_waringTyleL->setFont(f);
         m_startTimeL->setFont(f);
         m_endTimeL->setFont(f);
+        m_positionCombox->setFont(f);
+        waringTypeBtn_->setFont(f);
+        m_startTimeEdit->setFont(f);
+        m_endTimeEdit->setFont(f);
+        m_searchBtn->setFont(f);
 
         pal = m_positionL->palette();
-        pal.setColor(QPalette::Foreground,QColor(126,140,177));
+        pal.setColor(QPalette::Foreground,QColor(255,255,255,191));
         m_positionL->setPalette(pal);
         m_waringTyleL->setPalette(pal);
         m_startTimeL->setPalette(pal);
         m_endTimeL->setPalette(pal);
 
+        waringTypeBtn_->setFixedSize(200,34);
+        m_searchBtn->setFixedSize(99,34);
+        m_startTimeEdit->setFixedSize(200,34);
+        m_endTimeEdit->setFixedSize(200,34);
+        m_positionCombox->setFixedSize(200,34);
         m_searchBtn->setStyleSheet("QPushButton{"
                                    "background-color: rgb(83,77,251);"
                                    "color: white;"
                                    "border-radius: 6px;"
-                                   "font-size: 18px;"
+                                   "width: 99px;"
+                                   "height: 34px;"
                                    "}"
                                    "QPushButton:pressed{"
                                    "padding: 2px;"
                                    "background-color: #312DA6;"
                                    "}");
+
+        waringTypeBtn_->setStyleSheet("QPushButton{"
+                                      "background-color: rgba(255,255,255,0.1);"
+                                      "color: rgba(255,255,255,0.75);"
+                                      "border-radius: 6px;"
+                                      "width: 99px;"
+                                      "height: 34px;"
+                                      "text-align: center left;"
+                                      "padding-left: 10px;"
+                                      "}"
+                                      "QPushButton:pressed{"
+                                      "padding: 2px;"
+                                      "background-color: #312DA6;"
+                                      "text-align: center left;"
+                                      "padding-left: 10px;"
+                                      "}"
+                                      "QPushButton::menu-indicator{"
+                                      "subcontrol-origin: padding;"
+                                      "subcontrol-position: center right;"
+                                      "margin-right: 5px;"
+                                      "}");
+
         m_tableW->setStyleSheet("QTableView{"
                                 "selection-background-color: #383F4F;"
                                 "background-color: #383F4F;"
-                                "color: #7E8CB1;"
+                                "color: rgba(255,255,255,191);"
                                 "}"
                                 "QTableView QTableCornerButton::section{"
                                 "background: rgb(65,73,92);"
@@ -209,7 +388,7 @@ void EventSearch::setUserStyle(int s)
                                 "background-color: rgb(65,73,92);"
                                 "}"
                                 "QHeaderView::section{"
-                                "color: rgb(126,140,177);"
+                                "color: rgba(255,255,255,191);"
                                 "background-color: transparent;"
                                 "border: none;"
                                 "border-radius: 0px;"
@@ -253,102 +432,74 @@ void EventSearch::setUserStyle(int s)
                                 "border-radius: 0px;"
                                 "}");
 
+        m_positionCombox->setStyleSheet("QComboBoxListView{"
+                                        "color: rgba(255,255,255,191);"
+                                        "background-color: rgb(43,49,61);"
+                                        "}"
+                                        "QComboBox{"
+                                        "color: rgba(255,255,255,191);"
+                                        "background-color: rgba(255,255,255,0.1);"
+                                        "border-radius: 4px;"
+                                        "padding-left: 10px;"
+                                        "}"
+                                        "QComboBox QAbstractItemView{"
+                                        "selection-color: white;"
+                                        "outline: 0px;"
+                                        "selection-background-color: rgb(71,65,242);"
+                                        "}"
+                                        "QComboBox::drop-down{"
+                                        "subcontrol-position: center right;border-image: url(images/dropdown2.png);width:11px;height:8px;subcontrol-origin: padding;margin-right:5px;"
+                                        "}"
+                                        "QScrollBar:vertical{"
+                                        "background: transparent;"
+                                        "border: 0px solid gray;"
+                                        "width: 13px;"
+                                        "}"
+                                        "QScrollBar::handle:vertical{"
+                                        "background: rgba(255,255,255,0.5);"
+                                        "border-radius: 5px;"
+                                        "}"
+                                        "QScrollBar::add-line:vertical{"
+                                        "background: transparent;"
+                                        "border:0px solid #274168;"
+                                        "border-radius: 5px;"
+                                        "min-height: 10px;"
+                                        "width: 13px;"
+                                        "}"
+                                        "QScrollBar::sub-line:vertical{"
+                                        "background: transparent;"
+                                        "border:0px solid #274168;"
+                                        "min-height: 10px;"
+                                        "width: 13px;"
+                                        "}"
+                                        "QScrollBar::up-arrow:vertical{"
+                                        "subcontrol-origin: margin;"
+                                        "height: 0px;"
+                                        "border:0 0 0 0;"
+                                        "visible:false;"
+                                        "}"
+                                        "QScrollBar::down-arrow:vertical{"
+                                        "subcontrol-origin: margin;"
+                                        "height: 0px;"
+                                        "visible:false;"
+                                        "}"
+                                        "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
+                                        "background: transparent;"
+                                        "border: none;"
+                                        "border-radius: 0px;"
+                                        "}");
         m_startTimeEdit->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
-                                       "color: rgb(126,140,177);"
-//                                       "box-shadow:1px 1px 0px rgba(77,86,107,1);"
-                                       "border-radius:6px;"
-                                       "background-color: rgb(40,45,56);}");
-
+                                       "color: rgba(255,255,255,191);"
+                                       "border-radius:4px;"
+                                       "background-color: rgba(255,255,255,0.1);"
+                                       "padding-left: 10px;"
+                                       "}");
         m_endTimeEdit->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
-                                     "color: rgb(126,140,177);"
-//                                     "box-shadow:1px 1px 0px rgba(77,86,107,1);"
-                                     "border-radius:6px;"
-                                     "background-color: rgb(40,45,56);}");
-
-        m_positionCombox->setStyleSheet(
-                    "QComboBoxListView{"
-                    "color: #CECECE;"
-                    "background-color: rgb(43,49,61);"
-                    "}"
-                    "QComboBox{"
-                    "color: rgb(126,140,177);"
-                    "font-size: 18px;"
-                    "background-color: rgb(40,45,56);"
-//                    "box-shadow: 1px 1px 0px rgba(77,86,107,1);"
-                    "border-radius: 6px;"
-                    "}"
-                    "QComboBox QAbstractItemView{"
-                    "selection-color: white;"
-                    "outline: 0px;"
-                    "selection-background-color: rgb(71,65,242);"
-                    "}"
-                    "QComboBox::drop-down{"
-                    "subcontrol-position: center right;border-image: url(images/dropdown2.png);width:11px;height:8px;subcontrol-origin: padding;margin-right:5px;"
-                    "}"
-                    "QScrollBar:vertical{"
-                    "background: transparent;"
-                    "border: 0px solid gray;"
-                    "width: 13px;"
-                    "}"
-                    "QScrollBar::handle:vertical{"
-                    "background: rgba(255,255,255,0.5);"
-                    "border-radius: 5px;"
-                    "}"
-                    "QScrollBar::add-line:vertical{"
-                    "background: transparent;"
-                    "border:0px solid #274168;"
-                    "border-radius: 5px;"
-                    "min-height: 10px;"
-                    "width: 13px;"
-                    "}"
-                    "QScrollBar::sub-line:vertical{"
-                    "background: transparent;"
-                    "border:0px solid #274168;"
-                    "min-height: 10px;"
-                    "width: 13px;"
-                    "}"
-                    "QScrollBar::up-arrow:vertical{"
-                    "subcontrol-origin: margin;"
-                    "height: 0px;"
-                    "border:0 0 0 0;"
-                    "visible:false;"
-                    "}"
-                    "QScrollBar::down-arrow:vertical{"
-                    "subcontrol-origin: margin;"
-                    "height: 0px;"
-                    "visible:false;"
-                    "}"
-                    "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
-                    "background: transparent;"
-                    "border: none;"
-                    "border-radius: 0px;"
-                    "}");
-        m_waringTyleCombox->setStyleSheet(
-                    "QComboBoxListView{"
-                    "color: #CECECE;"
-                    "background-color: rgb(43,49,61);"
-                    "}"
-                    "QComboBox{"
-                    "color: rgb(126,140,177);"
-                    "font-size: 18px;"
-                    "background-color: rgb(40,45,56);"
-//                    "box-shadow:1px 1px 0px rgba(77,86,107,1);"
-                    "border-radius: 6px;"
-                    "}"
-                    "QComboBox QAbstractItemView{"
-                    "selection-color: white;"
-                    "outline: 0px;"
-                    "selection-background-color: rgb(71,65,242);"
-                    "}"
-                    "QComboBox::drop-down{"
-                    "subcontrol-position: center right;border-image: url(images/dropdown2.png);width:11px;height:8px;subcontrol-origin: padding;margin-right:5px;"
-                    "}");
-        menu_->setStyleSheet("QMenu{"
-                             "background-color: rgb(75,75,75);"
-                             "}"
-                             "QMenu::item:selected{"
-                             "background-color: rgba(255,255,255,0.4);"
-                             "}");
+                                     "color: rgba(255,255,255,191);"
+                                     "border-radius:4px;"
+                                     "background-color: rgba(255,255,255,0.1);"
+                                     "padding-left: 10px;"
+                                     "}");
         m_pageindicator->setUserStyle();
         noDataTipW_->setUserStyle(s);
     }
@@ -368,7 +519,7 @@ bool EventSearch::eventFilter(QObject *watched, QEvent *event)
         QPainter p(watchWid);
         if(userStyle() == 0){
             p.setPen(Qt::NoPen);
-            p.setBrush(QColor(48,54,68));
+            p.setBrush(QColor(0,0,0,102));
             p.drawRoundedRect(rect().adjusted(0,0,-p.pen().width(),-p.pen().width()),4,4);
         }
     }
@@ -391,6 +542,19 @@ void EventSearch::getCameraInfo()
     RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI,SIGNAL(sigCameraInfo(QVector<RestServiceI::CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<RestServiceI::CameraInfo>)));
     serviceI->getCameraInfo();
+}
+
+void EventSearch::parseGroupToVec(RestServiceI::PersonGroupInfo &datas, QVector<PersonGroup> &Vec)
+{
+    PersonGroup pdata;
+    pdata.no = datas.no;
+    pdata.name = datas.name;
+    pdata.id = datas.id;
+    pdata.description = datas.description;
+    Vec << pdata;
+    for(RestServiceI::PersonGroupInfo &value : datas.children){
+        parseGroupToVec(value,Vec);
+    }
 }
 
 void EventSearch::slotSearchPageAlarmHistory(int page)
@@ -420,6 +584,8 @@ void EventSearch::slotSearchPageAlarmHistory(int page)
     args.pageSize = 20;
     args.cameraId = curCameraid_;
     args.alarmType = curWaringType_;
+    args.personType = curPersonType_;
+    args.groupNo = curGroupNo_;
     args.start = curStartDateTime_;
     args.end = curEndDateTime_;
     serviceI->searchAlarmHistory(args);
@@ -486,7 +652,9 @@ void EventSearch::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)
 void EventSearch::slotSearchBtnClicked()
 {
     curCameraid_ = m_positionCombox->currentData().toString();
-    curWaringType_ = m_waringTyleCombox->currentData().toString();
+    curWaringType_ = waringTypeBtn_->property("alarm type").toString();
+    curPersonType_ = waringTypeBtn_->property("personType").toString();
+    curGroupNo_ = waringTypeBtn_->property("groupNo").toString();
     curStartDateTime_ = m_startTimeEdit->dateTime();
     curEndDateTime_ = m_endTimeEdit->dateTime();
     needUpdatePageInfo_ = true;
@@ -515,6 +683,7 @@ void EventSearch::slotAlarmHistory(RestServiceI::EventSearchReturn data)
         p.drawPolygon(itemData.warnZong);
         p.end();
         label->setPixmap(QPixmap::fromImage(itemData.image));
+        label->setContentsMargins(20,10,0,10);
         m_tableW->setCellWidget(m_tableW->rowCount() - 1,0,label);
 
         item = new QTableWidgetItem;

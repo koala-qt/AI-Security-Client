@@ -12,6 +12,7 @@
 #include <QDebug>
 #include <QFileDialog>
 #include <QStandardPaths>
+#include <QMouseEvent>
 #include <QDir>
 #include "sceneimagedialog.h"
 #include "facesearch.h"
@@ -29,6 +30,7 @@ SceneImageDialog::SceneImageDialog(QWidget *parent, Qt::WindowFlags f):
     selectAreaW_ = new SelectImage;
 #endif
     spiteL_ = new QLabel;
+    titleL_ = new QLabel(tr("Scene analysis"));
     listW_ = new QListWidget;
     btnBox_ = new QDialogButtonBox;
     sureSelectBtn_ = new QPushButton(tr("ok"));
@@ -40,6 +42,9 @@ SceneImageDialog::SceneImageDialog(QWidget *parent, Qt::WindowFlags f):
     saveBtn_ = new QPushButton(tr("Save scene"),selectAreaW_);
 #endif
     QVBoxLayout *vlay = new QVBoxLayout;
+    titleL_->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
+    titleL_->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    vlay->addWidget(titleL_);
 #ifdef USERECTIMAGE
     vlay->addWidget(rectesImgArea_);
 #else
@@ -56,16 +61,17 @@ SceneImageDialog::SceneImageDialog(QWidget *parent, Qt::WindowFlags f):
     hlay->addLayout(vlay,9);
     hlay->addWidget(spiteL_);
     hlay->addWidget(listW_,2);
-    hlay->setContentsMargins(10,10,10,10);
+    hlay->setMargin(0);
     operateAreaW_->setLayout(hlay);
     mainLay->addWidget(operateAreaW_);
     btnBox_->setContentsMargins(0,0,10,0);
     mainLay->addWidget(btnBox_);
-    mainLay->setContentsMargins(0,0,0,10);
+    mainLay->setSpacing(20);
+    mainLay->setContentsMargins(40,30,40,20);
     setLayout(mainLay);
 
-    cancelBtn_ = btnBox_->addButton(tr("Cancel"),QDialogButtonBox::RejectRole);
     searchBtn_ = btnBox_->addButton(tr("Search"),QDialogButtonBox::AcceptRole);
+    cancelBtn_ = btnBox_->addButton(tr("Cancel"),QDialogButtonBox::RejectRole);
     cancelBtn_->setFocusPolicy(Qt::NoFocus);
     searchBtn_->setFocusPolicy(Qt::NoFocus);
     searchBtn_->setDefault(false);
@@ -76,6 +82,7 @@ SceneImageDialog::SceneImageDialog(QWidget *parent, Qt::WindowFlags f):
     searchBtn_->setFixedSize(120,44);
     sureSelectBtn_->setIcon(QPixmap("images/btn_sure.jpg"));
     deleSelectBtn_->setIcon(QPixmap("images/delet_all_imgs.png"));
+    cancelBtn_->setDefault(true);
     spiteL_->setFixedWidth(2);
     listW_->setViewMode(QListWidget::IconMode);
     itemSizeHint_ = QSize(124,124);
@@ -98,7 +105,10 @@ SceneImageDialog::SceneImageDialog(QWidget *parent, Qt::WindowFlags f):
     listW_->hide();
     spiteL_->hide();
     deleSelectBtn_->hide();
+    saveBtn_->hide();
     setRectLinePen(QColor(19,255,175));
+    setWindowFlag(Qt::FramelessWindowHint);
+    setAttribute(Qt::WA_TintedBackground);
     connect(rectesImgArea_,SIGNAL(sigClickedImage(QImage)),this,SLOT(slotOnClickedImage(QImage)));
 #endif
 }
@@ -135,6 +145,7 @@ void SceneImageDialog::setRectLinePen(QColor c, QColor b)
 void SceneImageDialog::setUserStyle(int styleArg)
 {
     QPalette pal;
+    QFont f;
     if(styleArg == 0){
         pal = palette();
         pal.setColor(QPalette::Background,QColor(48,54,68));
@@ -150,26 +161,39 @@ void SceneImageDialog::setUserStyle(int styleArg)
         spiteL_->setPalette(pal);
         spiteL_->setAutoFillBackground(true);
 
-        searchBtn_->setStyleSheet("QPushButton{"
-                                  "background-color: rgb(83,77,251);"
-                                  "color: white;"
-                                  "border-radius: 4px;"
-                                  "font-size: 12px;"
-                                  "}"
-                                  "QPushButton:pressed{"
-                                  "padding: 2px;"
-                                  "background-color: #312DA6;"
-                                  "}");
+        pal = titleL_->palette();
+        pal.setColor(QPalette::Foreground,QColor(255,255,255,191));
+        titleL_->setPalette(pal);
+        f = titleL_->font();
+        f.setPixelSize(14);
+        titleL_->setFont(f);
+
         cancelBtn_->setStyleSheet("QPushButton{"
-                                  "background-color: rgb(83,77,251);"
                                   "color: white;"
+                                  "width: 120px;"
+                                  "height: 44px;"
+                                  "background-color: rgba(71,65,242,0.3);"
+                                  "border: none;"
                                   "border-radius: 4px;"
-                                  "font-size: 12px;"
+                                  "border:1px solid rgba(71,65,242,1);"
                                   "}"
                                   "QPushButton:pressed{"
-                                  "padding: 2px;"
                                   "background-color: #312DA6;"
+                                  "padding: 2px;"
                                   "}");
+        searchBtn_->setStyleSheet("QPushButton{"
+                                 "color: white;"
+                                 "width: 120px;"
+                                 "height: 44px;"
+                                 "background-color: #4741F2;"
+                                 "border: none;"
+                                 "border-radius: 4px;"
+                                 "}"
+                                 "QPushButton:pressed{"
+                                 "background-color: #312DA6;"
+                                 "border:1px solid rgba(71,65,242,1);"
+                                 "padding: 2px;"
+                                 "}");
         sureSelectBtn_->setStyleSheet("QPushButton{"
                                       "background-color: rgb(83,77,251);"
                                       "color: white;"
@@ -222,6 +246,25 @@ void SceneImageDialog::setUserStyle(int styleArg)
                                                     "background: transparent;"
                                                     "}");
     }
+}
+
+void SceneImageDialog::mousePressEvent(QMouseEvent *event)
+{
+    Q_UNUSED(event)
+    if(event->button() == Qt::RightButton)return;
+    startP_ = event->globalPos();
+}
+
+void SceneImageDialog::mouseReleaseEvent(QMouseEvent *event)
+{
+    qSwap(startP_,QPoint());
+}
+
+void SceneImageDialog::mouseMoveEvent(QMouseEvent *event)
+{
+    if(event->button() == Qt::RightButton || startP_.isNull())return;
+    move(pos() + (event->globalPos() - startP_));
+    startP_ = event->globalPos();
 }
 
 void SceneImageDialog::slotSaveBtnClicked()

@@ -29,6 +29,7 @@ public:
     void setUserStyle(int s = 0) override;
 
 protected:
+    bool event(QEvent *event)override;
     void paintEvent(QPaintEvent *event) override;
 
 private:

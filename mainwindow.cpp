@@ -45,9 +45,17 @@ MainWindow::MainWindow(WidgetI *parent)
     m_topList->setFlow(QListWidget::LeftToRight);
     setUserStyle(userStyle());
 
+    QStackedWidget *monitoringStackedW = new QStackedWidget;
+    HomPage *homeW = new HomPage;
+    RealtimeMonitoring *videoW = new RealtimeMonitoring;
+    monitoringStackedW->addWidget(homeW);
+    monitoringStackedW->addWidget(videoW);
+    connect(homeW,&HomPage::sigSwitchBtnClicked,monitoringStackedW,[monitoringStackedW]{monitoringStackedW->setCurrentIndex(1);});
+    connect(videoW,&RealtimeMonitoring::sigSwitchBtnClicked,videoW,[monitoringStackedW]{monitoringStackedW->setCurrentIndex(0);});
+    monitoringStackedW->setObjectName(tr("Surveilance"));
+
     m_centerW->addWidget(new GolbalViewWidget());
-    m_centerW->addWidget(new HomPage());
-    m_centerW->addWidget(new RealtimeMonitoring());
+    m_centerW->addWidget(monitoringStackedW);
     m_centerW->addWidget(new EventSearch());
     m_centerW->addWidget(new TargetSearch());
     m_centerW->addWidget(new ReportPage());
@@ -137,16 +145,18 @@ void MainWindow::setUserStyle(int s)
 {
     QPalette pal;
     QFont f = font();
-    f.setFamily("SF Pro Text"); //DINCond-Bold、PingFang SC Regular、微软雅黑 Microsoft YaHei UI
-    setFont(f);
+    f.setFamily("微软雅黑"); //DINCond-Bold、PingFang SC Regular、微软雅黑 Microsoft YaHei UI
+    f.setWeight(QFont::Normal);
+    qApp->setFont(f);
 
     f = m_topList->font();
     f.setFamily(tr("SF Pro Text"));
+    f.setWeight(QFont::Bold);
     f.setPixelSize(16);
     m_topList->setFont(f);
 
     f = appNameL_->font();
-    f.setBold(true);
+    f.setWeight(QFont::Bold);
     f.setPixelSize(14);
     appNameL_->setFont(f);
     if(s == 0){
@@ -174,7 +184,7 @@ void MainWindow::setUserStyle(int s)
                                  "background-color: transparent;"
                                  "}"
                                  "QListWidget::item{"
-                                 "color: rgb(126,140,177);"
+                                 "color: rgba(255,255,255,191);"
                                  "}"
                                  "QListWidget::item:selected{"
                                  "color: white;"
@@ -192,6 +202,20 @@ void MainWindow::setUserStyle(int s)
                                           "color: white;"
                                           "background-color: rgb(71,65,242);"
                                           "}");
+        qApp->setStyleSheet("QMenu{"
+                            "background-color: #2B313D;"
+                            "color: rgba(255,255,255,0.75);"
+                            "}"
+                            "QMenu::item:selected{"
+                            "background-color: #4741F2;"
+                            "color: white;"
+                            "}"
+                            "QMenu::item:disabled{"
+                            "color: rgba(255,255,255,0.3);"
+                            "}"
+                            "QMenu::item:disabled:hover{"
+                            "background-color: #2B313D;"
+                            "}");
     }
 }
 

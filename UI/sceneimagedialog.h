@@ -22,6 +22,11 @@ public:
     void setRectLinePen(QColor, QColor b = QColor(255,0,255));
     void setUserStyle(int);
 
+protected:
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+
 signals:
     void sigImages(QVector<QImage>);
 
@@ -33,8 +38,9 @@ private:
 #else
     SelectImage *selectAreaW_{nullptr};
 #endif
+    QPoint startP_;
     QListWidget *listW_{nullptr};
-    QLabel *spiteL_{nullptr};
+    QLabel *spiteL_{nullptr} , *titleL_{nullptr};
     QDialogButtonBox *btnBox_{nullptr};
     QSize itemSizeHint_;
     RestServiceI::SceneInfo curScenInfo_;

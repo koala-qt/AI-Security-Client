@@ -20,7 +20,6 @@ ReportPage::ReportPage(WidgetI *parent):
 
     QSettings configSetting("config.ini",QSettings::IniFormat);
     webHost_ = configSetting.value("Http/Javahost").toString();
-    webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/report/index.html"));
     webBridge_ = new ReportWebBridge(webView_);
     webBridge_->setHostName(webHost_);
     QWebChannel *channel = new QWebChannel(webBridge_);
@@ -35,6 +34,14 @@ ReportPage::ReportPage(WidgetI *parent):
 void ReportPage::setUserStyle(int s)
 {
 
+}
+
+bool ReportPage::event(QEvent *event)
+{
+    if(event->type() == QEvent::Show){
+        webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/report/index.html"));
+    }
+    return WidgetI::event(event);
 }
 
 void ReportPage::paintEvent(QPaintEvent *event)

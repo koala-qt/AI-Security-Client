@@ -7,6 +7,7 @@
 #include <QStandardPaths>
 #include <QFileDialog>
 #include <QScrollBar>
+#include <QPushButton>
 #include <QPainter>
 #include "videoanalysisdata.h"
 #include "personmark.h"
@@ -22,20 +23,28 @@ VideoAnalysisData::VideoAnalysisData(WidgetI *parent):
     titleTextL_ = new QLabel(tr("Analysis result"));
     countTextL_ = new QLabel;
     dataListW_ = new QListWidget;
+    backBtn_ = new QPushButton(tr("back"));
 
     QVBoxLayout *mainLay = new QVBoxLayout;
+    QHBoxLayout *hlay = new QHBoxLayout;
+    hlay->addWidget(titleTextL_);
+    hlay->addStretch();
+    hlay->addWidget(backBtn_);
+    hlay->setMargin(0);
     QVBoxLayout *topVLay = new QVBoxLayout;
-    topVLay->addWidget(titleTextL_);
+    topVLay->addLayout(hlay);
+    countTextL_->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     topVLay->addWidget(countTextL_);
-    topVLay->setAlignment(Qt::AlignLeft);
-    topVLay->setContentsMargins(40,40,0,10);
+    topVLay->setContentsMargins(20,40,20,0);
     mainLay->addLayout(topVLay);
     mainLay->addWidget(dataListW_);
     dataListW_->setSpacing(20);
-    mainLay->setContentsMargins(0,0,0,0);
+    mainLay->setMargin(20);
     setLayout(mainLay);
 
+    backBtn_->setFixedSize(99,34);
     dataListW_->setFrameStyle(QFrame::NoFrame);
+    connect(backBtn_,SIGNAL(clicked(bool)),this,SIGNAL(sigBackBtnClicked()));
     setUserStyle(userStyle());
 }
 
@@ -91,11 +100,32 @@ void VideoAnalysisData::setUserStyle(int s)
                                                        "border: none;"
                                                        "border-radius: 0px;"
                                                        "}");
+        backBtn_->setStyleSheet("QPushButton{"
+                                "width: 80px;"
+                                "background-color: rgb(83,77,251);"
+                                "color: white;"
+                                "border-radius: 6px;"
+                                "font-size: 18px;"
+                                "}"
+                                "QPushButton:pressed{"
+                                "padding: 2px;"
+                                "background-color: #312DA6;"
+                                "}");
     }
 }
-#include <QDebug>
+
+void VideoAnalysisData::initsize()
+{
+    backBtn_->hide();
+    dataListW_->clear();
+}
+
 void VideoAnalysisData::slotVideoAnalysisData(QString personId, QImage img)
 {
+    if(personId == tr("end")){
+        backBtn_->show();
+        return;
+    }
     QList<QListWidgetItem*> itemsList = dataListW_->findItems(personId,Qt::MatchFixedString);
     QListWidgetItem *item = nullptr;
     if(itemsList.isEmpty()){
@@ -287,12 +317,6 @@ void PersonInfo::setUserStyle(int s)
                                                       "border: none;"
                                                       "border-radius: 0px;"
                                                       "}");
-        menu_->setStyleSheet("QMenu{"
-                             "background-color: rgb(75,75,75);"
-                             "}"
-                             "QMenu::item:selected{"
-                             "background-color: rgba(255,255,255,0.4);"
-                             "}");
     }
 }
 

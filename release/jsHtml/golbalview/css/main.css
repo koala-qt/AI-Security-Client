@@ -1,4 +1,10 @@
+@font-face {
+  font-family: 'SF Pro Text';
+
+  src:url('./fonts/SF-Pro-Text-Regular.otf') format('woff'), url('./fonts/SF-Pro-Text-Regular.otf') format('truetype');/*non-IE*/
+}
 body {
+    font-family:'SF Pro Text' !important;
     margin: 0;
     padding: 0;
 }
@@ -25,13 +31,12 @@ body {
 }
 .new-data {
     position: absolute;
+    border-radius: 4px;
     top: 700px;
     bottom: 0;
     left: 40px;
     right: 40px;
-    padding-left: 40px;
-    padding-right: 40px;
-    background-color: #000;
+    background: rgba(0,0,0,0.2);
 }
 .app-right {
     position: absolute;
@@ -41,23 +46,26 @@ body {
     height: 100%;
 }
 .new-ids {
+  border-radius: 4px;
   width: 400px;
   height: 280px;
   margin-top: 40px;
-  background: #000;
+  background: rgba(0,0,0,0.2);
 }
 .new-cameras {
+  border-radius: 4px;
   width: 400px;
   height: 280px;
   margin-top: 40px;
-  background: #000;
+  background: rgba(0,0,0,0.2);
 }
 .new-location {
    position: absolute;
+   border-radius: 4px;
    top: 682px;
    bottom: 10px;
    width: 100%;
-   background-color: #000;
+   background: rgba(0,0,0,0.2);
 }
 .bg-img {
     position: absolute;
@@ -73,27 +81,48 @@ body {
     border-radius: 0 !important;
 }
 .el-date-table td.current:not(.disabled) span {
-    background: #34AB98 !important;
+    background: #3A3BC1 !important;
 }
 
 .el-date-table td.today span {
-    color: #fff !important;
+    color: rgba(255,255,255,0.7) !important;
 }
 
 .el-date-table td.available:hover {
-    color: #34AB98 !important;
+    color: #3A3BC1 !important;
+}
+.el-date-table td.available {
+    color: rgba(255,255,255,0.7) !important;
+}
+.el-date-table th {
+    color: rgba(255,255,255,0.7) !important;
+}
+.el-picker-panel__icon-btn {
+    /* margin: 0 !important; */
+    color: rgba(255,255,255,0.7) !important;
+    margin-top: 20px !important;
+}
+.el-icon-arrow-left {
+    margin-left: 24px;
+}
+.el-icon-arrow-right {
+    margin-right: 24px;
 }
 
-.el-picker-panel__icon-btn {
-    color: #fff !important;
-}
 .el-date-picker__header-label {
-    color: #fff !important;
+    color: rgba(255,255,255,0.7) !important;
+}
+.el-date-picker__header {
+    margin: 0 !important;
+    background: #3A3BC1;
+    height: 54px;
+    line-height: 54px;
+    text-align: center;
 }
 .el-input--prefix .el-input__inner {
     font-size: 18px;
-    color: #fff !important;
-    background: #000000;
+    color: rgba(255,255,255,0.7) !important;
+    background: #3A3BC1;
 }
 .el-input__icon {
   display: none;
@@ -102,7 +131,7 @@ body {
     text-align: center;
 }
 .el-date-editor.el-input, .el-date-editor.el-input__inner {
-    width: 400px;
+    width: 200px;
 }
 .el-date-table td div {
     height: 46px;
@@ -129,53 +158,117 @@ body {
     color: #fff;
 }
 .cap-alarm {
+    position: relative;
     display: flex;
-    background-color: #000;
+    border-radius: 4px;
     margin-top: 40px;
     width: 400px;
     height: 160px;
     text-align: center;
+    background: rgba(0,0,0,0.2);
+}
+.el-icon-d-arrow-left, .el-icon-d-arrow-right {
+    display: none;
+}
+.el-icon-arrow-left {
+
+}
+.cap-alarm-line {
+    height: 46px;
+    width: 1px;
+    background: #fff;
+    position: absolute;
+    z-index: 1111;
+    left: 183px;
+    top: 57px;
+    opacity: 0.2;
 }
 .today-cap {
   flex: 1;
-  padding-top: 40px;
+  padding-top: 56px;
   display: flex;
 }
 .today-alarm {
   flex: 1;
-  padding-top: 40px;
+  padding-top: 56px;
   display: flex;
 }
 .cap-tro {
-  color: #FFF;
-  font-size: 18px;
+  color: rgba(255,255,255,0.7);
+  font-size: 14px;
 }
 .cap-num {
-  color: #FFF;
-  font-size: 36px;
+  color: rgba(255,255,255,0.7);
+  text-align: left;
+  font-size: 24px;
 }
 .img-class {
     margin-left: 20px;
-    margin-top: 20px;
-    margin-right: 5px;
+    margin-top: 4px;
+    margin-right: 10px;
+}
+.img-class2 {
+    margin-left: 4px;
+    margin-top: 4px;
+    margin-right: 10px
 }
 .cap-alarm img {
-    width: 21px;
-    height: 25px;
+    width: 30px;
+    height: 30px;
 }
 .cap-static {
+    border-radius: 4px;
     width: 400px;
     height: 300px;
-    background-color: #000;
+    background: rgba(0,0,0,0.2);
     margin-top: 40px;
 }
 .alarm-prop {
     position: absolute;
+    border-radius: 4px;
     top: 680px;
     bottom: 10px;
     width: 400px;
-    background-color: #000;
+    background: rgba(0,0,0,0.2);
 }
 .date-block {
+    position: relative;
+    width: 200px;
     margin-top: 40px;
+}
+.date-block img {
+    position: absolute;
+    width: 8px;
+    height: 5px;
+    z-index: 11;
+    right: 22px;
+    top: 29px;
+}
+.focus-input {
+    position: absolute;
+    z-index: 100;
+    width: 200px;
+    height: 62px;
+}
+.el-date-table td.disabled div {
+    /* display: none */
+    background-color:#000 !important;
+    color: #606266;
+}
+.echarts-box {
+    position: relative;
+}
+.box-title {
+    color: rgba(255,255,255,0.7);
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    font-size: 18px;
+    font-weight: bold;
+}
+#alarmProp {
+    height: 250px;
+}
+[v-cloak] {
+	display: none !important;
 }

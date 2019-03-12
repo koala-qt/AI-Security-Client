@@ -180,7 +180,6 @@ void MovieLabel::setGeometry(const qreal geometry)
 {
     if ((m_geometry != geometry) && (m_geometry < 99))
     {
-        qDebug() << "geometry" << geometry;
         m_geometry = geometry;
         emit geometryChanged();
     }

@@ -19,7 +19,7 @@
 TargetSearch::TargetSearch( WidgetI *parent):
     WidgetI(parent)
 {
-    setObjectName(tr("Target search"));
+    setObjectName(tr("Search"));
     backImg_.load(tr("images/Mask.png"));
     treeW_ = new QTreeWidget;
     stackedW_ = new QStackedWidget;
@@ -31,7 +31,7 @@ TargetSearch::TargetSearch( WidgetI *parent):
     trackingPage_ = new TrackingPage();
     videoAnalysisPage_ = new VideoAnalysis();
     portraitSearchPage_ = new PortraitSearch;
-    // Added by aihc for Multiple face analysis.
+//     Added by aihc for Multiple face analysis.
     m_pMultFaceAnalysis = new MultipleFaceAnalysis;
     QHBoxLayout *mainLay = new QHBoxLayout;
     mainLay->addWidget(treeW_,33);
@@ -58,8 +58,9 @@ TargetSearch::TargetSearch( WidgetI *parent):
     m_pMultFaceAnalysis->installEventFilter(this);
     QVector<itemData> devicesVec;
     itemData items;
-    items.name = tr("Capture search");
+    items.name = tr("Capture Search");
     items.value = 0;
+#if 1
     items.childrens << itemData{semanticSearchPage_->objectName(),0,QVector<itemData>()} << itemData{tr("Upload Search"),1,QVector<itemData>()
                                                                                   << itemData{faceSearchPage_->objectName(),1,QVector<itemData>()}
                                                                                   << itemData{combinationPage_->objectName(),2,QVector<itemData>()}
@@ -73,6 +74,10 @@ TargetSearch::TargetSearch( WidgetI *parent):
     items.name = videoAnalysisPage_->objectName();
     items.value = 8;
     devicesVec << items;
+#else
+    items.childrens << itemData{semanticSearchPage_->objectName(),0,QVector<itemData>()};
+    devicesVec << items;
+#endif
     for(auto value : devicesVec){
         createTreeItem(treeW_,nullptr,value);
     }
@@ -80,6 +85,7 @@ TargetSearch::TargetSearch( WidgetI *parent):
     treeW_->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
     treeW_->headerItem()->setSizeHint(0,QSize(-1,45));
     treeW_->headerItem()->setText(0,tr(""));
+    treeW_->setFocusPolicy(Qt::NoFocus);
     connect(treeW_,SIGNAL(itemClicked(QTreeWidgetItem*,int)),this,SLOT(slotTreeWidgetItemClicked(QTreeWidgetItem*,int)));
     treeW_->setCurrentItem(treeW_->topLevelItem(0));
 
@@ -91,13 +97,34 @@ void TargetSearch::setUserStyle(int s)
     QPalette pal;
     if(0 == s){
         treeW_->setStyleSheet("QTreeView{"
-                               "border:none;"
-                               "font-size: 16px;"
-                               "color: #CECECE;"
-                               "border-radius: 10px;"
-                               "background-color: rgba(0,0,0,0.4);}");
-        treeW_->verticalScrollBar()->setStyleSheet(
-                                                    "QScrollBar:vertical{"
+                              "border:none;"
+                              "font-size: 14px;"
+                              "color: #CECECE;"
+                              "border-radius: 4px;"
+                              "background-color: rgba(0,0,0,0.4);"
+                              "}"
+                              "QTreeView::item{"
+                              "color: #CECECE;"
+                              "border:none;"
+                              "}"
+                              "QTreeView::item:selected:!active {"
+                              "color: white;"
+                              "background: rgb(71,65,242);"
+                              "}"
+                              "QTreeView::branch:selected:!active {"
+                              "background: rgb(71,65,242);"
+                              "}"
+                              "QTreeView::branch:has-children:!has-siblings:closed,"
+                              "QTreeView::branch:closed:has-children:has-siblings{"
+                              "border-image: none;"
+                              "image: url(images/tree_expand.png);"
+                              "}"
+                              "QTreeView::branch:open:has-children:!has-siblings,"
+                              "QTreeView::branch:open:has-children:has-siblings  {"
+                              "border-image: none;"
+                              "image: url(images/tree_unexpand.png);"
+                              "}");
+        treeW_->verticalScrollBar()->setStyleSheet("QScrollBar:vertical{"
                                                     "background: transparent;"
                                                     "border-radius: 10px;"
                                                     "border: none;"
@@ -164,9 +191,7 @@ void TargetSearch::createTreeItem(QTreeWidget *treeW, QTreeWidgetItem *parentIte
         item = new QTreeWidgetItem(treeW, QStringList() << items.name, items.childrens.isEmpty());
     }
     item->setData(0,Qt::UserRole,items.value);
-    if(item->type()){
-        item->setSizeHint(0,QSize(-1,50));
-    }
+    item->setSizeHint(0,QSize(-1,34));
     for(auto value : items.childrens){
         createTreeItem(treeW,item,value);
     }

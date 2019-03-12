@@ -34,6 +34,7 @@ private slots:
     void slotTrackingNew(QVector<RestServiceI::TrackingReturnData>);
     void slotTracking(QVector<SearchFace>);
     void slotOnCameraClicked(QString);
+    void slotOnWebError(QString);
 };
 
 #endif // TRACKINGPAGE_H

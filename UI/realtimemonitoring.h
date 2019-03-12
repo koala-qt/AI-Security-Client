@@ -25,6 +25,9 @@ public:
     ~RealtimeMonitoring();
     void setUserStyle(int s) override;
 
+signals:
+    void sigSwitchBtnClicked();
+
 protected:
     void paintEvent(QPaintEvent *event) override;
     bool eventFilter(QObject *watched, QEvent *event)override;
@@ -33,7 +36,7 @@ private:
     QComboBox *eventCombox_{nullptr};
     QLabel *m_faceListL{nullptr};
     QWidget *cameraGoupBackW_{nullptr},*faceCaptureBackW_{nullptr},*eventBackW_{nullptr};
-    QPushButton *m_settingBtn{nullptr};
+    QPushButton *m_settingBtn{nullptr},*switchToMap_{nullptr};
     QTreeWidget *m_treeW{nullptr};
     RealPlayManager *m_realPlayM{nullptr};
     QListWidget *m_faceList{nullptr},*eventList_{nullptr};

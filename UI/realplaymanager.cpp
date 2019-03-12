@@ -14,7 +14,7 @@ RealPlayManager::RealPlayManager( WidgetI *parent):
     WidgetI(parent)
 {
     m_mainLay = new QGridLayout;
-    m_mainLay->setMargin(3);
+    m_mainLay->setMargin(2);
     setLayout(m_mainLay);
     m_focusFrame = new QFocusFrame(this);
 

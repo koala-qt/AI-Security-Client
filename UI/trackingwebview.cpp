@@ -24,6 +24,7 @@ TrackingWebView::TrackingWebView(QWidget *parent):
     page()->setBackgroundColor(Qt::transparent);
     setContextMenuPolicy(Qt::NoContextMenu);
     connect(webBridge_,SIGNAL(sigCameraClicked(QString)),this,SIGNAL(sigCameraClicked(QString)));
+    connect(webBridge_,SIGNAL(sigWebError(QString)),this,SIGNAL(sigWebError(QString)));
     QNetworkProxyFactory::setUseSystemConfiguration(false);
 }
 
@@ -86,6 +87,11 @@ void TrackingBridge::onInitsized()
 void TrackingBridge::onCameraClicked(QString cameraId)
 {
     emit sigCameraClicked(cameraId);
+}
+
+void TrackingBridge::alertNoPoint(QString str)
+{
+    emit sigWebError(str);
 }
 
 void TrackingWebView::startWaiting()

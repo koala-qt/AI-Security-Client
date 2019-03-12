@@ -20,7 +20,7 @@ TreeCharts::TreeCharts(QWidget *parent)
 #else
     load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/calendar-charts.html"));
 #endif
-    page()->setBackgroundColor(QColor(66,66,66,20));
+    page()->setBackgroundColor(Qt::transparent);
     setContextMenuPolicy(Qt::NoContextMenu);
 }
 

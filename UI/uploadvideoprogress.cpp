@@ -57,6 +57,8 @@ void UploadVideoProgress::setUserStyle(int s)
         progressBar_->setStyleSheet("QProgressBar {"
                                     "border: none;"
                                     "border-radius: 0px;"
+                                    "color: rgb(126,140,177);"
+                                    "text-align: center;"
                                     "}"
                                     "QProgressBar::chunk {"
                                     "background-color: #4741F2;"

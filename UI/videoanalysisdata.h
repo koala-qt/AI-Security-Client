@@ -6,6 +6,7 @@
 QT_FORWARD_DECLARE_CLASS(QListWidget)
 QT_FORWARD_DECLARE_CLASS(QLabel)
 QT_FORWARD_DECLARE_CLASS(QMenu)
+QT_FORWARD_DECLARE_CLASS(QPushButton)
 QT_FORWARD_DECLARE_CLASS(QListWidgetItem)
 class PersonInfo : public WidgetI
 {
@@ -34,9 +35,14 @@ class VideoAnalysisData : public WidgetI
 public:
     VideoAnalysisData(WidgetI *parent = nullptr);
     void setUserStyle(int s) override;
+    void initsize();
+
+signals:
+    void sigBackBtnClicked();
 
 private:
     QLabel *titleTextL_{nullptr},*countTextL_{nullptr};
+    QPushButton *backBtn_{nullptr};
     QListWidget *dataListW_{nullptr};
 
 private slots:
