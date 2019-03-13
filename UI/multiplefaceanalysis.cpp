@@ -51,10 +51,6 @@ void MultipleFaceAnalysis::setUserStyle(int style)
 
         QString commStyle = "font-size:16px;color:#7E8CB1;font-family:PingFang SC Regular;";
         m_pLabDbTitle->setStyleSheet(commStyle);
-        m_pLabID->setStyleSheet(commStyle);
-        m_txtID->setStyleSheet("width:150px;max-width:250px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;");
-        m_pLabName->setStyleSheet("font:16px;color:#7E8CB1;font-family:PingFang SC Regular;width:40px;");
-        m_pTxtName->setStyleSheet(m_txtID->styleSheet());
         m_pLabSimilary->setStyleSheet(commStyle);
         m_pTxtSimilary->setStyleSheet("width:180px;max-width:250px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-size:16px;font-family:PingFang SC Regular;");
         m_pFaceTypesWgt->setStyleSheet(".QWidget{border-image:url(images/portraitlibrary/barbg.png);background-color:transparent;min-width:400px;height:45px;max-height:45px;}");
@@ -69,38 +65,8 @@ void MultipleFaceAnalysis::setUserStyle(int style)
                                  "selection-background-color: #4741F2;height:50px;"
                                  "}"
                                  "QComboBox QAbstractItemView::item {height:25px; min-height: 25px; }");
-#if 0
-        m_pLabPosition->setStyleSheet(commStyle);
-        m_pLabSTime->setStyleSheet(commStyle);
-        m_pLabETime->setStyleSheet(commStyle);
 
-        m_pComPosition->setStyleSheet("QComboBox{width:400px;max-width:450px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;}"
-                                      "QComboBox::drop-down{"
-                                      "subcontrol-position: center right;border-image: url(images/portraitlibrary/icon_arrow.png);width:8px;height:5px;subcontrol-origin: padding;margin-right:5px;"
-                                      "}"
-                                      "QComboBox QAbstractItemView{"
-                                      "background-color:#282D38;"
-                                      "selection-color: white;"
-                                      "outline: 0px;"
-                                      "selection-background-color: #4741F2;"
-                                      "}");
-        m_pDateSTime->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
-                                    "font-family:PingFang SC Regular;"
-                                    "width:250px;max-width:250px;height:34px;"
-                                    "color: rgb(126,140,177);"
-//                                    "box-shadow:1px 1px 0px rgba(77,86,107,1);"
-                                    "border-radius:6px;"
-                                    "background-color: rgb(40,45,56);}");
-        m_pDateETime->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
-                                    "font-family:PingFang SC Regular;"
-                                    "width:250px;max-width:250px;height:34px;"
-                                    "color: rgb(126,140,177);"
-//                                    "box-shadow:1px 1px 0px rgba(77,86,107,1);"
-                                    "border-radius:6px;"
-                                    "background-color: rgb(40,45,56);}");
-#endif
         m_pTxtFolderPath->setStyleSheet("width:450px;max-width:450px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;");
-
 
         // border:1px solid #CECECE;
         m_tableW->setStyleSheet(
@@ -270,19 +236,7 @@ void MultipleFaceAnalysis::onBtnSearchClicked()
     connect(serviceI, &RestServiceI::sigMNFaceAnalysisResult, this, [&,label](const QVector<RestServiceI::MNFaceAnalysisItem> value){
         label->close();
         delete label;
-#if 0
-        QVector<RestServiceI::PortraitLibCompItem> value2;
-        for (auto item : value)
-        {
-            value2.append(item);
-            value2.append(item);
-            value2.append(item);
-            value2.append(item);
-        }
-        slotAddRow(value2);
-#else
         slotAddRow(value);
-#endif
         m_pBtnSearch->setEnabled(true);
         m_pageIndicator->setEnabled(true);
         if (value.isEmpty())
@@ -292,14 +246,9 @@ void MultipleFaceAnalysis::onBtnSearchClicked()
         }
     });
     RestServiceI::MNFaceAnalysisArgs args;
-    args.sourceType = (0 == m_pDbType->currentIndex()) ? tr("1") : tr("2");
+    args.sourceType = (0 == m_pDbType->currentIndex()) ? tr("2") : tr("2");
     args.strFolderPath = m_pTxtFolderPath->text();
     args.bRequireBase64 = true;
-#if 0
-    args.cameraId = m_pComPosition->currentIndex();
-    args.startTime = m_pDateSTime->dateTime();
-    args.endTime = m_pDateETime->dateTime();
-#endif
     QString strTypes;
     int index = 0;
     for (auto btnTypeItem : m_lstFaceLibTypes)
@@ -315,20 +264,8 @@ void MultipleFaceAnalysis::onBtnSearchClicked()
         index++;
     }
     args.libType = strTypes;
-    //m_strBigPersonType = m_faceLibBar->tabText(m_faceLibBar->currentIndex());
     args.similarity = m_pTxtSimilary->text().toDouble();
     args.limit = 5;
-#if 0
-    if (!m_txtID->text().isEmpty())
-    {
-        args.nPersonId = m_txtID->text().toInt();
-    }
-    else
-    {
-        args.nPersonId = 0;
-    }
-    args.strPersonName = m_pTxtName->text();
-#endif
     serviceI->mnFaceAnalysisSearch(args);
     label->show(500);
     m_pBtnSearch->setEnabled(false);
@@ -354,15 +291,6 @@ void MultipleFaceAnalysis::onBtnOperationClicked()
 
 void MultipleFaceAnalysis::init()
 {
-    libGroupBox_ = new QGroupBox;
-    markRadiuBtn_ = new QRadioButton(tr("mark"));
-    registRadiuBtn_ = new QRadioButton(tr("regist"));
-    markRadiuBtn_->setChecked(true);
-    QHBoxLayout *hlay = new QHBoxLayout;
-    hlay->addWidget(markRadiuBtn_);
-    hlay->addWidget(registRadiuBtn_);
-    libGroupBox_->setLayout(hlay);
-
     QVBoxLayout *mainLay = new QVBoxLayout;
     mainLay->setSpacing(20);
 
@@ -370,7 +298,7 @@ void MultipleFaceAnalysis::init()
     QVBoxLayout *topVLay = new QVBoxLayout;
     mainLay->addLayout(topVLay);
 
-    hlay = new QHBoxLayout;
+    QHBoxLayout *hlay = new QHBoxLayout;
     topVLay->addLayout(hlay);
     m_pBtnUploadFolder = new QPushButton(tr("Upload folder"));
     m_pBtnUploadFolder->setIcon(QIcon("images/m_n/uploadico.png"));
@@ -380,37 +308,11 @@ void MultipleFaceAnalysis::init()
     m_pTxtFolderPath = new QLineEdit;
     m_pTxtFolderPath->setReadOnly(true);
     hlay->addWidget(m_pTxtFolderPath);
-    //hlay->addWidget(libGroupBox_);
     hlay->addStretch();
-
-
-    //topVLay->addStretch();
 
     QHBoxLayout *bottomHlay = new QHBoxLayout;
     bottomHlay->setSpacing(15);
     topVLay->addLayout(bottomHlay);
-    m_pLabID = new QLabel(tr("ID"));
-    //bottomHlay->addWidget(m_pLabID);
-    m_txtID = new QLineEdit;
-    m_txtID->setValidator(new QIntValidator(0, 500000, this));
-    //bottomHlay->addWidget(m_txtID);
-    m_pLabName = new QLabel(tr("Name"));
-    //bottomHlay->addWidget(m_pLabName);
-    m_pTxtName = new QLineEdit;
-    m_pTxtName->setMaxLength(50);
-    //bottomHlay->addWidget(m_pTxtName);
-    // 3.1 add
-#if 0
-    m_pLabLimit = new QLabel(tr("Top"));
-    bottomHlay->addWidget(m_pLabLimit);
-    m_pLimitCombo = new QComboBox;
-    bottomHlay->addWidget(m_pLimitCombo);
-    m_pLimitCombo->addItem(tr("10"));
-    m_pLimitCombo->addItem(tr("20"));
-    m_pLimitCombo->addItem(tr("30"));
-    m_pLimitCombo->addItem(tr("50"));
-    m_pLimitCombo->addItem(tr("100"));
-#endif
     m_pLabSimilary = new QLabel(tr("Similarity"));
     bottomHlay->addWidget(m_pLabSimilary);
     m_pTxtSimilary = new QLineEdit(tr("0.3"));
@@ -418,9 +320,10 @@ void MultipleFaceAnalysis::init()
     bottomHlay->addWidget(m_pTxtSimilary);
     m_pLabDbTitle = new QLabel(tr("Database"));
     bottomHlay->addWidget(m_pLabDbTitle);
+    bottomHlay->addSpacing(5);
     m_pDbType = new QComboBox;
     bottomHlay->addWidget(m_pDbType);
-    m_pDbType->addItem(tr("mark"));
+    //m_pDbType->addItem(tr("mark"));
     m_pDbType->addItem(tr("regist"));
     bottomHlay->addStretch();
     bottomHlay->setAlignment(Qt::AlignLeft);
@@ -432,41 +335,12 @@ void MultipleFaceAnalysis::init()
     m_pFaceTypesWgt->setLayout(m_pFaceTypesHLay);
     QHBoxLayout *faceTypeHLay = new QHBoxLayout;
     faceTypeHLay->addWidget(m_pFaceTypesWgt);
-    //faceTypeHLay->addStretch();
-    //topVLay->addWidget(m_pFaceTypesWgt);
     m_pBtnSearch = new QPushButton(tr("Search"));
     faceTypeHLay->addWidget(m_pBtnSearch);
     faceTypeHLay->addStretch();
     connect(m_pBtnSearch, SIGNAL(clicked(bool)),
             this, SLOT(onBtnSearchClicked()));
     topVLay->addLayout(faceTypeHLay);
-
-#if 0
-    // old version.
-    hlay = new QHBoxLayout;
-    hlay->setSpacing(10);
-    m_pLabPosition = new QLabel(tr("Position"));
-    hlay->addWidget(m_pLabPosition);
-    m_pComPosition = new QComboBox;
-    hlay->addWidget(m_pComPosition);
-    m_pLabSTime = new QLabel(tr("Starting time"));
-    hlay->addWidget(m_pLabSTime);
-    m_pDateSTime = new QDateTimeEdit;
-    m_pDateSTime->setDate(QDateTime::currentDateTime().addDays(-1).date());
-    hlay->addWidget(m_pDateSTime);
-    m_pLabETime = new QLabel(tr("End time"));
-    hlay->addWidget(m_pLabETime);
-    m_pDateETime = new QDateTimeEdit;
-    m_pDateETime->setDate(QDateTime::currentDateTime().addDays(1).date());
-    hlay->addWidget(m_pDateETime);
-    m_pBtnSearch = new QPushButton(tr("Search"));
-    hlay->addWidget(m_pBtnSearch);
-    hlay->addStretch();
-    connect(m_pBtnSearch, SIGNAL(clicked(bool)),
-            this, SLOT(onBtnSearchClicked()));
-    hlay->setAlignment(Qt::AlignLeft);
-    mainLay->addLayout(hlay);
-#endif
 
     // content area
     m_tableW = new QTableWidget;
@@ -621,7 +495,6 @@ void MultipleFaceAnalysis::slotAddRow(QVector<RestServiceI::MNFaceAnalysisItem> 
         m_tableW->setCellWidget(m_tableW->rowCount() - 1, UploadImgCol, tempLab);
 #endif
         int columnIndex = 1;
-        //QLabel *captureLab;
         QWidget *captureWgt = Q_NULLPTR;
         QLabel *captureLab = Q_NULLPTR;
         QLabel *idLab = Q_NULLPTR;
@@ -634,7 +507,6 @@ void MultipleFaceAnalysis::slotAddRow(QVector<RestServiceI::MNFaceAnalysisItem> 
         for (const RestServiceI::MNCaptureItem &captureitem : itemData.captureItems)
         {
             captureContainer = new QWidget;
-            //captureContainer->setStyleSheet("background-color:black;");
             hContainerLay = new QHBoxLayout;
             hContainerLay->setMargin(0);
             hContainerLay->setSpacing(0);
@@ -662,15 +534,7 @@ void MultipleFaceAnalysis::slotAddRow(QVector<RestServiceI::MNFaceAnalysisItem> 
             simiLab = new QLabel(QString(tr("%1%2")).arg("Similarity:").arg(QString::number(captureitem.dSimilarity)));
             vLay->addWidget(simiLab);
             m_tableW->setCellWidget(m_tableW->rowCount() - 1, columnIndex, captureWgt);
-#if 0
-            captureLab = new QPushButton;
-            captureLab->setStyleSheet("background-color:transparent;border:0px;");
-            captureLab->setProperty(CaptureImgTag, "true");
-            captureLab->setIcon(QPixmap::fromImage(captureitem.captureImg).scaled(46, 46));
-            captureLab->setIconSize(QSize(100, 100));
-            //captureLab->setAlignment(Qt::AlignCenter);
-            m_tableW->setCellWidget(m_tableW->rowCount() - 1, columnIndex, captureLab);
-#endif
+
             columnIndex++;
         }
         if ((0 == itemData.captureItems.count())
@@ -680,7 +544,5 @@ void MultipleFaceAnalysis::slotAddRow(QVector<RestServiceI::MNFaceAnalysisItem> 
             m_tableW->setItem(m_tableW->rowCount() - 1, Capture1, errItem);
             errItem->setTextAlignment(Qt::AlignCenter);
         }
-        //auto captureItems = itemData.captureItems;
-
     }
 }

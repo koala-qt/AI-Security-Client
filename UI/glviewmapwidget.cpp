@@ -40,13 +40,15 @@ bool GlViewMapWidget::event(QEvent *event)
 {
     if ((event->type() == QEvent::Show))
     {
-#if 0
+#if 1
     for (int i = 0; i < 10; ++i)
     {
         NotifyEventI::IntruderEventData info;
         info.deviceName = "test";
-        QImage tmpImg("C:/Users/Administrator/Desktop/images/1.png");
+        info.sourceId = "1";
+        QImage tmpImg("C:/Users/Administrator/Desktop/images/2.jpg");
         info.sceneImg = tmpImg;
+
         slotOnIntruderEvent(info);
     }
 #endif
@@ -57,25 +59,46 @@ bool GlViewMapWidget::event(QEvent *event)
     return WidgetI::event(event);
 }
 
+void GlViewMapWidget::mousePressEvent(QMouseEvent *event)
+{
+    WidgetI::mousePressEvent(event);
+}
+
 void GlViewMapWidget::slotOnIntruderEvent(NotifyEventI::IntruderEventData info)
 {
-    std::random_device device;
-    std::mt19937 gen(device());
-    std::uniform_int_distribution<int> dis(-150, 100);
-    std::uniform_int_distribution<int> dis2(-300, 100);
+    m_mutex.lock();
+    if (!m_mapCameras.contains(info.sourceId))
+    {
+        std::random_device device;
+        std::mt19937 gen(device());
+        std::uniform_int_distribution<int> dis(-150, 100);
+        std::uniform_int_distribution<int> dis2(-300, 100); // width
 
-    MovieLabel *ml = new MovieLabel(info, this); // 更改父级轻松搞定
-    ml->setFixedSize(180, 100);
-    QRect cr = ml->geometry();
+        MovieLabel *ml = new MovieLabel(info, this); // 更改父级轻松搞定
+        m_mapCameras.insert(info.sourceId, ml);
 
-    cr.moveCenter(this->rect().center());
-    ml->move(cr.topLeft() + QPoint(dis2(gen), dis(gen)) + QPoint(250 / 2, 360 / 2));
-    ml->setInfo(info.deviceName);
-    QPalette pal = ml->palette();
-    pal.setColor(QPalette::Foreground, Qt::white);
-    ml->setPalette(pal);
-    ml->show();
-    ml->startWaring();
+        //ml->setFixedSize(180, 100);
+        ml->setFixedSize(110, 150);
+        QRect cr = ml->geometry();
+
+        cr.moveCenter(this->rect().center());
+        ml->move(cr.topLeft() + QPoint(dis2(gen), dis(gen)) + QPoint(250 / 2, 310 / 2));
+        ml->setInfo(info.deviceName);
+        QPalette pal = ml->palette();
+        pal.setColor(QPalette::Foreground, Qt::white);
+        ml->setPalette(pal);
+        ml->show();
+        ml->startWaring();
+    }
+    else
+    {
+        auto *ml = m_mapCameras.value(info.sourceId);
+        if (Q_NULLPTR != ml)
+        {
+            ml->appendWarningInfo(info);
+        }
+    }
+    m_mutex.unlock();
 }
 
 void GlViewMapWidget::init()

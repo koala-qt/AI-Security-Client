@@ -4,7 +4,10 @@
 #include "widgetinterface.h"
 #include "service/servicei.h"
 #include <QPaintEvent>
+
 QT_FORWARD_DECLARE_CLASS(QLabel)
+
+class MovieLabel;
 
 class GlViewMapWidget : public WidgetI
 {
@@ -17,6 +20,7 @@ public:
 protected:
     void paintEvent(QPaintEvent *event) override;
     bool event(QEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
 
 private slots:
     void slotOnIntruderEvent(NotifyEventI::IntruderEventData info);
@@ -36,6 +40,10 @@ private:
     QLabel *m_labDataStorage{nullptr};
 
     NotifyServiceI *notifyServiceI_{nullptr};
+
+    // 3.13 add cameras position control.
+    QMutex m_mutex;
+    QMap<QString, MovieLabel *> m_mapCameras;
 
 };
 

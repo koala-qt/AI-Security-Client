@@ -75,20 +75,12 @@ private:
     QTableWidget *m_tableW = Q_NULLPTR;
 
     QMap<faceLibType, QString> m_mapFaceLibTypes;
-    //QList<QCheckBox *> m_lstFaceLibTypes;
-    QLabel *m_pLabID = Q_NULLPTR;
-    QLineEdit *m_txtID = Q_NULLPTR;
-    QLabel *m_pLabName = Q_NULLPTR;
-    QLineEdit *m_pTxtName = Q_NULLPTR;
-    QTabBar *m_faceLibBar = Q_NULLPTR;
     QImage m_faceImg; // upload face image.
     bool m_bFirstLoading = true;
     QVector<RestServiceI::PersonType> m_vecPersonTypes;
     QString m_strBigPersonType;
 
     // 3.1 add
-    QLabel *m_pLabLimit{nullptr};
-    QComboBox *m_pLimitCombo{nullptr};
     QLabel *m_pLabSimilary{nullptr};
     QLineEdit *m_pTxtSimilary{nullptr};
 
@@ -97,10 +89,6 @@ private:
     QPushButton *m_pBtnOperation{nullptr};
     QList<QPushButton *> m_lstFaceLibTypes;
     QHBoxLayout *m_pFaceTypesHLay{nullptr};
-
-    //wang hualin
-    QGroupBox *libGroupbox_{nullptr};
-    QRadioButton *markLibRadiuBtn_{nullptr},*registRadiusBtn_{nullptr};
 
     QLabel *m_pLabDbTitle{nullptr};
     QComboBox *m_pDbType{nullptr};

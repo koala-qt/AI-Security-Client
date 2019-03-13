@@ -91,10 +91,6 @@ private:
     bool m_bFirstLoading = true;
     QVector<RestServiceI::PersonType> m_vecPersonTypes;
     QString m_strBigPersonType;
-    QLabel *m_pLabID = Q_NULLPTR;
-    QLineEdit *m_txtID = Q_NULLPTR;
-    QLabel *m_pLabName = Q_NULLPTR;
-    QLineEdit *m_pTxtName = Q_NULLPTR;
     QLabel *m_pLabSimilary{nullptr};
     QLineEdit *m_pTxtSimilary{nullptr};
     QWidget *m_pFaceTypesWgt{nullptr};

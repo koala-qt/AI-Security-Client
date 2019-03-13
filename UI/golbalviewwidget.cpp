@@ -63,6 +63,11 @@ void GolbalViewWidget::paintEvent(QPaintEvent *event)
     p.drawImage(rect(), m_backgroundImg);
 }
 
+void GolbalViewWidget::mousePressEvent(QMouseEvent *event)
+{
+    WidgetI::mousePressEvent(event);
+}
+
 GolbalWebBridge::GolbalWebBridge(QObject *parent):
     QObject(parent)
 {

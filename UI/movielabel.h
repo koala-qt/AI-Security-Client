@@ -4,10 +4,12 @@
 #include <QWidget>
 #include <QTimer>
 #include <QPropertyAnimation>
+#include <QQueue>
 
 #include <service/servicei.h>
 
 QT_FORWARD_DECLARE_CLASS(QLabel)
+
 class MovieLabel : public QWidget
 {
     Q_OBJECT
@@ -19,6 +21,8 @@ public:
     QString getCameraId();
     QString &getDeviceName();
 
+    void appendWarningInfo(NotifyEventI::IntruderEventData info);
+
 signals:
     void geometryChanged();
 
@@ -29,6 +33,9 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void enterEvent(QEvent *event) override;
     void leaveEvent(QEvent *event) override;
+
+private slots:
+    void slotTimeout();
 
 private:
     void setGeometry(const qreal geometry);
@@ -42,16 +49,16 @@ private:
     QColor m_innerCircleColor;
     QColor m_outerCircleColor;
     bool m_isWarning = false;
-    NotifyEventI::IntruderEventData m_info;
+    NotifyEventI::IntruderEventData m_info; // 入侵报警
 
     float m_radius = 25;
     int m_fixRadius = 25;
     qreal m_geometry = 0;
     QPropertyAnimation *animation_{nullptr};
 
-
-private slots:
-    void slotTimeout();
+    // 3.13 add camera position control
+    QQueue<NotifyEventI::IntruderEventData> m_lstInfos;
+    QMutex m_mutex;
 };
 
 #endif // MOVIELABEL_H

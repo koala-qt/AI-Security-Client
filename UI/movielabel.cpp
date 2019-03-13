@@ -13,8 +13,8 @@ MovieLabel::MovieLabel(NotifyEventI::IntruderEventData info, QWidget *parent) : 
 {
     connect(&tm_,SIGNAL(timeout()),this,SLOT(slotTimeout()));
     setAttribute(Qt::WA_TranslucentBackground);
-    m_innerCircleColor = QColor("#F8E74C");
-    m_outerCircleColor = QColor(248, 231, 76, 255);
+    m_innerCircleColor = QColor(Qt::red);// "#84070A"
+    m_outerCircleColor = QColor(Qt::red);
     backColor_ = m_innerCircleColor;
     m_info = info;
     animation_ = new QPropertyAnimation(this, "geometry");
@@ -23,7 +23,6 @@ MovieLabel::MovieLabel(NotifyEventI::IntruderEventData info, QWidget *parent) : 
     animation_->setDuration(2000);
     animation_->setLoopCount(-1);
     animation_->start();
-   //this->setStyleSheet("background-color:black;");
 }
 
 void MovieLabel::startWaring()
@@ -39,11 +38,11 @@ void MovieLabel::startWaring()
     if (!m_isWarning)
     {
         m_isWarning = true;
-        tm_.start(10000);
+        tm_.start(5000);
     }
     else
     {
-        tm_.start(10000);
+        tm_.start(5000);
     }
 }
 
@@ -69,14 +68,21 @@ QString &MovieLabel::getDeviceName()
     return m_info.deviceName;
 }
 
+void MovieLabel::appendWarningInfo(NotifyEventI::IntruderEventData info)
+{
+    // qDebug() << Q_FUNC_INFO << info.sourceId;
+    m_mutex.lock();
+    m_lstInfos.enqueue(info);
+    m_mutex.unlock();
+}
+
 void MovieLabel::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
     int infoH = painter.fontMetrics().height();
     QRect textR(0,rect().bottom() - painter.pen().width() - infoH,width() - painter.pen().width(),infoH);
-    QRect cr(0,0,textR.width() / 2,textR.top());
-    //int radius = cr.width() > cr.height() ? cr.height() : cr.width();
-    //int radius = 25;
+    QRect cr(0, 110, this->width(), 40);
+    QRect devNameRect(0, cr.height(), textR.width(), textR.height());
     QRect ellpiseR; // 内圆
     ellpiseR.setSize(QSize(m_fixRadius, m_fixRadius));
     ellpiseR.moveCenter(cr.center());
@@ -104,7 +110,7 @@ void MovieLabel::paintEvent(QPaintEvent *event)
     painter.setBrush(backColor_);
     painter.drawEllipse(ellpiseR);
     painter.setBrush(palette().color(QPalette::Foreground));
-    painter.drawText(textR,Qt::AlignCenter,infoStr_);
+    //painter.drawText(devNameRect,Qt::AlignCenter,infoStr_);
     painter.restore();
     QRect ellpiseR2;
     if (!m_isWarning)
@@ -121,8 +127,8 @@ void MovieLabel::paintEvent(QPaintEvent *event)
 
 #if 1
     QPainter p(this);
-    QRect imgRect(62, 0, m_geometry, m_geometry);
-    p.drawImage(62, 0, m_info.sceneImg.scaled(100,100), 0, 0, m_geometry, m_geometry);
+    QRect imgRect(0, 0, m_geometry, m_geometry);
+    p.drawImage(0, 0, m_info.sceneImg.scaled(100,100), 0, 0, m_geometry, m_geometry);
     p.save();
     pen.setColor(QColor(Qt::yellow));
     p.setPen(pen);
@@ -134,14 +140,14 @@ void MovieLabel::paintEvent(QPaintEvent *event)
 
 void MovieLabel::mousePressEvent(QMouseEvent *event)
 {
-    if(event->button() == Qt::LeftButton){
+    if (event->button() == Qt::LeftButton){
         startPoint_ = event->globalPos();
     }
 }
 
 void MovieLabel::mouseMoveEvent(QMouseEvent *event)
 {
-#if 0
+#if 1
     move(pos() + event->globalPos() - startPoint_);
     startPoint_ = event->globalPos();
     QWidget::mouseMoveEvent(event);
@@ -202,8 +208,31 @@ qreal MovieLabel::getGeometry()
 
 void MovieLabel::slotTimeout()
 {
-    m_isWarning = false;
 
     backColor_ = m_innerCircleColor;
-    this->deleteLater();
+    if (0 == m_lstInfos.count())
+    {
+        m_isWarning = false;
+
+        this->hide();
+        //animation_->stop();
+        m_geometry = 20;
+        //this->deleteLater();
+    }
+    else
+    {
+        //m_mutex.lock();
+        m_isWarning = true;
+        auto warningItem = m_lstInfos.dequeue();
+        m_geometry = 20;
+        this->setInfo(warningItem.deviceName);
+        m_info = warningItem;
+        //        animation_->setStartValue(20);
+        //        animation_->setEndValue(100);
+        //        animation_->setDuration(2000);
+        //        animation_->setLoopCount(-1);
+        //animation_->start();
+        this->startWaring();
+        this->show();
+    }
 }
