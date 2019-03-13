@@ -3,6 +3,7 @@
 
 #include "widgetinterface.h"
 #include "service/servicei.h"
+#include <QMutex>
 #include <QPaintEvent>
 
 QT_FORWARD_DECLARE_CLASS(QLabel)
