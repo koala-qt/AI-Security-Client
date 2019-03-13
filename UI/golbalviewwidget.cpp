@@ -17,12 +17,12 @@ GolbalViewWidget::GolbalViewWidget(WidgetI *parent):
     setObjectName(tr("Home"));
     m_backgroundImg.load("images/glview/bg.png");
 
-    m_mapWgt = new GlViewMapWidget(this);
-    m_mapWgt->move(432,0);
-
     menbanL_ = new QLabel(this);
     menbanL_->setScaledContents(true);
-    //menbanL_->setPixmap(QPixmap("images/glview/glviewbg.png"));
+    menbanL_->setPixmap(QPixmap("images/glview/glviewbg.png"));
+
+    m_mapWgt = new GlViewMapWidget(this);
+    m_mapWgt->move(432,0);
 
     // web
     webView_ = new QWebEngineView(this);
