@@ -40,7 +40,7 @@ bool GlViewMapWidget::event(QEvent *event)
 {
     if ((event->type() == QEvent::Show))
     {
-#if 1
+#if 0
     for (int i = 0; i < 10; ++i)
     {
         NotifyEventI::IntruderEventData info;
