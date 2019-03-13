@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <QPropertyAnimation>
 #include <QQueue>
+#include <QMutex>
 
 #include <service/servicei.h>
 
