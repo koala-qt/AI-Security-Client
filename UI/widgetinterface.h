@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QDynamicPropertyChangeEvent>
+#include <QMouseEvent>
 class WidgetI : public QWidget
 {
     Q_OBJECT
@@ -14,11 +15,16 @@ public:
 
 protected:
     bool event(QEvent *event) override{
-        if(event->type() == QEvent::DynamicPropertyChange){
-            QDynamicPropertyChangeEvent *ev = dynamic_cast<QDynamicPropertyChangeEvent*>(event);
-            curStyle_ = ev->propertyName().toInt();
-            setUserStyle(curStyle_);
-            ev->accept();
+        if((event->type() == QEvent::DynamicPropertyChange)){
+            static bool bFirst = true;
+            if (bFirst)
+            {
+                bFirst = false;
+                QDynamicPropertyChangeEvent *ev = dynamic_cast<QDynamicPropertyChangeEvent*>(event);
+                curStyle_ = ev->propertyName().toInt();
+                setUserStyle(curStyle_);
+                ev->accept();
+            }
         }
         return QWidget::event(event);
     }

@@ -42,19 +42,15 @@ void MultipleFaceAnalysis::setUserStyle(int style)
     QFont f;
     if (0 == style)
     {
-        f = font();
-        f.setFamily("PingFang SC Regular");
-        setFont(f);
-
         pal = this->palette();
         pal.setColor(QPalette::Foreground, QColor("#313745"));
 
-        QString commStyle = "font-size:16px;color:#7E8CB1;font-family:PingFang SC Regular;";
+        QString commStyle = "font-size:14px;color:rgba(255,255,255,191);";
         m_pLabDbTitle->setStyleSheet(commStyle);
         m_pLabSimilary->setStyleSheet(commStyle);
-        m_pTxtSimilary->setStyleSheet("width:180px;max-width:250px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-size:16px;font-family:PingFang SC Regular;");
-        m_pFaceTypesWgt->setStyleSheet(".QWidget{border-image:url(images/portraitlibrary/barbg.png);background-color:transparent;min-width:400px;height:45px;max-height:45px;}");
-        m_pDbType->setStyleSheet(".QComboBox{width:180px;max-width:180px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;font-size:16px;}"
+        m_pTxtSimilary->setStyleSheet("width:180px;max-width:250px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-size:14px;");
+        m_pFaceTypesWgt->setStyleSheet(".QWidget{border-image:url(images/portraitlibrary/barbg.png);background-color:transparent;height:45px;max-height:45px;}");
+        m_pDbType->setStyleSheet(".QComboBox{width:180px;max-width:180px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-size:14px;}"
                                  "QComboBox::drop-down{"
                                  "subcontrol-position: center right;border-image: url(images/portraitlibrary/icon_arrow.png);width:8px;height:10px;subcontrol-origin: padding;margin-right:5px;"
                                  "}"
@@ -66,7 +62,7 @@ void MultipleFaceAnalysis::setUserStyle(int style)
                                  "}"
                                  "QComboBox QAbstractItemView::item {height:25px; min-height: 25px; }");
 
-        m_pTxtFolderPath->setStyleSheet("width:450px;max-width:450px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;font-family:PingFang SC Regular;");
+        m_pTxtFolderPath->setStyleSheet("width:450px;max-width:450px;height:34px;border-image:url(images/portraitlibrary/text.png);color:white;");
 
         // border:1px solid #CECECE;
         m_tableW->setStyleSheet(
@@ -94,7 +90,7 @@ void MultipleFaceAnalysis::setUserStyle(int style)
                                                     "}"
                                                     "QHeaderView::section{"
                                                     "background-color: transparent;"
-                                                    "color:#7E8CB1;font-size:14px;font:bold;"
+                                                    "color:rgba(255,255,255,191);font-size:14px;font:bold;"
                                                     "}");
         m_tableW->verticalScrollBar()->setStyleSheet(
                                                     "QScrollBar:vertical{"
@@ -141,7 +137,7 @@ void MultipleFaceAnalysis::setUserStyle(int style)
         m_pBtnSearch->setStyleSheet("QPushButton{"
                                    "border: 0px;"
                                    "color:white;"
-                                   "font-size:12px;width:156px;height:42px;font-family:Regular;"
+                                   "font-size:14px;width:156px;height:42px;"
                                    "border-image:url(images/portraitlibrary/search.png);"
                                    "}"
                                    "QPushButton:pressed{"
@@ -150,7 +146,7 @@ void MultipleFaceAnalysis::setUserStyle(int style)
         m_pBtnUploadFolder->setStyleSheet("QPushButton{"
                                           "border: 0px;"
                                           "color:white;"
-                                          "font-size:12px;width:120px;height:34px;font-family:Regular;"
+                                          "font-size:14px;width:120px;height:34px;"
                                           "border-image:url(images/portraitlibrary/search.png);"
                                           "}"
                                           "QPushButton:pressed{"
@@ -319,6 +315,7 @@ void MultipleFaceAnalysis::init()
     m_pTxtSimilary->setValidator(new QDoubleValidator(1, 0.1, 2, this));
     bottomHlay->addWidget(m_pTxtSimilary);
     m_pLabDbTitle = new QLabel(tr("Database"));
+    m_pLabDbTitle->setMinimumWidth(76);
     bottomHlay->addWidget(m_pLabDbTitle);
     bottomHlay->addSpacing(5);
     m_pDbType = new QComboBox;
@@ -331,7 +328,7 @@ void MultipleFaceAnalysis::init()
     m_pFaceTypesWgt = new QWidget;
     m_pFaceTypesHLay = new QHBoxLayout;
     m_pFaceTypesHLay->setSpacing(5);
-    m_pFaceTypesHLay->setMargin(2);
+    m_pFaceTypesHLay->setMargin(5);
     m_pFaceTypesWgt->setLayout(m_pFaceTypesHLay);
     QHBoxLayout *faceTypeHLay = new QHBoxLayout;
     faceTypeHLay->addWidget(m_pFaceTypesWgt);
@@ -411,7 +408,7 @@ void MultipleFaceAnalysis::queryPersonTypes()
         {
             m_pBtnOperation = new QPushButton(tr("Select all"));
             m_pBtnOperation->setProperty(MNFaceTypeCheckedTag, false);
-            m_pBtnOperation->setStyleSheet("QPushButton{border-image:url(images/portraitlibrary/tab-noselected.png);color:#7E8CB1;font-size:12px;font-family:PingFang SC Regular;width:120px;height:40px;}");
+            m_pBtnOperation->setStyleSheet("QPushButton{border-image:url(images/portraitlibrary/tab-noselected.png);color:rgba(255,255,255,191);font-size:14px;width:120px;height:40px;}");
             connect(m_pBtnOperation, SIGNAL(clicked(bool)),
                     this, SLOT(onBtnOperationClicked()));
             m_pFaceTypesHLay->addWidget(m_pBtnOperation);
@@ -426,15 +423,14 @@ void MultipleFaceAnalysis::queryPersonTypes()
 #endif
             m_btnFaceType = new QPushButton(iter->strTypeName);
             m_btnFaceType->setProperty(MNFaceTypeCheckedTag, false);
-            m_btnFaceType->setStyleSheet("QPushButton{border-image:url(images/portraitlibrary/tab-noselected.png);color:#7E8CB1;font-size:12px;font-family:PingFang SC Regular;width:120px;height:40px;}");
+            m_btnFaceType->setStyleSheet("QPushButton{border-image:url(images/portraitlibrary/tab-noselected.png);color:rgba(255,255,255,191);font-size:14px;width:120px;height:40px;}");
             m_pFaceTypesHLay->addWidget(m_btnFaceType);
             connect(m_btnFaceType, &QPushButton::clicked, this, [this, m_btnFaceType]{
                 updateBtnPersonTypeStyle(m_btnFaceType);
             });
             m_lstFaceLibTypes.append(m_btnFaceType);
         }
-        m_pFaceTypesHLay->addStretch();
-        //slotAddRow(value);
+        //m_pFaceTypesHLay->addStretch();
     });
     serviceI->queryPersonTypes();
     label->show(500);
@@ -460,13 +456,13 @@ void MultipleFaceAnalysis::updateBtnPersonTypeStyle(QPushButton *btn)
     {
         btn->setIcon(QIcon("images/portraitlibrary/icon_selected.png"));
         btn->setProperty(MNFaceTypeCheckedTag, true);
-        btn->setStyleSheet("QPushButton{border-image:url(images/portraitlibrary/tabselected.png);color:#7E8CB1;font-size:12px;font-family:PingFang SC Regular;width:120px;height:40px;}");
+        btn->setStyleSheet("QPushButton{border-image:url(images/portraitlibrary/tabselected.png);color:rgba(255,255,255,191);font-size:14px;width:120px;height:40px;}");
     }
     else
     {
         btn->setIcon(QIcon(""));
         btn->setProperty(MNFaceTypeCheckedTag, false);
-        btn->setStyleSheet("QPushButton{border-image:url(images/portraitlibrary/tab-noselected.png);color:#7E8CB1;font-size:12px;font-family:PingFang SC Regular;width:120px;height:40px;}");
+        btn->setStyleSheet("QPushButton{border-image:url(images/portraitlibrary/tab-noselected.png);color:rgba(255,255,255,191);font-size:14px;width:120px;height:40px;}");
     }
 }
 
@@ -514,7 +510,7 @@ void MultipleFaceAnalysis::slotAddRow(QVector<RestServiceI::MNFaceAnalysisItem> 
             captureContainer->setLayout(hContainerLay);
             captureWgt = new QWidget;
             hContainerLay->addWidget(captureWgt);
-            captureWgt->setStyleSheet("font-size:10px;color:#7E8CB1;font-family:PingFang SC Regular;height:50px;");
+            captureWgt->setStyleSheet("font-size:10px;color:rgba(255,255,255,191);height:50px;");
             hLay = new QHBoxLayout;
             hLay->setMargin(0);
             hLay->setAlignment(Qt::AlignCenter);
