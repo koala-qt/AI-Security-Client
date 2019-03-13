@@ -21,7 +21,7 @@ void GlViewMapWidget::setUserStyle(int style)
 {
     if (0 == style)
     {
-        QString strCommStyle = "font-size:56px;color:white;font-weight: bold;";
+        QString strCommStyle = "font-size:46px;color:white;";
         m_labLocationAccess->setStyleSheet(strCommStyle);
         m_labIDNumbers->setStyleSheet(strCommStyle);
         m_labCameraAccess->setStyleSheet(strCommStyle);
@@ -45,9 +45,8 @@ bool GlViewMapWidget::event(QEvent *event)
     {
         NotifyEventI::IntruderEventData info;
         info.deviceName = "test";
-        QImage tmpImg("C:/Users/kl/Desktop/Img/22.jpg");
-        tmpImg.scaled(100, 100);
-        info.sceneImg = tmpImg.scaled(100, 100);
+        QImage tmpImg("C:/Users/Administrator/Desktop/images/1.png");
+        info.sceneImg = tmpImg;
         slotOnIntruderEvent(info);
     }
 #endif
@@ -89,8 +88,9 @@ void GlViewMapWidget::init()
     mainHlay->addSpacing(this->width() - 200);
     QVBoxLayout *pMidVlay = new QVBoxLayout;
     pMidVlay->addSpacing(300);
+    pMidVlay->setSpacing(10);
     mainHlay->addLayout(pMidVlay);
-    QString strTitleStyle = "font-size:18px;color:white;font-weight: bold;";
+    QString strTitleStyle = "font-size:16px;color:white;";
     QLabel *labTitle = new QLabel(tr("Location Access"));
     labTitle->setStyleSheet(strTitleStyle);
     labTitle->setAlignment(Qt::AlignRight);
@@ -119,6 +119,7 @@ void GlViewMapWidget::init()
     m_labDataStorage = new QLabel(tr("10GB"));
     m_labDataStorage->setAlignment(Qt::AlignRight);
     pMidVlay->addWidget(m_labDataStorage);
+    pMidVlay->addStretch();
 
 #endif 0
 }

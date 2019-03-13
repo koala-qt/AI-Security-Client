@@ -22,7 +22,7 @@ GolbalViewWidget::GolbalViewWidget(WidgetI *parent):
 
     menbanL_ = new QLabel(this);
     menbanL_->setScaledContents(true);
-    menbanL_->setPixmap(QPixmap("images/glview/glviewbg.png"));
+    //menbanL_->setPixmap(QPixmap("images/glview/glviewbg.png"));
 
     // web
     webView_ = new QWebEngineView(this);

@@ -13,26 +13,28 @@ MovieLabel::MovieLabel(NotifyEventI::IntruderEventData info, QWidget *parent) : 
 {
     connect(&tm_,SIGNAL(timeout()),this,SLOT(slotTimeout()));
     setAttribute(Qt::WA_TranslucentBackground);
-    backColor_ = QColor("#599AFF");
+    m_innerCircleColor = QColor("#F8E74C");
+    m_outerCircleColor = QColor(248, 231, 76, 255);
+    backColor_ = m_innerCircleColor;
     m_info = info;
-    animation_ = new QPropertyAnimation(this,"geometry");
+    animation_ = new QPropertyAnimation(this, "geometry");
     animation_->setStartValue(20);
     animation_->setEndValue(100);
     animation_->setDuration(2000);
     animation_->setLoopCount(-1);
     animation_->start();
-    this->setStyleSheet("background-color:black;");
+   //this->setStyleSheet("background-color:black;");
 }
 
 void MovieLabel::startWaring()
 {
     if (m_fixRadius == 30)
-    {
-        backColor_ = QColor("#FF4B4B");
+    {// Inner circle
+        backColor_ = m_innerCircleColor;
     }
     else
-    {
-        backColor_ = QColor("#FF001B");
+    {// Outer circle
+        backColor_ = m_outerCircleColor;
     }
     if (!m_isWarning)
     {
@@ -119,8 +121,13 @@ void MovieLabel::paintEvent(QPaintEvent *event)
 
 #if 1
     QPainter p(this);
-    QRect imgRect(50, 50, 100, 100);
-    p.drawImage(60, 0, m_info.sceneImg.scaled(100,100), 0, 0, m_geometry, m_geometry);
+    QRect imgRect(62, 0, m_geometry, m_geometry);
+    p.drawImage(62, 0, m_info.sceneImg.scaled(100,100), 0, 0, m_geometry, m_geometry);
+    p.save();
+    pen.setColor(QColor(Qt::yellow));
+    p.setPen(pen);
+    p.drawRect(imgRect);
+    p.restore();
 #endif
     QWidget::paintEvent(event);
 }
@@ -152,6 +159,7 @@ void MovieLabel::mouseReleaseEvent(QMouseEvent *event)
 
 void MovieLabel::enterEvent(QEvent *event)
 {
+#if 0
     m_fixRadius = 32;
     if (!m_isWarning)
     {
@@ -161,6 +169,7 @@ void MovieLabel::enterEvent(QEvent *event)
     {
         backColor_ = QColor("#FF001B");
     }
+#endif
 }
 
 void MovieLabel::leaveEvent(QEvent *event)
@@ -195,6 +204,6 @@ void MovieLabel::slotTimeout()
 {
     m_isWarning = false;
 
-    backColor_ = QColor("#599AFF");
+    backColor_ = m_innerCircleColor;
     this->deleteLater();
 }

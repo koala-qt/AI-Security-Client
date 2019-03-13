@@ -39,6 +39,8 @@ private:
     QString infoStr_; // 摄像头显示信息
     QPoint startPoint_;
     QColor backColor_;
+    QColor m_innerCircleColor;
+    QColor m_outerCircleColor;
     bool m_isWarning = false;
     NotifyEventI::IntruderEventData m_info;
 
@@ -46,6 +48,7 @@ private:
     int m_fixRadius = 25;
     qreal m_geometry = 0;
     QPropertyAnimation *animation_{nullptr};
+
 
 private slots:
     void slotTimeout();
