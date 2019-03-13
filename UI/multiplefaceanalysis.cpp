@@ -315,9 +315,8 @@ void MultipleFaceAnalysis::init()
     m_pTxtSimilary->setValidator(new QDoubleValidator(1, 0.1, 2, this));
     bottomHlay->addWidget(m_pTxtSimilary);
     m_pLabDbTitle = new QLabel(tr("Database"));
-    m_pLabDbTitle->setMinimumWidth(76);
+    m_pLabDbTitle->setMinimumWidth(68);
     bottomHlay->addWidget(m_pLabDbTitle);
-    bottomHlay->addSpacing(5);
     m_pDbType = new QComboBox;
     bottomHlay->addWidget(m_pDbType);
     //m_pDbType->addItem(tr("mark"));
