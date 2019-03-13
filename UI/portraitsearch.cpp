@@ -239,6 +239,7 @@ void PortraitSearch::onBtnSearchClicked()
     args.similarity = m_pTxtSimilary->text().toDouble();
     args.limit = 100;
     args.sourceType = (0 == m_pDbType->currentIndex()) ? tr("2") : tr("2");
+    args.nPersonId = 0;
     serviceI->portraitLibCompSearch(args);
     label->show(500);
     //m_faceLibBar->setEnabled(false);

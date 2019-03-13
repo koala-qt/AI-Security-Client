@@ -262,6 +262,7 @@ void MultipleFaceAnalysis::onBtnSearchClicked()
     args.libType = strTypes;
     args.similarity = m_pTxtSimilary->text().toDouble();
     args.limit = 5;
+    args.nPersonId = 0;
     serviceI->mnFaceAnalysisSearch(args);
     label->show(500);
     m_pBtnSearch->setEnabled(false);
