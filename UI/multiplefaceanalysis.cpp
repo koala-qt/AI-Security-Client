@@ -186,7 +186,6 @@ bool MultipleFaceAnalysis::event(QEvent *event)
     {
         queryPersonTypes();
         m_bFirstLoading = false;
-        return true;
     }
     return WidgetI::event(event);
 }
@@ -321,7 +320,7 @@ void MultipleFaceAnalysis::init()
     m_pDbType = new QComboBox;
     bottomHlay->addWidget(m_pDbType);
     //m_pDbType->addItem(tr("mark"));
-    m_pDbType->addItem(tr("regist"));
+    m_pDbType->addItem(tr("ID"));
     bottomHlay->addStretch();
     bottomHlay->setAlignment(Qt::AlignLeft);
 

@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QDynamicPropertyChangeEvent>
 #include <QMouseEvent>
+#include <QDebug>
 class WidgetI : public QWidget
 {
     Q_OBJECT
@@ -15,11 +16,16 @@ public:
 
 protected:
     bool event(QEvent *event) override{
-        if((event->type() == QEvent::DynamicPropertyChange)){
+        if(event->type() == QEvent::DynamicPropertyChange){
             QDynamicPropertyChangeEvent *ev = dynamic_cast<QDynamicPropertyChangeEvent*>(event);
             curStyle_ = ev->propertyName().toInt();
             setUserStyle(curStyle_);
             ev->accept();
+        }else if(event->type() == QEvent::Show){
+            if(!isWindow() || !parentWidget())return QWidget::event(event);
+            QRect rt = rect();
+            rt.moveCenter(parentWidget()->window()->rect().center());
+            move(rt.topLeft());
         }
         return QWidget::event(event);
     }

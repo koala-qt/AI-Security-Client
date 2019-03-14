@@ -54,7 +54,6 @@ bool GlViewMapWidget::event(QEvent *event)
     }
 #endif
         queryTopStatistics();
-        return true;
     }
     return WidgetI::event(event);
 }

@@ -194,7 +194,7 @@ PersonInfo::PersonInfo(WidgetI *parent):
         faceDialog->show();
     });
 
-    menu_->addAction(tr("Registeration Search"),[this]{
+    menu_->addAction(tr("Registration Search"),[this]{
         PortraitSearch *portSearchDialog = new PortraitSearch(this);
         portSearchDialog->setAttribute(Qt::WA_DeleteOnClose);
         portSearchDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);

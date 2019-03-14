@@ -506,7 +506,6 @@ bool FaceSearch::event(QEvent *event)
 {
     if(event->type() == QEvent::Show){
         endTimeEdit_->setDateTime(QDateTime::currentDateTime());
-        return true;
     }
     return WidgetI::event(event);
 }

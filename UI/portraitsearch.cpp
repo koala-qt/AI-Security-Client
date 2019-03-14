@@ -161,7 +161,6 @@ bool PortraitSearch::event(QEvent *event)
     {
         queryPersonTypes();
         m_bFirstLoading = false;
-        return true;
     }
     return WidgetI::event(event);
 }
@@ -349,7 +348,7 @@ void PortraitSearch::init()
     m_pDbType = new QComboBox;
     rightTopHlay->addWidget(m_pDbType);
     //m_pDbType->addItem(tr("mark"));
-    m_pDbType->addItem(tr("regist"));
+    m_pDbType->addItem(tr("ID"));
 
     rightTopHlay->addStretch();
     hlay->setAlignment(Qt::AlignLeft);

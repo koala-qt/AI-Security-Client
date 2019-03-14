@@ -541,7 +541,6 @@ bool EventSearch::event(QEvent *event)
     if(event->type() == QEvent::Show && m_searchBtn->isEnabled()){
         m_endTimeEdit->setDateTime(QDateTime::currentDateTime());
         slotSearchBtnClicked();
-        return true;
     }
     return WidgetI::event(event);
 }

@@ -104,10 +104,6 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
             detailsW->slotSetData(resData);
             detailsW->setMinimumSize(582,514);
             detailsW->show();
-            QPoint r = detailsW->mapToGlobal(detailsW->rect().center());
-            QRect dr = detailsW->rect();
-            dr.moveCenter(r);
-            detailsW->move(dr.topLeft());
             dataMenu_->setEnabled(true);
         });
         serviceI->getPersonDetails(dataListW_->currentItem()->data(Qt::UserRole + 4).toString());
@@ -150,11 +146,6 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
                 faceDialog->setFaceImage(images.first());
                 faceDialog->setMinimumHeight(700);
                 faceDialog->show();
-
-                QPoint r = faceDialog->mapToGlobal(faceDialog->rect().center());
-                QRect dr = faceDialog->rect();
-                dr.moveCenter(r);
-                faceDialog->move(dr.topLeft());
             });
             dialog.exec();
             dataMenu_->setEnabled(true);
@@ -178,12 +169,8 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
         faceDialog->setOid(dataListW_->currentItem()->data(Qt::UserRole + 2).toString());
         faceDialog->setMinimumHeight(700);
         faceDialog->show();
-        QPoint r = mapToGlobal(faceDialog->rect().center());
-        QRect dr = faceDialog->rect();
-        dr.moveCenter(r);
-        faceDialog->move(dr.topLeft());
     });
-    dataMenu_->addAction(tr("Registeration Search"),[this]{
+    dataMenu_->addAction(tr("Registration Search"),[this]{
         PortraitSearch *portSearchDialog = new PortraitSearch(this);
         portSearchDialog->setAttribute(Qt::WA_DeleteOnClose);
         portSearchDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
@@ -212,10 +199,6 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
         faceLinkP->setFaceLinkOidAndImg(dataListW_->currentItem()->data(Qt::UserRole + 4).toString(),pix);
         faceLinkP->resize(1200,900);
         faceLinkP->show();
-        QPoint r = faceLinkP->mapToGlobal(faceLinkP->rect().center());
-        QRect dr = faceLinkP->rect();
-        dr.moveCenter(r);
-        faceLinkP->move(dr.topLeft());
     });
     dataMenu_->addAction(tr("Trajectory"),[this]{
         TrackingPage *view = new TrackingPage(this);
@@ -231,10 +214,6 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
         view->setImgageOid(dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>(),
                            dataListW_->currentItem()->data(Qt::UserRole + 4).toString());
         view->show();
-        QPoint r = view->mapToGlobal(view->rect().center());
-        QRect dr = view->rect();
-        dr.moveCenter(r);
-        view->move(dr.topLeft());
     });
     dataMenu_->addAction(tr("Register"),[this]{
         PersonMark markDialog;
@@ -671,7 +650,6 @@ bool SemanticSearchPage::event(QEvent *event)
     if(event->type() == QEvent::Show  && searchBtn_->isEnabled()){
         endTimeEdit_->setDateTime(QDateTime::currentDateTime());
         slotSearchBtnClicked();
-        return true;
     }
     return WidgetI::event(event);
 }
