@@ -13,8 +13,9 @@ GlViewMapWidget::GlViewMapWidget(WidgetI *parent):
 {
     init();
     setUserStyle(userStyle());
-    notifyServiceI_ = reinterpret_cast<NotifyServiceI*>(qApp->property("NotifyServiceI").toULongLong());
-    connect(notifyServiceI_,SIGNAL(sigIntruderEvent(NotifyEventI::IntruderEventData)),this,SLOT(slotOnIntruderEvent(NotifyEventI::IntruderEventData)),Qt::UniqueConnection);
+    m_notifyServiceI = reinterpret_cast<NotifyServiceI*>(qApp->property("NotifyServiceI").toULongLong());
+    connect(m_notifyServiceI, SIGNAL(sigIntruderEvent(NotifyEventI::IntruderEventData)),
+            this, SLOT(slotOnIntruderEvent(NotifyEventI::IntruderEventData)),Qt::UniqueConnection);
 }
 
 void GlViewMapWidget::setUserStyle(int style)
@@ -52,8 +53,7 @@ bool GlViewMapWidget::event(QEvent *event)
         slotOnIntruderEvent(info);
     }
 #endif
-
-//        queryTopStatistics();
+        queryTopStatistics();
         return true;
     }
     return WidgetI::event(event);
@@ -72,9 +72,9 @@ void GlViewMapWidget::slotOnIntruderEvent(NotifyEventI::IntruderEventData info)
         std::random_device device;
         std::mt19937 gen(device());
         std::uniform_int_distribution<int> dis(-150, 100);
-        std::uniform_int_distribution<int> dis2(-300, 100); // width
+        std::uniform_int_distribution<int> disWidth(-300, 90); // width
 
-        MovieLabel *ml = new MovieLabel(info, this); // 更改父级轻松搞定
+        MovieLabel *ml = new MovieLabel(info, this);
         m_mapCameras.insert(info.sourceId, ml);
 
         //ml->setFixedSize(180, 100);
@@ -82,7 +82,7 @@ void GlViewMapWidget::slotOnIntruderEvent(NotifyEventI::IntruderEventData info)
         QRect cr = ml->geometry();
 
         cr.moveCenter(this->rect().center());
-        ml->move(cr.topLeft() + QPoint(dis2(gen), dis(gen)) + QPoint(250 / 2, 310 / 2));
+        ml->move(cr.topLeft() + QPoint(disWidth(gen), dis(gen)) + QPoint(250 / 2, 310 / 2));
         ml->setInfo(info.deviceName);
         QPalette pal = ml->palette();
         pal.setColor(QPalette::Foreground, Qt::white);
@@ -143,7 +143,6 @@ void GlViewMapWidget::init()
     m_labDataStorage->setAlignment(Qt::AlignRight);
     pMidVlay->addWidget(m_labDataStorage);
     pMidVlay->addStretch();
-
 #endif 0
 }
 

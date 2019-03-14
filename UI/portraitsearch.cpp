@@ -42,7 +42,7 @@ void PortraitSearch::setUserStyle(int s)
         pal.setColor(QPalette::Foreground, QColor("#313745"));
 
         m_btnImg->setStyleSheet("QPushButton{"
-                                "background-color: transparent;"
+                                "background-color: transparent;border-image: url(images/person-face-back.png);"
                                 "}");
         QString commStyle = "font-size:14px;color:rgba(255,255,255,191);";
         m_pLabSimilary->setStyleSheet(commStyle);
@@ -91,7 +91,7 @@ void PortraitSearch::setUserStyle(int s)
                                                     "}"
                                                     "QHeaderView::section{"
                                                     "background-color: transparent;"
-                                                    "color:rgba(255,255,255,191);font-size:14px;font:bold;"
+                                                    "color:rgba(255,255,255,191);font-size:14px;"
                                                     "}");
         m_tableW->verticalScrollBar()->setStyleSheet(
                 "QScrollBar:vertical{"
@@ -235,14 +235,12 @@ void PortraitSearch::onBtnSearchClicked()
         index++;
     }
     args.libType = strTypes;
-    //m_strBigPersonType = m_faceLibBar->tabText(m_faceLibBar->currentIndex());
     args.similarity = m_pTxtSimilary->text().toDouble();
     args.limit = 100;
     args.sourceType = (0 == m_pDbType->currentIndex()) ? tr("2") : tr("2");
     args.nPersonId = 0;
     serviceI->portraitLibCompSearch(args);
     label->show(500);
-    //m_faceLibBar->setEnabled(false);
     m_pBtnSearch->setEnabled(false);
     m_pageIndicator->setEnabled(false);
     m_pDataTip->hide();
@@ -302,10 +300,10 @@ void PortraitSearch::init()
     m_btnImg = new QPushButton;
     connect(m_btnImg, SIGNAL(clicked(bool)), this, SLOT(onBtnImgClicked()));
     m_btnImg->setToolTip(tr("Add pictures"));
-    m_btnImg->setFixedSize(100, 100);
+    m_btnImg->setFixedSize(82, 82);
     m_btnImg->setIconSize(QSize(m_btnImg->size()));
     m_btnImg->setFocusPolicy(Qt::NoFocus);
-    QPixmap imgPix("images/portraitlibrary/uploadbg.png");
+    QPixmap imgPix("images/person-face-back.png");
     m_btnImg->setIcon(imgPix.scaled(m_btnImg->iconSize()));
     m_btnImg->setProperty("default-pix",imgPix);
     QCursor curSor = cursor();
@@ -384,7 +382,7 @@ void PortraitSearch::init()
     hlay->addWidget(m_pageIndicator);
     hlay->setAlignment(Qt::AlignCenter);
     mainLay->addLayout(hlay);
-    mainLay->setContentsMargins(30,20,10,10);
+    mainLay->setContentsMargins(30, 20, 10, 10);
     setLayout(mainLay);
 
     m_pDataTip = new NoDataTip(m_tableW);
@@ -414,7 +412,6 @@ void PortraitSearch::slotAddRow(QVector<RestServiceI::PortraitLibCompItem> info)
 
         item = new QTableWidgetItem;
         item->setText(itemData.strPersonName);
-        //item->setData(Qt::UserRole,itemData.strPersonName);
         item->setTextAlignment(Qt::AlignCenter);
         m_tableW->setItem(m_tableW->rowCount() - 1,PersonNameCol,item);
 
@@ -483,7 +480,6 @@ void PortraitSearch::queryPersonTypes()
             });
             m_lstFaceLibTypes.append(m_btnFaceType);
         }
-        //m_pFaceTypesHLay->addStretch();
     });
     serviceI->queryPersonTypes();
     label->show(500);
@@ -495,7 +491,6 @@ void PortraitSearch::updatePersonTypesState()
     for (auto *tempBtn : m_lstFaceLibTypes)
     {
         tempBtn->setProperty(FaceTypeCheckedTag, !bChecked);
-        qDebug() << "FaceTypeCheckedTag" << tempBtn->property(FaceTypeCheckedTag);
     }
     for (auto *btn : m_lstFaceLibTypes)
     {

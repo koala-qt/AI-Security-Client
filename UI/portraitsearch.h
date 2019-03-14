@@ -20,6 +20,7 @@ QT_FORWARD_DECLARE_CLASS(QHBoxLayout)
 
 class PageIndicator;
 class NoDataTip;
+
 class PortraitSearch : public WidgetI
 {
     Q_OBJECT

@@ -43,7 +43,7 @@ private:
     qreal getGeometry();
 
 private:
-    QTimer tm_;
+    QTimer m_timer;
     QString infoStr_; // 摄像头显示信息
     QPoint startPoint_;
     QColor backColor_;
@@ -55,7 +55,7 @@ private:
     float m_radius = 25;
     int m_fixRadius = 25;
     qreal m_geometry = 0;
-    QPropertyAnimation *animation_{nullptr};
+    QPropertyAnimation *m_animation{nullptr};
 
     // 3.13 add camera position control
     QQueue<NotifyEventI::IntruderEventData> m_lstInfos;

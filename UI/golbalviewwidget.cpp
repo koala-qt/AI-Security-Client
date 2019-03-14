@@ -22,7 +22,7 @@ GolbalViewWidget::GolbalViewWidget(WidgetI *parent):
     menbanL_->setPixmap(QPixmap("images/glview/glviewbg.png"));
 
     m_mapWgt = new GlViewMapWidget(this);
-    m_mapWgt->move(432,0);
+    m_mapWgt->move(432, 0);
 
     // web
     webView_ = new QWebEngineView(this);
@@ -48,6 +48,7 @@ void GolbalViewWidget::setUserStyle(int style)
 {
     if (0 == style)
     {
+
     }
 }
 
