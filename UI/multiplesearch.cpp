@@ -92,7 +92,7 @@ MultipleSearch::MultipleSearch( WidgetI *parent):
                 faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
                 faceDialog->setWindowModality(Qt::ApplicationModal);
                 QPalette pal = faceDialog->palette();
-                pal.setColor(QPalette::Background,QColor(112,110,119));
+                pal.setColor(QPalette::Background,QColor(37,41,52));
                 faceDialog->setPalette(pal);
                 faceDialog->setAutoFillBackground(true);
                 faceDialog->setUserStyle(userStyle());

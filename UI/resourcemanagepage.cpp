@@ -64,12 +64,12 @@ void ResourceManagePage::paintEvent(QPaintEvent *event)
 
 void ResourceManagePage::slotLoadRequest(QWebEngineDownloadItem *download)
 {
-    QMessageBox::StandardButton btn = QMessageBox::information(this,tr("download"),download->path(),QMessageBox::Ok,QMessageBox::Cancel);
-    if(btn == QMessageBox::Ok){
-        download->accept();
-    }else{
-        download->cancel();
-    }
+//    QMessageBox::StandardButton btn = QMessageBox::information(this,tr("download"),download->path(),QMessageBox::Ok,QMessageBox::Cancel);
+//    if(btn == QMessageBox::Ok){
+//        download->accept();
+//    }else{
+//        download->cancel();
+//    }
 }
 
 ResourceWebBridge::ResourceWebBridge(QObject *parent):

@@ -44,7 +44,7 @@ HomPage::HomPage(WidgetI *parent):
     webBridge_ = new HomePageWebBridge(channel);
     channel->registerObject("Bridge", webBridge_);
     webView_->page()->setWebChannel(channel);
-    webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/index.html"));
+    webView_->installEventFilter(this);
 
     connect(eventCombox_,SIGNAL(currentIndexChanged(int)),this,SLOT(slotEventComboxIndexChanged(int)));
     connect(webBridge_,SIGNAL(sigCameraClicked(QString)),this,SLOT(slotOnCameraClicked(QString)));
@@ -146,6 +146,10 @@ bool HomPage::eventFilter(QObject *watched, QEvent *event)
         for(int i = 0; i < eventListW_->count(); i++){
             QListWidgetItem *item = eventListW_->item(i);
             item->setSizeHint(eventItemSize_);
+        }
+    }else if(watchWid == webView_ && event->type() == QEvent::Show){
+        if(webView_->url().isEmpty()){
+            webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/index.html"));
         }
     }
     return WidgetI::eventFilter(watched,event);

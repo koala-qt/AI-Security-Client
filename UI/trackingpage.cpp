@@ -214,11 +214,7 @@ void TrackingPage::slotSearchBtnClicked()
 #endif
     serviceI->faceTracking(args);
     searchBtn_->setEnabled(false);
-    QTimer::singleShot(500,this,[this]{
-        if(!searchBtn_->isEnabled()){
-            dataView_->startWaiting();
-        }
-    });
+    dataView_->startWaiting();
 }
 
 void TrackingPage::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)

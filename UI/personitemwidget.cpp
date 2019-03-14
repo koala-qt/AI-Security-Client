@@ -5,6 +5,7 @@
 #include <QBitmap>
 #include <QDebug>
 #include "personitemwidget.h"
+#include "UI/components/CircleAnimation/circleanimation.h"
 
 PersonItemWidget::PersonItemWidget(WidgetI *parent):
     WidgetI(parent)
@@ -14,7 +15,7 @@ PersonItemWidget::PersonItemWidget(WidgetI *parent):
     registeredTextL_ = new QLabel(tr("Registered photo"));
     captredImgL_ = new QLabel;
     registedImgL_ = new QLabel;
-    similrityL_ = new QLabel;
+    similrityL_ = new CircleAnimation;
     timeIconL_ = new QLabel;
     timeTextL_ = new QLabel;
     posIconL_ = new QLabel;
@@ -33,7 +34,7 @@ PersonItemWidget::PersonItemWidget(WidgetI *parent):
     vlay->addWidget(captredImgL_);
     vlay->setAlignment(Qt::AlignCenter);
     centerHlay->addLayout(vlay);
-    similrityL_->setAlignment(Qt::AlignCenter);
+    similrityL_->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     centerHlay->addWidget(similrityL_);
     vlay = new QVBoxLayout;
     registeredTextL_->setAlignment(Qt::AlignCenter);
@@ -60,21 +61,11 @@ PersonItemWidget::PersonItemWidget(WidgetI *parent):
     timeIconL_->setPixmap(QPixmap("images/tipIcon.png"));
     posIconL_->setPixmap(QPixmap("images/cameraIcon.png"));
 
-    QFont f = font();
-    f.setPixelSize(12);
-    f.setBold(true);
-    personTypeL_->setFont(f);
-
-    f.setPixelSize(12);
-    similrityL_->setFont(f);
-
-    f.setBold(false);
-    captredImgL_->setFont(f);
-    registedImgL_->setFont(f);
     posIconL_->hide();
     timeIconL_->hide();
     timeTextL_->hide();
     posTextL_->hide();
+    setUserStyle(userStyle());
 }
 
 PersonItemWidget::~PersonItemWidget()
@@ -114,46 +105,44 @@ void PersonItemWidget::setInfos(const NotifyEventI::PersonEventData &data)
         registedImgL_->setPixmap(QPixmap::fromImage(data.faceImages.first().scaled(data.image.size(),Qt::KeepAspectRatio)));
     }
 #endif
-    QString similStr;
-    similStr.setNum(data.faceSimilarity * 100,'g',4);
-    similrityL_->setText(similStr + '%');
+    similrityL_->setStartValue(0);
+    similrityL_->setEndValue(data.faceSimilarity);
     timeTextL_->setText(data.timeStamp.toString("yyyy-MM-dd HH:mm:ss"));
     posTextL_->setText(data.deviceName);
-    setUserStyle(0);
 }
 
 void PersonItemWidget::setUserStyle(int s)
 {
+    QFont f;
     if(s == 0){
         personTypeL_->setStyleSheet("QLabel{"
                                     "color: rgba(255,255,255,0.75);"
-                                    "background-color: transparent"
                                     "border: 0px;"
+                                    "font-size: 12px;"
+                                    "font-weight: bold;"
                                     "}");
         captureTextL_->setStyleSheet("QLabel{"
                                      "color: rgba(255,255,255,0.75);"
-                                    "background-color: transparent"
-                                    "border: 0px;"
-                                    "}");
+                                     "font-size: 12px;"
+                                     "border: 0px;"
+                                     "}");
         registeredTextL_->setStyleSheet("QLabel{"
                                         "color: rgba(255,255,255,0.75);"
-                                    "background-color: transparent"
-                                    "border: 0px;"
-                                    "}");
-        similrityL_->setStyleSheet("QLabel{"
-                                    "color: rgba(255,255,255,0.75);"
-                                    "background-color: transparent"
-                                    "border: 0px;"
-                                    "}");
+                                        "font-size: 12px;"
+                                        "border: 0px;"
+                                        "}");
         timeTextL_->setStyleSheet("QLabel{"
                                   "color: rgba(255,255,255,0.75);"
-                                  "background-color: transparent"
+                                  "font-size: 12px;"
                                   "border: 0px;"
                                   "}");
         posTextL_->setStyleSheet("QLabel{"
                                  "color: rgba(255,255,255,0.75);"
-                                 "background-color: transparent"
+                                 "font-size: 12px;"
                                  "border: 0px;"
                                  "}");
+        f = similrityL_->font();
+        f.setPixelSize(10);
+        similrityL_->setFont(f);
     }
 }

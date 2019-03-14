@@ -50,19 +50,20 @@ void SelectUploadVide::setUserStyle(int s)
     if(s == 0){
         upLoadBtn_->setStyleSheet("QPushButton{"
                                   "background-color: rgb(83,77,251);"
-                                  "color: white;"
+                                  "color: rgba(255,255,255,0.75);"
                                   "border-radius: 6px;"
                                   "font-size: 18px;"
                                   "}"
                                   "QPushButton:pressed{"
+                                  "color: rgba(255,255,255,1);"
                                   "padding: 2px;"
                                   "background-color: #312DA6;"
                                   "}");
         videoTextL_->setStyleSheet("QLabel{"
-                                   "color: rgb(85,96,120);"
+                                   "color: rgba(255,255,255,0.5);"
                                    "}");
         tipTextL_->setStyleSheet("QLabel{"
-                                   "color: rgb(126,140,177);"
+                                 "color: rgba(255,255,255,0.75);"
                                    "}");
     }
 }

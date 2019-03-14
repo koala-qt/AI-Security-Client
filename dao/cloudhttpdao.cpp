@@ -290,18 +290,21 @@ QString DLL::CloudHttpDao::tracking(RestServiceI::FaceTrackingArgs &args, QVecto
         return jsObj.value("message").toString();
     }
     QJsonArray jsArray = jsObj.value("data").toArray();
-#if 0
+#if 1
     for(auto &jsVal : jsArray){
         QJsonObject  dataObj = jsVal.toObject();
         RestServiceI::TrackingReturnData pdata;
         pdata.cameraId = dataObj.value("cameraId").toString();
         pdata.objId = dataObj.value("id").toString();
+        pdata.lat = dataObj.value("lat").toDouble();
+        pdata.lng = dataObj.value("lng").toDouble();
         pdata.faceImg.loadFromData(QByteArray::fromBase64(dataObj.value("faceSnap").toString().toLatin1()));
         pdata.timeIn = QDateTime::fromMSecsSinceEpoch(dataObj.value("tsIn").toVariant().toULongLong());
         pdata.timeOut = QDateTime::fromMSecsSinceEpoch(dataObj.value("tsOut").toVariant().toULongLong());
-        resVec << pdata;
+        pdata.sceneId = dataObj.value("faceSceneId").toString();
+        *resVec << pdata;
     }
-#else 1
+#else
     QVector<RestServiceI::TrackingReturnData> allData;
     for(auto &jsVal : jsArray){
         QJsonObject  dataObj = jsVal.toObject();

@@ -71,9 +71,6 @@ VideoPlayer::VideoPlayer(QWidget *parent):
         QHBoxLayout *hlay = new QHBoxLayout;
         QGroupBox *groupBox = new QGroupBox;
         QRadioButton *radioBtn = new QRadioButton(tr("Intruder alarm"));
-        QFont f = radioBtn->font();
-        f.setFamily("Arial");
-        radioBtn->setFont(f);
         pal = radioBtn->palette();
         pal.setColor(QPalette::Foreground,Qt::white);
         radioBtn->setPalette(pal);
@@ -87,12 +84,9 @@ VideoPlayer::VideoPlayer(QWidget *parent):
             paintArea->update();
         });
         hlay->addWidget(radioBtn);
-        radioBtn = new QRadioButton(tr("AB门报警"));
-        f = radioBtn->font();
-        f.setFamily("Arial");
-        radioBtn->setFont(f);
+        radioBtn = new QRadioButton(tr("Trailing"));
         pal = radioBtn->palette();
-        pal.setColor(QPalette::Foreground,Qt::white);
+        pal.setColor(QPalette::Foreground,Qt::green);
         radioBtn->setPalette(pal);
         connect(radioBtn,&QRadioButton::clicked,paintArea,[paintArea,&ABPalette]{
             paintArea->setPalette(ABPalette);

@@ -30,6 +30,7 @@
 #include "sceneimagedialog.h"
 #include "informationdialog.h"
 #include "personitemwidget.h"
+//#define DEBUGWEBSOCKET
 
 #pragma execution_character_set("utf-8")
 RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
@@ -369,6 +370,10 @@ void RealtimeMonitoring::setUserStyle(int s)
                                   "font-size: 10px;"
                                   "border:none;}");
 
+        pal = eventList_->palette();
+        pal.setColor(QPalette::Base,Qt::transparent);
+        eventList_->setPalette(pal);
+
         eventList_->setStyleSheet("QListWidget{"
                                   "background-color: transparent;"
                                   "border-radius:0px;"
@@ -639,7 +644,7 @@ void RealtimeMonitoring::slotTreeItemDoubleClicked(QTreeWidgetItem *item, int co
 
 void RealtimeMonitoring::slotAddFaceitem(NotifyPersonI::FaceSnapEventData faceEvData)
 {
-    if(!m_faceItemSize.isValid() || m_faceList->rect().contains(m_faceList->mapFromGlobal(QCursor::pos()))) return;
+    if(!m_faceItemSize.isValid() || (m_faceList->rect().contains(m_faceList->mapFromGlobal(QCursor::pos())) && m_faceList->isVisible())) return;
     if(m_faceList->count() >= FACEITEMCOUNT){
         QListWidgetItem *delItem = m_faceList->takeItem(FACEITEMCOUNT - 1);
         m_faceList->removeItemWidget(delItem);
@@ -675,7 +680,7 @@ void RealtimeMonitoring::slotAddFaceitem(NotifyPersonI::FaceSnapEventData faceEv
 
 void RealtimeMonitoring::slotOnIntruderEvent(NotifyEventI::IntruderEventData evData)
 {
-    if(!eventItemSize_.isValid() || eventList_->rect().contains(eventList_->mapFromGlobal(QCursor::pos())))return;
+    if(!eventItemSize_.isValid() || (eventList_->rect().contains(eventList_->mapFromGlobal(QCursor::pos())) && eventList_->isVisible()))return;
     if(eventList_->count() >= EVENTITEMCOUNT){
         QListWidgetItem *delItem = eventList_->takeItem(EVENTITEMCOUNT - 1);
         eventList_->removeItemWidget(delItem);
@@ -699,13 +704,20 @@ void RealtimeMonitoring::slotOnIntruderEvent(NotifyEventI::IntruderEventData evD
     mainLay->addWidget(imgL);
     itemW->setLayout(mainLay);
     imgL->setPixmap(QPixmap::fromImage(evData.sceneImg.scaled(item->sizeHint())));
+#ifdef DEBUGWEBSOCKET
+    QLabel *tmL = new QLabel(evData.timeStamp.toString("yyyy-MM-dd HH:mm:ss"),imgL);
+    tmL->setStyleSheet("QLabel{"
+                       "background-color: black;"
+                       "color: white;"
+                       "}");
+#endif
     mainLay->setContentsMargins(0,5,0,5);
     eventList_->setItemWidget(item,itemW);
 }
 
 void RealtimeMonitoring::slotOnPersonEvent(NotifyEventI::PersonEventData evData)
 {
-    if(!eventItemSize_.isValid() || eventList_->rect().contains(eventList_->mapFromGlobal(QCursor::pos())))return;
+    if(!eventItemSize_.isValid() || (eventList_->rect().contains(eventList_->mapFromGlobal(QCursor::pos())) && eventList_->isVisible()))return;
     if(eventList_->count() >= EVENTITEMCOUNT){
         QListWidgetItem *delItem = eventList_->takeItem(EVENTITEMCOUNT - 1);
         eventList_->removeItemWidget(delItem);
@@ -716,19 +728,20 @@ void RealtimeMonitoring::slotOnPersonEvent(NotifyEventI::PersonEventData evData)
     item->setSizeHint(eventItemSize_);
     eventList_->insertItem(0,item);
     PersonItemWidget *itemW = new PersonItemWidget;
-    itemW->setStyleSheet("QWidget{"
-                         "background-color: transparent;"
-                         "color: rgba(255,255,255,0.75);"
-                         "border-radius: 0px;"
-                         "border: none;"
-                         "}");
     itemW->setInfos(evData);
+#ifdef DEBUGWEBSOCKET
+    QLabel *tmL = new QLabel(evData.timeStamp.toString("yyyy-MM-dd HH:mm:ss"),itemW);
+    tmL->setStyleSheet("QLabel{"
+                       "background-color: black;"
+                       "color: white;"
+                       "}");
+#endif
     eventList_->setItemWidget(item,itemW);
 }
 
 void RealtimeMonitoring::slotOnAbDoorEvent(NotifyEventI::ABDoorEventData evData)
 {
-    if(!eventItemSize_.isValid() || eventList_->rect().contains(eventList_->mapFromGlobal(QCursor::pos())))return;
+    if(!eventItemSize_.isValid() || (eventList_->rect().contains(eventList_->mapFromGlobal(QCursor::pos())) && eventList_->isVisible()))return;
     if(eventList_->count() >= EVENTITEMCOUNT){
         QListWidgetItem *delItem = eventList_->takeItem(EVENTITEMCOUNT - 1);
         eventList_->removeItemWidget(delItem);
@@ -752,13 +765,20 @@ void RealtimeMonitoring::slotOnAbDoorEvent(NotifyEventI::ABDoorEventData evData)
     mainLay->addWidget(imgL);
     itemW->setLayout(mainLay);
     imgL->setPixmap(QPixmap::fromImage(evData.sceneImg.scaled(item->sizeHint())));
+#ifdef DEBUGWEBSOCKET
+    QLabel *tmL = new QLabel(evData.timeStamp.toString("yyyy-MM-dd HH:mm:ss"),imgL);
+    tmL->setStyleSheet("QLabel{"
+                       "background-color: black;"
+                       "color: white;"
+                       "}");
+#endif
     mainLay->setContentsMargins(0,5,0,5);
     eventList_->setItemWidget(item,itemW);
 }
 
 void RealtimeMonitoring::slotOnClimbEvent(NotifyEventI::ClimbEventData evData)
 {
-    if(!eventItemSize_.isValid() || eventList_->rect().contains(eventList_->mapFromGlobal(QCursor::pos())))return;
+    if(!eventItemSize_.isValid() || (eventList_->rect().contains(eventList_->mapFromGlobal(QCursor::pos())) && eventList_->isVisible()))return;
     if(eventList_->count() >= EVENTITEMCOUNT){
         QListWidgetItem *delItem = eventList_->takeItem(EVENTITEMCOUNT - 1);
         eventList_->removeItemWidget(delItem);
@@ -782,13 +802,20 @@ void RealtimeMonitoring::slotOnClimbEvent(NotifyEventI::ClimbEventData evData)
     mainLay->addWidget(imgL);
     itemW->setLayout(mainLay);
     imgL->setPixmap(QPixmap::fromImage(evData.sceneImg.scaled(item->sizeHint())));
+#ifdef DEBUGWEBSOCKET
+    QLabel *tmL = new QLabel(evData.timeStamp.toString("yyyy-MM-dd HH:mm:ss"),imgL);
+    tmL->setStyleSheet("QLabel{"
+                       "background-color: black;"
+                       "color: white;"
+                       "}");
+#endif
     mainLay->setContentsMargins(0,5,0,5);
     eventList_->setItemWidget(item,itemW);
 }
 
 void RealtimeMonitoring::slotOngGatherEvent(NotifyEventI::GatherEventData evData)
 {
-    if(!eventItemSize_.isValid() || eventList_->rect().contains(eventList_->mapFromGlobal(QCursor::pos())))return;
+    if(!eventItemSize_.isValid() || (eventList_->rect().contains(eventList_->mapFromGlobal(QCursor::pos())) && eventList_->isVisible()))return;
     if(eventList_->count() >= EVENTITEMCOUNT){
         QListWidgetItem *delItem = eventList_->takeItem(EVENTITEMCOUNT - 1);
         eventList_->removeItemWidget(delItem);
@@ -804,6 +831,13 @@ void RealtimeMonitoring::slotOngGatherEvent(NotifyEventI::GatherEventData evData
     mainLay->addWidget(imgL);
     itemW->setLayout(mainLay);
     imgL->setPixmap(QPixmap::fromImage(evData.sceneImg.scaled(item->sizeHint())));
+#ifdef DEBUGWEBSOCKET
+    QLabel *tmL = new QLabel(evData.timeStamp.toString("yyyy-MM-dd HH:mm:ss"),imgL);
+    tmL->setStyleSheet("QLabel{"
+                       "background-color: black;"
+                       "color: white;"
+                       "}");
+#endif
     mainLay->setContentsMargins(0,5,0,5);
     eventList_->setItemWidget(item,itemW);
 }
