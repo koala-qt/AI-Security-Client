@@ -24,7 +24,7 @@ protected:
 
 private:
     QLabel *headImgL_{nullptr},*personOrderL_{nullptr},*personImgCountL_{nullptr};
-    int itemCount_ = 0,itemH_ = 0,lastRowCount_ = 0;
+    int itemH_ = 0,lastRowCount_ = 0,itemCount_ = 1;
     QListWidget *imgListW_{nullptr};
     QMenu *menu_{nullptr};
 };
