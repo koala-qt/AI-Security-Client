@@ -42,7 +42,7 @@ void PortraitSearch::setUserStyle(int s)
         pal.setColor(QPalette::Foreground, QColor("#313745"));
 
         m_btnImg->setStyleSheet("QPushButton{"
-                                "background-color: transparent;"
+                                "background-color: transparent;border-image: url(images/person-face-back.png);"
                                 "}");
         QString commStyle = "font-size:14px;color:rgba(255,255,255,191);";
         m_pLabSimilary->setStyleSheet(commStyle);
@@ -302,7 +302,7 @@ void PortraitSearch::init()
     m_btnImg = new QPushButton;
     connect(m_btnImg, SIGNAL(clicked(bool)), this, SLOT(onBtnImgClicked()));
     m_btnImg->setToolTip(tr("Add pictures"));
-    m_btnImg->setFixedSize(100, 100);
+    m_btnImg->setFixedSize(82, 82);
     m_btnImg->setIconSize(QSize(m_btnImg->size()));
     m_btnImg->setFocusPolicy(Qt::NoFocus);
     QPixmap imgPix("images/person-face-back.png");
