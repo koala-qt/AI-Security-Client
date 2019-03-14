@@ -11,18 +11,18 @@
 
 MovieLabel::MovieLabel(NotifyEventI::IntruderEventData info, QWidget *parent) : QWidget(parent)
 {
-    connect(&tm_,SIGNAL(timeout()),this,SLOT(slotTimeout()));
+    connect(&m_timer,SIGNAL(timeout()),this,SLOT(slotTimeout()));
     setAttribute(Qt::WA_TranslucentBackground);
-    m_innerCircleColor = QColor(Qt::red);// "#84070A"
+    m_innerCircleColor = QColor(Qt::red); // "#84070A"
     m_outerCircleColor = QColor(Qt::red);
     backColor_ = m_innerCircleColor;
     m_info = info;
-    animation_ = new QPropertyAnimation(this, "geometry");
-    animation_->setStartValue(20);
-    animation_->setEndValue(100);
-    animation_->setDuration(2000);
-    animation_->setLoopCount(-1);
-    animation_->start();
+    m_animation = new QPropertyAnimation(this, "geometry");
+    m_animation->setStartValue(20);
+    m_animation->setEndValue(100);
+    m_animation->setDuration(2000);
+    m_animation->setLoopCount(-1);
+    m_animation->start();
 }
 
 void MovieLabel::startWaring()
@@ -38,11 +38,11 @@ void MovieLabel::startWaring()
     if (!m_isWarning)
     {
         m_isWarning = true;
-        tm_.start(5000);
+        m_timer.start(5000);
     }
     else
     {
-        tm_.start(5000);
+        m_timer.start(5000);
     }
 }
 
@@ -70,7 +70,6 @@ QString &MovieLabel::getDeviceName()
 
 void MovieLabel::appendWarningInfo(NotifyEventI::IntruderEventData info)
 {
-    // qDebug() << Q_FUNC_INFO << info.sourceId;
     m_mutex.lock();
     m_lstInfos.enqueue(info);
     m_mutex.unlock();
@@ -215,13 +214,11 @@ void MovieLabel::slotTimeout()
         m_isWarning = false;
 
         this->hide();
-        //animation_->stop();
+        m_animation->stop();
         m_geometry = 20;
-        //this->deleteLater();
     }
     else
     {
-        //m_mutex.lock();
         m_isWarning = true;
         auto warningItem = m_lstInfos.dequeue();
         m_geometry = 20;
@@ -231,8 +228,8 @@ void MovieLabel::slotTimeout()
         //        animation_->setEndValue(100);
         //        animation_->setDuration(2000);
         //        animation_->setLoopCount(-1);
-        //animation_->start();
-        this->startWaring();
+        update();
         this->show();
+        m_animation->start();
     }
 }
