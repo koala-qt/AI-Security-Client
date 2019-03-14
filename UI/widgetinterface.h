@@ -16,15 +16,10 @@ public:
 protected:
     bool event(QEvent *event) override{
         if((event->type() == QEvent::DynamicPropertyChange)){
-            static bool bFirst = true;
-            if (bFirst)
-            {
-                bFirst = false;
-                QDynamicPropertyChangeEvent *ev = dynamic_cast<QDynamicPropertyChangeEvent*>(event);
-                curStyle_ = ev->propertyName().toInt();
-                setUserStyle(curStyle_);
-                ev->accept();
-            }
+            QDynamicPropertyChangeEvent *ev = dynamic_cast<QDynamicPropertyChangeEvent*>(event);
+            curStyle_ = ev->propertyName().toInt();
+            setUserStyle(curStyle_);
+            ev->accept();
         }
         return QWidget::event(event);
     }

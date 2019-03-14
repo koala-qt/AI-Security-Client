@@ -18,17 +18,17 @@ PersonMark::PersonMark(QWidget *parent, Qt::WindowFlags f):
 {
     setObjectName(tr("Person Labeling"));
     titleL_ = new QLabel(objectName());
-    nameL_ = new QLabel(tr("name"));
+    nameL_ = new QLabel(tr("Name"));
     nameEdit_ = new QLineEdit;
     idL_ = new QLabel(tr("ID"));
     idEdit_ = new QLineEdit;
-    phontoL_ = new QLabel(tr("photo"));
+    phontoL_ = new QLabel(tr("Photo"));
     imgL_ = new QLabel;
-    typeL_ = new QLabel(tr("type"));
+    typeL_ = new QLabel(tr("Type"));
     typeCombox_ = new QComboBox;
     statusL_ = new QLabel(tr("Status"));
     statusCombox_ = new QComboBox;
-    customL_ = new QLabel(tr("describ"));
+    customL_ = new QLabel(tr("Describe"));
     customEdit_ = new QLineEdit;
     btnBox_ = new QDialogButtonBox;
     cancelBtn_ = btnBox_->addButton(tr("CANCEL"),QDialogButtonBox::RejectRole);

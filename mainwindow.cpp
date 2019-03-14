@@ -145,12 +145,10 @@ void MainWindow::setUserStyle(int s)
 {
     QPalette pal;
     QFont f = font();
-    f.setFamily("微软雅黑"); //DINCond-Bold、PingFang SC Regular、微软雅黑 Microsoft YaHei UI
+    f.setFamily("Arial"); //DINCond-Bold、PingFang SC Regular、微软雅黑 Microsoft YaHei UI、Source Sans Pro
     f.setWeight(QFont::Normal);
     qApp->setFont(f);
 
-    f = m_topList->font();
-    f.setFamily(tr("SF Pro Text"));
     f.setWeight(QFont::Bold);
     f.setPixelSize(16);
     m_topList->setFont(f);
@@ -244,11 +242,13 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
 {
     Q_UNUSED(event)
+#if 0
     QWidgetList wlist = QApplication::allWidgets();
     for(QWidget *wid : wlist){
         QDynamicPropertyChangeEvent *ev = new QDynamicPropertyChangeEvent("danyahei");
         QApplication::postEvent(dynamic_cast<QObject*>(wid),ev);
     }
+#endif
 }
 
 void MainWindow::slotItemClicked(QListWidgetItem *item)

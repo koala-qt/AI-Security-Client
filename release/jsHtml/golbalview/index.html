@@ -2,10 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <!-- import CSS -->
-  <!-- <link rel="stylesheet" href="./css/element.css"> -->
   <link rel="stylesheet" href="./css/vue-datepicker-local.css">
-  <!-- <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"> -->
   <link rel="stylesheet" href="./css/main.css">
   <script src="./js/echarts.min.js"></script>
   <script src="./js/qwebchannel.js"></script>
@@ -22,23 +19,6 @@
             <div class="meng-del-ceng"></div>
             <div class="meng-ceng"></div>
             <vue-datepicker-local v-model="dateValue" clearable></vue-datepicker-local>
-            <!-- <div @click="focusInput" class="focus-input"></div> -->
-            <!-- <el-date-picker
-                id="elDatePicker"
-                v-model="dateValue"
-                type="date"
-                :editable="false"
-                @change="changeDate"
-                placeholder="select date"
-                :picker-options="pickerOptions1"
-            
-                value-format='yyyy-MM-dd'>
-            </el-date-picker> -->
-            <!-- <el-date-picker
-                v-model="dateValue1"
-                type="date"
-                placeholder="选择日期">
-            </el-date-picker> -->
         </div>
         
         <div class="cap-alarm">
@@ -51,7 +31,7 @@
                <div>
                     <div class="cap-tro">Today Captures</div>
                     <div class="cap-num">
-                         {{countCaptures}}
+                         {{toThousands(countCaptures)}}
                      </div>
                </div>
            </div>
@@ -62,7 +42,7 @@
                 <div>
                     <div class="cap-tro">Today Alarms</div>
                     <div class="cap-num">
-                        {{countAlarm}}
+                        {{toThousands(countAlarm)}}
                     </div>
                 </div>
                 
@@ -102,20 +82,16 @@
   </div>
 </body>
   <script src="./js/vue.js"></script>
-  <!-- <script src="./js/element-index.js"></script> -->
   <script src="./js/vue-datepicker-local.js"></script>
   <script src="./js/highlight.js"></script>
-  <!-- <script src="./js/en.js"></script> -->
   <script src="./js/axios.min.js"></script>
   <script>
-    let ip = 'http://192.168.100.65:18082'
-    // ELEMENT.locale(ELEMENT.lang.en)
+    let ip = 'http://192.168.100.10:18081'
     if(typeof qt != "undefined") {
         new QWebChannel(qt.webChannelTransport, function(channel) {
             window.Bridge = channel.objects.Bridge;
                 Bridge.sigHostNameChanged.connect(function(dataObj) { //连接Qt中brideg类的信号并定义执行代码
-                //console.log(JSON.stringify(dataObj))
-                console.log(dataObj)
+              
                 ip = dataObj
                 zhixing()
             });
@@ -154,15 +130,12 @@
         },
         watch: {
             dateValue(newVal) {
-            //   console.log(newVal)
-            //   console.log(newVal.getFullYear())
                 try {
                     let y = newVal.getFullYear()
                     let m = newVal.getMonth() < 10 ? `0${newVal.getMonth() + 1}` : (newVal.getMonth() + 1)
                     let d = newVal.getDate() < 10 ? `0${newVal.getDate()}` : newVal.getDate()
                     let t = `${y}-${m}-${d}`
                     this.dateValue = t
-                    console.log(t)
                     this.getData()
                 } catch (error) {
                     
@@ -171,19 +144,55 @@
             }
         },
         methods: {
+            relTimeData() {
+                let self = this
+                setInterval(() => {
+                    self.getMenuSta()
+                }, 5000)
+                
+            },
+            getMenuSta() {
+                let self = this
+                axios.get(`${this.interfaces.todayData}`,{
+                        params:{
+                            'endTime':this.dateValue
+                        },
+                        headers: {
+                            'Accept-Language': 'en_US'
+                        }
+                    
+                    }).then(resp => {
+                        self.countCaptures =  resp.data.data.countCaptures
+                        self.countAlarm = resp.data.data.countAlarm
+                        let legendArr = []
+                        let newObj = []
+                        resp.data.data.chart.forEach(item => {
+                            legendArr.push(item.showName)
+                            newObj.push({
+                                value: item.count,
+                                name: item.showName
+                            })
+                        })
+                        self.alarmProp(legendArr, newObj)
+                    })
+            },
+            toThousands(num) {
+                let result = [ ], counter = 0;
+                num = (num || 0).toString().split('');
+                for (let i = num.length - 1; i >= 0; i--) {
+                    counter++;
+                    result.unshift(num[i]);
+                    if (!(counter % 3) && i != 0) { result.unshift(','); }
+                }
+                return result.join('');
+            },
             showFormatDate() {
-                console.log(this.dateValue)
                 if(this.dateValue === '') {
-                    debugger
                 return ''
                 } else {
-                    debugger
                     let y = this.dateValue.split('-')[0]
                     let m = parseInt(this.dateValue.split('-')[1]) +4
-            
                     let d = this.dateValue.split('-')[2]
-                    // console.log(this.mouthEn[m])
-                    console.log(`${this.mouthEn[m]} ${d},${y}`)
                     return `${this.mouthEn[m]} ${d},${y}`
                 }
             
@@ -278,13 +287,11 @@
                 var newtime
 
                 if (a[1].indexOf('0') == 0) {
-                    // console.log(a[1].slice(1))
                     newtime = a[1].slice(1) + '/'
                 } else {
                     newtime = a[1] + '/'
                 }
                 if (a[2].indexOf('0') == 0) {
-                    // console.log(a[1].slice(1))
                     newtime = newtime + a[2].slice(1)
                 } else {
                     newtime = newtime + a[2]
@@ -488,7 +495,7 @@
                         data:legendArr,
                         textStyle: {
                             color: '#CECECE',
-                            fontSize: 14,
+                            fontSize: 12,
                         }
                     },
                     series: [
@@ -524,43 +531,23 @@
                 this.dateValue = `${y}-${m}-${d}`
             },
             getData() {
-                axios.get(`${this.interfaces.todayData}`,{
-                params:{
-                    'endTime':this.dateValue
-                },
-                headers: {
-                    'Accept-Language': 'en_US'
-                }
-                
-                }).then(resp => {
-                    this.countCaptures =  resp.data.data.countCaptures
-                    this.countAlarm = resp.data.data.countAlarm
-                    let legendArr = []
-                    let newObj = []
-                    resp.data.data.chart.forEach(item => {
-                        legendArr.push(item.showName)
-                        newObj.push({
-                            value: item.count,
-                            name: item.showName
-                        })
-                    })
-                    this.alarmProp(legendArr, newObj)
-                })
+               
 
                 axios.get(`${this.interfaces.capTure}`,
                 {
+                    params:{
+                        'endTime':this.dateValue
+                    },
                     headers: {
                         'Accept-Language': 'en_US'
                     }
                 }
                 ).then(resp => {
                     let datas = resp.data.data.splice(0, 7)
-                    console.log(datas)
                     let xrr = []
                     let dataArr = []
                     datas.forEach(item => {
                         let date = item.showName
-
                         xrr.push(`${date.split('-')[1]}/${date.split('-')[2]}`)
                         dataArr.push(item.count)
                     })
@@ -603,6 +590,8 @@
         mounted() {
             this.getNowTime()
             this.getData()
+            this.relTimeData()
+            this.getMenuSta()
         }
         })
         

@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QWebEngineProfile>
 #include <QApplication>
+#include <QWebEngineCookieStore>
 #include "reportpage.h"
 
 ReportPage::ReportPage(WidgetI *parent):
@@ -41,6 +42,12 @@ bool ReportPage::event(QEvent *event)
 {
     if(event->type() == QEvent::Show){
         if(webView_->url().isEmpty()){
+//            webView_->page()->profile()->setPersistentCookiesPolicy(QWebEngineProfile::NoPersistentCookies);
+//            webView_->page()->profile()->clearHttpCache(); // 清理缓存
+//            webView_->page()->profile()->clearAllVisitedLinks(); // 清理浏览记录
+//            QWebEngineCookieStore* pCookie = webView_->page()->profile()->cookieStore();
+//            pCookie->deleteAllCookies(); // 清理cookie
+//            pCookie->deleteSessionCookies(); // 清理会话cookie
             webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/report/index.html"));
         }
     }

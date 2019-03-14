@@ -6,6 +6,7 @@
 #include <QWebEngineProfile>
 #include <QMessageBox>
 #include <QStandardPaths>
+#include <QWebEngineCookieStore>
 #include "resourcemanagepage.h"
 
 ResourceManagePage::ResourceManagePage(WidgetI *parent):
@@ -39,6 +40,12 @@ void ResourceManagePage::setUserStyle(int s)
 
 void ResourceManagePage::loadWebPage(int index)
 {
+//    webView_->page()->profile()->setPersistentCookiesPolicy(QWebEngineProfile::NoPersistentCookies);
+//    webView_->page()->profile()->clearHttpCache(); // 清理缓存
+//    webView_->page()->profile()->clearAllVisitedLinks(); // 清理浏览记录
+//    QWebEngineCookieStore* pCookie = webView_->page()->profile()->cookieStore();
+//    pCookie->deleteAllCookies(); // 清理cookie
+//    pCookie->deleteSessionCookies(); // 清理会话cookie
     if(index == 0){
         webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + tr("/jsHtml/resource/device/index.html")));
     }else if(index == 1){

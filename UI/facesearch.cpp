@@ -65,7 +65,7 @@ FaceSearch::FaceSearch(WidgetI *parent):
     QPixmap pix(1,topCombox_->iconSize().height());
     pix.fill(Qt::transparent);
     for(const QPair<QString,int> &value : itemVec){
-        topCombox_->addItem(pix,value.first,value.second);
+        topCombox_->addItem(value.first,value.second);
     }
     similarL_ = new QLabel(tr("Threshold "));
     similarL_->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
@@ -76,17 +76,17 @@ FaceSearch::FaceSearch(WidgetI *parent):
     similarSpin_->setMinimumWidth(200);
     similarSpin_->setValue(40);
     similarSpin_->setSingleStep(5);
-    startTimeL_ = new QLabel(tr("开始时间"));
+    startTimeL_ = new QLabel(tr("Starting Time"));
     startTimeEdit_ = new QDateTimeEdit;
     startTimeEdit_->setMinimumSize(200,34);
     startTimeEdit_->setDisplayFormat("yyyy/MM/dd HH:mm:ss");
     startTimeEdit_->setDate(QDateTime::currentDateTime().addDays(-1).date());
-    endTimeL_ = new QLabel(tr("结束时间"));
+    endTimeL_ = new QLabel(tr("Ending Time"));
     endTimeEdit_ = new QDateTimeEdit;
     endTimeEdit_->setDisplayFormat("yyyy/MM/dd HH:mm:ss");
     endTimeEdit_->setMinimumSize(200,34);
     endTimeEdit_->setDate(QDateTime::currentDateTime().addDays(1).date());
-    m_searchBtn = new QPushButton(tr("检索"));
+    m_searchBtn = new QPushButton(tr("Search"));
     m_searchBtn->setFixedSize(99,34);
     m_searchBtn->setFocusPolicy(Qt::NoFocus);
     gridLay->addWidget(cameraLabel_,0,0,1,1);
@@ -315,21 +315,28 @@ void FaceSearch::setUserStyle(int s)
                                      "font-size: 14px;"
                                      "background-color: rgba(255,255,255,0.1);"
                                      "border: none;"
-                                     "border-radius: 0px;"
+                                     "border-radius: 4px;"
+                                     "padding-left: 10px;"
                                      "}"
                                      "QComboBox QAbstractItemView{"
                                      "background-color: rgb(43,49,61);"
-                                     "border-radius: 6px;"
+                                     "border-radius: 0px;"
                                      "selection-color: white;"
                                      "outline: 0px;"
-                                     "selection-background-color: #CECECE;"
+                                     "selection-background-color: rgba(255,255,255,0.1);"
                                      "}"
                                      "QComboBox::drop-down{"
                                      "subcontrol-position: center right;"
                                      "border-image: url(images/dropdown2.png);"
-                                     "width:11px;height:8px;"
+                                     "width:11px;"
+                                     "height:8px;"
                                      "subcontrol-origin: padding;"
                                      "margin-right:5px;"
+                                     "}"
+                                     "QScrollBar:vertical{"
+                                     "background: transparent;"
+                                     "border: 0px solid gray;"
+                                     "width: 13px;"
                                      "}"
                                      "QScrollBar::handle:vertical{"
                                      "background: rgba(255,255,255,0.5);"
@@ -376,21 +383,28 @@ void FaceSearch::setUserStyle(int s)
                                   "font-size: 14px;"
                                   "background-color: rgba(255,255,255,0.1);"
                                   "border: none;"
-                                  "border-radius: 0px;"
+                                  "border-radius: 4px;"
+                                  "padding-left: 10px;"
                                   "}"
                                   "QComboBox QAbstractItemView{"
                                   "background-color: rgb(43,49,61);"
-                                  "border-radius: 6px;"
+                                  "border-radius: 0px;"
                                   "selection-color: white;"
                                   "outline: 0px;"
-                                  "selection-background-color: #CECECE;"
+                                  "selection-background-color: rgba(255,255,255,0.1);"
                                   "}"
                                   "QComboBox::drop-down{"
                                   "subcontrol-position: center right;"
                                   "border-image: url(images/dropdown2.png);"
-                                  "width:11px;height:8px;"
+                                  "width:11px;"
+                                  "height:8px;"
                                   "subcontrol-origin: padding;"
                                   "margin-right:5px;"
+                                  "}"
+                                  "QScrollBar:vertical{"
+                                  "background: transparent;"
+                                  "border: 0px solid gray;"
+                                  "width: 13px;"
                                   "}"
                                   "QScrollBar::handle:vertical{"
                                   "background: rgba(255,255,255,0.5);"
@@ -589,7 +603,6 @@ void FaceSearch::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
 {
 #if 1
     SceneImageDialog dialog;
-    dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
     dialog.setUserStyle(userStyle());
     dialog.setSceneInfo(sinfo);
     SceneImageDialog *dialogPtr = &dialog;

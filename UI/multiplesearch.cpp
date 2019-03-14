@@ -28,8 +28,8 @@ MultipleSearch::MultipleSearch( WidgetI *parent):
     imgList_ = new QListWidget;
     dataList_ = new QListWidget;
     positionL_ = new QLabel(tr("Position"));
-    startTimeL_ = new QLabel(tr("Starting time"));
-    endTimeL_ = new QLabel(tr("Ending time"));
+    startTimeL_ = new QLabel(tr("Starting Time"));
+    endTimeL_ = new QLabel(tr("Ending Time"));
     searchBtn_ = new QPushButton(tr("Search"));
     posCombox_ = new QComboBox;
     startTimeEdit_ = new QDateTimeEdit;
@@ -184,21 +184,28 @@ void MultipleSearch::setUserStyle(int style)
                                   "font-size: 14px;"
                                   "background-color: rgba(255,255,255,0.1);"
                                   "border: none;"
-                                  "border-radius: 0px;"
+                                  "border-radius: 4px;"
+                                  "padding-left: 10px;"
                                   "}"
                                   "QComboBox QAbstractItemView{"
                                   "background-color: rgb(43,49,61);"
-                                  "border-radius: 6px;"
+                                  "border-radius: 0px;"
                                   "selection-color: white;"
                                   "outline: 0px;"
-                                  "selection-background-color: #CECECE;"
+                                  "selection-background-color: rgba(255,255,255,0.1);"
                                   "}"
                                   "QComboBox::drop-down{"
                                   "subcontrol-position: center right;"
                                   "border-image: url(images/dropdown2.png);"
-                                  "width:11px;height:8px;"
+                                  "width:11px;"
+                                  "height:8px;"
                                   "subcontrol-origin: padding;"
                                   "margin-right:5px;"
+                                  "}"
+                                  "QScrollBar:vertical{"
+                                  "background: transparent;"
+                                  "border: 0px solid gray;"
+                                  "width: 13px;"
                                   "}"
                                   "QScrollBar::handle:vertical{"
                                   "background: rgba(255,255,255,0.5);"

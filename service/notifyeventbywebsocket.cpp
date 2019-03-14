@@ -38,11 +38,13 @@ NotifyEventByWebSocket::~NotifyEventByWebSocket()
 
 void NotifyEventByWebSocket::slotTimeout()
 {
+    qDebug() << "-----websocket reconnecting----";
     QMetaObject::invokeMethod(websocket_,"open",Q_ARG(QUrl, curUrl_));
 }
 
 void NotifyEventByWebSocket::onConnected()
 {
+    qDebug() << "-----websocket connected----";
     connect(websocket_, SIGNAL(textMessageReceived(QString)),this, SLOT(onTextMessageReceived(QString)),Qt::UniqueConnection);
     connect(websocket_, SIGNAL(disconnected()),this,SLOT(onDisconnected()),Qt::UniqueConnection);
     if(timer_->isActive()){
@@ -52,6 +54,7 @@ void NotifyEventByWebSocket::onConnected()
 
 void NotifyEventByWebSocket::onDisconnected()
 {
+    qDebug() << "-----websocket disconnected----";
     websocket_->close();
     if(!timer_->isActive()){
         timer_->start(5000);

@@ -226,12 +226,16 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
     posEdit_->setMinimumHeight(36);
     posEdit_->setPlaceholderText(tr("Search"));
     switchToMap_->setIcon(QPixmap("images/switch_icon.png"));
-    eventCombox_->addItem(tr("All Alarm"));
-    eventCombox_->addItem(tr("Intruder Alarm"));
-    eventCombox_->addItem(tr("Trailing Alarm"));
-    eventCombox_->addItem(tr("Climb Alarm"));
-    eventCombox_->addItem(tr("Gather Alarm"));
-    eventCombox_->addItem(tr("Blacklist Alarm"));
+    eventCombox_->setIconSize(QSize(1,43));
+    QPixmap pix(eventCombox_->iconSize());
+    pix.fill(Qt::transparent);
+    eventCombox_->addItem(pix,tr("All"));
+    eventCombox_->addItem(pix,tr("Intrusion"));
+    eventCombox_->addItem(pix,tr("Trailing"));
+    eventCombox_->addItem(pix,tr("Climbing"));
+    eventCombox_->addItem(pix,tr("Gathering"));
+    eventCombox_->addItem(pix,tr("Blacklist"));
+    eventCombox_->addItem(pix,tr("VIP"));
     faceCaptureBackW_->installEventFilter(this);
     eventBackW_->installEventFilter(this);
     eventList_->installEventFilter(this);
@@ -376,19 +380,24 @@ void RealtimeMonitoring::setUserStyle(int s)
                                     "border-radius: 0px;"
                                     "border: none;"
                                     "}"
+                                    "QComboBoxListView::item{"
+                                    "min-height: 50px;"
+                                    "}"
                                     "QComboBox{"
-                                    "color: rgba(255,255,255,0.75);"
+                                    "color: rgba(255,255,255,1);"
                                     "font-size: 14px;"
-                                    "background-color: transparent;"
+                                    "font-weight: bold;"
+                                    "background-color: rgba(255,255,255,0.1);"
                                     "border: none;"
-                                    "border-radius: 0px;"
+                                    "border-radius: 4px;"
+                                    "padding-left: 10px;"
                                     "}"
                                     "QComboBox QAbstractItemView{"
                                     "background-color: rgb(43,49,61);"
-                                    "border-radius: 6px;"
-                                    "selection-color: white;"
+                                    "border-radius: 0px;"
+                                    "selection-color: rgba(255,255,255,1);"
                                     "outline: 0px;"
-                                    "selection-background-color: #CECECE;"
+                                    "selection-background-color: rgba(60,70,85,1);"
                                     "}"
                                     "QComboBox::drop-down{"
                                     "subcontrol-position: center right;"
@@ -396,7 +405,7 @@ void RealtimeMonitoring::setUserStyle(int s)
                                     "width:16px;"
                                     "height:16px;"
                                     "subcontrol-origin: padding;"
-                                    "margin-right:5px;"
+                                    "margin-right:15px;"
                                     "}"
                                     "QScrollBar:vertical{"
                                     "background: transparent;"
@@ -519,6 +528,7 @@ void RealtimeMonitoring::getCameraGroup(QTreeWidgetItem* item,QString groupNo)
             }else{
                 childItem = new QTreeWidgetItem(item,QStringList() << groupV.groupName,0);
             }
+            childItem->setSizeHint(0,QSize(childItem->sizeHint(0).width(),34));
             childItem->setData(0,Qt::UserRole,groupV.groupNo);
             childItem->setData(1,Qt::UserRole + 1,groupV.description);
             if(groupV.deviceNumber){
@@ -629,7 +639,7 @@ void RealtimeMonitoring::slotTreeItemDoubleClicked(QTreeWidgetItem *item, int co
 
 void RealtimeMonitoring::slotAddFaceitem(NotifyPersonI::FaceSnapEventData faceEvData)
 {
-    if(!m_faceItemSize.isValid())return;
+    if(!m_faceItemSize.isValid() || m_faceList->rect().contains(m_faceList->mapFromGlobal(QCursor::pos()))) return;
     if(m_faceList->count() >= FACEITEMCOUNT){
         QListWidgetItem *delItem = m_faceList->takeItem(FACEITEMCOUNT - 1);
         m_faceList->removeItemWidget(delItem);
@@ -652,6 +662,7 @@ void RealtimeMonitoring::slotAddFaceitem(NotifyPersonI::FaceSnapEventData faceEv
     label->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     label->setStyleSheet(faceItemStyleSheet_);
     vboxLay->addWidget(label);
+    vboxLay->setContentsMargins(2,0,2,0);
     itemWidget->setLayout(vboxLay);
 
     QListWidgetItem *item = new QListWidgetItem;
@@ -664,7 +675,7 @@ void RealtimeMonitoring::slotAddFaceitem(NotifyPersonI::FaceSnapEventData faceEv
 
 void RealtimeMonitoring::slotOnIntruderEvent(NotifyEventI::IntruderEventData evData)
 {
-    if(!eventItemSize_.isValid())return;
+    if(!eventItemSize_.isValid() || eventList_->rect().contains(eventList_->mapFromGlobal(QCursor::pos())))return;
     if(eventList_->count() >= EVENTITEMCOUNT){
         QListWidgetItem *delItem = eventList_->takeItem(EVENTITEMCOUNT - 1);
         eventList_->removeItemWidget(delItem);
@@ -694,7 +705,7 @@ void RealtimeMonitoring::slotOnIntruderEvent(NotifyEventI::IntruderEventData evD
 
 void RealtimeMonitoring::slotOnPersonEvent(NotifyEventI::PersonEventData evData)
 {
-    if(!eventItemSize_.isValid())return;
+    if(!eventItemSize_.isValid() || eventList_->rect().contains(eventList_->mapFromGlobal(QCursor::pos())))return;
     if(eventList_->count() >= EVENTITEMCOUNT){
         QListWidgetItem *delItem = eventList_->takeItem(EVENTITEMCOUNT - 1);
         eventList_->removeItemWidget(delItem);
@@ -717,7 +728,7 @@ void RealtimeMonitoring::slotOnPersonEvent(NotifyEventI::PersonEventData evData)
 
 void RealtimeMonitoring::slotOnAbDoorEvent(NotifyEventI::ABDoorEventData evData)
 {
-    if(!eventItemSize_.isValid())return;
+    if(!eventItemSize_.isValid() || eventList_->rect().contains(eventList_->mapFromGlobal(QCursor::pos())))return;
     if(eventList_->count() >= EVENTITEMCOUNT){
         QListWidgetItem *delItem = eventList_->takeItem(EVENTITEMCOUNT - 1);
         eventList_->removeItemWidget(delItem);
@@ -747,7 +758,7 @@ void RealtimeMonitoring::slotOnAbDoorEvent(NotifyEventI::ABDoorEventData evData)
 
 void RealtimeMonitoring::slotOnClimbEvent(NotifyEventI::ClimbEventData evData)
 {
-    if(!eventItemSize_.isValid())return;
+    if(!eventItemSize_.isValid() || eventList_->rect().contains(eventList_->mapFromGlobal(QCursor::pos())))return;
     if(eventList_->count() >= EVENTITEMCOUNT){
         QListWidgetItem *delItem = eventList_->takeItem(EVENTITEMCOUNT - 1);
         eventList_->removeItemWidget(delItem);
@@ -777,7 +788,7 @@ void RealtimeMonitoring::slotOnClimbEvent(NotifyEventI::ClimbEventData evData)
 
 void RealtimeMonitoring::slotOngGatherEvent(NotifyEventI::GatherEventData evData)
 {
-    if(!eventItemSize_.isValid())return;
+    if(!eventItemSize_.isValid() || eventList_->rect().contains(eventList_->mapFromGlobal(QCursor::pos())))return;
     if(eventList_->count() >= EVENTITEMCOUNT){
         QListWidgetItem *delItem = eventList_->takeItem(EVENTITEMCOUNT - 1);
         eventList_->removeItemWidget(delItem);
@@ -835,7 +846,6 @@ void RealtimeMonitoring::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
 {
     SceneImageDialog dialog;
     dialog.setUserStyle(userStyle());
-    dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
     dialog.setSceneInfo(sinfo);
     dialog.setShowRect(true,true);
     connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){

@@ -23,8 +23,8 @@ TrackingPage::TrackingPage( WidgetI *parent):
     setObjectName(tr("Trajectory"));
     imgBtn_ = new QPushButton;
     searchBtn_ = new QPushButton(tr("Search"));
-    startTimeL_ = new QLabel(tr("Starting time"));
-    endTimeL_ = new QLabel(tr("Ending time"));
+    startTimeL_ = new QLabel(tr("Starting Time"));
+    endTimeL_ = new QLabel(tr("Ending Time"));
     threshL_ = new QLabel(tr("Thresh"));
     startTimeEdit_ = new QDateTimeEdit;
     endTimeEdit_ = new QDateTimeEdit;

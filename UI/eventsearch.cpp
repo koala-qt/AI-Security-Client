@@ -32,21 +32,21 @@ EventSearch::EventSearch( WidgetI *parent):
     QVBoxLayout *mainLay = new QVBoxLayout;
     QHBoxLayout *hlay = new QHBoxLayout;
     hlay->setSpacing(15);
-    m_positionL = new QLabel(tr("Regional location"));
+    m_positionL = new QLabel(tr("Regional Location"));
     m_positionCombox = new QComboBox;
     m_positionCombox->setMinimumSize(90,40);
     m_positionCombox->setIconSize(QSize(1,30));
     m_positionCombox->setFixedHeight(40);
     m_positionCombox->setFocusPolicy(Qt::NoFocus);
-    m_waringTyleL = new QLabel(tr("Alarm type "));
+    m_waringTyleL = new QLabel(tr("Alarm Type "));
     waringTypeMenu_ = new QMenu();
     waringTypeBtn_ = new QPushButton;
-    m_startTimeL = new QLabel(tr("Starting time"));
+    m_startTimeL = new QLabel(tr("Starting Time"));
     m_startTimeEdit = new QDateTimeEdit;
     m_startTimeEdit->setDisplayFormat("yyyy-MM-dd HH:mm:ss");
     m_startTimeEdit->setDate(QDateTime::currentDateTime().addDays(-1).date());
     m_startTimeEdit->setMinimumSize(160,40);
-    m_endTimeL = new QLabel(tr("Ending time"));
+    m_endTimeL = new QLabel(tr("Ending Time"));
     m_endTimeEdit = new QDateTimeEdit;
     m_endTimeEdit->setDisplayFormat("yyyy-MM-dd HH:mm:ss");
     m_endTimeEdit->setDate(QDateTime::currentDateTime().addDays(1).date());
@@ -218,10 +218,10 @@ EventSearch::EventSearch( WidgetI *parent):
                        << std::make_tuple(tr("smsr_alarm_intruder"),tr("Intrusion"),QColor(200,0,0,100))
                        << std::make_tuple(tr("smsr_alarm_abdoor"),tr("Trailing"),QColor(0,200,0,100))
                        << std::make_tuple(tr("smsr_alarm_climb"),tr("Climbing"),QColor(100,100,0,100))
-                       << std::make_tuple(tr("smsr_alarm_gather"),tr("Gathering"),QColor(100,0,100,100));
+                       << std::make_tuple(tr("smsr_alarm_gather"),tr("Gathering"),Qt::transparent);
     for(int i = 0; i < waringTypeTupleVec.count(); i++){
         QString alarmType = std::get<0>(waringTypeTupleVec.at(i));
-        waringColorMap_.insert(std::get<0>(waringTypeTupleVec.at(i)),std::get<2>(waringTypeTupleVec.at(i)));
+        waringColorMap_.insert(std::get<1>(waringTypeTupleVec.at(i)),std::get<2>(waringTypeTupleVec.at(i)));
         originalEventMap_.insert(std::get<0>(waringTypeTupleVec.at(i)),std::get<1>(waringTypeTupleVec.at(i)));
         QAction *act = new QAction(std::get<1>(waringTypeTupleVec.at(i)));
         connect(act,&QAction::triggered,waringTypeMenu_,[this,alarmType,act]{
@@ -238,10 +238,10 @@ EventSearch::EventSearch( WidgetI *parent):
 
     QVector<std::tuple<QString,QString,QString,QColor>> subTypeAlarmVec;
     subTypeAlarmVec << std::make_tuple(tr("smsr_alarm_black"),tr("Blacklist"),tr("100010001008"),Qt::transparent)
-                    << std::make_tuple(tr("smsr_alarm_vip"),tr("VIP"),tr("100010001007"),QColor(100,0,100,100));
+                    << std::make_tuple(tr("smsr_alarm_vip"),tr("VIP"),tr("100010001007"),Qt::transparent);
     for(int i = 0; i < subTypeAlarmVec.count(); i++){
         QString personTypeNo = std::get<2>(subTypeAlarmVec.at(i));
-        waringColorMap_.insert(std::get<0>(subTypeAlarmVec.at(i)),std::get<3>(subTypeAlarmVec.at(i)));
+        waringColorMap_.insert(std::get<1>(subTypeAlarmVec.at(i)),std::get<3>(subTypeAlarmVec.at(i)));
         faceAlarmMap_.insert(std::get<2>(subTypeAlarmVec.at(i)),std::get<1>(subTypeAlarmVec.at(i)));
         QMenu *typeMenu = new QMenu(std::get<1>(subTypeAlarmVec.at(i)));
         typeMenu->setProperty("personType",personTypeNo);
@@ -294,9 +294,8 @@ EventSearch::EventSearch( WidgetI *parent):
     }
 #endif
     waringTypeBtn_->setMenu(waringTypeMenu_);
-
-    noDataTipW_ = new NoDataTip(m_tableW);
     setUserStyle(userStyle());
+    noDataTipW_ = new NoDataTip(m_tableW);
     getCameraInfo();
 
     QSettings configSeting("config.ini",QSettings::IniFormat);
@@ -328,6 +327,7 @@ void EventSearch::setUserStyle(int s)
         m_endTimeL->setPalette(pal);
 
         waringTypeBtn_->setFixedSize(200,34);
+        waringTypeMenu_->setMinimumSize(waringTypeBtn_->size());
         m_searchBtn->setFixedSize(99,34);
         m_startTimeEdit->setFixedSize(200,34);
         m_endTimeEdit->setFixedSize(200,34);
@@ -360,15 +360,16 @@ void EventSearch::setUserStyle(int s)
                                       "padding-left: 10px;"
                                       "}"
                                       "QPushButton::menu-indicator{"
-                                      "subcontrol-origin: padding;"
                                       "subcontrol-position: center right;"
-                                      "margin-right: 5px;"
+                                      "subcontrol-origin: padding;"
+                                      "margin-right:5px;"
                                       "}");
 
         m_tableW->setStyleSheet("QTableView{"
                                 "selection-background-color: #383F4F;"
                                 "background-color: #383F4F;"
                                 "color: rgba(255,255,255,191);"
+                                "font-size: 14px;"
                                 "}"
                                 "QTableView QTableCornerButton::section{"
                                 "background: rgb(65,73,92);"
@@ -382,6 +383,8 @@ void EventSearch::setUserStyle(int s)
                                 "}"
                                 "QHeaderView{"
                                 "background-color: rgb(65,73,92);"
+                                "font-size: 14px;"
+                                "font-weight: bold;"
                                 "}"
                                 "QHeaderView::section{"
                                 "color: rgba(255,255,255,191);"
@@ -429,22 +432,33 @@ void EventSearch::setUserStyle(int s)
                                 "}");
 
         m_positionCombox->setStyleSheet("QComboBoxListView{"
-                                        "color: rgba(255,255,255,191);"
-                                        "background-color: rgb(43,49,61);"
+                                        "color: #CECECE;"
+                                        "background-color: transparent;"
+                                        "border-radius: 0px;"
+                                        "border: none;"
                                         "}"
                                         "QComboBox{"
-                                        "color: rgba(255,255,255,191);"
+                                        "color: rgba(255,255,255,0.75);"
+                                        "font-size: 14px;"
                                         "background-color: rgba(255,255,255,0.1);"
+                                        "border: none;"
                                         "border-radius: 4px;"
                                         "padding-left: 10px;"
                                         "}"
                                         "QComboBox QAbstractItemView{"
+                                        "background-color: rgb(43,49,61);"
+                                        "border-radius: 0px;"
                                         "selection-color: white;"
                                         "outline: 0px;"
-                                        "selection-background-color: rgb(71,65,242);"
+                                        "selection-background-color: rgba(255,255,255,0.1);"
                                         "}"
                                         "QComboBox::drop-down{"
-                                        "subcontrol-position: center right;border-image: url(images/dropdown2.png);width:11px;height:8px;subcontrol-origin: padding;margin-right:5px;"
+                                        "subcontrol-position: center right;"
+                                        "border-image: url(images/dropdown2.png);"
+                                        "width:11px;"
+                                        "height:8px;"
+                                        "subcontrol-origin: padding;"
+                                        "margin-right:5px;"
                                         "}"
                                         "QScrollBar:vertical{"
                                         "background: transparent;"
@@ -608,7 +622,6 @@ void EventSearch::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
 #else
     SceneImageDialog dialog;
     dialog.setUserStyle(userStyle());
-    dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
     dialog.setSceneInfo(sinfo);
     dialog.setShowRect(true,true);
     connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
@@ -667,6 +680,13 @@ void EventSearch::slotAlarmHistory(RestServiceI::EventSearchReturn data)
     m_tableW->model()->removeRows(0,m_tableW->rowCount());
     for(RestServiceI::EventSearchItem &itemData : data.data){
         m_tableW->insertRow(m_tableW->rowCount());
+
+        QString eventStr;
+        if(itemData.eventType == "smsr_alarm_face"){
+            eventStr = faceAlarmMap_.value(itemData.persontypNo);
+        }else{
+            eventStr = originalEventMap_.value(itemData.eventType);
+        }
         QTableWidgetItem *item = new QTableWidgetItem;
         item->setData(Qt::UserRole,itemData.warnZong);
         item->setData(Qt::UserRole + 1,itemData.bodyId);
@@ -674,7 +694,7 @@ void EventSearch::slotAlarmHistory(RestServiceI::EventSearchReturn data)
         QLabel *label = new QLabel;
         label->setScaledContents(true);
         QPainter p(&itemData.image);
-        p.setBrush(waringColorMap_.value(itemData.eventType));
+        p.setBrush(waringColorMap_.value(eventStr));
         p.setPen(Qt::NoPen);
         p.drawPolygon(itemData.warnZong);
         p.end();
@@ -693,11 +713,7 @@ void EventSearch::slotAlarmHistory(RestServiceI::EventSearchReturn data)
         m_tableW->setItem(m_tableW->rowCount() - 1,2,item);
 
         item = new QTableWidgetItem;
-        if(itemData.eventType == "smsr_alarm_face"){
-            item->setText(faceAlarmMap_.value(itemData.persontypNo));
-        }else{
-            item->setText(originalEventMap_.value(itemData.eventType));
-        }
+        item->setText(eventStr);
         item->setTextAlignment(Qt::AlignCenter);
         m_tableW->setItem(m_tableW->rowCount() - 1,3,item);
 
