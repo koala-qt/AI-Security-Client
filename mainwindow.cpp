@@ -99,14 +99,14 @@ MainWindow::MainWindow(WidgetI *parent)
         resouPage->loadWebPage(0);
     });
     resourceXialaMenu_->addAction(ac);
-    ac = new QAction(tr("Persons"),resourceXialaMenu_);
+    ac = new QAction(tr("ID Database"),resourceXialaMenu_);
     ac->setData(m_centerW->count() - 1);
     connect(ac,&QAction::triggered,resourceXialaMenu_,[this,ac,resouPage]{
         m_centerW->setCurrentIndex(ac->data().toInt());
         resouPage->loadWebPage(1);
     });
     resourceXialaMenu_->addAction(ac);
-    ac = new QAction(tr("Mark"),resourceXialaMenu_);
+    ac = new QAction(tr("Registration Database"),resourceXialaMenu_);
     ac->setData(m_centerW->count() - 1);
     connect(ac,&QAction::triggered,resourceXialaMenu_,[this,ac,resouPage]{
         m_centerW->setCurrentIndex(ac->data().toInt());
