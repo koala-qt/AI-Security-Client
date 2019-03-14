@@ -1315,11 +1315,7 @@ QString DLL::CloudHttpDao::mnFaceAnalysisSearch(RestServiceI::MNFaceAnalysisArgs
 
 QString DLL::CloudHttpDao::queryGLViewTopStatistics(QString &strDay, RestServiceI::GLViewTopStatistics *resVec)
 {
-#if 0
     QString urlStr = host_ +  QObject::tr("api/v2/cmcc/index/top_statistics");
-#else
-    QString urlStr = "http://192.168.2.126:8080/api/v2/cmcc/index/top_statistics";
-#endif
     QString strCondition = QString("endTime=%1").arg(strDay);
     int resCode = send(DLL::GET,urlStr.toStdString(),strCondition.toStdString(),10);
     if(resCode != CURLE_OK){

@@ -52,8 +52,7 @@ bool GlViewMapWidget::event(QEvent *event)
         slotOnIntruderEvent(info);
     }
 #endif
-
-//        queryTopStatistics();
+        queryTopStatistics();
         return true;
     }
     return WidgetI::event(event);
