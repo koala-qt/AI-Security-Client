@@ -305,7 +305,7 @@ void PortraitSearch::init()
     m_btnImg->setFixedSize(100, 100);
     m_btnImg->setIconSize(QSize(m_btnImg->size()));
     m_btnImg->setFocusPolicy(Qt::NoFocus);
-    QPixmap imgPix("images/portraitlibrary/uploadbg.png");
+    QPixmap imgPix("images/person-face-back.png");
     m_btnImg->setIcon(imgPix.scaled(m_btnImg->iconSize()));
     m_btnImg->setProperty("default-pix",imgPix);
     QCursor curSor = cursor();
