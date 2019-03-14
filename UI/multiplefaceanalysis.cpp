@@ -90,7 +90,7 @@ void MultipleFaceAnalysis::setUserStyle(int style)
                                                     "}"
                                                     "QHeaderView::section{"
                                                     "background-color: transparent;"
-                                                    "color:rgba(255,255,255,191);font-size:14px;font:bold;"
+                                                    "color:rgba(255,255,255,191);font-size:14px;"
                                                     "}");
         m_tableW->verticalScrollBar()->setStyleSheet(
                                                     "QScrollBar:vertical{"
@@ -418,9 +418,6 @@ void MultipleFaceAnalysis::queryPersonTypes()
         QPushButton *m_btnFaceType = Q_NULLPTR;
         for (iter; iter != value.end(); ++iter)
         {
-#if 0
-            m_faceLibBar->addTab(iter->strTypeName);
-#endif
             m_btnFaceType = new QPushButton(iter->strTypeName);
             m_btnFaceType->setProperty(MNFaceTypeCheckedTag, false);
             m_btnFaceType->setStyleSheet("QPushButton{border-image:url(images/portraitlibrary/tab-noselected.png);color:rgba(255,255,255,191);font-size:14px;width:120px;height:40px;}");
@@ -430,7 +427,6 @@ void MultipleFaceAnalysis::queryPersonTypes()
             });
             m_lstFaceLibTypes.append(m_btnFaceType);
         }
-        //m_pFaceTypesHLay->addStretch();
     });
     serviceI->queryPersonTypes();
     label->show(500);
@@ -442,7 +438,6 @@ void MultipleFaceAnalysis::updatePersonTypesState()
     for (auto *tempBtn : m_lstFaceLibTypes)
     {
         tempBtn->setProperty(MNFaceTypeCheckedTag, !bChecked);
-        qDebug() << "MNFaceTypeCheckedTag" << tempBtn->property(MNFaceTypeCheckedTag);
     }
     for (auto *btn : m_lstFaceLibTypes)
     {
@@ -472,8 +467,6 @@ void MultipleFaceAnalysis::slotAddRow(QVector<RestServiceI::MNFaceAnalysisItem> 
     {
         m_pDataTip->show();
     }
-//    for (int j = 0; j < 4; ++j) // test scroll
-//    {
     for (const RestServiceI::MNFaceAnalysisItem &itemData : info)
     {
         m_tableW->insertRow(m_tableW->rowCount());

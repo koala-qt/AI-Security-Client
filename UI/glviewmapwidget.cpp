@@ -13,8 +13,9 @@ GlViewMapWidget::GlViewMapWidget(WidgetI *parent):
 {
     init();
     setUserStyle(userStyle());
-    notifyServiceI_ = reinterpret_cast<NotifyServiceI*>(qApp->property("NotifyServiceI").toULongLong());
-    connect(notifyServiceI_,SIGNAL(sigIntruderEvent(NotifyEventI::IntruderEventData)),this,SLOT(slotOnIntruderEvent(NotifyEventI::IntruderEventData)),Qt::UniqueConnection);
+    m_notifyServiceI = reinterpret_cast<NotifyServiceI*>(qApp->property("NotifyServiceI").toULongLong());
+    connect(m_notifyServiceI, SIGNAL(sigIntruderEvent(NotifyEventI::IntruderEventData)),
+            this, SLOT(slotOnIntruderEvent(NotifyEventI::IntruderEventData)),Qt::UniqueConnection);
 }
 
 void GlViewMapWidget::setUserStyle(int style)
@@ -142,7 +143,6 @@ void GlViewMapWidget::init()
     m_labDataStorage->setAlignment(Qt::AlignRight);
     pMidVlay->addWidget(m_labDataStorage);
     pMidVlay->addStretch();
-
 #endif 0
 }
 

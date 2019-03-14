@@ -35,12 +35,12 @@ private:
     QImage m_backgroundImg;
 
     // top statistics
-    QLabel *m_labLocationAccess{nullptr};
+    QLabel *m_labLocationAccess{nullptr}; // Area cameras
     QLabel *m_labCameraAccess{nullptr};
     QLabel *m_labIDNumbers{nullptr};
     QLabel *m_labDataStorage{nullptr};
 
-    NotifyServiceI *notifyServiceI_{nullptr};
+    NotifyServiceI *m_notifyServiceI{nullptr};
 
     // 3.13 add cameras position control.
     QMutex m_mutex;
