@@ -631,6 +631,7 @@ QString DLL::CloudHttpDao::captureSearch(RestServiceI::CaptureSearchArgs &args, 
         item.id = itemObj.value("id").toString();
         item.sceneId = itemObj.value("sceneId").toString();
         item.time = QDateTime::fromMSecsSinceEpoch(itemObj.value("ts").toVariant().toULongLong());
+        item.time = item.time.toUTC();
         QImage img;
         img.loadFromData(QByteArray::fromBase64(itemObj.value("snapshot").toString().toLatin1()));
         item.img = img;
@@ -680,6 +681,7 @@ QString DLL::CloudHttpDao::semanticSearch(RestServiceI::SemanticSearchArgs &args
         item.id = itemObj.value("id").toString();
         item.sceneId = itemObj.value("sceneId").toString();
         item.time = QDateTime::fromMSecsSinceEpoch(itemObj.value("ts").toVariant().toULongLong());
+        item.time = item.time.toUTC();
         QImage img;
         img.loadFromData(QByteArray::fromBase64(itemObj.value("snapshot").toString().toLatin1()));
         item.img = img;
@@ -735,6 +737,7 @@ QString DLL::CloudHttpDao::searchByImage(RestServiceI::SearchUseImageArgs &args,
         sitem.personId = itemObj.value("personId").toString();
         sitem.sceneId = itemObj.value("sceneId").toString();
         sitem.time = QDateTime::fromMSecsSinceEpoch(itemObj.value("ts").toVariant().toULongLong());
+        sitem.time = sitem.time.toUTC();
         sitem.similarity = itemObj.value("similarity").toDouble();
         return sitem;
     });
@@ -787,6 +790,7 @@ QString DLL::CloudHttpDao::combinationSearch(RestServiceI::CombinationSearchArgs
         sitem.img.loadFromData(QByteArray::fromBase64(itemObj.value("snapshot").toString().toLatin1()));
         sitem.sceneId = itemObj.value("sceneId").toString();
         sitem.time = QDateTime::fromMSecsSinceEpoch(itemObj.value("ts").toVariant().toULongLong());
+        sitem.time = sitem.time.toUTC();
         sitem.similarity = itemObj.value("similarity").toDouble();
         return sitem;
     });
@@ -799,6 +803,7 @@ QString DLL::CloudHttpDao::combinationSearch(RestServiceI::CombinationSearchArgs
         sitem.bodyImg.loadFromData(QByteArray::fromBase64(itemObj.value("snapshot").toString().toLatin1()));
         sitem.sceneId = itemObj.value("sceneId").toString();
         sitem.time = QDateTime::fromMSecsSinceEpoch(itemObj.value("ts").toVariant().toULongLong());
+        sitem.time = sitem.time.toUTC();
         sitem.similarity = itemObj.value("similarity").toDouble();
         return sitem;
     });
@@ -852,6 +857,7 @@ QString DLL::CloudHttpDao::multipleSearch(RestServiceI::MultipleSearchArgs &args
         sitem.cameraId = itemObj.value("cameraId").toString();
         sitem.img.loadFromData(QByteArray::fromBase64(itemObj.value("snapshot").toString().toLatin1()));
         sitem.time = QDateTime::fromMSecsSinceEpoch(itemObj.value("ts").toVariant().toULongLong());
+        sitem.time = sitem.time.toUTC();
         sitem.sceneId = itemObj.value("id").toString();
         return sitem;
     });
@@ -891,6 +897,7 @@ QString DLL::CloudHttpDao::getFaceLinkDataColl(RestServiceI::FaceLinkDataCollArg
         item.id = itemObj.value("id").toString();
         item.sceneId = itemObj.value("sceneId").toString();
         item.time = QDateTime::fromMSecsSinceEpoch(itemObj.value("ts").toVariant().toULongLong());
+        item.time = item.time.toUTC();
         QImage img;
         img.loadFromData(QByteArray::fromBase64(itemObj.value("snapshot").toString().toLatin1()));
         item.img = img;

@@ -649,7 +649,7 @@ bool SemanticSearchPage::event(QEvent *event)
 {
     if(event->type() == QEvent::Show  && searchBtn_->isEnabled()){
         endTimeEdit_->setDateTime(QDateTime::currentDateTime());
-        slotSearchBtnClicked();
+//        slotSearchBtnClicked();
     }
     return WidgetI::event(event);
 }

@@ -50,7 +50,7 @@ private:
     int curMode_;
     bool needUpdatePageInfo_ = true;
     bool preIsSearch_ = false;
-    bool dataGeted_ = false, availabelAttrGeted_ = false;
+    bool dataGeted_ = true, availabelAttrGeted_ = true;
     int dataRows_;
     int dataCols_;
     int curTotalPage_,curTotalRecords_;

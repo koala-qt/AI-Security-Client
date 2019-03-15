@@ -52,7 +52,7 @@ MainWindow::MainWindow(WidgetI *parent)
     monitoringStackedW->addWidget(videoW);
     connect(homeW,&HomPage::sigSwitchBtnClicked,monitoringStackedW,[monitoringStackedW]{monitoringStackedW->setCurrentIndex(1);});
     connect(videoW,&RealtimeMonitoring::sigSwitchBtnClicked,videoW,[monitoringStackedW]{monitoringStackedW->setCurrentIndex(0);});
-    monitoringStackedW->setObjectName(tr("Surveilance"));
+    monitoringStackedW->setObjectName(tr("Surveillance"));
 
     m_centerW->addWidget(new GolbalViewWidget());
     m_centerW->addWidget(monitoringStackedW);
@@ -91,7 +91,7 @@ MainWindow::MainWindow(WidgetI *parent)
         m_topList->addItem(item);
     }
     resourceXialaMenu_->setMinimumWidth(m_topList->item(m_topList->count() - 1)->sizeHint().width());
-    m_topList->setMinimumWidth(viewW + (m_topList->count() + 1) * m_topList->spacing() + 2 * m_topList->frameWidth());
+    m_topList->setFixedWidth(viewW + (m_topList->count() + 1) * m_topList->spacing() + 2 * m_topList->frameWidth());
     QAction *ac = new QAction(tr("Devices"),resourceXialaMenu_);
     ac->setData(m_centerW->count() - 1);
     connect(ac,&QAction::triggered,resourceXialaMenu_,[this,ac,resouPage]{
