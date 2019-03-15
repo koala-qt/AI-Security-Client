@@ -23,7 +23,7 @@
 MultipleSearch::MultipleSearch( WidgetI *parent):
     WidgetI(parent)
 {
-    setObjectName(tr("Simultaneous Scene"));
+    setObjectName(tr("Multiple Images"));
     QVBoxLayout *mainLay = new QVBoxLayout;
     imgList_ = new QListWidget;
     dataList_ = new QListWidget;

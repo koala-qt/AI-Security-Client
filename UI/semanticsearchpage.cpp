@@ -36,7 +36,7 @@
 SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     WidgetI(parent)
 {
-    setObjectName(tr("Historical Capture"));
+    setObjectName(tr("Surveillance Database"));
     personTypeL_ = new QLabel(tr("Source"));
     personTypeCombox_ = new QComboBox;
     posL_ = new QLabel(tr("    Position"));
@@ -708,6 +708,9 @@ void SemanticSearchPage::setTableData(QVector<RestServiceI::DataRectureItem> &da
         item->setToolTip(cameraMapInfo_.value(info.cameraId));
         item->setTextAlignment(Qt::AlignHCenter);
         dataListW_->addItem(item);
+    }
+    if(data.isEmpty()){
+        noDataW_->show();
     }
 }
 

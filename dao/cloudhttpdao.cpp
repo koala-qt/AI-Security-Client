@@ -291,6 +291,7 @@ QString DLL::CloudHttpDao::tracking(RestServiceI::FaceTrackingArgs &args, QVecto
     }
     QJsonArray jsArray = jsObj.value("data").toArray();
 #if 1
+    if(jsArray.isEmpty())return "No matched result !";
     for(auto &jsVal : jsArray){
         QJsonObject  dataObj = jsVal.toObject();
         RestServiceI::TrackingReturnData pdata;
@@ -319,7 +320,7 @@ QString DLL::CloudHttpDao::tracking(RestServiceI::FaceTrackingArgs &args, QVecto
         pdata.sceneId = dataObj.value("faceSceneId").toString();
         allData << pdata;
     }
-    if(allData.isEmpty())return "no points";
+    if(allData.isEmpty())return "No matched result !";
     QVector<QVector<RestServiceI::TrackingReturnData>> rightDataVec;
     rightDataVec << (QVector<RestServiceI::TrackingReturnData>() << allData.first());
     for(int i = 1; i < allData.count(); i++){

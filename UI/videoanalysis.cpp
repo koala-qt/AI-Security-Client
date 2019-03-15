@@ -14,7 +14,7 @@
 VideoAnalysis::VideoAnalysis(WidgetI *parent):
     WidgetI(parent)
 {
-    setObjectName(tr("Video Search"));
+    setObjectName(tr("Uploaded Videos"));
     stackedW_ = new QStackedWidget;
     videoDataW_ = new VideoAnalysisData;
     progressW_ = new UploadVideoProgress;

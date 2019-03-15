@@ -58,18 +58,17 @@ TargetSearch::TargetSearch( WidgetI *parent):
     m_pMultFaceAnalysis->installEventFilter(this);
     QVector<itemData> devicesVec;
     itemData items;
-    items.name = tr("Capture Search");
+    items.name = semanticSearchPage_->objectName();
     items.value = 0;
 #if 1
-    items.childrens << itemData{semanticSearchPage_->objectName(),0,QVector<itemData>()} << itemData{tr("Upload Search"),1,QVector<itemData>()
-                                                                                  << itemData{faceSearchPage_->objectName(),1,QVector<itemData>()}
-                                                                                  << itemData{combinationPage_->objectName(),2,QVector<itemData>()}
-                                                                                  << itemData{multiPleSearchPage_->objectName(),3,QVector<itemData>()}
-                                                                                  << itemData{facelinkPage_->objectName(),4,QVector<itemData>()}
-                                                                                  << itemData{trackingPage_->objectName(),5,QVector<itemData>()}};
+    items.childrens << itemData{tr("Search By Upload"),1, QVector<itemData>() << itemData{faceSearchPage_->objectName(),1,QVector<itemData>()}
+                                                                              << itemData{combinationPage_->objectName(),2,QVector<itemData>()}
+                                                                              << itemData{multiPleSearchPage_->objectName(),3,QVector<itemData>()}
+                                                                              << itemData{facelinkPage_->objectName(),4,QVector<itemData>()}
+                                                                              << itemData{trackingPage_->objectName(),5,QVector<itemData>()}};
     devicesVec << items;
     items.childrens.clear();
-    items.name = tr("Face Database Search");
+    items.name = tr("Imported Photo Database");
     items.value = 6;
     items.childrens << itemData{portraitSearchPage_->objectName(),6,QVector<itemData>()}
                                                                                  << itemData{m_pMultFaceAnalysis->objectName(),7,QVector<itemData>()};

@@ -28,7 +28,7 @@
 CombinationPage::CombinationPage( WidgetI *parent):
     WidgetI(parent)
 {
-    setObjectName(tr("Body Search"));
+    setObjectName(tr("Body"));
     imageBtn_ = new QPushButton;
     searchBtn_ = new QPushButton(tr("Search"));
     similarityL_ = new QLabel(tr("Similarity"));

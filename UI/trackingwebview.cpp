@@ -47,7 +47,6 @@ void TrackingWebView::updateTracking(QVector<TrackingWebView::TrackingPoint> &da
         jsObj["sceneId"] = value.sceneId;
         jsArray << jsObj;
     }
-    qDebug() << jsArray;
     webBridge_->updateData(jsArray);
 }
 
