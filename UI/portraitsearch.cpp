@@ -42,7 +42,7 @@ void PortraitSearch::setUserStyle(int s)
         pal.setColor(QPalette::Foreground, QColor("#313745"));
 
         m_btnImg->setStyleSheet("QPushButton{"
-                                "background-color: transparent;border-image: url(images/person-face-back.png);"
+                                "border-image: url(images/person-face-back.png);"
                                 "}");
         QString commStyle = "font-size:14px;color:rgba(255,255,255,191);";
         m_pLabSimilary->setStyleSheet(commStyle);
@@ -381,7 +381,7 @@ void PortraitSearch::init()
     hlay->addWidget(m_pageIndicator);
     hlay->setAlignment(Qt::AlignCenter);
     mainLay->addLayout(hlay);
-    mainLay->setContentsMargins(30, 20, 10, 10);
+    mainLay->setContentsMargins(40, 40, 40, 40);
     setLayout(mainLay);
 
     m_pDataTip = new NoDataTip(m_tableW);

@@ -365,7 +365,7 @@ void MultipleFaceAnalysis::init()
     hlay->addWidget(m_pageIndicator);
     hlay->setAlignment(Qt::AlignCenter);
     mainLay->addLayout(hlay);
-    mainLay->setContentsMargins(30,20,10,10);
+    mainLay->setContentsMargins(40, 40, 40, 40);
     setLayout(mainLay);
 
     m_pDataTip = new NoDataTip(m_tableW);
@@ -498,14 +498,14 @@ void MultipleFaceAnalysis::slotAddRow(QVector<RestServiceI::MNFaceAnalysisItem> 
             hContainerLay = new QHBoxLayout;
             hContainerLay->setMargin(0);
             hContainerLay->setSpacing(0);
-            hContainerLay->setAlignment(Qt::AlignCenter);
+            hContainerLay->setAlignment(Qt::AlignLeft);
             captureContainer->setLayout(hContainerLay);
             captureWgt = new QWidget;
             hContainerLay->addWidget(captureWgt);
             captureWgt->setStyleSheet("font-size:10px;color:rgba(255,255,255,191);height:50px;");
             hLay = new QHBoxLayout;
             hLay->setMargin(0);
-            hLay->setAlignment(Qt::AlignCenter);
+            hLay->setAlignment(Qt::AlignLeft);
             hLay->setSpacing(10);
             captureWgt->setLayout(hLay);
             vLay = new QVBoxLayout;
@@ -530,7 +530,7 @@ void MultipleFaceAnalysis::slotAddRow(QVector<RestServiceI::MNFaceAnalysisItem> 
         {
             QTableWidgetItem *errItem = new QTableWidgetItem(itemData.strErrMsg);
             m_tableW->setItem(m_tableW->rowCount() - 1, Capture1, errItem);
-            errItem->setTextAlignment(Qt::AlignCenter);
+            errItem->setTextAlignment(Qt::AlignLeft);
         }
     }
 }
