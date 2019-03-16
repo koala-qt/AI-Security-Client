@@ -179,7 +179,7 @@ QString DLL::CloudHttpDao::faceLink_(RestServiceI::FaceLinkArgs &args, QString *
                       {"base64",QString::fromLatin1(imgArray.toBase64(QByteArray::Base64UrlEncoding))}};
     QJsonDocument jsDoc(jsObj);
     QByteArray argsJsonArray = jsDoc.toJson();
-    int resCode = send(DLL::POST,urlStr.toStdString(),argsJsonArray.toStdString(),30);
+    int resCode = send(DLL::POST,urlStr.toStdString(),argsJsonArray.toStdString(),45);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -603,8 +603,8 @@ QString DLL::CloudHttpDao::captureSearch(RestServiceI::CaptureSearchArgs &args, 
             .arg(args.end.toString("yyyy-MM-dd HH:mm:ss"))
             .arg(args.page)
             .arg(args.pageCount);
-    qDebug() << urlStr;
-    qDebug() << postData;
+    qDebug() << "all" << urlStr;
+    qDebug() << "all" << postData;
     int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),30);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
@@ -653,8 +653,8 @@ QString DLL::CloudHttpDao::semanticSearch(RestServiceI::SemanticSearchArgs &args
             .arg(args.endT.toString("yyyy-MM-dd HH:mm:ss"))
             .arg(args.pageNo)
             .arg(args.pageSize);
-    qDebug() << urlStr;
-    qDebug() << postData;
+    qDebug() << "semantic" << urlStr;
+    qDebug() << "semantic" << postData;
     int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),30);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
@@ -871,6 +871,7 @@ QString DLL::CloudHttpDao::getFaceLinkDataColl(RestServiceI::FaceLinkDataCollArg
             .arg(args.cameraId,args.faceAttrs.join(','),args.startT.toString("yyyy-MM-dd HH:mm:ss"),args.endT.toString("yyyy-MM-dd HH:mm:ss"))
             .arg(args.pageNo)
             .arg(args.pageSize);
+    qDebug() << "facelink" << urlStr;
     int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),30);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
@@ -976,6 +977,7 @@ QString DLL::CloudHttpDao::searchAvailableAttribute(RestServiceI::SearchAttrsArg
 {
     QString urlStr = host_ + QObject::tr("api/v2/external/monitor-detail/query/face-attributes?mode=%1&faceAttrs=%2&startTime=%3&finishTime=%4&cameraId=%5")
             .arg(args.model,args.faceAttrs.join(','),args.startT.toString("yyyy-MM-dd%20HH:mm:ss"),args.endT.toString("yyyy-MM-dd%20HH:mm:ss"),args.cameraId);
+    qDebug() << "search availabel attribute" << urlStr;
     int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),30);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));

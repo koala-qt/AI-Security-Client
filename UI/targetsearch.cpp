@@ -196,6 +196,9 @@ void TargetSearch::createTreeItem(QTreeWidget *treeW, QTreeWidgetItem *parentIte
     }
     item->setData(0,Qt::UserRole,items.value);
     item->setSizeHint(0,QSize(-1,34));
+    if(items.value == 4){
+        treeW->setItemHidden(item,true);
+    }
     for(auto value : items.childrens){
         createTreeItem(treeW,item,value);
     }

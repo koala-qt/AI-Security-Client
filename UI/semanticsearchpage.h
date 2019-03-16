@@ -37,7 +37,7 @@ private:
     QLabel *personTypeL_{nullptr}, *posL_{nullptr},*startTimeL_{nullptr},*endTimeL_{nullptr};
     QComboBox *personTypeCombox_{nullptr}, *posCombox_{nullptr};
     QDateTimeEdit *startTimeEdit_{nullptr},*endTimeEdit_{nullptr};
-    QPushButton *searchBtn_{nullptr};
+    QPushButton *searchBtn_{nullptr},*flushAttrBtn_{nullptr};
     PageIndicator *pageIndicator_{nullptr};
     QTreeWidget *attributTreeW_{nullptr};
     QListWidget *dataListW_{nullptr};
@@ -51,6 +51,7 @@ private:
     bool needUpdatePageInfo_ = true;
     bool preIsSearch_ = false;
     bool dataGeted_ = true, availabelAttrGeted_ = true;
+    bool isClearnAttrSelected_ = false;
     int dataRows_;
     int dataCols_;
     int curTotalPage_,curTotalRecords_;
@@ -67,10 +68,11 @@ private:
     void getAvailableAttrs(WaitingLabel *);
 
 private slots:
+    void slotAttributeBtnClicked();
     void slotPageIndexChanged(int);
-    void slotSearchAll(int);
-    void slotSemanticSearch(int);
-    void slotSearchFaceLink(int);
+    void slotSearchAll(int,bool attrAsync);
+    void slotSemanticSearch(int,bool attrAsync);
+    void slotSearchFaceLink(int,bool attrAsync);
     void slotSearchBtnClicked();
     void slotOnCameraInfo(QVector<RestServiceI::CameraInfo>);
     void slotTreeItemChanged(QTreeWidgetItem*,int);

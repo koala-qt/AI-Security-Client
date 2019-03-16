@@ -49,6 +49,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     attributTreeW_ = new QTreeWidget;
     dataListW_ = new QListWidget;
     centeVSplieL_ = new QLabel;
+    flushAttrBtn_ = new QPushButton(tr("Attributes Reset"));
     pageIndicator_ = new PageIndicator;
     dataMenu_ = new QMenu(dataListW_);
 
@@ -74,7 +75,13 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     QHBoxLayout *mainLay = new QHBoxLayout;
     mainLay->addLayout(vlay);
     mainLay->addWidget(centeVSplieL_);
-    mainLay->addWidget(attributTreeW_);
+    vlay = new QVBoxLayout;
+    QHBoxLayout *hlay = new QHBoxLayout;
+    hlay->addWidget(flushAttrBtn_);
+    vlay->addLayout(hlay);
+    vlay->addWidget(attributTreeW_);
+    vlay->setSpacing(0);
+    mainLay->addLayout(vlay);
     mainLay->setSpacing(20);
     mainLay->setContentsMargins(40,40,40,40);
     setLayout(mainLay);
@@ -284,7 +291,9 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     attributTreeW_->headerItem()->setTextAlignment(0,Qt::AlignCenter);
     attributTreeW_->header()->setStretchLastSection(true);
     attributTreeW_->header()->setIconSize(QSize(50,50));
+    attributTreeW_->header()->hide();
     attributTreeW_->setFocusPolicy(Qt::NoFocus);
+    flushAttrBtn_->setFixedSize(164,34);
     QSize s = attributTreeW_->headerItem()->sizeHint(0);
     attributTreeW_->headerItem()->setSizeHint(0,QSize(s.width(),50));
     personTypeCombox_->setFixedSize(200,34);
@@ -308,6 +317,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     connect(pageIndicator_,SIGNAL(sigPageClicked(int)),this,SLOT(slotPageIndexChanged(int)));
     connect(searchBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSearchBtnClicked()));
     connect(attributTreeW_,SIGNAL(itemChanged(QTreeWidgetItem*,int)),this,SLOT(slotTreeItemChanged(QTreeWidgetItem*,int)));
+    connect(flushAttrBtn_,SIGNAL(clicked(bool)),this,SLOT(slotAttributeBtnClicked()));
 
     QSettings config("config.ini",QSettings::IniFormat);
     dataRows_ = config.value("App/SemanticRows").toInt();
@@ -620,6 +630,16 @@ void SemanticSearchPage::setUserStyle(int s)
                                                 "font-weight: bold;"
                                                 "background-color: transparent;"
                                                 "}");
+        flushAttrBtn_->setStyleSheet("QPushButton{"
+                                     "background-color: rgb(83,77,251);"
+                                     "color: white;"
+                                     "border-radius: 4px;"
+                                     "font-size: 14px;"
+                                     "}"
+                                     "QPushButton:pressed{"
+                                     "padding: 2px;"
+                                     "background-color: #312DA6;"
+                                     "}");
 
         noDataW_->setUserStyle(s);
     }
@@ -709,17 +729,18 @@ void SemanticSearchPage::setTableData(QVector<RestServiceI::DataRectureItem> &da
         item->setTextAlignment(Qt::AlignHCenter);
         dataListW_->addItem(item);
     }
+
     if(data.isEmpty()){
         noDataW_->show();
     }
 }
 
-void SemanticSearchPage::slotSemanticSearch(int page)
+void SemanticSearchPage::slotSemanticSearch(int page,bool attrAsync)
 {
     ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
     RestServiceI *serviceI = factoryI->makeRestServiceI();
     WaitingLabel *label = new WaitingLabel(dataListW_);
-    if(page == 1){
+    if(attrAsync){
         connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
             dataGeted_ = true;
             curEnableAttrErrorStr_ = str;
@@ -740,7 +761,9 @@ void SemanticSearchPage::slotSemanticSearch(int page)
                 pageIndicator_->setEnabled(true);
                 searchBtn_->setEnabled(true);
                 attributTreeW_->setEnabled(true);
+                flushAttrBtn_->setEnabled(true);
                 preIsSearch_ = false;
+                isClearnAttrSelected_ = false;
             }
         });
         connect(serviceI,&RestServiceI::sigSemanticSearch,this,[this,label](RestServiceI::SemanticReturnData returnData){
@@ -757,6 +780,13 @@ void SemanticSearchPage::slotSemanticSearch(int page)
                     infoDialog.setMessage(tr("GetEnabledAttr:%1").arg(curDataErrorStr_));
                     infoDialog.exec();
                     curEnableAttrErrorStr_.clear();
+                    noDataW_->show();
+                    pageIndicator_->setEnabled(true);
+                    searchBtn_->setEnabled(true);
+                    attributTreeW_->setEnabled(true);
+                    flushAttrBtn_->setEnabled(true);
+                    preIsSearch_ = false;
+                    isClearnAttrSelected_ = false;
                     return;
                 }
                 setEnableAttrs(curEnableAttrList_);
@@ -766,7 +796,9 @@ void SemanticSearchPage::slotSemanticSearch(int page)
                 pageIndicator_->setEnabled(true);
                 searchBtn_->setEnabled(true);
                 attributTreeW_->setEnabled(true);
+                flushAttrBtn_->setEnabled(true);
                 preIsSearch_ = false;
+                isClearnAttrSelected_ = false;
             }
         });
         getAvailableAttrs(label);
@@ -783,6 +815,7 @@ void SemanticSearchPage::slotSemanticSearch(int page)
             attributTreeW_->setEnabled(true);
             noDataW_->show();
             preIsSearch_ = false;
+            isClearnAttrSelected_ = false;
         });
         connect(serviceI,&RestServiceI::sigSemanticSearch,this,[this,label](RestServiceI::SemanticReturnData returnData){
             label->close();
@@ -792,14 +825,12 @@ void SemanticSearchPage::slotSemanticSearch(int page)
                 pageIndicator_->setPageInfo(returnData.totalPage,returnData.toatal);
                 needUpdatePageInfo_ = false;
             }
-            if(returnData.toatal == 0){
-                noDataW_->show();
-            }
             setTableData(returnData.records);
             pageIndicator_->setEnabled(true);
             searchBtn_->setEnabled(true);
             attributTreeW_->setEnabled(true);
             preIsSearch_ = false;
+            isClearnAttrSelected_ = false;
         });
     }
     RestServiceI::SemanticSearchArgs args;
@@ -821,12 +852,12 @@ void SemanticSearchPage::slotSemanticSearch(int page)
     dataGeted_ = false;
 }
 
-void SemanticSearchPage::slotSearchFaceLink(int page)
+void SemanticSearchPage::slotSearchFaceLink(int page, bool attrAsync)
 {
     ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
     RestServiceI *serviceI = factoryI->makeRestServiceI();
     WaitingLabel *label = new WaitingLabel(dataListW_);
-    if(page == 1){
+    if(attrAsync){
         connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
             dataGeted_ = true;
             curEnableAttrErrorStr_ = str;
@@ -847,7 +878,9 @@ void SemanticSearchPage::slotSearchFaceLink(int page)
                 pageIndicator_->setEnabled(true);
                 searchBtn_->setEnabled(true);
                 attributTreeW_->setEnabled(true);
+                flushAttrBtn_->setEnabled(true);
                 preIsSearch_ = false;
+                isClearnAttrSelected_ = false;
             }
         });
         connect(serviceI,&RestServiceI::sigFaceLinkDataColl,this,[this,label](RestServiceI::FaceLinkDataCollReturn &returnData){
@@ -864,6 +897,13 @@ void SemanticSearchPage::slotSearchFaceLink(int page)
                     infoDialog.setMessage(tr("GetEnabledAttr:%1").arg(curDataErrorStr_));
                     infoDialog.exec();
                     curEnableAttrErrorStr_.clear();
+                    noDataW_->show();
+                    pageIndicator_->setEnabled(true);
+                    searchBtn_->setEnabled(true);
+                    attributTreeW_->setEnabled(true);
+                    flushAttrBtn_->setEnabled(true);
+                    preIsSearch_ = false;
+                    isClearnAttrSelected_ = false;
                     return;
                 }
                 setEnableAttrs(curEnableAttrList_);
@@ -873,7 +913,9 @@ void SemanticSearchPage::slotSearchFaceLink(int page)
                 pageIndicator_->setEnabled(true);
                 searchBtn_->setEnabled(true);
                 attributTreeW_->setEnabled(true);
+                flushAttrBtn_->setEnabled(true);
                 preIsSearch_ = false;
+                isClearnAttrSelected_ = false;
             }
         });
         getAvailableAttrs(label);
@@ -890,6 +932,7 @@ void SemanticSearchPage::slotSearchFaceLink(int page)
             attributTreeW_->setEnabled(true);
             noDataW_->show();
             preIsSearch_ = false;
+            isClearnAttrSelected_ = false;
         });
         connect(serviceI,&RestServiceI::sigFaceLinkDataColl,this,[this,label](RestServiceI::FaceLinkDataCollReturn &returnData){
             label->close();
@@ -899,14 +942,12 @@ void SemanticSearchPage::slotSearchFaceLink(int page)
                 pageIndicator_->setPageInfo(returnData.totalPage,returnData.toatal);
                 needUpdatePageInfo_ = false;
             }
-            if(returnData.toatal == 0){
-                noDataW_->show();
-            }
             setTableData(returnData.records);
             pageIndicator_->setEnabled(true);
             searchBtn_->setEnabled(true);
             attributTreeW_->setEnabled(true);
             preIsSearch_ = false;
+            isClearnAttrSelected_ = false;
         });
     }
     RestServiceI::FaceLinkDataCollArgs args;
@@ -956,6 +997,13 @@ void SemanticSearchPage::getAvailableAttrs(WaitingLabel *label)
                 infoDialog.setMessage(tr("Data:%1").arg(curDataErrorStr_));
                 infoDialog.exec();
                 curDataErrorStr_.clear();
+                noDataW_->show();
+                pageIndicator_->setEnabled(true);
+                searchBtn_->setEnabled(true);
+                attributTreeW_->setEnabled(true);
+                preIsSearch_ = false;
+                isClearnAttrSelected_ = false;
+                flushAttrBtn_->setEnabled(true);
                 return;
             }
             setEnableAttrs(attrs);
@@ -965,7 +1013,9 @@ void SemanticSearchPage::getAvailableAttrs(WaitingLabel *label)
             pageIndicator_->setEnabled(true);
             searchBtn_->setEnabled(true);
             attributTreeW_->setEnabled(true);
+            flushAttrBtn_->setEnabled(true);
             preIsSearch_ = false;
+            isClearnAttrSelected_ = false;
         }
     });
     connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
@@ -988,7 +1038,9 @@ void SemanticSearchPage::getAvailableAttrs(WaitingLabel *label)
             pageIndicator_->setEnabled(true);
             searchBtn_->setEnabled(true);
             attributTreeW_->setEnabled(true);
+            flushAttrBtn_->setEnabled(true);
             preIsSearch_ = false;
+            isClearnAttrSelected_ = false;
         }
     });
     RestServiceI::SearchAttrsArgs args;
@@ -1001,23 +1053,50 @@ void SemanticSearchPage::getAvailableAttrs(WaitingLabel *label)
     availabelAttrGeted_ = false;
 }
 
+void SemanticSearchPage::slotAttributeBtnClicked()
+{
+    isClearnAttrSelected_ = true;
+    QTreeWidgetItemIterator it(attributTreeW_->topLevelItem(0));
+    while (*it) {
+        if((*it)->type()){
+            (*it)->setCheckState(0,Qt::Unchecked);
+        }
+        ++it;
+    }
+
+    curfaceAttrList_.clear();
+    curCameraId_ = posCombox_->currentData().toString();
+    curMode_ = personTypeCombox_->currentIndex();
+    curStartTime_ = startTimeEdit_->dateTime();
+    curEndTime_ = endTimeEdit_->dateTime();
+    needUpdatePageInfo_ = true;
+    if(curMode_ == 0){
+        slotSearchAll(1,true);
+    }else if(curMode_ == 1){
+        slotSemanticSearch(1,true);
+    }else if(curMode_ == 2){
+        slotSearchFaceLink(1,true);
+    }
+    flushAttrBtn_->setEnabled(false);
+}
+
 void SemanticSearchPage::slotPageIndexChanged(int page)
 {
     if(curMode_ == 0){
-        slotSearchAll(page);
+        slotSearchAll(page,false);
     }else if(curMode_ == 1){
-        slotSemanticSearch(page);
+        slotSemanticSearch(page,false);
     }else if(curMode_ == 2){
-        slotSearchFaceLink(page);
+        slotSearchFaceLink(page,false);
     }
 }
 
-void SemanticSearchPage::slotSearchAll(int page)
+void SemanticSearchPage::slotSearchAll(int page, bool attrAsync)
 {
     ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
     RestServiceI *serviceI = factoryI->makeRestServiceI();
     WaitingLabel *label = new WaitingLabel(dataListW_);
-    if(page == 1){
+    if(attrAsync){
         connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
             dataGeted_ = true;
             curEnableAttrErrorStr_ = str;
@@ -1038,7 +1117,9 @@ void SemanticSearchPage::slotSearchAll(int page)
                 pageIndicator_->setEnabled(true);
                 searchBtn_->setEnabled(true);
                 attributTreeW_->setEnabled(true);
+                flushAttrBtn_->setEnabled(true);
                 preIsSearch_ = false;
+                isClearnAttrSelected_ = false;
             }
         });
         connect(serviceI,&RestServiceI::sigCaptureSearch,this,[this,label](RestServiceI::CaptureSearchReturnData value){
@@ -1055,8 +1136,16 @@ void SemanticSearchPage::slotSearchAll(int page)
                     infoDialog.setMessage(tr("GetEnabledAttr:%1").arg(curDataErrorStr_));
                     infoDialog.exec();
                     curEnableAttrErrorStr_.clear();
+                    pageIndicator_->setEnabled(true);
+                    searchBtn_->setEnabled(true);
+                    attributTreeW_->setEnabled(true);
+                    flushAttrBtn_->setEnabled(true);
+                    preIsSearch_ = false;
+                    isClearnAttrSelected_ = false;
+                    noDataW_->show();
                     return;
                 }
+
                 setEnableAttrs(curEnableAttrList_);
                 pageIndicator_->adjustRow();
                 pageIndicator_->setPageInfo(curTotalPage_,curTotalRecords_);
@@ -1064,7 +1153,9 @@ void SemanticSearchPage::slotSearchAll(int page)
                 pageIndicator_->setEnabled(true);
                 searchBtn_->setEnabled(true);
                 attributTreeW_->setEnabled(true);
+                flushAttrBtn_->setEnabled(true);
                 preIsSearch_ = false;
+                isClearnAttrSelected_ = false;
             }
         });
         getAvailableAttrs(label);
@@ -1081,6 +1172,7 @@ void SemanticSearchPage::slotSearchAll(int page)
             attributTreeW_->setEnabled(true);
             noDataW_->show();
             preIsSearch_ = false;
+            isClearnAttrSelected_ = false;
         });
         connect(serviceI,&RestServiceI::sigCaptureSearch,this,[this,label](RestServiceI::CaptureSearchReturnData value){
             label->close();
@@ -1090,14 +1182,12 @@ void SemanticSearchPage::slotSearchAll(int page)
                 pageIndicator_->setPageInfo(value.totalPage,value.totalCount);
                 needUpdatePageInfo_ = false;
             }
-            if(value.totalCount == 0){
-                noDataW_->show();
-            }
             setTableData(value.data);
             pageIndicator_->setEnabled(true);
             searchBtn_->setEnabled(true);
             attributTreeW_->setEnabled(true);
             preIsSearch_ = false;
+            isClearnAttrSelected_ = false;
         });
     }
     RestServiceI::CaptureSearchArgs args;
@@ -1120,8 +1210,6 @@ void SemanticSearchPage::slotSearchAll(int page)
 
 void SemanticSearchPage::slotSearchBtnClicked()
 {
-    curfaceAttrList_.clear();
-    curfaceAttrList_ = checkedAttrbute(attributTreeW_->topLevelItem(0));
     curCameraId_ = posCombox_->currentData().toString();
     curMode_ = personTypeCombox_->currentIndex();
     curStartTime_ = startTimeEdit_->dateTime();
@@ -1142,8 +1230,20 @@ void SemanticSearchPage::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data
 
 void SemanticSearchPage::slotTreeItemChanged(QTreeWidgetItem *item, int column)
 {
-    if(preIsSearch_)return;
-    slotSearchBtnClicked();
+    if(preIsSearch_ || isClearnAttrSelected_)return;
+    curfaceAttrList_ = checkedAttrbute(attributTreeW_->topLevelItem(0));
+    curCameraId_ = posCombox_->currentData().toString();
+    curMode_ = personTypeCombox_->currentIndex();
+    curStartTime_ = startTimeEdit_->dateTime();
+    curEndTime_ = endTimeEdit_->dateTime();
+    needUpdatePageInfo_ = true;
+    if(curMode_ == 0){
+        slotSearchAll(1,true);
+    }else if(curMode_ == 1){
+        slotSemanticSearch(1,true);
+    }else if(curMode_ == 2){
+        slotSearchFaceLink(1,true);
+    }
 }
 
 void SemanticSearchPage::createTreeItem(QTreeWidget *treeW, QTreeWidgetItem *parentItem, SemanticSearchPage::itemData &items)
@@ -1156,6 +1256,7 @@ void SemanticSearchPage::createTreeItem(QTreeWidget *treeW, QTreeWidgetItem *par
     }
     if(item->type()){
         item->setCheckState(0,Qt::Unchecked);
+        item->setDisabled(true);
     }
     for(auto value : items.childrens){
         createTreeItem(treeW,item,value);
