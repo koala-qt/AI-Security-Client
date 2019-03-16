@@ -290,7 +290,7 @@ QString DLL::CloudHttpDao::tracking(RestServiceI::FaceTrackingArgs &args, QVecto
         return jsObj.value("message").toString();
     }
     QJsonArray jsArray = jsObj.value("data").toArray();
-#if 1
+#if 0
     if(jsArray.isEmpty())return "No matched result !";
     for(auto &jsVal : jsArray){
         QJsonObject  dataObj = jsVal.toObject();

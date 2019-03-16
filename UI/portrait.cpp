@@ -75,14 +75,15 @@ void Portrait::setUserStyle(int s)
         personType_->setPalette(pal);
 
         saveBtn_->setStyleSheet("QPushButton{"
-                                "background-color: rgb(63,70,87);"
-                                "color: rgba(255,255,255,0.75);"
+                                "background-color: #4741F2;"
+                                "color: white;"
                                 "border-radius: 6px;"
                                 "font-size: 18px;"
                                 "}"
                                 "QPushButton:pressed{"
-                                "padding: 2px;"
                                 "background-color: #312DA6;"
+                                "border:1px solid rgba(71,65,242,1);"
+                                "padding: 2px;"
                                 "}");
     }
 }

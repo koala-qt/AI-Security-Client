@@ -25,7 +25,7 @@ TrackingPage::TrackingPage( WidgetI *parent):
     searchBtn_ = new QPushButton(tr("Search"));
     startTimeL_ = new QLabel(tr("Starting Time"));
     endTimeL_ = new QLabel(tr("Ending Time"));
-    threshL_ = new QLabel(tr("Thresh"));
+    threshL_ = new QLabel(tr("Threshold"));
     startTimeEdit_ = new QDateTimeEdit;
     endTimeEdit_ = new QDateTimeEdit;
     threshSpin_ = new QSpinBox;

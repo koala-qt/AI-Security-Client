@@ -44,40 +44,46 @@ VideoPlayer::VideoPlayer(QWidget *parent):
         setWaringAreaDialog.setPalette(pal);
         setWaringAreaDialog.setAutoFillBackground(true);
         QDialogButtonBox *buttonBox = new QDialogButtonBox;
-        QPushButton *okBtn = buttonBox->addButton(tr("确定"),QDialogButtonBox::AcceptRole);
+        QPushButton *okBtn = buttonBox->addButton(tr("OK"),QDialogButtonBox::AcceptRole);
         okBtn->setStyleSheet("QPushButton{"
-                             "background-color: rgb(83,77,251);"
                              "color: white;"
-                             "border-radius: 6px;"
-                             "font-size: 18px;"
+                             "width: 120px;"
+                             "height: 44px;"
+                             "background-color: #4741F2;"
+                             "border: none;"
+                             "border-radius: 4px;"
                              "}"
                              "QPushButton:pressed{"
-                             "padding: 2px;"
                              "background-color: #312DA6;"
+                             "border:1px solid rgba(71,65,242,1);"
+                             "padding: 2px;"
                              "}");
-        QPushButton *cancelBtn = buttonBox->addButton(tr("取消"),QDialogButtonBox::RejectRole);
+        QPushButton *cancelBtn = buttonBox->addButton(tr("CANCLE"),QDialogButtonBox::RejectRole);
         cancelBtn->setStyleSheet("QPushButton{"
-                                 "background-color: rgb(83,77,251);"
                                  "color: white;"
-                                 "border-radius: 6px;"
-                                 "font-size: 18px;"
+                                 "width: 120px;"
+                                 "height: 44px;"
+                                 "background-color: rgba(71,65,242,0.3);"
+                                 "border: none;"
+                                 "border-radius: 4px;"
+                                 "border:1px solid rgba(71,65,242,1);"
                                  "}"
                                  "QPushButton:pressed{"
-                                 "padding: 2px;"
                                  "background-color: #312DA6;"
+                                 "padding: 2px;"
                                  "}");
 
         PaintArea *paintArea = new PaintArea;
         QHBoxLayout *hlay = new QHBoxLayout;
         QGroupBox *groupBox = new QGroupBox;
-        QRadioButton *radioBtn = new QRadioButton(tr("Intruder alarm"));
+        QRadioButton *radioBtn = new QRadioButton(tr("Intrusion"));
         pal = radioBtn->palette();
         pal.setColor(QPalette::Foreground,Qt::white);
         radioBtn->setPalette(pal);
         radioBtn->setChecked(true);
         QPalette normalPal,ABPalette;
         normalPal.setColor(QPalette::Foreground,Qt::red);
-        ABPalette.setColor(QPalette::Foreground,Qt::yellow);
+        ABPalette.setColor(QPalette::Foreground,Qt::green);
         paintArea->setPalette(normalPal);
         connect(radioBtn,&QRadioButton::clicked,paintArea,[paintArea,&normalPal]{
             paintArea->setPalette(normalPal);
@@ -86,7 +92,7 @@ VideoPlayer::VideoPlayer(QWidget *parent):
         hlay->addWidget(radioBtn);
         radioBtn = new QRadioButton(tr("Trailing"));
         pal = radioBtn->palette();
-        pal.setColor(QPalette::Foreground,Qt::green);
+        pal.setColor(QPalette::Foreground,Qt::white);
         radioBtn->setPalette(pal);
         connect(radioBtn,&QRadioButton::clicked,paintArea,[paintArea,&ABPalette]{
             paintArea->setPalette(ABPalette);
@@ -196,7 +202,7 @@ void VideoPlayer::slotSetPolygons(QVector<QPair<int, QPolygonF> > points)
             if(value.first == AreaType::FORBIDDENZONE){
                 c = Qt::red;
             }else if(value.first == AreaType::ABDOOR){
-                c = Qt::yellow;
+                c = Qt::green;
             }
             return qMakePair(c,value.second);
         });
