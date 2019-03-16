@@ -296,6 +296,7 @@ void PortraitSearch::init()
     mainLay->setSpacing(20);
     QHBoxLayout *hlay = new QHBoxLayout;
     hlay->setMargin(0);
+    hlay->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     m_btnImg = new QPushButton;
     connect(m_btnImg, SIGNAL(clicked(bool)), this, SLOT(onBtnImgClicked()));
     m_btnImg->setToolTip(tr("Add pictures"));
@@ -303,6 +304,7 @@ void PortraitSearch::init()
     m_btnImg->setIconSize(QSize(m_btnImg->size()));
     m_btnImg->setFocusPolicy(Qt::NoFocus);
     QPixmap imgPix("images/person-face-back.png");
+    imgPix.fill(Qt::transparent);
     m_btnImg->setIcon(imgPix.scaled(m_btnImg->iconSize()));
     m_btnImg->setProperty("default-pix",imgPix);
     QCursor curSor = cursor();
@@ -315,6 +317,7 @@ void PortraitSearch::init()
     hlay->addWidget(topRigWgt);
     QVBoxLayout *topRighVlay = new QVBoxLayout;
     topRighVlay->setMargin(0);
+    topRighVlay->setSpacing(10);
     topRigWgt->setLayout(topRighVlay);
     QHBoxLayout *topHlay = new QHBoxLayout;
     topHlay->setSpacing(0);
