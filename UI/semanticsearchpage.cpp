@@ -300,9 +300,29 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     posCombox_->setFixedSize(200,34);
     startTimeEdit_->setFixedSize(200,34);
     startTimeEdit_->setDisplayFormat("yyyy-MM-dd HH:mm:ss");
+    connect(startTimeEdit_, &QDateTimeEdit::editingFinished, this, [this](){
+        if (1 != personTypeCombox_->currentIndex())
+        {
+            return;
+        }
+        if (startTimeEdit_->dateTime().addDays(3).msecsTo(endTimeEdit_->dateTime()) > 0)
+        {
+            endTimeEdit_->setDateTime(startTimeEdit_->dateTime().addDays(3));
+        }
+    });
     startTimeEdit_->setDateTime(QDateTime::currentDateTime().addDays(-1));
     endTimeEdit_->setFixedSize(200,34);
     endTimeEdit_->setDisplayFormat("yyyy-MM-dd HH:mm:ss");
+    connect(endTimeEdit_, &QDateTimeEdit::editingFinished, this, [this](){
+        if (1 != personTypeCombox_->currentIndex())
+        {
+            return;
+        }
+        if (startTimeEdit_->dateTime().addDays(3).msecsTo(endTimeEdit_->dateTime()) > 0)
+        {
+            endTimeEdit_->setDateTime(startTimeEdit_->dateTime().addDays(3));
+        }
+    });
     endTimeEdit_->setDateTime(QDateTime::currentDateTime());
     searchBtn_->setMinimumSize(99,33);
     pageIndicator_->setPageInfo(0,0);
@@ -312,6 +332,9 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     for(auto &v : personTypeVec_){
         personTypeCombox_->addItem(v.first);
     }
+    // 3.17 edit limit time range
+    connect(personTypeCombox_, SIGNAL(currentIndexChanged(int)), this, SLOT(onSourceCurrentIndexChanged(int)));
+
     noDataW_ = new NoDataTip(dataListW_);
 
     connect(pageIndicator_,SIGNAL(sigPageClicked(int)),this,SLOT(slotPageIndexChanged(int)));
@@ -1260,5 +1283,16 @@ void SemanticSearchPage::createTreeItem(QTreeWidget *treeW, QTreeWidgetItem *par
     }
     for(auto value : items.childrens){
         createTreeItem(treeW,item,value);
+    }
+}
+
+void SemanticSearchPage::onSourceCurrentIndexChanged(int index)
+{
+    if (1 == index)
+    {
+        if (startTimeEdit_->dateTime().addDays(3).msecsTo(endTimeEdit_->dateTime()) > 0)
+        {
+            endTimeEdit_->setDateTime(startTimeEdit_->dateTime().addDays(3));
+        }
     }
 }

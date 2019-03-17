@@ -77,6 +77,8 @@ private slots:
     void slotOnCameraInfo(QVector<RestServiceI::CameraInfo>);
     void slotTreeItemChanged(QTreeWidgetItem*,int);
     void createTreeItem(QTreeWidget *treeW,QTreeWidgetItem *parentItem,itemData &items);
+
+    void onSourceCurrentIndexChanged(int index);
 };
 
 #endif // SEMANTICSEARCHPAGE_H
