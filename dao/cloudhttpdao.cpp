@@ -139,7 +139,7 @@ QString DLL::CloudHttpDao::faceLink(RestServiceI::FaceLinkArgs &args)
                       {"file",QString::fromLatin1(imgArray.toBase64())}};
     QJsonDocument jsDoc(jsObj);
     QByteArray argsJsonArray = jsDoc.toJson();
-    int resCode = send(DLL::POST,urlStr.toStdString(),argsJsonArray.toStdString(),5);
+    int resCode = send(DLL::POST,urlStr.toStdString(),argsJsonArray.toStdString(),60);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -179,7 +179,7 @@ QString DLL::CloudHttpDao::faceLink_(RestServiceI::FaceLinkArgs &args, QString *
                       {"base64",QString::fromLatin1(imgArray.toBase64(QByteArray::Base64UrlEncoding))}};
     QJsonDocument jsDoc(jsObj);
     QByteArray argsJsonArray = jsDoc.toJson();
-    int resCode = send(DLL::POST,urlStr.toStdString(),argsJsonArray.toStdString(),45);
+    int resCode = send(DLL::POST,urlStr.toStdString(),argsJsonArray.toStdString(),60);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -202,7 +202,7 @@ QString DLL::CloudHttpDao::faceLink_(RestServiceI::FaceLinkArgs &args, QString *
 QString DLL::CloudHttpDao::getFaceLinkPoint(QString &faceLinkId, RestServiceI::FaceLinkPointData *rootPointData)
 {
     QString urlStr = host_ + QObject::tr("graph/node/find/name?name=%1").arg(faceLinkId);
-    int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),5);
+    int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),30);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -240,7 +240,7 @@ QString DLL::CloudHttpDao::getFaceLinkPoint(QString &faceLinkId, RestServiceI::F
 QString DLL::CloudHttpDao::getFaceLinkTree(QString &objectId, QJsonObject *treeJson)
 {
     QString urlStr = host_ + QObject::tr("graph/node/find/hierarchical?objId=%1").arg(objectId);
-    int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),5);
+    int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),30);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -274,7 +274,7 @@ QString DLL::CloudHttpDao::tracking(RestServiceI::FaceTrackingArgs &args, QVecto
             .arg(QString(imgArray.toBase64(QByteArray::Base64UrlEncoding)),args.oid)
             .arg(args.thresh)
             .arg(args.startT.toString("yyyy-MM-dd HH:mm:ss"),args.endT.toString("yyyy-MM-dd HH:mm:ss"));
-    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),20);
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),60);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -605,7 +605,7 @@ QString DLL::CloudHttpDao::captureSearch(RestServiceI::CaptureSearchArgs &args, 
             .arg(args.pageCount);
     qDebug() << "all" << urlStr;
     qDebug() << "all" << postData;
-    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),30);
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),60);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -655,7 +655,7 @@ QString DLL::CloudHttpDao::semanticSearch(RestServiceI::SemanticSearchArgs &args
             .arg(args.pageSize);
     qDebug() << "semantic" << urlStr;
     qDebug() << "semantic" << postData;
-    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),30);
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),60);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -834,7 +834,7 @@ QString DLL::CloudHttpDao::multipleSearch(RestServiceI::MultipleSearchArgs &args
             .arg(imgsBase64StrList.join(','))
             .arg(args.cameraId);
 #endif
-    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),30);
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),60);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -872,7 +872,7 @@ QString DLL::CloudHttpDao::getFaceLinkDataColl(RestServiceI::FaceLinkDataCollArg
             .arg(args.pageNo)
             .arg(args.pageSize);
     qDebug() << "facelink" << urlStr;
-    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),30);
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),60);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
