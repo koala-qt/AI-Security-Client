@@ -66,7 +66,7 @@ void NotifyEventByWebSocket::onTextMessageReceived(QString message)
     QJsonParseError jsError;
     QJsonDocument jsDoc = QJsonDocument::fromJson(message.toLatin1(),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        qDebug() << jsError.errorString();
+        qDebug() << "No search results";
         return;
     }
     QJsonObject jsObj = jsDoc.object();
