@@ -47,11 +47,14 @@ MainWindow::MainWindow(WidgetI *parent)
     setUserStyle(userStyle());
 
     QStackedWidget *monitoringStackedW = new QStackedWidget;
-    HomPage *homeW = new HomPage;
     RealtimeMonitoring *videoW = new RealtimeMonitoring;
+
+#if 0
+    HomPage *homeW = new HomPage;
     monitoringStackedW->addWidget(homeW);
-    monitoringStackedW->addWidget(videoW);
     connect(homeW,&HomPage::sigSwitchBtnClicked,monitoringStackedW,[monitoringStackedW]{monitoringStackedW->setCurrentIndex(1);});
+#endif
+    monitoringStackedW->addWidget(videoW);
     connect(videoW,&RealtimeMonitoring::sigSwitchBtnClicked,videoW,[monitoringStackedW]{monitoringStackedW->setCurrentIndex(0);});
     monitoringStackedW->setObjectName(tr("Surveillance"));
 

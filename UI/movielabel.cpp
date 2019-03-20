@@ -160,12 +160,13 @@ void MovieLabel::paintEvent(QPaintEvent *event)
 
     QPainter p(this);
     QRect imgRect(0, 0, m_geometry, m_geometry);
+    QRect textRect(4, 4, m_geometry, m_geometry);
 #ifdef IntruderWarning
     p.drawImage(0, 0, m_info.sceneImg.scaled(100,100), 0, 0, m_geometry, m_geometry);
-    p.drawText(imgRect, Qt::AlignLeft | Qt::AlignTop, "Intrusion");
+    p.drawText(textRect, Qt::AlignLeft | Qt::AlignTop, "Intrusion");
 #else
     p.drawImage(0, 0, m_glInfo.image.scaled(100, 100), 0, 0, m_geometry, m_geometry);
-    p.drawText(imgRect, Qt::AlignLeft | Qt::AlignTop, m_glInfo.strEventType);
+    p.drawText(textRect, Qt::AlignLeft | Qt::AlignTop, m_glInfo.strEventType);
 #endif
     p.save();
     pen.setColor(QColor(Qt::yellow));
