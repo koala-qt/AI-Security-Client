@@ -15,30 +15,28 @@
   <div id="app" class="app" style="background: transparent" v-cloak>
     <div class="app-left">
         <div class="date-block">
-            <img src="./img/x.png">
+            <!-- <img src="./img/x.png"> -->
             <div class="meng-del-ceng"></div>
             <div class="meng-ceng"></div>
             <vue-datepicker-local v-model="dateValue" clearable></vue-datepicker-local>
         </div>
-        
         <div class="cap-alarm">
            <div class="cap-alarm-line">
            </div>
+           <div class="total-cap">
+                 <div class="cap-tro" style="font-size: 14px">Total Captures</div>
+                 <div class="cap-num" style="font-size: 28px">
+                      {{toThousands(totalCaptrues)}}
+                  </div>
+           </div>
            <div class="today-cap">
-               <div class="img-class">
-                    <img src="./img/cap.png">
-               </div>
-               <div>
                     <div class="cap-tro">Today Captures</div>
                     <div class="cap-num">
                          {{toThousands(countCaptures)}}
                      </div>
-               </div>
+              
            </div>
            <div class="today-alarm">
-                <div class="img-class2">
-                    <img src="./img/alarm.png">
-                </div>
                 <div>
                     <div class="cap-tro">Today Alarms</div>
                     <div class="cap-num">
@@ -108,6 +106,7 @@
                 showApp: false,
                 countAlarm: 0,
                 countCaptures: 0,
+                totalCaptrues: 0,
                 dateValue: '',
                 dateValue1: '',
                 interfaces: {
@@ -117,7 +116,8 @@
                 newData: `${ip}/api/v2/cmcc/index/alarm_statistics`, // 30天
                 newIds:  `${ip}/api/v2/cmcc/index/newids`, // 注册
                 newCam: `${ip}/api/v2/cmcc/index/newcameras`, // 摄像头
-                newLoc: `${ip}/api/v2/cmcc/index/newlocation` //场所
+                newLoc: `${ip}/api/v2/cmcc/index/newlocation`, //场所
+                totalCapture: `${ip}/api/v2/cmcc/index/total_statistics`, //场所
                 },
                 showDate: false,
                 pickerOptions1: {
@@ -148,8 +148,14 @@
                 let self = this
                 setInterval(() => {
                     self.getMenuSta()
+                    self.getTotalCapture()
                 }, 5000)
-                
+            },
+            getTotalCapture() {
+                axios.get(`${this.interfaces.totalCapture}`,{
+                }).then(resp => {
+                  this.totalCaptrues = resp.data.data.count
+                })
             },
             getMenuSta() {
                 let self = this
@@ -167,6 +173,9 @@
                         let legendArr = []
                         let newObj = []
                         resp.data.data.chart.forEach(item => {
+                            if(item.showName === 'Vip') {
+                                item.showName = 'VIP'
+                            }
                             legendArr.push(item.showName)
                             newObj.push({
                                 value: item.count,
@@ -214,7 +223,7 @@
                 var mychart4 = echarts.init(document.getElementById('bottomC'))
                 var option4 = {
                     title: {
-                    text: 'New data in the last 30 days',
+                    text: 'Alarms in the last 30 days',
                     textStyle: {
                         color: 'rgba(255,255,255,0.7)',//坐标值得具体的颜色
                     },
@@ -544,6 +553,7 @@
                 }
                 ).then(resp => {
                     let datas = resp.data.data.splice(0, 7)
+                    console.log(JSON.stringify(datas))
                     let xrr = []
                     let dataArr = []
                     datas.forEach(item => {
@@ -551,6 +561,11 @@
                         xrr.push(`${date.split('-')[1]}/${date.split('-')[2]}`)
                         dataArr.push(item.count)
                     })
+                    xrr = xrr.reverse()
+                    dataArr= dataArr.reverse()
+                    console.log(xrr)
+                    // dataArr = [151233,121233,131233,101233,131243,122243,250611]
+                    console.log(JSON.stringify(dataArr))
                     this.capStatic(xrr, dataArr)
                 })
 
@@ -566,7 +581,7 @@
                         'endTime':this.dateValue
                     },
                 }).then(resp => {
-                    this.getTreeCharts('idsC', '#EF7272', 'New location in the last 7 days', resp.data.data)
+                    this.getTreeCharts('idsC', '#EF7272', 'New IDs in the last 7 days', resp.data.data)
                 })
                 axios.get(`${this.interfaces.newCam}`,{
                     params:{
@@ -580,7 +595,7 @@
                         'endTime':this.dateValue
                     },
                 }).then(resp => {
-                    this.getTreeCharts('locationC', '#4CF8DC', 'New IDs in the last 7 days', resp.data.data)
+                    this.getTreeCharts('locationC', '#4CF8DC', 'New location in the last 7 days', resp.data.data)
                 })
             },
             changeDate() {
@@ -592,6 +607,7 @@
             this.getData()
             this.relTimeData()
             this.getMenuSta()
+            this.getTotalCapture()
         }
         })
         
