@@ -8,6 +8,8 @@
 #include "informationdialog.h"
 #include "movielabel.h"
 
+//#define SwitchIntruderWarning
+
 GlViewMapWidget::GlViewMapWidget(WidgetI *parent):
     WidgetI(parent)
 {
@@ -16,6 +18,14 @@ GlViewMapWidget::GlViewMapWidget(WidgetI *parent):
     m_notifyServiceI = reinterpret_cast<NotifyServiceI*>(qApp->property("NotifyServiceI").toULongLong());
     connect(m_notifyServiceI, SIGNAL(sigIntruderEvent(NotifyEventI::IntruderEventData)),
             this, SLOT(slotOnIntruderEvent(NotifyEventI::IntruderEventData)),Qt::UniqueConnection);
+    connect(m_notifyServiceI,SIGNAL(sigABDoorEventData(NotifyEventI::ABDoorEventData)),
+            this,SLOT(slotOnAbDoorEvent(NotifyEventI::ABDoorEventData)),Qt::UniqueConnection);
+    connect(m_notifyServiceI,SIGNAL(sigPersonEventData(NotifyEventI::PersonEventData)),
+            this,SLOT(slotOnPersonEvent(NotifyEventI::PersonEventData)),Qt::UniqueConnection);
+    connect(m_notifyServiceI,SIGNAL(sigClimbEventData(NotifyEventI::ClimbEventData)),
+            this,SLOT(slotOnClimbEvent(NotifyEventI::ClimbEventData)));
+    connect(m_notifyServiceI,SIGNAL(sigGatherEventData(NotifyEventI::GatherEventData)),
+            this,SLOT(slotOngGatherEvent(NotifyEventI::GatherEventData)));
 }
 
 void GlViewMapWidget::setUserStyle(int style)
@@ -65,6 +75,7 @@ void GlViewMapWidget::mousePressEvent(QMouseEvent *event)
 
 void GlViewMapWidget::slotOnIntruderEvent(NotifyEventI::IntruderEventData info)
 {
+#ifdef SwitchIntruderWarning
     m_mutex.lock();
     if (!m_mapCameras.contains(info.sourceId))
     {
@@ -73,7 +84,8 @@ void GlViewMapWidget::slotOnIntruderEvent(NotifyEventI::IntruderEventData info)
         std::uniform_int_distribution<int> dis(-150, 100);
         std::uniform_int_distribution<int> disWidth(-300, 90); // width
 
-        MovieLabel *ml = new MovieLabel(info, this);
+        MovieLabel *ml = Q_NULLPTR;
+        ml = new MovieLabel(info, this);
         m_mapCameras.insert(info.sourceId, ml);
 
         //ml->setFixedSize(180, 100);
@@ -94,17 +106,64 @@ void GlViewMapWidget::slotOnIntruderEvent(NotifyEventI::IntruderEventData info)
         auto *ml = m_mapCameras.value(info.sourceId);
         if (Q_NULLPTR != ml)
         {
-            ml->appendWarningInfo(info);
+        ml->appendWarningInfo(info);
         }
     }
     m_mutex.unlock();
+#else
+    NotifyEventI::GlEventData glInfo;
+    glInfo.deviceId = info.sourceId;
+    glInfo.deviceName = info.deviceName;
+    glInfo.image = info.sceneImg;
+    glInfo.strEventType = "Intrusion";
+    allEventWarning(glInfo);
+#endif
+}
+
+void GlViewMapWidget::slotOnAbDoorEvent(NotifyEventI::ABDoorEventData info)
+{
+    NotifyEventI::GlEventData glInfo;
+    glInfo.deviceId = info.sourceId;
+    glInfo.deviceName = info.deviceName;
+    glInfo.image = info.sceneImg;
+    glInfo.strEventType = "Trailing";
+    allEventWarning(glInfo);
+}
+
+void GlViewMapWidget::slotOnPersonEvent(NotifyEventI::PersonEventData info)
+{
+    NotifyEventI::GlEventData glInfo;
+    glInfo.deviceId = info.sourceId;
+    glInfo.deviceName = info.deviceName;
+    glInfo.image = info.image;
+    glInfo.strEventType = "BlackList";
+    allEventWarning(glInfo);
+}
+
+void GlViewMapWidget::slotOnClimbEvent(NotifyEventI::ClimbEventData info)
+{
+    NotifyEventI::GlEventData glInfo;
+    glInfo.deviceId = info.sourceId;
+    glInfo.deviceName = info.deviceName;
+    glInfo.image = info.sceneImg;
+    glInfo.strEventType = "Climbing";
+    allEventWarning(glInfo);
+}
+
+void GlViewMapWidget::slotOngGatherEvent(NotifyEventI::GatherEventData info)
+{
+    NotifyEventI::GlEventData glInfo;
+    glInfo.deviceId = info.sourceId;
+    glInfo.deviceName = info.deviceName;
+    glInfo.image = info.sceneImg;
+    glInfo.strEventType = "Gathering";
+    allEventWarning(glInfo);
 }
 
 void GlViewMapWidget::init()
 {
     m_backgroundImg.load("images/glview/map.png");
     setFixedSize(m_backgroundImg.size());
-#if 1
     QHBoxLayout *mainHlay = new QHBoxLayout;
     this->setLayout(mainHlay);
     mainHlay->addSpacing(this->width() - 200);
@@ -142,7 +201,6 @@ void GlViewMapWidget::init()
     m_labDataStorage->setAlignment(Qt::AlignRight);
     pMidVlay->addWidget(m_labDataStorage);
     pMidVlay->addStretch();
-#endif 0
 }
 
 void GlViewMapWidget::queryTopStatistics()
@@ -169,4 +227,46 @@ void GlViewMapWidget::queryTopStatistics()
     });
     serviceI->queryGLViewTopStatistics("2019-03-02");
     label->show(500);
+}
+
+void GlViewMapWidget::allEventWarning(NotifyEventI::GlEventData info)
+{
+    if (info.image.isNull())
+    {
+        return;
+    }
+    m_mutex.lock();
+    if (!m_mapCameras.contains(info.deviceId))
+    {
+        std::random_device device;
+        std::mt19937 gen(device());
+        std::uniform_int_distribution<int> dis(-150, 100);
+        std::uniform_int_distribution<int> disWidth(-300, 90); // width
+
+        MovieLabel *ml = Q_NULLPTR;
+        ml = new MovieLabel(info, this);
+        m_mapCameras.insert(info.deviceId, ml);
+
+        //ml->setFixedSize(180, 100);
+        ml->setFixedSize(110, 150);
+        QRect cr = ml->geometry();
+
+        cr.moveCenter(this->rect().center());
+        ml->move(cr.topLeft() + QPoint(disWidth(gen), dis(gen)) + QPoint(250 / 2, 310 / 2));
+        ml->setInfo(info.deviceName);
+        QPalette pal = ml->palette();
+        pal.setColor(QPalette::Foreground, Qt::white);
+        ml->setPalette(pal);
+        ml->show();
+        ml->startWaring();
+    }
+    else
+    {
+        auto *ml = m_mapCameras.value(info.deviceId);
+        if (Q_NULLPTR != ml)
+        {
+            ml->appendWarningInfo(info);
+        }
+    }
+    m_mutex.unlock();
 }

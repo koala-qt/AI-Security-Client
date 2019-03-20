@@ -651,12 +651,23 @@ public:
         QImage image;
         QVector<QImage> faceImages;
     };
+
+    // 3.20 globalView EventData
+    struct GlEventData
+    {
+        QString deviceId;
+        QString deviceName;
+        QString strEventType;
+        QImage image;
+    };
+
     NotifyEventI(QObject *parent = nullptr) : QThread(parent){
         qRegisterMetaType<NotifyEventI::IntruderEventData>("NotifyEventI::IntruderEventData");
         qRegisterMetaType<NotifyEventI::ABDoorEventData>("NotifyEventI::ABDoorEventData");
         qRegisterMetaType<NotifyEventI::PersonEventData>("NotifyEventI::PersonEventData");
         qRegisterMetaType<NotifyEventI::GatherEventData>("NotifyEventI::GatherEventData");
         qRegisterMetaType<NotifyEventI::ClimbEventData>("NotifyEventI::ClimbEventData");
+        qRegisterMetaType<NotifyEventI::GlEventData>("NotifyEventI::GlEventData");
     }
 
 signals:

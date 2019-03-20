@@ -25,11 +25,17 @@ protected:
 
 private slots:
     void slotOnIntruderEvent(NotifyEventI::IntruderEventData info);
+    void slotOnAbDoorEvent(NotifyEventI::ABDoorEventData info);
+    void slotOnPersonEvent(NotifyEventI::PersonEventData info);
+    void slotOnClimbEvent(NotifyEventI::ClimbEventData info);
+    void slotOngGatherEvent(NotifyEventI::GatherEventData info);
 
 private:
     void init();
 
     void queryTopStatistics();
+
+    void allEventWarning(NotifyEventI::GlEventData info);
 
 private:
     QImage m_backgroundImg;
