@@ -28,6 +28,7 @@
 MainWindow::MainWindow(WidgetI *parent)
     : WidgetI(parent)
 {
+    backImage_.load("images/app-background.png");
     QVBoxLayout *mainLay = new QVBoxLayout;
     logoLabel_ = new QLabel;
     logoLabel_->setPixmap(QPixmap("images/appLogo.png"));
@@ -248,6 +249,15 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
         QDynamicPropertyChangeEvent *ev = new QDynamicPropertyChangeEvent("danyahei");
         QApplication::postEvent(dynamic_cast<QObject*>(wid),ev);
     }
+#endif
+}
+
+void MainWindow::paintEvent(QPaintEvent *event)
+{
+    Q_UNUSED(event);
+#if 0
+    QPainter p(this);
+    p.drawImage(rect(),backImage_);
 #endif
 }
 

@@ -23,6 +23,7 @@ public:
 protected:
     void resizeEvent(QResizeEvent *event)override;
     void mouseDoubleClickEvent(QMouseEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
 
 private:
     QListWidget *m_topList{nullptr};
@@ -30,6 +31,7 @@ private:
     QStackedWidget *m_centerW{nullptr};
     QLabel *logoLabel_{nullptr},*topBorderLine_{nullptr},*appNameL_{nullptr};
     QMenu *resourceXialaMenu_{nullptr};
+    QImage backImage_;
 
 private slots:
     void slotItemClicked(QListWidgetItem*);

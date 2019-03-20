@@ -6,6 +6,7 @@
 #include <QPropertyAnimation>
 #include <QQueue>
 #include <QMutex>
+#include <QStack>
 
 #include <service/servicei.h>
 
@@ -17,12 +18,15 @@ class MovieLabel : public QWidget
     Q_PROPERTY(qreal geometry READ getGeometry WRITE setGeometry NOTIFY geometryChanged)
 public:
     explicit MovieLabel(NotifyEventI::IntruderEventData info, QWidget *parent = nullptr);
+    MovieLabel(NotifyEventI::GlEventData info, QWidget *parent = nullptr);
+
     void startWaring();
     void setInfo(QString);
     QString getCameraId();
     QString &getDeviceName();
 
     void appendWarningInfo(NotifyEventI::IntruderEventData info);
+    void appendWarningInfo(NotifyEventI::GlEventData info);
 
 signals:
     void geometryChanged();
@@ -50,7 +54,7 @@ private:
     QColor m_innerCircleColor;
     QColor m_outerCircleColor;
     bool m_isWarning = false;
-    NotifyEventI::IntruderEventData m_info; // 入侵报警
+    NotifyEventI::IntruderEventData m_info; // intruder warning.
 
     float m_radius = 25;
     int m_fixRadius = 25;
@@ -60,6 +64,9 @@ private:
     // 3.13 add camera position control
     QQueue<NotifyEventI::IntruderEventData> m_lstInfos;
     QMutex m_mutex;
+    // all event warning.
+    QStack<NotifyEventI::GlEventData> m_stackInfos;
+    NotifyEventI::GlEventData m_glInfo;
 };
 
 #endif // MOVIELABEL_H

@@ -15,11 +15,13 @@ GolbalViewWidget::GolbalViewWidget(WidgetI *parent):
     WidgetI(parent)
 {
     setObjectName(tr("Home"));
-    m_backgroundImg.load("images/glview/bg.png");
+    m_backgroundImg.load("images/app-background.png");
 
+#if 0
     menbanL_ = new QLabel(this);
     menbanL_->setScaledContents(true);
     menbanL_->setPixmap(QPixmap("images/glview/glviewbg.png"));
+#endif
 
     m_mapWgt = new GlViewMapWidget(this);
     m_mapWgt->move(432, 0);
@@ -54,14 +56,18 @@ void GolbalViewWidget::setUserStyle(int style)
 
 void GolbalViewWidget::resizeEvent(QResizeEvent *event)
 {
+#if 0
     menbanL_->setFixedSize(size());
+#endif
 }
 
 void GolbalViewWidget::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event)
+#if 1
     QPainter p(this);
     p.drawImage(rect(), m_backgroundImg);
+#endif
 }
 
 void GolbalViewWidget::mousePressEvent(QMouseEvent *event)

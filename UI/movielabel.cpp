@@ -9,6 +9,9 @@
 #include <QSettings>
 //#include <QElapsedTimer>
 
+//#define IntruderWarning
+static int EventMaxCount = 5;
+
 MovieLabel::MovieLabel(NotifyEventI::IntruderEventData info, QWidget *parent) : QWidget(parent)
 {
     connect(&m_timer,SIGNAL(timeout()),this,SLOT(slotTimeout()));
@@ -17,6 +20,22 @@ MovieLabel::MovieLabel(NotifyEventI::IntruderEventData info, QWidget *parent) : 
     m_outerCircleColor = QColor(Qt::red);
     backColor_ = m_innerCircleColor;
     m_info = info;
+    m_animation = new QPropertyAnimation(this, "geometry");
+    m_animation->setStartValue(20);
+    m_animation->setEndValue(100);
+    m_animation->setDuration(2000);
+    m_animation->setLoopCount(-1);
+    m_animation->start();
+}
+
+MovieLabel::MovieLabel(NotifyEventI::GlEventData info, QWidget *parent) : QWidget(parent)
+{
+    connect(&m_timer,SIGNAL(timeout()),this,SLOT(slotTimeout()));
+    setAttribute(Qt::WA_TranslucentBackground);
+    m_innerCircleColor = QColor(Qt::red); // "#84070A"
+    m_outerCircleColor = QColor(Qt::red);
+    backColor_ = m_innerCircleColor;
+    m_glInfo = info;
     m_animation = new QPropertyAnimation(this, "geometry");
     m_animation->setStartValue(20);
     m_animation->setEndValue(100);
@@ -71,7 +90,22 @@ QString &MovieLabel::getDeviceName()
 void MovieLabel::appendWarningInfo(NotifyEventI::IntruderEventData info)
 {
     m_mutex.lock();
+    if (m_lstInfos.count() > EventMaxCount)
+    {
+        m_lstInfos.dequeue();
+    }
     m_lstInfos.enqueue(info);
+    m_mutex.unlock();
+}
+
+void MovieLabel::appendWarningInfo(NotifyEventI::GlEventData info)
+{
+    m_mutex.lock();
+    if (m_stackInfos.count() > EventMaxCount)
+    {
+        m_stackInfos.pop();
+    }
+    m_stackInfos.push(info);
     m_mutex.unlock();
 }
 
@@ -124,16 +158,20 @@ void MovieLabel::paintEvent(QPaintEvent *event)
     ellpiseR2.moveCenter(cr.center());
     painter.drawEllipse(ellpiseR2);
 
-#if 1
     QPainter p(this);
     QRect imgRect(0, 0, m_geometry, m_geometry);
+#ifdef IntruderWarning
     p.drawImage(0, 0, m_info.sceneImg.scaled(100,100), 0, 0, m_geometry, m_geometry);
+    p.drawText(imgRect, Qt::AlignLeft | Qt::AlignTop, "Intrusion");
+#else
+    p.drawImage(0, 0, m_glInfo.image.scaled(100, 100), 0, 0, m_geometry, m_geometry);
+    p.drawText(imgRect, Qt::AlignLeft | Qt::AlignTop, m_glInfo.strEventType);
+#endif
     p.save();
     pen.setColor(QColor(Qt::yellow));
     p.setPen(pen);
     p.drawRect(imgRect);
     p.restore();
-#endif
     QWidget::paintEvent(event);
 }
 
@@ -209,6 +247,7 @@ void MovieLabel::slotTimeout()
 {
 
     backColor_ = m_innerCircleColor;
+#ifdef IntruderWarning
     if (0 == m_lstInfos.count())
     {
         m_isWarning = false;
@@ -224,12 +263,31 @@ void MovieLabel::slotTimeout()
         m_geometry = 20;
         this->setInfo(warningItem.deviceName);
         m_info = warningItem;
-        //        animation_->setStartValue(20);
-        //        animation_->setEndValue(100);
-        //        animation_->setDuration(2000);
-        //        animation_->setLoopCount(-1);
         update();
         this->show();
         m_animation->start();
     }
+#else
+    if (0 == m_stackInfos.count())
+    {
+        m_isWarning = false;
+
+        this->hide();
+        m_animation->stop();
+        m_geometry = 20;
+    }
+    else
+    {
+        m_isWarning = true;
+        auto warningItem = m_stackInfos.pop();
+        m_animation->stop();
+        m_geometry = 20;
+        this->setInfo(warningItem.deviceName);
+        m_glInfo = warningItem;
+        update();
+        this->show();
+        m_animation->start();
+    }
+#endif
+
 }

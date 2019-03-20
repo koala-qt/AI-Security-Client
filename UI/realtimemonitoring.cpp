@@ -619,6 +619,10 @@ void RealtimeMonitoring::slotEventComboxIndexChanged(int index)
     }else if(index == 5){
         connect(notifyServiceI_,SIGNAL(sigPersonEventData(NotifyEventI::PersonEventData)),this,SLOT(slotOnPersonEvent(NotifyEventI::PersonEventData)),Qt::UniqueConnection);
     }
+    if (0 != index)
+    {
+        eventList_->clear();
+    }
 }
 
 void RealtimeMonitoring::slotTreeItemDoubleClicked(QTreeWidgetItem *item, int column)
