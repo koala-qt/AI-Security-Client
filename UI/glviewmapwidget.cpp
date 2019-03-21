@@ -171,14 +171,15 @@ void GlViewMapWidget::init()
     setFixedSize(m_backgroundImg.size());
     QHBoxLayout *mainHlay = new QHBoxLayout;
     this->setLayout(mainHlay);
-    mainHlay->addSpacing(this->width() - 200);
+    mainHlay->addSpacing(this->width() - 160);
     QVBoxLayout *pMidVlay = new QVBoxLayout;
     pMidVlay->addSpacing(100);
     pMidVlay->setSpacing(10);
     mainHlay->addLayout(pMidVlay);
     QWidget *parentWgt = new QWidget;
-    parentWgt->setStyleSheet(".QWidget{background-color:rgba(53,76,97,0.8);height:140px;"
-                             "min-height:140px;border-radius:4px;}");
+    QString strWgtStyle = ".QWidget{background-color:rgba(53,76,97,0.8);height:140px;"
+                          "min-height:140px;border-radius:4px;}";
+    parentWgt->setStyleSheet(strWgtStyle);
     QVBoxLayout *vLay = new QVBoxLayout;
     vLay->setContentsMargins(5, 20, 5, 20);
     parentWgt->setLayout(vLay);
@@ -193,8 +194,7 @@ void GlViewMapWidget::init()
     vLay->addWidget(m_labLocationAccess);
 
     parentWgt = new QWidget;
-    parentWgt->setStyleSheet(".QWidget{background-color:rgba(53,76,97,0.8);height:140px;"
-                             "min-height:140px;border-radius:4px;}");
+    parentWgt->setStyleSheet(strWgtStyle);
     vLay = new QVBoxLayout;
     vLay->setContentsMargins(5, 20, 5, 20);
     parentWgt->setLayout(vLay);
@@ -208,8 +208,7 @@ void GlViewMapWidget::init()
     vLay->addWidget(m_labCameraAccess);
 
     parentWgt = new QWidget;
-    parentWgt->setStyleSheet(".QWidget{background-color:rgba(53,76,97,0.8);height:140px;"
-                             "min-height:140px;border-radius:4px;}");
+    parentWgt->setStyleSheet(strWgtStyle);
     vLay = new QVBoxLayout;
     vLay->setContentsMargins(5, 20, 5, 20);
     parentWgt->setLayout(vLay);
@@ -223,8 +222,7 @@ void GlViewMapWidget::init()
     vLay->addWidget(m_labIDNumbers);
 
     parentWgt = new QWidget;
-    parentWgt->setStyleSheet(".QWidget{background-color:rgba(53,76,97,0.8);height:140px;"
-                             "min-height:140px;border-radius:4px;}");
+    parentWgt->setStyleSheet(strWgtStyle);
     vLay = new QVBoxLayout;
     vLay->setContentsMargins(5, 20, 5, 20);
     parentWgt->setLayout(vLay);
@@ -237,6 +235,7 @@ void GlViewMapWidget::init()
     m_labDataStorage->setAlignment(Qt::AlignLeft);
     vLay->addWidget(m_labDataStorage);
     pMidVlay->addStretch();
+    mainHlay->addSpacing(15);
 }
 
 void GlViewMapWidget::queryTopStatistics()
