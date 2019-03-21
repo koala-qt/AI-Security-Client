@@ -180,7 +180,7 @@ void GlViewMapWidget::init()
     parentWgt->setStyleSheet(".QWidget{background-color:rgba(53,76,97,0.8);height:140px;"
                              "min-height:140px;border-radius:4px;}");
     QVBoxLayout *vLay = new QVBoxLayout;
-    vLay->setContentsMargins(5, 15, 5, 5);
+    vLay->setContentsMargins(5, 20, 5, 20);
     parentWgt->setLayout(vLay);
     pMidVlay->addWidget(parentWgt);
     QString strTitleStyle = "font-size:18px;color:white;";
@@ -196,7 +196,7 @@ void GlViewMapWidget::init()
     parentWgt->setStyleSheet(".QWidget{background-color:rgba(53,76,97,0.8);height:140px;"
                              "min-height:140px;border-radius:4px;}");
     vLay = new QVBoxLayout;
-    vLay->setContentsMargins(5, 15, 5, 5);
+    vLay->setContentsMargins(5, 20, 5, 20);
     parentWgt->setLayout(vLay);
     pMidVlay->addWidget(parentWgt);
     labTitle = new QLabel(tr("Camera Access"));
@@ -211,7 +211,7 @@ void GlViewMapWidget::init()
     parentWgt->setStyleSheet(".QWidget{background-color:rgba(53,76,97,0.8);height:140px;"
                              "min-height:140px;border-radius:4px;}");
     vLay = new QVBoxLayout;
-    vLay->setContentsMargins(5, 15, 5, 5);
+    vLay->setContentsMargins(5, 20, 5, 20);
     parentWgt->setLayout(vLay);
     pMidVlay->addWidget(parentWgt);
     labTitle = new QLabel(tr("Total ID Numbers"));
@@ -226,7 +226,7 @@ void GlViewMapWidget::init()
     parentWgt->setStyleSheet(".QWidget{background-color:rgba(53,76,97,0.8);height:140px;"
                              "min-height:140px;border-radius:4px;}");
     vLay = new QVBoxLayout;
-    vLay->setContentsMargins(5, 15, 5, 5);
+    vLay->setContentsMargins(5, 20, 5, 20);
     parentWgt->setLayout(vLay);
     pMidVlay->addWidget(parentWgt);
     labTitle = new QLabel(tr("Data Storage"));
