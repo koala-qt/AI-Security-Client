@@ -7,6 +7,7 @@
 #include <QWebEnginePage>
 #include <QApplication>
 #include <QNetworkProxyFactory>
+#include <QBuffer>
 #include "trackingwebview.h"
 
 TrackingWebView::TrackingWebView(QWidget *parent):
@@ -17,7 +18,7 @@ TrackingWebView::TrackingWebView(QWidget *parent):
     channel->registerObject("Bridge", qobject_cast<QObject*>(webBridge_));
     page()->setWebChannel(channel);
 #ifndef Test
-    load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/routeline.html"));
+    load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/tracking.html"));
 #else
     load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/calendar-charts.html"));
 #endif
@@ -50,6 +51,26 @@ void TrackingWebView::updateTracking(QVector<TrackingWebView::TrackingPoint> &da
     webBridge_->updateData(jsArray);
 }
 
+void TrackingWebView::updatePersonInfo(QVector<RestServiceI::PortraitLibCompItem> values)
+{
+    QJsonObject jsObj;
+    if (values.count() > 0)
+    {
+        RestServiceI::PortraitLibCompItem value = values[0];
+        QByteArray imgStr;
+        QBuffer imgBuf(&imgStr);
+        imgBuf.open(QIODevice::WriteOnly);
+        value.faceImg.save(&imgBuf,"jpg");
+        QString base64Str(imgStr.toBase64()); //QByteArray::Base64UrlEncoding)
+        jsObj["personId"] = value.nPersonId;
+        jsObj["personName"] = value.strPersonName;
+        jsObj["personFace"] = base64Str;
+        jsObj["personType"] = value.strSubType;
+        jsObj["similarity"] = QString::number(value.dSimilarity * 100, 'g', 2) + "%";
+    }
+    webBridge_->updatePersonData(jsObj);
+}
+
 void TrackingBridge::setHostName(QString s)
 {
     hostName_ = s;
@@ -72,6 +93,14 @@ void TrackingBridge::startWaiting()
 void TrackingBridge::stopWaiting()
 {
     emit sigMovieStop();
+}
+
+void TrackingBridge::updatePersonData(QJsonObject &jsArray)
+{
+    if(isInitsized_)
+    {
+        emit sigPersonInfo(jsArray);
+    }
 }
 
 void TrackingBridge::onInitsized()

@@ -8,6 +8,8 @@ QT_FORWARD_DECLARE_CLASS(QLabel)
 QT_FORWARD_DECLARE_CLASS(QSpinBox)
 QT_FORWARD_DECLARE_CLASS(TrackingWebView)
 QT_FORWARD_DECLARE_CLASS(QPushButton)
+
+class WaitingLabel;
 class TrackingPage : public WidgetI
 {
     Q_OBJECT
@@ -35,6 +37,15 @@ private slots:
     void slotTracking(QVector<SearchFace>);
     void slotOnCameraClicked(QString);
     void slotOnWebError(QString);
+
+private:
+    void queryPersonTypes();
+    void portraitSearch();
+
+private:
+    QString m_strPersonTypes;
+    QImage m_faceImg;
+    WaitingLabel *waitingL_{nullptr};
 };
 
 #endif // TRACKINGPAGE_H

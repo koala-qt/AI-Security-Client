@@ -4,6 +4,8 @@
 #include <QWebEngineView>
 #include <QJsonArray>
 #include <QJsonObject>
+
+#include <service/servicei.h>
 class TrackingBridge : public QObject
 {
     Q_OBJECT
@@ -13,6 +15,7 @@ public:
     void updateData(QJsonArray &);
     void startWaiting();
     void stopWaiting();
+    void updatePersonData(QJsonObject &jsArray);
 
 signals:
     void sigHostNameChanged(QString);
@@ -21,6 +24,7 @@ signals:
     void sigMovieStop();
     void sigCameraClicked(QString);
     void sigWebError(QString);
+    void sigPersonInfo(QJsonObject);
 
 public slots:
     void onInitsized();
@@ -53,6 +57,7 @@ public:
     void stopWaiting();
     void setHostName(QString);
     void updateTracking(QVector<TrackingPoint> &data);
+    void updatePersonInfo(QVector<RestServiceI::PortraitLibCompItem> values);
 
 signals:
     void sigCameraClicked(QString);

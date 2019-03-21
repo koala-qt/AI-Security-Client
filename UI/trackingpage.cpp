@@ -84,6 +84,7 @@ TrackingPage::TrackingPage( WidgetI *parent):
     connect(dataView_,SIGNAL(sigWebError(QString)),this,SLOT(slotOnWebError(QString)));
     setUserStyle(userStyle());
     getCameraInfo();
+    queryPersonTypes();
 }
 
 void TrackingPage::setUserStyle(int s)
@@ -157,6 +158,7 @@ void TrackingPage::setImgageOid(QImage img, QString oid)
     QPixmap pix = QPixmap::fromImage(img.scaled(imgBtn_->iconSize()));
     imgBtn_->setIcon(pix);
     imgBtn_->setProperty("pixmap",QPixmap::fromImage(img));
+    m_faceImg = img;
 }
 
 void TrackingPage::getCameraInfo()
@@ -179,10 +181,12 @@ void TrackingPage::slotImgBtnClicked()
     imgBtn_->setIcon(pix.scaled(imgBtn_->iconSize()));
     imgBtn_->setProperty("pixmap",pix);
     curOid_.clear();
+    m_faceImg = pix.toImage();
 }
 
 void TrackingPage::slotSearchBtnClicked()
 {
+    waitingL_ = new WaitingLabel(dataView_);
     ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
     RestServiceI *serviceI = factoryI->makeRestServiceI();
     RestServiceI::FaceTrackingArgs args;
@@ -192,6 +196,9 @@ void TrackingPage::slotSearchBtnClicked()
     args.endT = endTimeEdit_->dateTime();
     args.thresh = threshSpin_->value() / qreal(100);
     connect(serviceI,&RestServiceI::sigError,this,[this](QString str){
+        waitingL_->close();
+        delete waitingL_;
+        waitingL_ = nullptr;
         dataView_->updateTracking(QVector<TrackingWebView::TrackingPoint>());
         InformationDialog infoDialog(this);
         infoDialog.setUserStyle(userStyle());
@@ -208,13 +215,20 @@ void TrackingPage::slotSearchBtnClicked()
     });
 #else
     connect(serviceI,&RestServiceI::sigTrackingNew,this,[this](const QVector<RestServiceI::TrackingReturnData> data){
+        waitingL_->close();
+        delete waitingL_;
+        waitingL_ = nullptr;
         slotTrackingNew(data);
         searchBtn_->setEnabled(true);
     });
 #endif
     serviceI->faceTracking(args);
+    waitingL_->show(500);
+
+    // 3.21 add 1:n
+    portraitSearch();
     searchBtn_->setEnabled(false);
-    dataView_->startWaiting();
+    //dataView_->startWaiting();
 }
 
 void TrackingPage::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)
@@ -275,4 +289,43 @@ void TrackingPage::slotOnWebError(QString str)
     infoDialog.setUserStyle(userStyle());
     infoDialog.setMessage(str);
     infoDialog.exec();
+}
+
+void TrackingPage::queryPersonTypes()
+{
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
+    connect(serviceI, &RestServiceI::sigError, this, [this](const QString str){
+    });
+    connect(serviceI, &RestServiceI::sigPersonTypesResult, this, [&](const QVector<RestServiceI::PersonType> value){
+        auto iter = value.begin();
+        QPushButton *m_btnFaceType = Q_NULLPTR;
+        for (iter; iter != value.end(); ++iter)
+        {
+            m_strPersonTypes += iter->strTypeNo + ",";
+        }
+    });
+    serviceI->queryPersonTypes();
+}
+
+void TrackingPage::portraitSearch()
+{
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
+    connect(serviceI, &RestServiceI::sigError, this, [this](const QString str){
+    });
+    connect(serviceI, &RestServiceI::sigPortraitLibCompResult, this, [&](const QVector<RestServiceI::PortraitLibCompItem> value){
+        dataView_->updatePersonInfo(value);
+    });
+    RestServiceI::PortraitLibCompArgs args;
+    args.image = m_faceImg;
+    args.bRequireBase64 = true;
+
+    args.libType = m_strPersonTypes;
+    //args.similarity = 0.3f;
+    args.similarity = threshSpin_->value() / qreal(100);
+    args.limit = 1;
+    args.sourceType = tr("2");
+    args.nPersonId = 0;
+    serviceI->portraitLibCompSearch(args);
 }

@@ -27,6 +27,7 @@ GolbalViewWidget::GolbalViewWidget(WidgetI *parent):
     m_mapWgt->move(432, 0);
 
     // web
+#if 0
     webView_ = new QWebEngineView(this);
     QHBoxLayout *mainLay = new QHBoxLayout;
     mainLay->addWidget(webView_);
@@ -43,6 +44,13 @@ GolbalViewWidget::GolbalViewWidget(WidgetI *parent):
     webView_->setContextMenuPolicy(Qt::NoContextMenu);
 
     webView_->load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/golbalview/index.html"));
+#else
+    m_webView = new GlobalWebView(this);
+    QHBoxLayout *mainLay = new QHBoxLayout;
+    mainLay->addWidget(m_webView);
+    setLayout(mainLay);
+#endif
+
     setUserStyle(userStyle());
 }
 
@@ -92,4 +100,60 @@ void GolbalWebBridge::setHostName(QString s)
 void GolbalWebBridge::onInitsized()
 {
     emit sigHostNameChanged(host_);
+}
+
+GlobalWebView::GlobalWebView(QWidget *parent):
+    QWebEngineView(parent)
+{
+    QSettings configSetting("config.ini",QSettings::IniFormat);
+    QString webHost_ = configSetting.value("Http/Javahost").toString();
+    QWebChannel *webChannel = new QWebChannel(this);
+    m_webBridget = new GolbalWebBridge(webChannel);
+    webChannel->registerObject("Bridge",m_webBridget);
+    page()->setWebChannel(webChannel);
+    page()->setBackgroundColor(Qt::transparent);
+    m_webBridget->setHostName(webHost_);
+    this->setContextMenuPolicy(Qt::NoContextMenu);
+
+    this->load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/golbalview/index.html"));
+}
+
+void GlobalWebView::mousePressEvent(QMouseEvent *event)
+{
+
+}
+
+void GlobalWebView::mouseMoveEvent(QMouseEvent *event)
+{
+
+}
+
+bool GlobalWebView::event(QEvent *event)
+{
+    if ( QEvent::ChildAdded == event->type())
+    {
+        QChildEvent *child_ev = static_cast<QChildEvent*>(event);
+        QObject *obj = child_ev->child();
+        QWidget *w = qobject_cast<QWidget*>(obj);
+        if (nullptr != w)
+        {
+            this->m_child = w;
+        }
+    }
+    else if ( QEvent::ChildRemoved == event->type() )
+    {
+        QChildEvent *child_ev = static_cast<QChildEvent*>(event);
+        QObject *obj = child_ev->child();
+        QWidget *w = qobject_cast<QWidget*>(obj);
+        if ( this->m_child == w )
+        {
+            this->m_child = nullptr;
+        }
+    }
+    else
+    {
+
+    }
+
+    return QWebEngineView::event(event);
 }

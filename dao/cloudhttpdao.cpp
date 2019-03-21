@@ -441,6 +441,7 @@ QString DLL::CloudHttpDao::getSceneInfo(QString &scenId,QString &alarmBodyId, Re
     QString urlStr = host_ + QObject::tr("api/v2/external/monitor-detail/find-document?collection=snap_scene&requiredFields=%1&objId=%2")
             .arg(requiredFileds.join(','))
             .arg(scenId);
+    qDebug() << Q_FUNC_INFO << urlStr;
     int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),5);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));

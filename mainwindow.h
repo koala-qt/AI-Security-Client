@@ -8,6 +8,8 @@ QT_FORWARD_DECLARE_CLASS(QStackedWidget)
 QT_FORWARD_DECLARE_CLASS(QListWidgetItem)
 QT_FORWARD_DECLARE_CLASS(QLabel)
 QT_FORWARD_DECLARE_CLASS(QMenu)
+
+class GolbalViewWidget;
 //#define FULLTOP
 //#define USERESIZE
 class MainWindow : public WidgetI
@@ -24,6 +26,7 @@ protected:
     void resizeEvent(QResizeEvent *event)override;
     void mouseDoubleClickEvent(QMouseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
 
 private:
     QListWidget *m_topList{nullptr};
@@ -32,6 +35,8 @@ private:
     QLabel *logoLabel_{nullptr},*topBorderLine_{nullptr},*appNameL_{nullptr};
     QMenu *resourceXialaMenu_{nullptr};
     QImage backImage_;
+
+    GolbalViewWidget *m_glViewWgt{nullptr};
 
 private slots:
     void slotItemClicked(QListWidgetItem*);

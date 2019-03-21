@@ -58,7 +58,8 @@ MainWindow::MainWindow(WidgetI *parent)
     connect(videoW,&RealtimeMonitoring::sigSwitchBtnClicked,videoW,[monitoringStackedW]{monitoringStackedW->setCurrentIndex(0);});
     monitoringStackedW->setObjectName(tr("Surveillance"));
 
-    m_centerW->addWidget(new GolbalViewWidget());
+    m_glViewWgt = new GolbalViewWidget();
+    m_centerW->addWidget(m_glViewWgt);
     m_centerW->addWidget(monitoringStackedW);
     m_centerW->addWidget(new EventSearch());
     m_centerW->addWidget(new TargetSearch());
@@ -262,6 +263,11 @@ void MainWindow::paintEvent(QPaintEvent *event)
     QPainter p(this);
     p.drawImage(rect(),backImage_);
 #endif
+}
+
+void MainWindow::mousePressEvent(QMouseEvent *event)
+{
+    m_glViewWgt->mousePressEvent(event);
 }
 
 void MainWindow::slotItemClicked(QListWidgetItem *item)
