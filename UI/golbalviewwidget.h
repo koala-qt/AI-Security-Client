@@ -36,6 +36,7 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     bool event(QEvent *event) override;
+    bool eventFilter(QObject *obj, QEvent *ev) override;
 
 private:
     GolbalWebBridge *m_webBridget{nullptr};

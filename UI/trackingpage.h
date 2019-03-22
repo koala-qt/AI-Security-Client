@@ -45,7 +45,7 @@ private:
 private:
     QString m_strPersonTypes;
     QImage m_faceImg;
-    WaitingLabel *waitingL_{nullptr};
+    //WaitingLabel *waitingL_{nullptr};
 };
 
 #endif // TRACKINGPAGE_H

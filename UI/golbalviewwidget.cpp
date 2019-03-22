@@ -120,12 +120,12 @@ GlobalWebView::GlobalWebView(QWidget *parent):
 
 void GlobalWebView::mousePressEvent(QMouseEvent *event)
 {
-
+    Q_UNUSED(event)
 }
 
 void GlobalWebView::mouseMoveEvent(QMouseEvent *event)
 {
-
+    Q_UNUSED(event)
 }
 
 bool GlobalWebView::event(QEvent *event)
@@ -138,6 +138,7 @@ bool GlobalWebView::event(QEvent *event)
         if (nullptr != w)
         {
             this->m_child = w;
+            w->installEventFilter(this);
         }
     }
     else if ( QEvent::ChildRemoved == event->type() )
@@ -156,4 +157,18 @@ bool GlobalWebView::event(QEvent *event)
     }
 
     return QWebEngineView::event(event);
+}
+
+bool GlobalWebView::eventFilter(QObject *obj, QEvent *ev)
+{
+#if 0
+    if (obj == m_child
+            && (ev->type() == QEvent::MouseButtonPress
+                || ev->type() == QEvent::MouseButtonDblClick))
+    {
+        return true;
+    }
+#endif
+
+    return QWebEngineView::eventFilter(obj, ev);
 }

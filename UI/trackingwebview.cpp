@@ -36,6 +36,7 @@ QSize TrackingWebView::sizeHint() const
 
 void TrackingWebView::updateTracking(QVector<TrackingWebView::TrackingPoint> &data)
 {
+    QHash<QString, int> groupStatistics;
     QJsonArray jsArray;
     for(const TrackingWebView::TrackingPoint &value : data){
         QJsonObject jsObj;
@@ -47,8 +48,28 @@ void TrackingWebView::updateTracking(QVector<TrackingWebView::TrackingPoint> &da
         jsObj["personImg"] = value.personImgUr;
         jsObj["sceneId"] = value.sceneId;
         jsArray << jsObj;
+        if (!groupStatistics.contains(value.strGroupName))
+        {
+            groupStatistics.insert(value.strGroupName, 1);
+        }
+        else
+        {
+            groupStatistics[value.strGroupName] = groupStatistics.value(value.strGroupName) + 1;
+        }
     }
     webBridge_->updateData(jsArray);
+
+    QJsonArray groupArray;
+    QHash<QString, int>::const_iterator iter1 = groupStatistics.constBegin();
+    while (iter1 != groupStatistics.constEnd())
+    {
+        QJsonObject jsObj;
+        jsObj["GroupName"] = iter1.key();
+        jsObj["GroupCount"] = iter1.value();
+        groupArray << jsObj;
+        ++iter1;
+    }
+    webBridge_->updateGroupStatistics(groupArray);
 }
 
 void TrackingWebView::updatePersonInfo(QVector<RestServiceI::PortraitLibCompItem> values)
@@ -97,9 +118,17 @@ void TrackingBridge::stopWaiting()
 
 void TrackingBridge::updatePersonData(QJsonObject &jsArray)
 {
-    if(isInitsized_)
+    if (isInitsized_)
     {
         emit sigPersonInfo(jsArray);
+    }
+}
+
+void TrackingBridge::updateGroupStatistics(QJsonArray jsArray)
+{
+    if (isInitsized_)
+    {
+        emit sigGroupStatistics(jsArray);
     }
 }
 

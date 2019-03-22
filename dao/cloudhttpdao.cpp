@@ -318,6 +318,7 @@ QString DLL::CloudHttpDao::tracking(RestServiceI::FaceTrackingArgs &args, QVecto
         pdata.timeIn = QDateTime::fromMSecsSinceEpoch(dataObj.value("tsIn").toVariant().toULongLong());
         pdata.timeOut = QDateTime::fromMSecsSinceEpoch(dataObj.value("tsOut").toVariant().toULongLong());
         pdata.sceneId = dataObj.value("faceSceneId").toString();
+        pdata.strGroupName = dataObj.value("GroupName").toString();
         allData << pdata;
     }
     if(allData.isEmpty())return "No matched result !";

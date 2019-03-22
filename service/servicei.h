@@ -133,6 +133,7 @@ public:
         QDateTime timeOut;
         QImage faceImg;
         QImage bodyImg;
+        QString strGroupName;
     };
     struct FaceTrackingArgs
     {

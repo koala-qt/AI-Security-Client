@@ -186,7 +186,7 @@ void TrackingPage::slotImgBtnClicked()
 
 void TrackingPage::slotSearchBtnClicked()
 {
-    waitingL_ = new WaitingLabel(dataView_);
+    WaitingLabel *waitingL_ = new WaitingLabel(dataView_);
     ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
     RestServiceI *serviceI = factoryI->makeRestServiceI();
     RestServiceI::FaceTrackingArgs args;
@@ -196,9 +196,9 @@ void TrackingPage::slotSearchBtnClicked()
     args.endT = endTimeEdit_->dateTime();
     args.thresh = threshSpin_->value() / qreal(100);
     connect(serviceI,&RestServiceI::sigError,this,[this](QString str){
-        waitingL_->close();
-        delete waitingL_;
-        waitingL_ = nullptr;
+//        waitingL_->close();
+//        delete waitingL_;
+//        waitingL_ = nullptr;
         dataView_->updateTracking(QVector<TrackingWebView::TrackingPoint>());
         InformationDialog infoDialog(this);
         infoDialog.setUserStyle(userStyle());
@@ -215,19 +215,19 @@ void TrackingPage::slotSearchBtnClicked()
     });
 #else
     connect(serviceI,&RestServiceI::sigTrackingNew,this,[this](const QVector<RestServiceI::TrackingReturnData> data){
-        waitingL_->close();
-        delete waitingL_;
-        waitingL_ = nullptr;
+//        waitingL_->close();
+//        delete waitingL_;
+//        waitingL_ = nullptr;
         slotTrackingNew(data);
         searchBtn_->setEnabled(true);
     });
 #endif
+    searchBtn_->setEnabled(false);
     serviceI->faceTracking(args);
-    waitingL_->show(500);
-
     // 3.21 add 1:n
     portraitSearch();
-    searchBtn_->setEnabled(false);
+    waitingL_->show(500);
+
     //dataView_->startWaiting();
 }
 
@@ -253,6 +253,7 @@ void TrackingPage::slotTrackingNew(QVector<RestServiceI::TrackingReturnData> dat
         pointData.lat = value.lat;
         pointData.lng = value.lng;
         pointData.sceneId = value.sceneId;
+        pointData.strGroupName = value.strGroupName;
 //        qDebug() << pointData.cameraId << pointData.name << pointData.grabTime << pointData.holdTime << pointData.personImgUr << pointData.lat << pointData.lng;
         return pointData;
     });
@@ -313,6 +314,8 @@ void TrackingPage::portraitSearch()
     ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
     RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI, &RestServiceI::sigError, this, [this](const QString str){
+        QVector<RestServiceI::PortraitLibCompItem> value;
+        dataView_->updatePersonInfo(value);
     });
     connect(serviceI, &RestServiceI::sigPortraitLibCompResult, this, [&](const QVector<RestServiceI::PortraitLibCompItem> value){
         dataView_->updatePersonInfo(value);

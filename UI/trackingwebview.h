@@ -16,6 +16,7 @@ public:
     void startWaiting();
     void stopWaiting();
     void updatePersonData(QJsonObject &jsArray);
+    void updateGroupStatistics(QJsonArray jsArray);
 
 signals:
     void sigHostNameChanged(QString);
@@ -25,6 +26,7 @@ signals:
     void sigCameraClicked(QString);
     void sigWebError(QString);
     void sigPersonInfo(QJsonObject);
+    void sigGroupStatistics(QJsonArray);
 
 public slots:
     void onInitsized();
@@ -50,6 +52,7 @@ public:
         QString grabTime;
         QString personImgUr;
         QString sceneId;
+        QString strGroupName;
     };
     TrackingWebView(QWidget *parent = Q_NULLPTR);
     QSize sizeHint() const override;
