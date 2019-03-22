@@ -26,7 +26,7 @@ const char* FaceTypeCheckedTag = "FaceTypeChecked";
 PortraitSearch::PortraitSearch(WidgetI *parent):
     WidgetI(parent)
 {
-    setObjectName(tr("Single Image"));
+    setObjectName(tr("Single Face"));
 
     init(); // init ui
     setUserStyle(userStyle());

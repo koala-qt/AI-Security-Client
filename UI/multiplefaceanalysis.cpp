@@ -30,7 +30,7 @@ const char* MNFaceTypeCheckedTag = "FaceTypeChecked";
 MultipleFaceAnalysis::MultipleFaceAnalysis(WidgetI *parent):
     WidgetI(parent)
 {
-    setObjectName(tr("Multiple Images"));
+    setObjectName(tr("Multiple Faces"));
     init();
     setUserStyle(userStyle());
     getCameraInfo();
