@@ -37,10 +37,12 @@ private slots:
     void slotTracking(QVector<SearchFace>);
     void slotOnCameraClicked(QString);
     void slotOnWebError(QString);
+    void slotFaceClicked(QString strOid);
 
 private:
     void queryPersonTypes();
     void portraitSearch();
+    void slotOnSceneInfo(RestServiceI::SceneInfo sinfo);
 
 private:
     QString m_strPersonTypes;

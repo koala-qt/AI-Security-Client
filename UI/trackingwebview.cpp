@@ -8,6 +8,7 @@
 #include <QApplication>
 #include <QNetworkProxyFactory>
 #include <QBuffer>
+#include <QSettings>
 #include "trackingwebview.h"
 
 TrackingWebView::TrackingWebView(QWidget *parent):
@@ -25,8 +26,12 @@ TrackingWebView::TrackingWebView(QWidget *parent):
     page()->setBackgroundColor(Qt::transparent);
     setContextMenuPolicy(Qt::NoContextMenu);
     connect(webBridge_,SIGNAL(sigCameraClicked(QString)),this,SIGNAL(sigCameraClicked(QString)));
+    connect(webBridge_,SIGNAL(sigFaceClicked(QString)),this,SIGNAL(sigFaceClicked(QString)));
     connect(webBridge_,SIGNAL(sigWebError(QString)),this,SIGNAL(sigWebError(QString)));
     QNetworkProxyFactory::setUseSystemConfiguration(false);
+    QSettings configSetting("config.ini",QSettings::IniFormat);
+    QString webHost_ = configSetting.value("Http/Javahost").toString();
+    webBridge_->setHostName(webHost_);
 }
 
 QSize TrackingWebView::sizeHint() const
@@ -38,6 +43,7 @@ void TrackingWebView::updateTracking(QVector<TrackingWebView::TrackingPoint> &da
 {
     QHash<QString, int> groupStatistics;
     QJsonArray jsArray;
+#if 0
     for(const TrackingWebView::TrackingPoint &value : data){
         QJsonObject jsObj;
         jsObj["pos"] = QJsonObject{{"lat",value.lat},{"lng",value.lng}};
@@ -57,6 +63,30 @@ void TrackingWebView::updateTracking(QVector<TrackingWebView::TrackingPoint> &da
             groupStatistics[value.strGroupName] = groupStatistics.value(value.strGroupName) + 1;
         }
     }
+#else
+    QVector<TrackingWebView::TrackingPoint>::const_iterator value = data.constEnd() - 1;
+    while (value != data.constBegin() - 1)
+    {
+        QJsonObject jsObj;
+        jsObj["pos"] = QJsonObject{{"lat",value->lat},{"lng",value->lng}};
+        jsObj["name"] = value->name;
+        jsObj["cameraId"] = value->cameraId;
+        jsObj["holdTime"] = value->holdTime;
+        jsObj["grabTime"] = value->grabTime;
+        jsObj["personImg"] = value->personImgUr;
+        jsObj["sceneId"] = value->sceneId;
+        jsArray << jsObj;
+        if (!groupStatistics.contains(value->strGroupName))
+        {
+            groupStatistics.insert(value->strGroupName, 1);
+        }
+        else
+        {
+            groupStatistics[value->strGroupName] = groupStatistics.value(value->strGroupName) + 1;
+        }
+        --value;
+    }
+#endif
     webBridge_->updateData(jsArray);
 
     QJsonArray groupArray;
@@ -149,6 +179,11 @@ void TrackingBridge::onCameraClicked(QString cameraId)
 void TrackingBridge::alertNoPoint(QString str)
 {
     emit sigWebError(str);
+}
+
+void TrackingBridge::onFaceClicked(QString strFaceId)
+{
+    emit sigFaceClicked(strFaceId);
 }
 
 void TrackingWebView::startWaiting()

@@ -118,13 +118,18 @@ void SceneImageDialog::setShowRect(bool face, bool body)
     rectesImgArea_->setShowRect(face,body);
 }
 
-void SceneImageDialog::setSceneInfo(const RestServiceI::SceneInfo &sinfo)
+void SceneImageDialog::setSceneInfo(const RestServiceI::SceneInfo &sinfo, QString strPlaceholder)
 {
 #ifdef USERECTIMAGE
     curScenInfo_ = sinfo;
     rectesImgArea_->setInfos(curScenInfo_.image,sinfo.faceRectVec,sinfo.bodyRectVec);
     if(sinfo.faceRectVec.isEmpty()){
         searchBtn_->hide();
+    }
+    if (!strPlaceholder.isEmpty())
+    {
+        searchBtn_->hide();
+        cancelBtn_->setText(tr("Close"));
     }
 #else
     selectAreaW_->setBackImage(sinfo.image);

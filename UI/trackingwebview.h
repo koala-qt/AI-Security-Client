@@ -27,11 +27,13 @@ signals:
     void sigWebError(QString);
     void sigPersonInfo(QJsonObject);
     void sigGroupStatistics(QJsonArray);
+    void sigFaceClicked(QString);
 
 public slots:
     void onInitsized();
     void onCameraClicked(QString cameraId);
     void alertNoPoint(QString);
+    void onFaceClicked(QString strFaceId);
 
 private:
     bool isInitsized_ = false;
@@ -65,6 +67,7 @@ public:
 signals:
     void sigCameraClicked(QString);
     void sigWebError(QString);
+    void sigFaceClicked(QString);
 
 private:
     TrackingBridge *webBridge_{nullptr};

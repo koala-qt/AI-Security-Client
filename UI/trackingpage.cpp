@@ -16,6 +16,7 @@
 #include "waitinglabel.h"
 #include "informationdialog.h"
 #include "videoplayer.h"
+#include "sceneimagedialog.h"
 
 TrackingPage::TrackingPage( WidgetI *parent):
     WidgetI(parent)
@@ -81,6 +82,7 @@ TrackingPage::TrackingPage( WidgetI *parent):
     hostname_ = configSetting.value("Http/Javahost").toString();
 
     connect(dataView_,SIGNAL(sigCameraClicked(QString)),this,SLOT(slotOnCameraClicked(QString)));
+    connect(dataView_,SIGNAL(sigFaceClicked(QString)),this,SLOT(slotFaceClicked(QString)));
     connect(dataView_,SIGNAL(sigWebError(QString)),this,SLOT(slotOnWebError(QString)));
     setUserStyle(userStyle());
     getCameraInfo();
@@ -186,6 +188,9 @@ void TrackingPage::slotImgBtnClicked()
 
 void TrackingPage::slotSearchBtnClicked()
 {
+#if 0
+    slotFaceClicked("5c93b769109ec40fcd5850df");
+#endif
     WaitingLabel *waitingL_ = new WaitingLabel(dataView_);
     ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
     RestServiceI *serviceI = factoryI->makeRestServiceI();
@@ -199,6 +204,7 @@ void TrackingPage::slotSearchBtnClicked()
 //        waitingL_->close();
 //        delete waitingL_;
 //        waitingL_ = nullptr;
+        dataView_->stopWaiting();
         dataView_->updateTracking(QVector<TrackingWebView::TrackingPoint>());
         InformationDialog infoDialog(this);
         infoDialog.setUserStyle(userStyle());
@@ -220,6 +226,7 @@ void TrackingPage::slotSearchBtnClicked()
 //        waitingL_ = nullptr;
         slotTrackingNew(data);
         searchBtn_->setEnabled(true);
+        dataView_->stopWaiting();
     });
 #endif
     searchBtn_->setEnabled(false);
@@ -228,7 +235,7 @@ void TrackingPage::slotSearchBtnClicked()
     portraitSearch();
     waitingL_->show(500);
 
-    //dataView_->startWaiting();
+    dataView_->startWaiting();
 }
 
 void TrackingPage::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)
@@ -292,6 +299,27 @@ void TrackingPage::slotOnWebError(QString str)
     infoDialog.exec();
 }
 
+void TrackingPage::slotFaceClicked(QString strOid)
+{
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
+    WaitingLabel *label = new WaitingLabel(this);
+    connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
+        label->close();
+        delete label;
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(userStyle());
+        infoDialog.setMessage(str);
+        infoDialog.exec();
+    });
+    connect(serviceI,&RestServiceI::sigSceneInfo,this,[&,label](const RestServiceI::SceneInfo sinfo){
+        label->close();
+        delete label;
+        slotOnSceneInfo(sinfo);
+    });
+    serviceI->getSceneInfo(strOid, "");
+}
+
 void TrackingPage::queryPersonTypes()
 {
     ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
@@ -331,4 +359,12 @@ void TrackingPage::portraitSearch()
     args.sourceType = tr("2");
     args.nPersonId = 0;
     serviceI->portraitLibCompSearch(args);
+}
+
+void TrackingPage::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
+{
+    SceneImageDialog dialog;
+    dialog.setUserStyle(userStyle());
+    dialog.setSceneInfo(sinfo, "TrackingPage");
+    dialog.exec();
 }
