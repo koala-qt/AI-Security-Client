@@ -15,7 +15,7 @@ void installTranslators()
     //get translator file
     QDir languageDir("language");
 
-    QString strLocale = "en_US";
+    QString strLocale = "zh_CN";
     QStringList fileFilter;
     fileFilter << QString("*.%1.qm").arg(strLocale);
     foreach (QFileInfo fileInfo, languageDir.entryInfoList(fileFilter))
