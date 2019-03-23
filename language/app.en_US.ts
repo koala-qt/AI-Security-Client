@@ -1141,8 +1141,12 @@
     <name>NoDataTip</name>
     <message>
         <location filename="../UI/nodatatip.cpp" line="10"/>
-        <source>No results found 
-Please adjust the conditions to re-query</source>
+        <source>No results found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../UI/nodatatip.cpp" line="10"/>
+        <source>Please adjust the conditions to re-query</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

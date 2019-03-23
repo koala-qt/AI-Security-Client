@@ -7,7 +7,7 @@ NoDataTip::NoDataTip(QWidget *parent):
     QWidget(parent)
 {
     imgLabel_ = new QLabel;
-    errorL_ = new QLabel(tr("No results found \nPlease adjust the conditions to re-query"));
+    errorL_ = new QLabel(QString("%1\n%2").arg(tr("No results found")).arg(tr("Please adjust the conditions to re-query")));
 
     QVBoxLayout *mainLay = new QVBoxLayout;
     imgLabel_->setAlignment(Qt::AlignCenter);

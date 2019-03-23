@@ -145,7 +145,7 @@ void MainWindow::setUserStyle(int s)
 {
     QPalette pal;
     QFont f = font();
-    f.setFamily("Arial"); //DINCond-Bold、PingFang SC Regular、微软雅黑 Microsoft YaHei UI、Source Sans Pro
+    f.setFamily("微软雅黑"); //DINCond-Bold、PingFang SC Regular、微软雅黑 Microsoft YaHei UI、Source Sans Pro
     f.setWeight(QFont::Normal);
     qApp->setFont(f);
 

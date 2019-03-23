@@ -940,10 +940,19 @@
 <context>
     <name>NoDataTip</name>
     <message>
-        <location filename="../UI/nodatatip.cpp" line="10"/>
         <source>No results found 
 Please adjust the conditions to re-query</source>
-        <translation type="unfinished">未找到结果\n请输入查询条件</translation>
+        <translation type="obsolete">未找到结果\n请输入查询条件</translation>
+    </message>
+    <message>
+        <location filename="../UI/nodatatip.cpp" line="10"/>
+        <source>No results found</source>
+        <translation type="unfinished">未找到结果</translation>
+    </message>
+    <message>
+        <location filename="../UI/nodatatip.cpp" line="10"/>
+        <source>Please adjust the conditions to re-query</source>
+        <translation type="unfinished">请输入查询条件</translation>
     </message>
     <message>
         <location filename="../UI/nodatatip.cpp" line="23"/>
@@ -956,12 +965,12 @@ Please adjust the conditions to re-query</source>
     <message>
         <location filename="../service/notifyeventbywebsocket.cpp" line="132"/>
         <source>smsr_alarm_climb</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">攀爬警报</translation>
     </message>
     <message>
         <location filename="../service/notifyeventbywebsocket.cpp" line="163"/>
         <source>smsr_alarm_gather</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">聚集警报</translation>
     </message>
 </context>
 <context>
@@ -2274,7 +2283,7 @@ cameraId:%2
     <message>
         <location filename="../UI/videoplayback.cpp" line="311"/>
         <source>Cameras</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">摄像机</translation>
     </message>
 </context>
 <context>
