@@ -1,0 +1,7 @@
+AI-Security-Client.pro.user
+debug/*
+Makefile
+Makefile.*
+release/*
+AI-Security-Client_resource.rc
+.qmake.stash
