@@ -37,7 +37,7 @@ QString DLL::CloudHttpDao::getCameraInfo(QVector<RestServiceI::CameraInfo> *came
     QJsonParseError jsError;
     QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
 
     QJsonObject jsObj = jsDoc.object();
@@ -68,7 +68,7 @@ QString DLL::CloudHttpDao::getGroup(QString groupNo, QVector<RestServiceI::Camer
     QJsonParseError jsError;
     QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
 
     QJsonObject jsObj = jsDoc.object();
@@ -100,7 +100,7 @@ QString DLL::CloudHttpDao::getDevice(QString groupNo, QVector<RestServiceI::Came
     QJsonParseError jsError;
     QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
 
     QJsonObject jsObj = jsDoc.object();
@@ -147,7 +147,7 @@ QString DLL::CloudHttpDao::faceLink(RestServiceI::FaceLinkArgs &args)
     QJsonParseError jsError;
     jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
 
     qDebug() << QString::fromStdString(responseData());
@@ -187,7 +187,7 @@ QString DLL::CloudHttpDao::faceLink_(RestServiceI::FaceLinkArgs &args, QString *
     QJsonParseError jsError;
     jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
 
     jsObj = jsDoc.object();
@@ -210,7 +210,7 @@ QString DLL::CloudHttpDao::getFaceLinkPoint(QString &faceLinkId, RestServiceI::F
     QJsonParseError jsError;
     QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
 
     QJsonObject jsObj = jsDoc.object();
@@ -248,7 +248,7 @@ QString DLL::CloudHttpDao::getFaceLinkTree(QString &objectId, QJsonObject *treeJ
     QJsonParseError jsError;
     QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
 
     QJsonObject jsObj = jsDoc.object();
@@ -282,7 +282,7 @@ QString DLL::CloudHttpDao::tracking(RestServiceI::FaceTrackingArgs &args, QVecto
     QJsonParseError jsError;
     QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
     QJsonObject jsObj = jsDoc.object();
     int status = jsObj.value("status").toInt();
@@ -359,7 +359,7 @@ QString DLL::CloudHttpDao::getPersonNumbers(RestServiceI::PersonsStayArgs &args,
     QJsonParseError jsError;
     QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
 
     QJsonObject jsObj = jsDoc.object();
@@ -384,7 +384,7 @@ QString DLL::CloudHttpDao::getPeronAverageTime(RestServiceI::AveragePersonTimeAr
     QJsonParseError jsError;
     QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
 
     QJsonObject jsObj = jsDoc.object();
@@ -407,7 +407,7 @@ QString DLL::CloudHttpDao::getPersonDetailes(QString &objId, RestServiceI::Portr
     QJsonParseError jsError;
     QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
 
     QJsonObject jsObj = jsDoc.object();
@@ -449,7 +449,7 @@ QString DLL::CloudHttpDao::getSceneInfo(QString &scenId,QString &alarmBodyId, Re
     QJsonParseError jsError;
     QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
 
     QJsonObject jsObj = jsDoc.object();
@@ -521,7 +521,7 @@ QString DLL::CloudHttpDao::getSceneInfo(QString &scenId,QString &alarmBodyId, Re
 
     jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
     jsObj = jsDoc.object();
     status = jsObj.value("status").toInt();
@@ -613,7 +613,7 @@ QString DLL::CloudHttpDao::captureSearch(RestServiceI::CaptureSearchArgs &args, 
     QJsonParseError jsError;
     QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
 
     QJsonObject jsObj = jsDoc.object();
@@ -663,7 +663,7 @@ QString DLL::CloudHttpDao::semanticSearch(RestServiceI::SemanticSearchArgs &args
     QJsonParseError jsError;
     QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
 
     QJsonObject jsObj = jsDoc.object();
@@ -719,7 +719,7 @@ QString DLL::CloudHttpDao::searchByImage(RestServiceI::SearchUseImageArgs &args,
     QJsonParseError jsError;
     QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
 
     QJsonObject jsObj = jsDoc.object();
@@ -770,7 +770,7 @@ QString DLL::CloudHttpDao::combinationSearch(RestServiceI::CombinationSearchArgs
     QJsonParseError jsError;
     QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
 
     QJsonObject jsObj = jsDoc.object();
@@ -842,7 +842,7 @@ QString DLL::CloudHttpDao::multipleSearch(RestServiceI::MultipleSearchArgs &args
     QJsonParseError jsError;
     QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
 
     QJsonObject jsObj = jsDoc.object();
@@ -880,7 +880,7 @@ QString DLL::CloudHttpDao::getFaceLinkDataColl(RestServiceI::FaceLinkDataCollArg
     QJsonParseError jsError;
     QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
 
     QJsonObject jsObj = jsDoc.object();
@@ -933,7 +933,7 @@ QString DLL::CloudHttpDao::eventSearch(RestServiceI::EventSearchArgs &args, Rest
     QJsonParseError jsError;
     QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
 
     QJsonObject jsObj = jsDoc.object();
@@ -986,7 +986,7 @@ QString DLL::CloudHttpDao::searchAvailableAttribute(RestServiceI::SearchAttrsArg
     QJsonParseError jsError;
     QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
 
     QJsonObject jsObj = jsDoc.object();
@@ -1014,7 +1014,7 @@ QString DLL::CloudHttpDao::getPersonGroupInfo(QString &groupNo, QVector<RestServ
     QJsonParseError jsError;
     QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
 
     QJsonObject jsObj = jsDoc.object();
@@ -1073,7 +1073,7 @@ QString DLL::CloudHttpDao::registerPerson(RestServiceI::PersonRegisterArgs &args
     QJsonParseError jsError;
     jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
 
     QJsonObject jsObj = jsDoc.object();
@@ -1095,7 +1095,7 @@ QString DLL::CloudHttpDao::searchPesonTypeDetail(QString &persontypeNo, RestServ
     QJsonParseError jsError;
     QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
 
     QJsonObject jsObj = jsDoc.object();
@@ -1113,7 +1113,7 @@ QString DLL::CloudHttpDao::searchPesonTypeDetail(QString &persontypeNo, RestServ
 
     jsDoc = QJsonDocument::fromJson(jsObj.value("value").toString().toLatin1(),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
 
     jsObj = jsDoc.object();
@@ -1153,7 +1153,7 @@ QString DLL::CloudHttpDao::portraitLibCompSearch(RestServiceI::PortraitLibCompAr
     QJsonParseError jsError;
     QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
 
     QJsonObject jsObj = jsDoc.object();
@@ -1188,7 +1188,7 @@ QString DLL::CloudHttpDao::queryPersonTypes(QVector<RestServiceI::PersonType> *r
     QJsonParseError jsError;
     QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
 
     QJsonObject jsObj = jsDoc.object();
@@ -1277,7 +1277,7 @@ QString DLL::CloudHttpDao::mnFaceAnalysisSearch(RestServiceI::MNFaceAnalysisArgs
     QJsonParseError jsError;
     QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
 
     QJsonObject jsObj = jsDoc.object();
@@ -1338,7 +1338,7 @@ QString DLL::CloudHttpDao::queryGLViewTopStatistics(QString &strDay, RestService
     QJsonParseError jsError;
     QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        return "No search results";
+        return QObject::tr("No search results");
     }
 
     QJsonObject jsObj = jsDoc.object();

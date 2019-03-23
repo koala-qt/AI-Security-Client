@@ -31,7 +31,7 @@ QString DLL::CppHttpDao::uploadVideo(QString videoPath)
         QJsonParseError jsError;
         QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
         if(jsError.error != QJsonParseError::NoError){
-            return "No search results";
+            return QObject::tr("No search results");
         }
 
         qDebug() << jsDoc.object();
@@ -79,7 +79,7 @@ QString DLL::CppHttpDao::uploadVideoByForm(QString videoPath)
         QJsonParseError jsError;
         QJsonDocument jsDoc = QJsonDocument::fromJson(QByteArray::fromStdString(responseData()),&jsError);
         if(jsError.error != QJsonParseError::NoError){
-            return "No search results";
+            return QObject::tr("No search results");
         }
 
         qDebug() << jsDoc.object();
