@@ -17,7 +17,7 @@ class HKPlayBack : public QWidget
 public:
     explicit HKPlayBack(QWidget *parent = nullptr);
     void startPlay(PlayBackParam &);
-    void setUserStyle(WidgetManagerI::SkinStyle s);
+    void setUserStyle(int s);
 
 signals:
 

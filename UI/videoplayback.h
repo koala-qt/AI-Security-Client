@@ -4,7 +4,7 @@
 #include <QTreeWidgetItem>
 #include <QTableWidgetItem>
 #include "widgetinterface.h"
-#include "service/restservicei.h"
+#include "service/servicei.h"
 QT_FORWARD_DECLARE_CLASS(QTreeWidget)
 QT_FORWARD_DECLARE_CLASS(HKPlayBack)
 QT_FORWARD_DECLARE_CLASS(QCalendarWidget)
@@ -14,8 +14,8 @@ class VideoPlayback : public WidgetI
 {
     Q_OBJECT
 public:
-    VideoPlayback(WidgetManagerI *wm, WidgetI * parent = nullptr);
-    void setUserStyle(WidgetManagerI::SkinStyle s) override;
+    VideoPlayback( WidgetI * parent = nullptr);
+    void setUserStyle(int s) override;
 
 protected:
     void paintEvent(QPaintEvent *event) override;

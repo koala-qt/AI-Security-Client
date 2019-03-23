@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QWebEnginePage>
 #include <QApplication>
+#include <QNetworkProxyFactory>
 #include "trackingwebview.h"
 
 TrackingWebView::TrackingWebView(QWidget *parent):
@@ -16,11 +17,15 @@ TrackingWebView::TrackingWebView(QWidget *parent):
     channel->registerObject("Bridge", qobject_cast<QObject*>(webBridge_));
     page()->setWebChannel(channel);
 #ifndef Test
-    load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/tracking.html"));
+    load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/routeline.html"));
 #else
     load(QUrl::fromLocalFile(qApp->applicationDirPath() + "/jsHtml/calendar-charts.html"));
 #endif
     page()->setBackgroundColor(Qt::transparent);
+    setContextMenuPolicy(Qt::NoContextMenu);
+    connect(webBridge_,SIGNAL(sigCameraClicked(QString)),this,SIGNAL(sigCameraClicked(QString)));
+    connect(webBridge_,SIGNAL(sigWebError(QString)),this,SIGNAL(sigWebError(QString)));
+    QNetworkProxyFactory::setUseSystemConfiguration(false);
 }
 
 QSize TrackingWebView::sizeHint() const
@@ -31,20 +36,23 @@ QSize TrackingWebView::sizeHint() const
 void TrackingWebView::updateTracking(QVector<TrackingWebView::TrackingPoint> &data)
 {
     QJsonArray jsArray;
-    std::random_device device;
-    std::mt19937 gen(device());
-    std::uniform_int_distribution<int> disx(0,1139 - 71);
-    std::uniform_int_distribution<int> disy(0,640 - 35);
     for(const TrackingWebView::TrackingPoint &value : data){
         QJsonObject jsObj;
-        jsObj["pos"] = QJsonObject{{"x",disx(gen)},{"y",disy(gen)}};
+        jsObj["pos"] = QJsonObject{{"lat",value.lat},{"lng",value.lng}};
         jsObj["name"] = value.name;
+        jsObj["cameraId"] = value.cameraId;
         jsObj["holdTime"] = value.holdTime;
         jsObj["grabTime"] = value.grabTime;
         jsObj["personImg"] = value.personImgUr;
+        jsObj["sceneId"] = value.sceneId;
         jsArray << jsObj;
     }
     webBridge_->updateData(jsArray);
+}
+
+void TrackingBridge::setHostName(QString s)
+{
+    hostName_ = s;
 }
 
 void TrackingBridge::updateData(QJsonArray &jsArray)
@@ -56,25 +64,46 @@ void TrackingBridge::updateData(QJsonArray &jsArray)
     }
 }
 
+void TrackingBridge::startWaiting()
+{
+    emit sigMovieingStart();
+}
+
+void TrackingBridge::stopWaiting()
+{
+    emit sigMovieStop();
+}
+
 void TrackingBridge::onInitsized()
 {
-//    QJsonArray jsArray;
-//    std::random_device device;
-//    std::mt19937 gen(device());
-//    std::uniform_int_distribution<int> disx(0,1139 - 71);
-//    std::uniform_int_distribution<int> disy(0,640 - 35);
-//    for(int i = 0; i < 5; i++){
-//        QJsonObject jsObj;
-//        jsObj["pos"] = QJsonObject{{"x",disx(gen)},{"y",disy(gen)}};
-//        jsObj["name"] = tr("camera%1").arg(i);
-//        jsObj["holdTime"] = "10:30:10";
-//        jsObj["grabTime"] = "2019/01/22 11:33";
-//        jsObj["personImg"] = "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=4001431513,4128677135&fm=27&gp=0.jpg";
-//        jsArray << jsObj;
-//    }
-//    emit sigTrackingDataChanged(jsArray);
     if(!curJsonArray_.isEmpty()){
         emit sigTrackingDataChanged(curJsonArray_);
     }
+    emit sigHostNameChanged(hostName_);
     isInitsized_ = true;
+}
+
+void TrackingBridge::onCameraClicked(QString cameraId)
+{
+    emit sigCameraClicked(cameraId);
+}
+
+void TrackingBridge::alertNoPoint(QString str)
+{
+    emit sigWebError(str);
+}
+
+void TrackingWebView::startWaiting()
+{
+    webBridge_->startWaiting();
+}
+
+void TrackingWebView::stopWaiting()
+{
+    webBridge_->stopWaiting();
+}
+
+void TrackingWebView::setHostName(QString s)
+{
+    webBridge_->setHostName(s);
 }

@@ -11,23 +11,25 @@
 #include <QFileDialog>
 #include <QMenu>
 #include <QStandardPaths>
+#include <QApplication>
+#include <QEvent>
 #include "multiplesearch.h"
 #include "waitinglabel.h"
 #include "sceneimagedialog.h"
 #include "facesearch.h"
-#include "service/restservice.h"
+#include "informationdialog.h"
+#include "nodatatip.h"
 
-MultipleSearch::MultipleSearch(WidgetManagerI *wm, WidgetI *parent):
-    WidgetI(wm,parent)
+MultipleSearch::MultipleSearch( WidgetI *parent):
+    WidgetI(parent)
 {
-    setObjectName(tr("Multiple search"));
-    backImg_.load("images/Mask.png");
+    setObjectName(tr("Multiple Faces"));
     QVBoxLayout *mainLay = new QVBoxLayout;
     imgList_ = new QListWidget;
     dataList_ = new QListWidget;
     positionL_ = new QLabel(tr("Position"));
-    startTimeL_ = new QLabel(tr("Starting time"));
-    endTimeL_ = new QLabel(tr("Ending time"));
+    startTimeL_ = new QLabel(tr("Starting Time"));
+    endTimeL_ = new QLabel(tr("Ending Time"));
     searchBtn_ = new QPushButton(tr("Search"));
     posCombox_ = new QComboBox;
     startTimeEdit_ = new QDateTimeEdit;
@@ -35,8 +37,14 @@ MultipleSearch::MultipleSearch(WidgetManagerI *wm, WidgetI *parent):
     dataMenu_ = new QMenu(dataList_);
 
     QHBoxLayout *hlay = new QHBoxLayout;
+#ifdef MULTIPSEARCHUSEMOVESIZE
     hlay->addWidget(imgList_,1);
     hlay->addStretch(4);
+#else
+    hlay->addWidget(imgList_);
+    hlay->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    hlay->setMargin(0);
+#endif
     mainLay->addLayout(hlay,1);
     QGridLayout *gridLay = new QGridLayout;
     gridLay->addWidget(positionL_,0,0,1,1);
@@ -47,35 +55,58 @@ MultipleSearch::MultipleSearch(WidgetManagerI *wm, WidgetI *parent):
     gridLay->addWidget(endTimeEdit_,1,3,1,1);
     gridLay->addWidget(searchBtn_,1,6,1,1);
     gridLay->setAlignment(Qt::AlignLeft);
+    gridLay->setSpacing(20);
+    gridLay->setMargin(0);
     mainLay->addLayout(gridLay,1);
     mainLay->addWidget(dataList_,7);
+    mainLay->setContentsMargins(37,39,40,40);
+    mainLay->setSpacing(20);
     setLayout(mainLay);
 
     dataMenu_->addAction(tr("Scene analysis"),[this]{
-        SceneImageDialog dialog;
-        dialog.setUserStyle(widgetManger()->currentStyle());
-        dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
-        dialog.setImage(dataList_->currentItem()->data(Qt::UserRole).value<QImage>());
-        dialog.setRectLinePen(Qt::yellow);
-        connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
-            if(!images.count()){
-                return;
-            }
-            FaceSearch *faceDialog = new FaceSearch(widgetManger());
-            faceDialog->setAttribute(Qt::WA_DeleteOnClose);
-            faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
-            faceDialog->setWindowModality(Qt::ApplicationModal);
-            QPalette pal = faceDialog->palette();
-            pal.setColor(QPalette::Background,QColor(112,110,119));
-            faceDialog->setPalette(pal);
-            faceDialog->setAutoFillBackground(true);
-            faceDialog->setUserStyle(widgetManger()->currentStyle());
-            faceDialog->layout()->setMargin(10);
-            faceDialog->setFaceImage(images.first());
-            faceDialog->setMinimumHeight(700);
-            faceDialog->show();
+        ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+        RestServiceI *serviceI = factoryI->makeRestServiceI();
+        WaitingLabel *label = new WaitingLabel(this);
+        connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
+            label->close();
+            delete label;
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(userStyle());
+            infoDialog.setMessage(str);
+            infoDialog.exec();
+            dataMenu_->setEnabled(true);
         });
-        dialog.exec();
+        connect(serviceI,&RestServiceI::sigSceneInfo,this,[&,label](const RestServiceI::SceneInfo sinfo){
+            label->close();
+            delete label;
+            SceneImageDialog dialog;
+            dialog.setUserStyle(userStyle());
+            dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+            dialog.setSceneInfo(sinfo);
+            connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
+                if(!images.count()){
+                    return;
+                }
+                FaceSearch *faceDialog = new FaceSearch(this);
+                faceDialog->setAttribute(Qt::WA_DeleteOnClose);
+                faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+                faceDialog->setWindowModality(Qt::ApplicationModal);
+                QPalette pal = faceDialog->palette();
+                pal.setColor(QPalette::Background,QColor(37,41,52));
+                faceDialog->setPalette(pal);
+                faceDialog->setAutoFillBackground(true);
+                faceDialog->setUserStyle(userStyle());
+                faceDialog->layout()->setMargin(10);
+                faceDialog->setFaceImage(images.first());
+                faceDialog->setMinimumHeight(700);
+                faceDialog->show();
+            });
+            dialog.exec();
+            dataMenu_->setEnabled(true);
+        });
+        serviceI->getSceneInfo(dataList_->currentItem()->data(Qt::UserRole).toString());
+        label->show(500);
+        dataMenu_->setEnabled(false);
     });
     dataList_->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(dataList_,&QListWidget::customContextMenuRequested,this,[this](const QPoint&p){
@@ -84,117 +115,154 @@ MultipleSearch::MultipleSearch(WidgetManagerI *wm, WidgetI *parent):
         dataMenu_->show();
     });
     imgList_->setFlow(QListWidget::LeftToRight);
+    imgList_->setFrameStyle(QFrame::NoFrame);
     dataList_->setFlow(QListWidget::LeftToRight);
     dataList_->setViewMode(QListWidget::IconMode);
     dataList_->setMovement(QListWidget::Static);
-    dataList_->setIconSize(QSize(192,108));
-    posCombox_->setMaximumWidth(290);
-    posCombox_->setMinimumHeight(44);
-    startTimeEdit_->setMinimumSize(250,44);
+    dataList_->setIconSize(QSize(340,191));
+    dataList_->setFrameStyle(QFrame::NoFrame);
+    posCombox_->setFixedSize(200,34);
+    startTimeEdit_->setFixedSize(200,34);
     startTimeEdit_->setDateTime(QDateTime::currentDateTime().addDays(-1));
-    endTimeEdit_->setMinimumSize(250,44);
+    endTimeEdit_->setFixedSize(200,34);
     endTimeEdit_->setDateTime(QDateTime::currentDateTime());
-    searchBtn_->setMinimumSize(120,44);
+    searchBtn_->setFixedSize(99,34);
+#ifndef MULTIPSEARCHUSEMOVESIZE
+    QPixmap iconPix("images/person-face-back.png");
+    imgList_->setIconSize(iconPix.size());
+    int listWidth = imgList_->iconSize().width() * itemCount_ + (itemCount_ + 1 )* imgList_->spacing() + imgList_->frameWidth() * 2;
+    int listHeight = imgList_->iconSize().height() + imgList_->frameWidth() * 2 + imgList_->spacing() * 2;
+    imgList_->setFixedSize(listWidth,listHeight);
+    for(int i = 0; i < itemCount_; i++){
+        QListWidgetItem *item = new QListWidgetItem;
+        item->setSizeHint(imgList_->iconSize());
+        item->setIcon(iconPix);
+        item->setData(Qt::UserRole,false);
+        imgList_->addItem(item);
+    }
+#endif
 
     connect(imgList_,SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(slotItemClicked(QListWidgetItem*)));
     connect(searchBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSearchBtnClicked()));
+    noDataW_ = new NoDataTip(dataList_);
+
+    setUserStyle(userStyle());
     getCameraInfo();
 }
 
-void MultipleSearch::setUserStyle(WidgetManagerI::SkinStyle style)
+void MultipleSearch::setUserStyle(int style)
 {
     QPalette pal;
-    if(WidgetManagerI::Danyahei == style){
+    QFont f;
+    if(0 == style){
         imgList_->setStyleSheet("QListWidget{"
                                 "background-color: transparent;"
                                 "}");
         pal = positionL_->palette();
-        pal.setColor(QPalette::Foreground,Qt::white);
+        pal.setColor(QPalette::Foreground,QColor(255,255,255,191));
         positionL_->setPalette(pal);
         startTimeL_->setPalette(pal);
         endTimeL_->setPalette(pal);
 
-        posCombox_->setStyleSheet(
-                    "QComboBoxListView{"
-                    "color: #CECECE;"
-                    "background-color: #525964;"
-                    "}"
-                    "QComboBox{"
-                    "color: white;"
-                    "font-size: 16px;"
-                    "background-color: transparent;"
-                    "border: 1px solid rgba(255, 255, 255, 1);"
-                    "border-radius: 4px;"
-                    "}"
-                    "QComboBox QAbstractItemView{"
-                    "selection-color: white;"
-                    "outline: 0px;"
-                    "selection-background-color: #CECECE;"
-                    "}"
-                    "QComboBox::drop-down{"
-                    "subcontrol-position: center right;border-image: url(images/dropdown2.png);width:11px;height:8px;subcontrol-origin: padding;margin-right:5px;"
-                    "}"
-                    "QScrollBar:vertical{"
-                    "background: transparent;"
-                    "border: 0px solid gray;"
-                    "width: 13px;"
-                    "}"
-                    "QScrollBar::handle:vertical{"
-                    "background: rgba(255,255,255,0.5);"
-                    "border-radius: 5px;"
-                    "}"
-                    "QScrollBar::add-line:vertical{"
-                    "background: transparent;"
-                    "border:0px solid #274168;"
-                    "border-radius: 5px;"
-                    "min-height: 10px;"
-                    "width: 13px;"
-                    "}"
-                    "QScrollBar::sub-line:vertical{"
-                    "background: transparent;"
-                    "border:0px solid #274168;"
-                    "min-height: 10px;"
-                    "width: 13px;"
-                    "}"
-                    "QScrollBar::up-arrow:vertical{"
-                    "subcontrol-origin: margin;"
-                    "height: 0px;"
-                    "border:0 0 0 0;"
-                    "visible:false;"
-                    "}"
-                    "QScrollBar::down-arrow:vertical{"
-                    "subcontrol-origin: margin;"
-                    "height: 0px;"
-                    "visible:false;"
-                    "}"
-                    "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
-                    "background: transparent;"
-                    "border: none;"
-                    "border-radius: 0px;"
-                    "}");
+        f = font();
+        f.setPixelSize(14);
+        positionL_->setFont(f);
+        startTimeL_->setFont(f);
+        endTimeL_->setFont(f);
+        startTimeEdit_->setFont(f);
+        endTimeEdit_->setFont(f);
+        searchBtn_->setFont(f);
+
+        posCombox_->setStyleSheet("QComboBoxListView{"
+                                  "color: #CECECE;"
+                                  "background-color: transparent;"
+                                  "border-radius: 0px;"
+                                  "border: none;"
+                                  "}"
+                                  "QComboBox{"
+                                  "color: rgba(255,255,255,0.75);"
+                                  "font-size: 14px;"
+                                  "background-color: rgba(255,255,255,0.1);"
+                                  "border: none;"
+                                  "border-radius: 4px;"
+                                  "padding-left: 10px;"
+                                  "}"
+                                  "QComboBox QAbstractItemView{"
+                                  "background-color: rgb(43,49,61);"
+                                  "border-radius: 0px;"
+                                  "selection-color: white;"
+                                  "outline: 0px;"
+                                  "selection-background-color: rgba(255,255,255,0.1);"
+                                  "}"
+                                  "QComboBox::drop-down{"
+                                  "subcontrol-position: center right;"
+                                  "border-image: url(images/dropdown2.png);"
+                                  "width:11px;"
+                                  "height:8px;"
+                                  "subcontrol-origin: padding;"
+                                  "margin-right:5px;"
+                                  "}"
+                                  "QScrollBar:vertical{"
+                                  "background: transparent;"
+                                  "border: 0px solid gray;"
+                                  "width: 13px;"
+                                  "}"
+                                  "QScrollBar::handle:vertical{"
+                                  "background: rgba(255,255,255,0.5);"
+                                  "border-radius: 5px;"
+                                  "}"
+                                  "QScrollBar::add-line:vertical{"
+                                  "background: transparent;"
+                                  "border:0px solid #274168;"
+                                  "border-radius: 5px;"
+                                  "min-height: 10px;"
+                                  "width: 13px;"
+                                  "}"
+                                  "QScrollBar::sub-line:vertical{"
+                                  "background: transparent;"
+                                  "border:0px solid #274168;"
+                                  "min-height: 10px;"
+                                  "width: 13px;"
+                                  "}"
+                                  "QScrollBar::up-arrow:vertical{"
+                                  "subcontrol-origin: margin;"
+                                  "height: 0px;"
+                                  "border:0 0 0 0;"
+                                  "visible:false;"
+                                  "}"
+                                  "QScrollBar::down-arrow:vertical{"
+                                  "subcontrol-origin: margin;"
+                                  "height: 0px;"
+                                  "visible:false;"
+                                  "}"
+                                  "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
+                                  "background: transparent;"
+                                  "border: none;"
+                                  "border-radius: 0px;"
+                                  "}");
         startTimeEdit_->setDisplayFormat("yyyy/MM/dd HH:mm:ss");
         startTimeEdit_->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
-            "color: rgba(206, 206, 206, 1);"
-            "border:1px solid white;"
-            "border-radius:4px;"
-            "background-color: transparent;"
-            "}");
+                                      "color: rgba(255,255,255,0.75);"
+                                      "background-color: rgba(255,255,255,0.1);"
+                                      "border-radius: 4px;"
+                                      "padding-left: 10px;"
+                                      "}");
         endTimeEdit_->setDisplayFormat("yyyy/MM/dd HH:mm:ss");
         endTimeEdit_->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
-            "color: rgba(206, 206, 206, 1);"
-            "border:1px solid white;"
-            "border-radius:4px;"
-            "background-color: transparent;"
-            "}");
+                                    "color: rgba(255,255,255,0.75);"
+                                    "background-color: rgba(255,255,255,0.1);"
+                                    "border-radius: 4px;"
+                                    "padding-left: 10px;"
+                                    "}");
         searchBtn_->setStyleSheet("QPushButton{"
-                                   "background-color: #B4A06C;"
-                                   "color: white;"
-                                   "border-radius: 6px;"
-                                   "font-size:18px;"
-                                   "}"
-                                   "QPushButton:pressed{"
-                                   "padding: 2px;"
-                                   "}");
+                                  "background-color: rgb(83,77,251);"
+                                  "color: white;"
+                                  "border-radius: 4px;"
+                                  "}"
+                                  "QPushButton:pressed{"
+                                  "padding: 2px;"
+                                  "background-color: #312DA6;"
+                                  "}");
         dataList_->setStyleSheet("QListWidget{"
                                  "background-color: transparent;"
                                  "color: white;"
@@ -202,9 +270,20 @@ void MultipleSearch::setUserStyle(WidgetManagerI::SkinStyle style)
         QCursor imgListCursor = imgList_->cursor();
         imgListCursor.setShape(Qt::PointingHandCursor);
         imgList_->setCursor(imgListCursor);
+
+        noDataW_->setUserStyle(style);
     }
 }
 
+bool MultipleSearch::event(QEvent *event)
+{
+    if(event->type() == QEvent::Show){
+        endTimeEdit_->setDateTime(QDateTime::currentDateTime());
+    }
+    return WidgetI::event(event);
+}
+
+#ifdef MULTIPSEARCHUSEMOVESIZE
 void MultipleSearch::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event)
@@ -226,21 +305,14 @@ void MultipleSearch::resizeEvent(QResizeEvent *event)
         }
     }
 }
-
-void MultipleSearch::paintEvent(QPaintEvent *event)
-{
-    Q_UNUSED(event)
-    QPainter p(this);
-    p.drawImage(rect(),backImg_);
-}
+#endif
 
 void MultipleSearch::getCameraInfo()
 {
-    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI,SIGNAL(sigCameraInfo(QVector<RestServiceI::CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<RestServiceI::CameraInfo>)));
     serviceI->getCameraInfo();
-    startWorker(worker);
 }
 
 void MultipleSearch::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)
@@ -257,37 +329,42 @@ void MultipleSearch::slotItemClicked(QListWidgetItem *item)
 {
     QString filePath = QFileDialog::getOpenFileName(this,tr("添加图片"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),"*.png *.jpg *.tmp");
     QPixmap pix(filePath);
+    bool isValid = true;
     if(pix.isNull()){
-        item->setData(Qt::UserRole,false);
-        return;
+        pix = QPixmap("images/person-face-back.png");
+        isValid = false;
     }
-    item->setIcon(pix);
-    item->setData(Qt::UserRole,true);
+    item->setIcon(pix.scaled(imgList_->iconSize()));
+    item->setData(Qt::UserRole,isValid);
     item->setData(Qt::UserRole + 1, pix.toImage());
 }
 
 void MultipleSearch::slotSearchBtnClicked()
 {
-    BLL::Worker *worker = new BLL::RestService(widgetManger()->workerManager());
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     WaitingLabel *label = new WaitingLabel(this);
     connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
         label->close();
         delete label;
-        QMessageBox::information(this,objectName(),str);
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(userStyle());
+        infoDialog.setMessage(str);
+        infoDialog.exec();
         searchBtn_->setEnabled(true);
+        noDataW_->show();
     });
     connect(serviceI,&RestServiceI::sigMultipleSearch,this,[this,label](QVector<RestServiceI::MultipleSearchItem> data){
         label->close();
         delete label;
         if(data.isEmpty()){
-            QMessageBox::information(this,objectName(),tr("No matched result !"));
+            noDataW_->show();
         }
         for(auto &itemInfo : data){
             QListWidgetItem *item = new QListWidgetItem;
             item->setIcon(QPixmap::fromImage(itemInfo.img).scaled(dataList_->iconSize()));
             item->setText(curCameraMapInfo_.value(itemInfo.cameraId).left(18) + "\n" + itemInfo.time.toString("yyyy-MM-dd HH:mm:ss"));
-            item->setData(Qt::UserRole,itemInfo.img);
+            item->setData(Qt::UserRole,itemInfo.sceneId);
             dataList_->addItem(item);
         }
         searchBtn_->setEnabled(true);
@@ -302,7 +379,8 @@ void MultipleSearch::slotSearchBtnClicked()
         }
     }
     serviceI->multipleSearch(args);
-    startWorker(worker);
     label->show(500);
     searchBtn_->setEnabled(false);
+    noDataW_->hide();
+    dataList_->clear();
 }

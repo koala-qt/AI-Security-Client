@@ -10,14 +10,14 @@
 #include <QDebug>
 #include <QListView>
 #include <QFile>
+#include <QApplication>
 #include "realmonitorsetting.h"
 #include "buttondelegate.h"
-#include "service/restservice.h"
+#include "informationdialog.h"
 
 #pragma execution_character_set("utf-8")
-RealMonitorSetting::RealMonitorSetting(BLL::WorkerManager *wm, QWidget *parent, Qt::WindowFlags f):
-    QDialog(parent,f),
-    wm_(wm)
+RealMonitorSetting::RealMonitorSetting(QWidget *parent, Qt::WindowFlags f):
+    QDialog(parent,f)
 {
     QVBoxLayout *mainLay = new QVBoxLayout;
     QGridLayout *gridLay = new QGridLayout;
@@ -94,6 +94,15 @@ RealMonitorSetting::RealMonitorSetting(BLL::WorkerManager *wm, QWidget *parent, 
     }
 
     getCameraInfo();
+
+//    timeCostL_->hide();
+//    startLocationL_->hide();
+//    startLocationCombox_->hide();
+//    arrorL_->hide();
+//    endLocationL_->hide();
+//    endLocationCombox_->hide();
+//    addStatisBtn_->hide();
+//    timeCostTable_->hide();
 }
 
 void RealMonitorSetting::setScreenIndex(int screenCount)
@@ -117,14 +126,11 @@ void RealMonitorSetting::screenSelected(int *rows, int *cols, int *bigRow, int *
     *colSpan = screenCountCombox_->currentData(Qt::UserRole + 6).toInt();
 }
 
-void RealMonitorSetting::setUserStyle(WidgetManagerI::SkinStyle s)
+void RealMonitorSetting::setUserStyle(int s)
 {
     QPalette pal;
     QFont f;
-    if(s == WidgetManagerI::Danyahei){
-        f = font();
-        f.setFamily("Arial");
-        setFont(f);
+    if(s == 0){
         pal = palette();
         pal.setColor(QPalette::Background,QColor(112,110,119));
         setPalette(pal);
@@ -230,31 +236,28 @@ void RealMonitorSetting::setUserStyle(WidgetManagerI::SkinStyle s)
 
 void RealMonitorSetting::addStatis()
 {
-    BLL::Worker * worker = new BLL::RestService(wm_);
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI,SIGNAL(sigResultState(bool)),this,SLOT(slotAddStatis(bool)));
     serviceI->addStatis(startLocationCombox_->currentData().toString(),endLocationCombox_->currentData().toString());
     curStartLocation_ = startLocationCombox_->currentData().toString();
     curEndLocation_ = endLocationCombox_->currentData().toString();
-    wm_->startWorker(worker);
 }
 
 void RealMonitorSetting::updateStatis()
 {
-    BLL::Worker * worker = new BLL::RestService(wm_);
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI,SIGNAL(sigStatisInfo(QVector<StatisTask>)),this,SLOT(slotSnapInfo(QVector<StatisTask>)));
     serviceI->getStatisInfo();
-    wm_->startWorker(worker);
 }
 
 void RealMonitorSetting::getCameraInfo()
 {
-    BLL::Worker * worker = new BLL::RestService(wm_);
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI,SIGNAL(sigCameraInfo(QVector<RestServiceI::CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<RestServiceI::CameraInfo>)));
     serviceI->getCameraInfo();
-    wm_->startWorker(worker);
 }
 
 QString RealMonitorSetting::findNameById(QString id)
@@ -270,12 +273,11 @@ QString RealMonitorSetting::findNameById(QString id)
 void RealMonitorSetting::slotCellClicked(int row, int col)
 {
     if(col == 2){
-        BLL::Worker * worker = new BLL::RestService(wm_);
-        RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+        ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+        RestServiceI *serviceI = factoryI->makeRestServiceI();
         connect(serviceI,SIGNAL(sigResultState(bool)),this,SLOT(slotRemoveStatis(bool)));
         serviceI->removeStatis(timeCostTable_->item(row,0)->data(Qt::UserRole + 1).toString(),timeCostTable_->item(row,1)->data(Qt::UserRole + 1).toString());
         curRmRow_ = row;
-        wm_->startWorker(worker);
     }
 }
 
@@ -300,7 +302,10 @@ void RealMonitorSetting::slotAddStatis(bool s)
         item->setText(tr("删除"));
         timeCostTable_->setItem(0,2,item);
     }else{
-        QMessageBox::information(this,tr("添加路径"),tr("添加失败"));
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(0);
+        infoDialog.setMessage(tr("Add path failed"));
+        infoDialog.exec();
     }
 }
 
@@ -309,7 +314,10 @@ void RealMonitorSetting::slotRemoveStatis(bool s)
     if(s){
         timeCostTable_->removeRow(curRmRow_);
     }else{
-        QMessageBox::information(this,tr("删除路径"),tr("删除失败"));
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(0);
+        infoDialog.setMessage(tr("Deleted path failed"));
+        infoDialog.exec();
     }
 }
 

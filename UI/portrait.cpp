@@ -1,119 +1,180 @@
 #include <QLabel>
 #include <QListWidget>
 #include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QPushButton>
+#include <QFileDialog>
+#include <QBoxLayout>
+#include <QStandardPaths>
+#include <QMouseEvent>
 #include "portrait.h"
 #include "cornerwidget.h"
 #include "flowlayout.h"
+#include "informationdialog.h"
 
-Portrait::Portrait(WidgetManagerI *wm, WidgetI *parent):
-    WidgetI(wm,parent)
+Portrait::Portrait( WidgetI *parent):
+    WidgetI(parent)
 {
-    QHBoxLayout *mainLay = new QHBoxLayout;
-    personBack_ = new QLabel;
-    faceCornerW_ = new CornerWidget;
-    faceL_ = new QLabel;
-    faceTextL = new QLabel(tr("Face recognition"));
-    bodyTextL = new QLabel(tr("Body recognition"));
-    personL_ = new QLabel;
-    splitVL_ = new QLabel;
-    faceAttributeTitleL_ = new QLabel(tr("Face attribute"));
-    bodyAttributeTitleL_ = new QLabel(tr("body attribute"));
-    attributeSpliteL_ = new QLabel;
-    faceAttributeBack = new QWidget;
-    bodyAttributeBack_ = new QWidget;
+    idL_ = new QLabel;
+    nameL_ = new QLabel;
+    personType_ = new QLabel;
+    faceImgL_ = new QLabel;
+    bodyImgL_ = new QLabel;
+    saveBtn_ = new QPushButton(tr("Save images"));
     flowLayFace_ = new FlowLayout;
     flowLayBody_ = new FlowLayout;
-    mainLay->addWidget(personBack_,1);
-    QVBoxLayout *vlay = new QVBoxLayout;
-    vlay->addWidget(faceTextL);
+
+    QVBoxLayout *mainLay = new QVBoxLayout;
+    QBoxLayout *topBox = new QBoxLayout(QBoxLayout::TopToBottom);
+    topBox->addWidget(idL_);
+    topBox->addWidget(nameL_);
+    topBox->addWidget(personType_);
+    topBox->setAlignment(Qt::AlignLeft);
+    mainLay->addLayout(topBox);
     QHBoxLayout *hlay = new QHBoxLayout;
-    hlay->addWidget(faceL_);
-    faceCornerW_->setLayout(hlay);
-    vlay->addWidget(faceCornerW_);
-    vlay->addWidget(bodyTextL);
-    vlay->addWidget(personL_);
-    mainLay->addLayout(vlay,1);
-    mainLay->addWidget(splitVL_);
-    vlay = new QVBoxLayout;
-    vlay->addWidget(faceAttributeTitleL_);
-    faceAttributeBack->setLayout(flowLayFace_);
-    vlay->addWidget(faceAttributeBack);
-    vlay->addWidget(attributeSpliteL_);
-    vlay->addWidget(bodyAttributeTitleL_);
-    bodyAttributeBack_->setLayout(flowLayBody_);
-    vlay->addWidget(bodyAttributeBack_);
-    mainLay->addLayout(vlay,2);
+    faceImgL_->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Preferred);
+    hlay->addWidget(faceImgL_);
+    hlay->addLayout(flowLayFace_);
+    mainLay->addLayout(hlay);
+    hlay = new QHBoxLayout;
+    bodyImgL_->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Preferred);
+    hlay->addWidget(bodyImgL_);
+    hlay->addLayout(flowLayBody_);
+    mainLay->addLayout(hlay);
+    mainLay->addStretch();
+    hlay = new QHBoxLayout;
+    hlay->addWidget(saveBtn_);
+    hlay->setAlignment(Qt::AlignRight);
+    mainLay->addLayout(hlay);
     setLayout(mainLay);
 
-    personBack_->setPixmap(QPixmap("images/portrait_back.png"));
-    splitVL_->setFixedWidth(1);
-    attributeSpliteL_->setFixedHeight(1);
-    faceAttributeTitleL_->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Fixed);
-    bodyAttributeTitleL_->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Fixed);
-    faceL_->setFixedSize(78,78);
-    personL_->setFixedSize(73,273);
-    faceL_->setScaledContents(true);
-    personL_->setScaledContents(true);
-    faceAttributeBack->setMinimumWidth(325);
+    saveBtn_->setMinimumSize(139,33);
+    connect(saveBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSaveBtnClicked()));
+    setUserStyle(userStyle());
 }
 
-void Portrait::setUserStyle(WidgetManagerI::SkinStyle s)
+void Portrait::setUserStyle(int s)
 {
     QPalette pal;
-    if(WidgetManagerI::Danyahei == s){
+    QFont f;
+    if(0 == s){
+        if(parentWidget()){
+            f = font();
+            f.setFamily(parentWidget()->font().family());
+            setFont(f);
+        }
         pal = palette();
-        pal.setColor(QPalette::Background,QColor("#4B4B4B"));
+        pal.setColor(QPalette::Background,QColor(48,54,68));
         setPalette(pal);
         setAutoFillBackground(true);
 
-        pal = splitVL_->palette();
-        pal.setColor(QPalette::Background,Qt::gray);
-        splitVL_->setPalette(pal);
-        splitVL_->setAutoFillBackground(true);
-        attributeSpliteL_->setPalette(pal);
-        attributeSpliteL_->setAutoFillBackground(true);
+        pal = idL_->palette();
+        pal.setColor(QPalette::Foreground,QColor(255,255,255,191));
+        idL_->setPalette(pal);
+        nameL_->setPalette(pal);
+        personType_->setPalette(pal);
 
-        pal = faceCornerW_->palette();
-        pal.setColor(QPalette::Foreground,Qt::gray);
-        faceCornerW_->setPalette(pal);
-
-        pal = faceTextL->palette();
-        pal.setColor(QPalette::Foreground,Qt::white);
-        faceTextL->setPalette(pal);
-        bodyTextL->setPalette(pal);
-        faceAttributeTitleL_->setPalette(pal);
-        bodyAttributeTitleL_->setPalette(pal);
+        saveBtn_->setStyleSheet("QPushButton{"
+                                "background-color: #4741F2;"
+                                "color: white;"
+                                "border-radius: 6px;"
+                                "font-size: 18px;"
+                                "}"
+                                "QPushButton:pressed{"
+                                "background-color: #312DA6;"
+                                "border:1px solid rgba(71,65,242,1);"
+                                "padding: 2px;"
+                                "}");
     }
 }
 
-void Portrait::slotSetData(QImage face, QImage body, QStringList attributeList, QStringList bodyAttributeList)
+void Portrait::mousePressEvent(QMouseEvent *event)
 {
-    faceL_->setPixmap(QPixmap::fromImage(face));
-    personL_->setPixmap(QPixmap::fromImage(body));
+    if(event->button() != Qt::LeftButton)return;
+    startP_ = event->globalPos();
+    return WidgetI::mousePressEvent(event);
+}
+
+void Portrait::mouseReleaseEvent(QMouseEvent *event)
+{
+    qSwap(startP_,QPoint());
+    return WidgetI::mouseReleaseEvent(event);
+}
+
+void Portrait::mouseMoveEvent(QMouseEvent *event)
+{
+    if(event->button() != Qt::LeftButton)return;
+    move(pos() + event->globalPos() - startP_);
+    startP_ = event->globalPos();
+    return WidgetI::mouseReleaseEvent(event);
+}
+
+void Portrait::slotSetData(RestServiceI::PortraitReturnData &data)
+{
+    if(data.id.isEmpty()){
+        data.id = tr("unknown");
+    }
+    if(data.name.isEmpty()){
+        data.name = tr("unknown");
+    }
+    if(data.personType.isEmpty()){
+        data.personType = tr("unknown");
+    }
+    curObjId_ = data.objId;
+    curFaceImg_ = data.faceImg;
+    curBodyImg_ = data.bodyImg;
+    idL_->setText(tr("ID:%1").arg(data.id));
+    nameL_->setText(tr("Name:%1").arg(data.name));
+    personType_->setText(tr("Person Type:%1").arg(data.personType));
+    faceImgL_->setPixmap(QPixmap::fromImage(data.faceImg));
+    bodyImgL_->setPixmap(QPixmap::fromImage(data.bodyImg.scaled(data.faceImg.width(), data.faceImg.width() * ((qreal)data.bodyImg.height() / data.bodyImg.width()),Qt::KeepAspectRatio)));
     while (QLayoutItem *item = flowLayFace_->takeAt(0)) {
         delete item;
     }
-    for(auto attrStr : attributeList){
+    for(auto attrStr : data.faceAttrs){
         QLabel *attL = new QLabel(attrStr);
         attL->setStyleSheet("QLabel{"
                             "background:rgba(255,255,255,0.1);"
                             "color: white;"
                             "border: 1px solid rgba(255,255,255,1);"
-                            "border-radius: 10px;"
+                            "border-radius: 2px;"
                             "}");
+        QFont f = attL->font();
+        f.setFamily(font().family());
+        setFont(f);
         flowLayFace_->addWidget(attL);
     }
     while (QLayoutItem *item = flowLayBody_->takeAt(0)) {
         delete item;
     }
-    for(auto attrStr : bodyAttributeList){
+    for(auto attrStr : data.bodyAttrs){
         QLabel *attL = new QLabel(attrStr);
         attL->setStyleSheet("QLabel{"
                             "background:rgba(255,255,255,0.1);"
                             "color: white;"
                             "border: 1px solid rgba(255,255,255,1);"
-                            "border-radius: 10px;"
+                            "border-radius: 2px;"
                             "}");
+        QFont f = attL->font();
+        f.setFamily(font().family());
+        setFont(f);
         flowLayBody_->addWidget(attL);
+    }
+}
+
+void Portrait::slotSaveBtnClicked()
+{
+    QString filePath =  QFileDialog::getExistingDirectory(this,tr("Save face image"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
+    if(filePath.isEmpty())return;
+    if(!curFaceImg_.save(filePath + "/" + curObjId_ + ".jpg")){
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(0);
+        infoDialog.setMessage("Operation failed!");
+    }
+
+    if(!curBodyImg_.save(filePath + "/" + curObjId_ + "body.jpg")){
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(0);
+        infoDialog.setMessage("Operation failed!");
     }
 }

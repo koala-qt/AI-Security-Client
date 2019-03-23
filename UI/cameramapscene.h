@@ -2,7 +2,7 @@
 #define CAMERAMAPSCENE_H
 
 #include <QGraphicsScene>
-#include "service/restservicei.h"
+#include "service/servicei.h"
 #include "widgetinterface.h"
 class CameraMapScene : public QGraphicsScene
 {
@@ -17,7 +17,6 @@ public:
     void setPersonTracking(QVector<PointInfo>);
 
 private:
-    BLL::WorkerManager *workerM_{nullptr};
 };
 
 #endif // CAMERAMAPSCENE_H

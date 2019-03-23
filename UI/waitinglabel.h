@@ -13,6 +13,10 @@ public:
 public slots:
     void show(int timeout);
 
+protected:
+    bool event(QEvent *event) override;
+    bool eventFilter(QObject *watched, QEvent *event) override;
+
 private:
     QMovie *movie_{nullptr};
 };

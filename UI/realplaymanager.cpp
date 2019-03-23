@@ -8,31 +8,39 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QDebug>
+#include "informationdialog.h"
 
-RealPlayManager::RealPlayManager(WidgetManagerI *wm, WidgetI *parent):
-    WidgetI(wm,parent)
+RealPlayManager::RealPlayManager( WidgetI *parent):
+    WidgetI(parent)
 {
     m_mainLay = new QGridLayout;
-    m_mainLay->setMargin(3);
+    m_mainLay->setMargin(2);
     setLayout(m_mainLay);
     m_focusFrame = new QFocusFrame(this);
 
     QSettings config("config.ini",QSettings::IniFormat);
     decoderName_ = config.value("VideoScreen/decoder").toString();
+    setUserStyle(userStyle());
 }
 
 RealPlayManager::~RealPlayManager()
 {
 }
 
-void RealPlayManager::setUserStyle(WidgetManagerI::SkinStyle s)
+void RealPlayManager::setUserStyle(int s)
 {
     QPalette pal;
     switch (s) {
-    case WidgetManagerI::Danyahei:
+    case 0:
         pal = m_focusFrame->palette();
-        pal.setColor(QPalette::Foreground,QColor(189,56,57));
+        pal.setColor(QPalette::Foreground,QColor(25,250,167));
         m_focusFrame->setPalette(pal);
+
+        for(int i = 0; i < m_mainLay->count(); i++){
+            QFont f = m_mainLay->itemAt(i)->widget()->font();
+            f.setFamily(font().family());
+            m_mainLay->itemAt(i)->widget()->setFont(f);
+        }
         break;
     default:
         break;
@@ -69,7 +77,6 @@ void RealPlayManager::splitScreen(const int rows, const int cols, const int bigF
             m_mainLay->addWidget(realFrameLayStack.pop(), _row, _col,_rowSpan,_colSpan);
         }else{
             VideoPlayer *vp = new VideoPlayer;
-            vp->setWorkerManager(widgetManger()->workerManager());
             m_mainLay->addWidget(vp,_row, _col,_rowSpan,_colSpan);
         }
     }
@@ -80,7 +87,6 @@ void RealPlayManager::splitScreen(const int rows, const int cols, const int bigF
             m_mainLay->addWidget(realFrameLayStack.pop(), _row, _col,_rowSpan,_colSpan);
         }else{
             VideoPlayer *vp = new VideoPlayer;
-            vp->setWorkerManager(widgetManger()->workerManager());
             m_mainLay->addWidget(vp, _row, _col,_rowSpan,_colSpan);
         }
     }
@@ -90,7 +96,6 @@ void RealPlayManager::splitScreen(const int rows, const int cols, const int bigF
         m_mainLay->addWidget(realFrameLayStack.pop(), _row, _col,_rowSpan,_colSpan);
     }else{
         VideoPlayer *vp = new VideoPlayer;
-        vp->setWorkerManager(widgetManger()->workerManager());
         m_mainLay->addWidget(vp,_row, _col,_rowSpan,_colSpan);
     }
 
@@ -103,7 +108,6 @@ void RealPlayManager::splitScreen(const int rows, const int cols, const int bigF
             m_mainLay->addWidget(realFrameLayStack.pop(), _row, _col,_rowSpan,_colSpan);
         }else{
             VideoPlayer *vp = new VideoPlayer;
-            vp->setWorkerManager(widgetManger()->workerManager());
             m_mainLay->addWidget(vp,_row, _col,_rowSpan,_colSpan);
         }
     }
@@ -116,7 +120,6 @@ void RealPlayManager::splitScreen(const int rows, const int cols, const int bigF
             m_mainLay->addWidget(realFrameLayStack.pop(), _row, _col,_rowSpan,_colSpan);
         }else{
             VideoPlayer *vp = new VideoPlayer;
-            vp->setWorkerManager(widgetManger()->workerManager());
             m_mainLay->addWidget(vp,_row, _col,_rowSpan,_colSpan);
         }
     }
@@ -155,12 +158,18 @@ void RealPlayManager::playByFocus(QString url, QString id, QString name)
 {
     VideoPlayer *w {nullptr};
     if(! (w = dynamic_cast<VideoPlayer*>(m_focusFrame->widget()))){
-        QMessageBox::information(this,tr("Play"),tr("Please select a window first"));
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(userStyle());
+        infoDialog.setMessage(tr("Please select a window first"));
+        infoDialog.exec();
         return;
     }
 
     if(m_videoMap.contains(id)){
-        QMessageBox::information(this,tr("Play"),tr("Already in the play window"));
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(userStyle());
+        infoDialog.setMessage(tr("Already in the play window"));
+        infoDialog.exec();
         return;
     }
 

@@ -1,5 +1,23 @@
 #include "httpexector.h"
 #include <functional>
+#include <QDebug>
+
+size_t onReply(void *ptr,size_t size, size_t nmemb, void *userData)
+{
+    std::string *rvData = reinterpret_cast<std::string*>(userData);
+    rvData->append(reinterpret_cast<char*>(ptr),size * nmemb);
+    return size * nmemb;
+}
+
+int progress_func(void *ptr, double totalDownLoad,double downloaded,double totalUpload, double uploaded)
+{
+    DLL::HttpExector *objPtr = reinterpret_cast<DLL::HttpExector*>(ptr);
+    if(objPtr->cancelRequestFlag_){
+        return -1;
+    }
+    objPtr->progress(totalDownLoad,downloaded,totalUpload,uploaded);
+    return 0;
+}
 
 DLL::HttpExector::HttpExector()
 {
@@ -24,11 +42,17 @@ void DLL::HttpExector::setheader(std::vector<std::string> &headers)
     curl_easy_setopt(_curl,CURLOPT_HTTPHEADER,_headers);
 }
 
-size_t onReply(void *ptr,size_t size, size_t nmemb, void *userData)
+int DLL::HttpExector::submitFormData(std::string &uri, void *formpost)
 {
-    std::string *rvData = reinterpret_cast<std::string*>(userData);
-    rvData->append(reinterpret_cast<char*>(ptr),size * nmemb);
-    return size * nmemb;
+    _recvData.clear();
+    curl_easy_setopt(_curl,CURLOPT_URL,uri.c_str());
+    curl_easy_setopt(_curl,CURLOPT_WRITEFUNCTION, onReply);
+    curl_easy_setopt(_curl,CURLOPT_NOPROGRESS,false);
+    curl_easy_setopt(_curl,CURLOPT_PROGRESSFUNCTION,progress_func);
+    curl_easy_setopt(_curl,CURLOPT_PROGRESSDATA,this);
+    curl_easy_setopt(_curl,CURLOPT_HTTPPOST,formpost);
+
+    return curl_easy_perform(_curl);
 }
 
 int DLL::HttpExector::send(DLL::HTTP_METHORD methord, std::string &url, std::string &data, unsigned long timeout)
@@ -40,6 +64,9 @@ int DLL::HttpExector::send(DLL::HTTP_METHORD methord, std::string &url, std::str
         break;
     case DLL::POST:
         curl_easy_setopt(_curl,CURLOPT_POST,1);
+        curl_easy_setopt(_curl, CURLOPT_NOPROGRESS, false);
+        curl_easy_setopt(_curl,CURLOPT_PROGRESSFUNCTION,progress_func);
+        curl_easy_setopt(_curl,CURLOPT_PROGRESSDATA,this);
         curl_easy_setopt(_curl,CURLOPT_POSTFIELDS,data.c_str());
         curl_easy_setopt(_curl,CURLOPT_POSTFIELDSIZE,data.size());
     }

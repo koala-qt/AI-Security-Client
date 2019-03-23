@@ -2,7 +2,7 @@
 #define MULTIPLESEARCH_H
 
 #include "widgetinterface.h"
-#include "service/restservicei.h"
+#include "service/servicei.h"
 QT_FORWARD_DECLARE_CLASS(QLabel)
 QT_FORWARD_DECLARE_CLASS(QDateTimeEdit)
 QT_FORWARD_DECLARE_CLASS(QPushButton)
@@ -10,16 +10,20 @@ QT_FORWARD_DECLARE_CLASS(QListWidget)
 QT_FORWARD_DECLARE_CLASS(QComboBox)
 QT_FORWARD_DECLARE_CLASS(QListWidgetItem)
 QT_FORWARD_DECLARE_CLASS(QMenu)
+QT_FORWARD_DECLARE_CLASS(NoDataTip)
+//#define MULTIPSEARCHUSEMOVESIZE
 class MultipleSearch : public WidgetI
 {
     Q_OBJECT
 public:
-    MultipleSearch(WidgetManagerI *wm, WidgetI *parent = nullptr);
-    void setUserStyle(WidgetManagerI::SkinStyle style) override;
+    MultipleSearch( WidgetI *parent = nullptr);
+    void setUserStyle(int style) override;
 
 protected:
+    bool event(QEvent *event) override;
+#ifdef MULTIPSEARCHUSEMOVESIZE
     void resizeEvent(QResizeEvent *event) override;
-    void paintEvent(QPaintEvent *event) override;
+#endif
 
 private:
     const int itemCount_ = 4;
@@ -31,7 +35,7 @@ private:
     QPushButton *searchBtn_{nullptr};
     QMenu *dataMenu_{nullptr};
 
-    QImage backImg_;
+    NoDataTip *noDataW_{nullptr};
     QMap<QString,QString> curCameraMapInfo_;
 
     void getCameraInfo();

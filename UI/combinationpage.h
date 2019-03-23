@@ -2,7 +2,7 @@
 #define COMBINATIONPAGE_H
 
 #include "widgetinterface.h"
-#include "service/restservicei.h"
+#include "service/servicei.h"
 QT_FORWARD_DECLARE_CLASS(QListWidget)
 QT_FORWARD_DECLARE_CLASS(QStackedWidget)
 QT_FORWARD_DECLARE_CLASS(QLabel)
@@ -15,14 +15,16 @@ QT_FORWARD_DECLARE_CLASS(QPushButton)
 QT_FORWARD_DECLARE_CLASS(PageIndicator)
 QT_FORWARD_DECLARE_CLASS(QMenu)
 QT_FORWARD_DECLARE_CLASS(QTableWidget)
+QT_FORWARD_DECLARE_CLASS(NoDataTip)
 class CombinationPage : public WidgetI
 {
     Q_OBJECT
 public:
-    CombinationPage(WidgetManagerI *wm,WidgetI *parent = nullptr);
-    void setUserStyle(WidgetManagerI::SkinStyle s) override;
+    CombinationPage(WidgetI *parent = nullptr);
+    void setUserStyle(int s) override;
 
 protected:
+    bool event(QEvent *event) override;
     bool eventFilter(QObject *watched, QEvent *event) override;
 
 private:
@@ -38,6 +40,7 @@ private:
 
     QMap<QString,QString> curCameraMapInfo_;
     bool faceTableOrder_ = false,bodyTableOrder_ = false;
+    NoDataTip *noFaceDataW_{nullptr},*noBodyDataW_{nullptr};
 
     void getCameraInfo();
 
@@ -47,7 +50,7 @@ private slots:
     void slotOnCameraInfo(QVector<RestServiceI::CameraInfo>);
     void slotSearchBtnClicked();
     void slotImageBtnClicked();
-    void slotOnSceneImg(QImage);
+    void slotOnSceneInfo(RestServiceI::SceneInfo sinfo);
 };
 
 #endif // COMBINATIONPAGE_H

@@ -2,6 +2,7 @@
 #define BASENETEXECTOR_H
 
 #include <string>
+#include "curl.h"
 namespace DLL {
 enum NetType{
     TCP,
@@ -17,10 +18,12 @@ class BaseHttpExector
 {
 public:
     BaseHttpExector() = default;
+    virtual void cancelRequest() = 0;
     virtual ~BaseHttpExector(){}
 
 protected:
     virtual int send(HTTP_METHORD methord,std::string &uri,std::string &data, unsigned long timeout = 1) = 0;
+    virtual int submitFormData(std::string &uri,void* formpost) = 0;
     virtual const std::string & responseData() = 0;
 };
 

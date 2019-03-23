@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui webenginewidgets webchannel charts
+QT       += core gui webenginewidgets webchannel charts concurrent websockets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -27,6 +27,7 @@ include (UI/ui.pri)
 include (dao/dao.pri)
 #RC_FILE  = myico.rc
 RC_ICONS = appLogo.ico
+QMAKE_CXXFLAGS+=-DNOMINMAX
 
 win32{
 contains(QT_ARCH, i386):{
@@ -42,11 +43,12 @@ INCLUDEPATH += = $$PWD/3rd/curl/include \
                  $$PWD/3rd/klvideowidget/include \
                  $$PWD/3rd/ffmpeg/x64/include \
                  D:/boost_1_58_0-x64/include \
-                 D:/thrift-0.11.0-x64/include \
+                 D:/thrift-0.11.0-x64-release/include \
                  D:/mosquitto-x64/include \
-                 D:/protobuf-x64-3.6.1/include \
+                 D:/protobuf-x64-3.6.1-release/include \
                  $$PWD/3rd/milestone\include
 
+CONFIG(debug,debug|release){
 LIBS += -LD:/boost_1_58_0-x64/lib \
         -LD:/OpenSSL-Win64/lib/VC \
         -L$$PWD/3rd/HK_SDK/lib/windows/win64 \
@@ -54,11 +56,25 @@ LIBS += -LD:/boost_1_58_0-x64/lib \
         -LD:/mosquitto-x64/lib \
         -LD:/protobuf-x64-3.6.1/lib \
         $$PWD/3rd/curl/lib/windows/win64/libcurl-d_imp.lib \
-        $$PWD/3rd/klvideowidget/x64/lib/klvideowidget.lib \
+        $$PWD/3rd/klvideowidget/x64/lib/debug/klvideowidget.lib \
         $$PWD/3rd/milestone/lib/x64/ToolkitFactoryProvider.lib \
         GdiPlus.lib HCCore.lib HCCore.lib HCNetSDK.lib PlayCtrl.lib \
         libthrift.lib libthriftnb.lib libcrypto64MDd.lib libssl64MDd.lib ws2_32.lib \
         mosquitto.lib mosquittopp.lib libprotobufd.lib libprotobuf-lited.lib libprotocd.lib
+}else{
+LIBS += -LD:/boost_1_58_0-x64/lib \
+        -LD:/OpenSSL-Win64/lib/VC \
+        -L$$PWD/3rd/HK_SDK/lib/windows/win64 \
+        -LD:/thrift-0.11.0-x64-release/lib \
+        -LD:/mosquitto-x64/lib \
+        -LD:/protobuf-x64-3.6.1-release/lib \
+        $$PWD/3rd/curl/lib/windows/win64/libcurl-d_imp.lib \
+        $$PWD/3rd/klvideowidget/x64/lib/release/klvideowidget.lib \
+        $$PWD/3rd/milestone/lib/x64/ToolkitFactoryProvider.lib \
+        GdiPlus.lib HCCore.lib HCCore.lib HCNetSDK.lib PlayCtrl.lib \
+        libthrift.lib libthriftnb.lib libcrypto64MD.lib libssl64MD.lib ws2_32.lib \
+        mosquitto.lib mosquittopp.lib libprotobuf.lib libprotobuf-lite.lib libprotoc.lib
+}
 }
 }
 SOURCES += \

@@ -9,21 +9,23 @@
 #include <QSettings>
 #include <QFileDialog>
 #include <QStandardPaths>
+#include <QApplication>
+#include <QTimer>
 #include "trackingpage.h"
 #include "trackingwebview.h"
-#include "service/restservice.h"
 #include "waitinglabel.h"
+#include "informationdialog.h"
+#include "videoplayer.h"
 
-TrackingPage::TrackingPage(WidgetManagerI *wm, WidgetI *parent):
-    WidgetI(wm,parent)
+TrackingPage::TrackingPage( WidgetI *parent):
+    WidgetI(parent)
 {
-    setObjectName(tr("Tracking"));
-    backImg_.load("images/Mask.png");
+    setObjectName(tr("Trajectory"));
     imgBtn_ = new QPushButton;
     searchBtn_ = new QPushButton(tr("Search"));
-    startTimeL_ = new QLabel(tr("Starting time"));
-    endTimeL_ = new QLabel(tr("Ending time"));
-    threshL_ = new QLabel(tr("Thresh"));
+    startTimeL_ = new QLabel(tr("Starting Time"));
+    endTimeL_ = new QLabel(tr("Ending Time"));
+    threshL_ = new QLabel(tr("Threshold"));
     startTimeEdit_ = new QDateTimeEdit;
     endTimeEdit_ = new QDateTimeEdit;
     threshSpin_ = new QSpinBox;
@@ -40,26 +42,31 @@ TrackingPage::TrackingPage(WidgetManagerI *wm, WidgetI *parent):
     gridLay->addWidget(endTimeL_,1,2,1,1);
     gridLay->addWidget(endTimeEdit_,1,3,1,1);
     gridLay->addWidget(searchBtn_,1,4,1,1);
+    gridLay->setSpacing(20);
+    gridLay->setMargin(0);
     topHLay->addLayout(gridLay);
     topHLay->setAlignment(Qt::AlignLeft);
+    topHLay->setSpacing(20);
+    topHLay->setMargin(0);
     mainLay->addLayout(topHLay);
     mainLay->addWidget(dataView_);
+    mainLay->setMargin(40);
+    mainLay->setSpacing(20);
     setLayout(mainLay);
 
     threshSpin_->setRange(0,100);
     threshSpin_->setSuffix("%");
-    threshSpin_->setMinimumHeight(40);
-    startTimeEdit_->setMinimumSize(250,44);
-    endTimeEdit_->setMinimumSize(250,44);
+    threshSpin_->setFixedSize(200,34);
+    startTimeEdit_->setFixedSize(200,34);
     startTimeEdit_->setDisplayFormat("yyyy/MM/dd HH:mm:ss");
     endTimeEdit_->setDisplayFormat("yyyy/MM/dd HH:mm:ss");
     startTimeEdit_->setDateTime(QDateTime::currentDateTime().addDays(-1));
     endTimeEdit_->setDateTime(QDateTime::currentDateTime());
-    threshSpin_->setValue(40);
-    searchBtn_->setMinimumSize(120,44);
-    imgBtn_->setFixedSize(95,95);
-    imgBtn_->setIconSize(imgBtn_->size());
+    threshSpin_->setValue(53);
+    endTimeEdit_->setFixedSize(200,34);
     QPixmap defaultPersonBackPix("images/person-face-back.png");
+    imgBtn_->setFixedSize(defaultPersonBackPix.size());
+    imgBtn_->setIconSize(imgBtn_->size());
     imgBtn_->setIcon(defaultPersonBackPix.scaled(imgBtn_->iconSize()));
     imgBtn_->setProperty("default-pix",defaultPersonBackPix);
     QCursor imgBtnCoursor = imgBtn_->cursor();
@@ -71,58 +78,76 @@ TrackingPage::TrackingPage(WidgetManagerI *wm, WidgetI *parent):
     connect(searchBtn_,SIGNAL(clicked(bool)),this,SLOT(slotSearchBtnClicked()));
 
     QSettings configSetting("config.ini",QSettings::IniFormat);
-    hostname_ = configSetting.value("CloudHost/host").toString();
+    hostname_ = configSetting.value("Http/Javahost").toString();
+
+    connect(dataView_,SIGNAL(sigCameraClicked(QString)),this,SLOT(slotOnCameraClicked(QString)));
+    connect(dataView_,SIGNAL(sigWebError(QString)),this,SLOT(slotOnWebError(QString)));
+    setUserStyle(userStyle());
     getCameraInfo();
 }
 
-void TrackingPage::setUserStyle(WidgetManagerI::SkinStyle s)
+void TrackingPage::setUserStyle(int s)
 {
     QPalette pal;
-    if(WidgetManagerI::Danyahei == s){
+    if(0 == s){
         imgBtn_->setStyleSheet("QPushButton{"
                                "background-color: transparent;"
                                "}");
-        pal = palette();
-        pal.setColor(QPalette::Foreground,Qt::white);
-        setPalette(pal);
-
+        threshL_->setStyleSheet("QLabel{"
+                                "color: rgba(255,255,255,191);"
+                                "font-size: 14px;"
+                                "}");
+        startTimeL_->setStyleSheet("QLabel{"
+                                   "color: rgba(255,255,255,191);"
+                                   "font-size: 14px;"
+                                   "}");
+        endTimeL_->setStyleSheet("QLabel{"
+                                 "color: rgba(255,255,255,191);"
+                                 "font-size: 14px;"
+                                 "}");
         endTimeEdit_->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
-            "color: rgba(206, 206, 206, 1);"
-            "border:1px solid white;"
-            "border-radius:4px;"
-            "background-color: transparent;"
-            "}");
+                                    "color: rgba(255,255,255,191);"
+                                    "background-color: rgba(255,255,255,0.1);"
+                                    "border-radius: 4px;"
+                                    "padding-left: 10px;"
+                                    "font-size: 14px;"
+                                    "}");
         startTimeEdit_->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
-            "color: rgba(206, 206, 206, 1);"
-            "border:1px solid white;"
-            "border-radius:4px;"
-            "background-color: transparent;"
-            "}");
+                                      "color: rgba(255,255,255,191);"
+                                      "background-color: rgba(255,255,255,0.1);"
+                                      "border-radius: 4px;"
+                                      "padding-left: 10px;"
+                                      "font-size: 14px;"
+                                      "}");
         searchBtn_->setStyleSheet("QPushButton{"
-                                 "color: white;"
-                                 "background-color: rgba(112, 112, 112, 1);"
-                                 "}");
+                                  "background-color: rgb(83,77,251);"
+                                  "color: white;"
+                                  "border-radius: 6px;"
+                                  "font-size: 18px;"
+                                  "}"
+                                  "QPushButton:pressed{"
+                                  "padding: 2px;"
+                                  "background-color: #312DA6;"
+                                  "}");
         threshSpin_->setStyleSheet("QSpinBox{"
-                                 "padding-right: 15px;"
-                                 "border-width: 3;"
-                                 "background-color: transparent;"
-                                 "border:1px solid #CECECE;"
-                                    "border-radius:6px;"
-                                 "color: white;"
-                                 "font-size: 18px;"
-                                 "}"
-                                 "QSpinBox::up-button{"
-                                 "subcontrol-origin: border;"
-                                 "subcontrol-position: top right;"
-                                 "width: 16px;"
-                                 "border-image: url(images/on.png) 1;"
-                                 "}"
-                                 "QSpinBox::down-button{"
-                                 "subcontrol-origin: border;"
-                                 "subcontrol-position: bottom right;"
-                                 "width: 16px;"
-                                 "border-image: url(images/under.png) 1;"
-                                 "}");
+                                   "color: rgba(255,255,255,191);"
+                                   "background-color: rgba(255,255,255,0.1);"
+                                   "border-radius: 4px;"
+                                   "padding-left: 10px;"
+                                   "font-size: 14px;"
+                                   "}");
+        searchBtn_->setStyleSheet("QPushButton{"
+                                  "background-color: rgb(83,77,251);"
+                                  "color: white;"
+                                  "border-radius: 6px;"
+                                  "width: 99px;"
+                                  "height: 34px;"
+                                  "font-size: 14px;"
+                                  "}"
+                                  "QPushButton:pressed{"
+                                  "padding: 2px;"
+                                  "background-color: #312DA6;"
+                                  "}");
     }
 }
 
@@ -131,22 +156,15 @@ void TrackingPage::setImgageOid(QImage img, QString oid)
     curOid_ = oid;
     QPixmap pix = QPixmap::fromImage(img.scaled(imgBtn_->iconSize()));
     imgBtn_->setIcon(pix);
-    imgBtn_->setProperty("pixmap",pix);
-}
-
-void TrackingPage::paintEvent(QPaintEvent *event)
-{
-    QPainter p(this);
-    p.drawImage(rect(),backImg_);
+    imgBtn_->setProperty("pixmap",QPixmap::fromImage(img));
 }
 
 void TrackingPage::getCameraInfo()
 {
-    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI,SIGNAL(sigCameraInfo(QVector<RestServiceI::CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<RestServiceI::CameraInfo>)));
     serviceI->getCameraInfo();
-    startWorker(worker);
 }
 
 void TrackingPage::slotImgBtnClicked()
@@ -155,28 +173,30 @@ void TrackingPage::slotImgBtnClicked()
     QPixmap pix(filePath);
     if(pix.isNull()){
         imgBtn_->setIcon(imgBtn_->property("default-pix").value<QPixmap>());
+        imgBtn_->setProperty("pixmap",QPixmap());
         return;
     }
     imgBtn_->setIcon(pix.scaled(imgBtn_->iconSize()));
     imgBtn_->setProperty("pixmap",pix);
+    curOid_.clear();
 }
 
 void TrackingPage::slotSearchBtnClicked()
 {
-    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     RestServiceI::FaceTrackingArgs args;
     args.oid = curOid_;
-//    args.faceImg = imgBtn_->property("pixmap").value<QPixmap>().toImage();
-    args.faceImg = QImage();
+    args.faceImg = imgBtn_->property("pixmap").value<QPixmap>().toImage();
     args.startT = startTimeEdit_->dateTime();
     args.endT = endTimeEdit_->dateTime();
     args.thresh = threshSpin_->value() / qreal(100);
-    WaitingLabel *label = new WaitingLabel(this);
-    connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
-        label->close();
-        delete label;
-        QMessageBox::information(this,objectName(),str);
+    connect(serviceI,&RestServiceI::sigError,this,[this](QString str){
+        dataView_->updateTracking(QVector<TrackingWebView::TrackingPoint>());
+        InformationDialog infoDialog(this);
+        infoDialog.setUserStyle(userStyle());
+        infoDialog.setMessage(str);
+        infoDialog.exec();
         searchBtn_->setEnabled(true);
     });
 #if 0
@@ -187,23 +207,20 @@ void TrackingPage::slotSearchBtnClicked()
         searchBtn_->setEnabled(true);
     });
 #else
-    connect(serviceI,&RestServiceI::sigTrackingNew,this,[this,label](const QVector<RestServiceI::TrackingReturnData> data){
-        label->close();
-        delete label;
+    connect(serviceI,&RestServiceI::sigTrackingNew,this,[this](const QVector<RestServiceI::TrackingReturnData> data){
         slotTrackingNew(data);
         searchBtn_->setEnabled(true);
     });
 #endif
     serviceI->faceTracking(args);
-    startWorker(worker);
-    curOid_.clear();
-    label->show(500);
+    searchBtn_->setEnabled(false);
+    dataView_->startWaiting();
 }
 
 void TrackingPage::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)
 {
     for(RestServiceI::CameraInfo &info : data){
-        curCameraMap_[info.cameraId] = info.cameraPos;
+        curCameraMap_[info.cameraId] = info;
     }
 }
 
@@ -212,16 +229,20 @@ void TrackingPage::slotTrackingNew(QVector<RestServiceI::TrackingReturnData> dat
     QVector<TrackingWebView::TrackingPoint> trackingVec;
     std::transform(data.begin(),data.end(),std::back_inserter(trackingVec),[this](const RestServiceI::TrackingReturnData &value){
         TrackingWebView::TrackingPoint pointData;
-        pointData.name = curCameraMap_.value(value.cameraId);
+        pointData.cameraId = value.cameraId;
+        pointData.name = curCameraMap_.value(value.cameraId).cameraPos;
         pointData.grabTime = value.timeIn.toString("yyyy-MM-dd HH:mm:ss");
-        pointData.holdTime.setNum((value.timeOut.toMSecsSinceEpoch() - value.timeIn.toMSecsSinceEpoch())/1000);
-        pointData.personImgUr = hostname_ + "graph/node/picture/" + value.objId;
-        qDebug() << pointData.personImgUr;
+        int holdTime = (value.timeOut.toMSecsSinceEpoch() - value.timeIn.toMSecsSinceEpoch())/1000;
+        pointData.holdTime.setNum(holdTime < 1 ? 1 : holdTime);
+//        pointData.personImgUr = hostname_ + "graph/node/picture/" + value.objId;
+        pointData.personImgUr = hostname_ + "api/v2/cmcc/monitor/alarm/query/sms-face/" + value.objId;
+        pointData.lat = value.lat;
+        pointData.lng = value.lng;
+        pointData.sceneId = value.sceneId;
+//        qDebug() << pointData.cameraId << pointData.name << pointData.grabTime << pointData.holdTime << pointData.personImgUr << pointData.lat << pointData.lng;
         return pointData;
     });
-    if(!trackingVec.isEmpty()){
-        dataView_->updateTracking(trackingVec);
-    }
+    dataView_->updateTracking(trackingVec);
 }
 
 void TrackingPage::slotTracking(QVector<SearchFace> data)
@@ -235,4 +256,23 @@ void TrackingPage::slotTracking(QVector<SearchFace> data)
         return pointData;
     });
     dataView_->updateTracking(trackingVec);
+}
+
+void TrackingPage::slotOnCameraClicked(QString cameraId)
+{
+    VideoPlayer *player = new VideoPlayer(this);
+    player->setAttribute(Qt::WA_DeleteOnClose);
+    player->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+    player->setWindowModality(Qt::ApplicationModal);
+    player->setMinimumSize(960,540);
+    player->startPlay(curCameraMap_.value(cameraId).rtsp,"fmg_decoder");
+    player->show();
+}
+
+void TrackingPage::slotOnWebError(QString str)
+{
+    InformationDialog infoDialog(this);
+    infoDialog.setUserStyle(userStyle());
+    infoDialog.setMessage(str);
+    infoDialog.exec();
 }

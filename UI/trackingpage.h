@@ -2,7 +2,7 @@
 #define TRACKINGPAGE_H
 
 #include "widgetinterface.h"
-#include "service/restservicei.h"
+#include "service/servicei.h"
 QT_FORWARD_DECLARE_CLASS(QDateTimeEdit)
 QT_FORWARD_DECLARE_CLASS(QLabel)
 QT_FORWARD_DECLARE_CLASS(QSpinBox)
@@ -12,12 +12,9 @@ class TrackingPage : public WidgetI
 {
     Q_OBJECT
 public:
-    TrackingPage(WidgetManagerI *wm, WidgetI *parent = nullptr);
-    void setUserStyle(WidgetManagerI::SkinStyle s) override;
+    TrackingPage( WidgetI *parent = nullptr);
+    void setUserStyle(int s) override;
     void setImgageOid(QImage,QString);
-
-protected:
-    void paintEvent(QPaintEvent *event) override;
 
 private:
     QLabel *threshL_{nullptr},*startTimeL_{nullptr},*endTimeL_{nullptr};
@@ -26,9 +23,8 @@ private:
     QDateTimeEdit *startTimeEdit_,*endTimeEdit_{nullptr};
     TrackingWebView *dataView_{nullptr};
 
-    QImage backImg_;
     QString curOid_,hostname_;
-    QMap<QString,QString> curCameraMap_;
+    QMap<QString,RestServiceI::CameraInfo> curCameraMap_;
     void getCameraInfo();
 
 private slots:
@@ -37,6 +33,8 @@ private slots:
     void slotOnCameraInfo(QVector<RestServiceI::CameraInfo>);
     void slotTrackingNew(QVector<RestServiceI::TrackingReturnData>);
     void slotTracking(QVector<SearchFace>);
+    void slotOnCameraClicked(QString);
+    void slotOnWebError(QString);
 };
 
 #endif // TRACKINGPAGE_H

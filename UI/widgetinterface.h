@@ -2,52 +2,34 @@
 #define WIDGETINTERFACE_H
 
 #include <QWidget>
-#include "service/core/workerapi.h"
-#include "service/core/workermanagerapi.h"
-class WidgetI;
-class WidgetManagerI
-{
-public:
-    enum SkinStyle{
-        Invalid,
-        Danyahei,
-        Dianyalan
-    };
-    virtual void setdefaultStyle(SkinStyle) = 0;
-    virtual void registerWidget(WidgetI*) = 0;
-    virtual void notifyUserStyle(SkinStyle) = 0;
-    virtual void unregisterWidget(WidgetI*) = 0;
-    virtual SkinStyle currentStyle() const = 0;
-    virtual inline void setWorkerManager(BLL::WorkerManager *workerM){
-        _workerM = workerM;
-    }
-    virtual inline BLL::WorkerManager* workerManager(){return _workerM;}
-
-private:
-    BLL::WorkerManager *_workerM = nullptr;
-};
-
+#include <QDynamicPropertyChangeEvent>
+#include <QMouseEvent>
+#include <QDebug>
 class WidgetI : public QWidget
 {
     Q_OBJECT
 public:
-    explicit WidgetI(WidgetManagerI*wm,WidgetI *parent = nullptr):_wmager(wm),QWidget(parent){
-        _wmager->registerWidget(this);
+    WidgetI(QWidget *parent = nullptr):QWidget(parent){
     }
-    ~WidgetI(){widgetManger()->unregisterWidget(this);}
-    virtual void setUserStyle(WidgetManagerI::SkinStyle style) = 0;
-    virtual inline BLL::Worker* getWoker(QString name){
-        return _wmager->workerManager()->getWorker(name);
-    }
-    virtual inline void startWorker(BLL::Worker*w, int threadCount = 1){
-        return _wmager->workerManager()->startWorker(w,threadCount);
-    }
-    virtual inline WidgetManagerI::SkinStyle userStyle(){
-        return _wmager->currentStyle();
-    }
-    virtual inline WidgetManagerI* widgetManger() const{return _wmager;}
+    virtual void setUserStyle(int s = 0) = 0;
+    virtual int userStyle() const{return curStyle_;}
 
-private:
-    WidgetManagerI *_wmager = nullptr;
+protected:
+    bool event(QEvent *event) override{
+        if(event->type() == QEvent::DynamicPropertyChange){
+            QDynamicPropertyChangeEvent *ev = dynamic_cast<QDynamicPropertyChangeEvent*>(event);
+            curStyle_ = ev->propertyName().toInt();
+            setUserStyle(curStyle_);
+            ev->accept();
+        }else if(event->type() == QEvent::Show){
+            if(!isWindow() || !parentWidget())return QWidget::event(event);
+            QRect rt = rect();
+            rt.moveCenter(parentWidget()->window()->rect().center());
+            move(rt.topLeft());
+        }
+        return QWidget::event(event);
+    }
+
+    int curStyle_ = 0;
 };
 #endif // WIDGETINTERFACE_H

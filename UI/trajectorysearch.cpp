@@ -6,8 +6,8 @@
 #include <QLabel>
 
 #pragma execution_character_set("utf-8")
-TrajectorySearch::TrajectorySearch(WidgetManagerI *wm, WidgetI *parent):
-    WidgetI(wm,parent)
+TrajectorySearch::TrajectorySearch( WidgetI *parent):
+    WidgetI(parent)
 {
     setObjectName(tr("轨迹检索"));
     QVBoxLayout *mainLay = new QVBoxLayout;
@@ -42,11 +42,12 @@ TrajectorySearch::TrajectorySearch(WidgetManagerI *wm, WidgetI *parent):
     setLayout(mainLay);
 
     connect(m_searchBtn,SIGNAL(clicked(bool)),this,SLOT(slotSearchBtnClicked()));
+    setUserStyle(userStyle());
 }
 
-void TrajectorySearch::setUserStyle(WidgetManagerI::SkinStyle s)
+void TrajectorySearch::setUserStyle(int s)
 {
-    if(s == WidgetManagerI::Danyahei){
+    if(s == 0){
     }
 }
 

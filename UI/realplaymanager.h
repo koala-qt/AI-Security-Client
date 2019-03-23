@@ -11,9 +11,9 @@ class RealPlayManager : public WidgetI
 {
     Q_OBJECT
 public:
-    explicit RealPlayManager(WidgetManagerI*wm,WidgetI*parent = nullptr);
+    explicit RealPlayManager(WidgetI*parent = nullptr);
     ~RealPlayManager();
-    void setUserStyle(WidgetManagerI::SkinStyle) override;
+    void setUserStyle(int) override;
     int screenCount()const;
     void splitScreen(const int rows, const int cols, const int bigFrameRow, const int bigFrameCol, const int bigFrameRowSpan, const int bigFrameColSpan);
     void playByOrder(QString url, QString id, QString name = QString());

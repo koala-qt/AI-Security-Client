@@ -10,6 +10,7 @@
 #include <QDateTimeEdit>
 #include <QHeaderView>
 #include <QFileDialog>
+#include <QApplication>
 #include <QStandardPaths>
 #include <QScrollBar>
 #include <QSpinBox>
@@ -21,22 +22,23 @@
 #include "pageindicator.h"
 #include "waitinglabel.h"
 #include "sceneimagedialog.h"
-#include "service/restservice.h"
+#include "informationdialog.h"
+#include "nodatatip.h"
+#include "windowtitlebar.h"
 
 #pragma execution_character_set("utf-8")
-FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
-    WidgetI(wm,parent)
+FaceSearch::FaceSearch(WidgetI *parent):
+    WidgetI(parent)
 {
-    setObjectName(tr("Search using an image"));
+    setObjectName(tr("Single Face"));
     QVBoxLayout *mainLay = new QVBoxLayout;
     QHBoxLayout *hlay = new QHBoxLayout;
     m_imgBtn = new QPushButton;
     m_imgBtn->setToolTip(tr("添加图片"));
-    m_imgBtn->setFixedSize(150,150);
-    m_imgBtn->setIconSize(QSize(m_imgBtn->size()));
     m_imgBtn->setFocusPolicy(Qt::NoFocus);
     QPixmap imgPix("images/person-face-back.png");
-    m_imgBtn->setIcon(imgPix.scaled(m_imgBtn->iconSize()));
+    m_imgBtn->setFixedSize(imgPix.size());
+    m_imgBtn->setIconSize(m_imgBtn->size());
     m_imgBtn->setProperty("default-pix",imgPix);
     QCursor curSor = cursor();
     curSor.setShape(Qt::PointingHandCursor);
@@ -44,17 +46,17 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
     hlay->addWidget(m_imgBtn);
 
     QGridLayout *gridLay = new QGridLayout;
-    cameraLabel_ = new QLabel(tr("位置"));
+    cameraLabel_ = new QLabel(tr("Position"));
     cameraLabel_->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     cameraCombox_ = new QComboBox;
     cameraCombox_->setIconSize(QSize(1,30));
     cameraCombox_->setFocusPolicy(Qt::NoFocus);
-    cameraCombox_->setFixedHeight(40);
-    recordCountL_ = new QLabel(tr("查询条数"));
+    cameraCombox_->setFixedSize(200,34);
+    recordCountL_ = new QLabel(tr("Query Count"));
     recordCountL_->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     topCombox_ = new QComboBox;
     topCombox_->setIconSize(QSize(1,30));
-    topCombox_->setFixedHeight(40);
+    topCombox_->setFixedSize(200,34);
     topCombox_->setFocusPolicy(Qt::NoFocus);
     QVector<QPair<QString,int>> itemVec{qMakePair(tr("20"),20),
                 qMakePair(tr("50"),50),qMakePair(tr("100"),100),
@@ -63,28 +65,29 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
     QPixmap pix(1,topCombox_->iconSize().height());
     pix.fill(Qt::transparent);
     for(const QPair<QString,int> &value : itemVec){
-        topCombox_->addItem(pix,value.first,value.second);
+        topCombox_->addItem(value.first,value.second);
     }
-    similarL_ = new QLabel(tr("最低相似度"));
+    similarL_ = new QLabel(tr("Threshold "));
     similarL_->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     similarSpin_ = new QSpinBox;
     similarSpin_->setRange(0,100);
     similarSpin_->setSuffix("%");
-    similarSpin_->setMinimumHeight(40);
+    similarSpin_->setMinimumHeight(34);
     similarSpin_->setMinimumWidth(200);
-    similarSpin_->setValue(50);
-    startTimeL_ = new QLabel(tr("开始时间"));
+    similarSpin_->setValue(40);
+    similarSpin_->setSingleStep(5);
+    startTimeL_ = new QLabel(tr("Starting Time"));
     startTimeEdit_ = new QDateTimeEdit;
-    startTimeEdit_->setMinimumSize(160,40);
+    startTimeEdit_->setMinimumSize(200,34);
     startTimeEdit_->setDisplayFormat("yyyy/MM/dd HH:mm:ss");
     startTimeEdit_->setDate(QDateTime::currentDateTime().addDays(-1).date());
-    endTimeL_ = new QLabel(tr("结束时间"));
+    endTimeL_ = new QLabel(tr("Ending Time"));
     endTimeEdit_ = new QDateTimeEdit;
     endTimeEdit_->setDisplayFormat("yyyy/MM/dd HH:mm:ss");
-    endTimeEdit_->setMinimumSize(160,40);
+    endTimeEdit_->setMinimumSize(200,34);
     endTimeEdit_->setDate(QDateTime::currentDateTime().addDays(1).date());
-    m_searchBtn = new QPushButton(tr("检索"));
-    m_searchBtn->setFixedHeight(40);
+    m_searchBtn = new QPushButton(tr("Search"));
+    m_searchBtn->setFixedSize(99,34);
     m_searchBtn->setFocusPolicy(Qt::NoFocus);
     gridLay->addWidget(cameraLabel_,0,0,1,1);
     gridLay->addWidget(cameraCombox_,0,1,1,1);
@@ -96,25 +99,27 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
     gridLay->addWidget(startTimeEdit_,1,1,1,1);
     gridLay->addWidget(endTimeL_,1,2,1,1);
     gridLay->addWidget(endTimeEdit_,1,3,1,1);
-    gridLay->addWidget(m_searchBtn,1,5,1,1);
-    gridLay->setContentsMargins(10,5,0,0);
-    gridLay->setHorizontalSpacing(15);
-    gridLay->setVerticalSpacing(0);
-    QHBoxLayout *topRighHlay = new QHBoxLayout;
-    topRighHlay->addLayout(gridLay);
-    topRighHlay->addStretch();
-    hlay->addLayout(topRighHlay);
-    hlay->setAlignment(Qt::AlignLeft);
+    gridLay->addWidget(m_searchBtn,1,4,1,1);
+    gridLay->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    gridLay->setSpacing(20);
+    gridLay->setMargin(0);
+    hlay->addLayout(gridLay);
+    hlay->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    hlay->setSpacing(20);
+    hlay->setMargin(0);
     mainLay->addLayout(hlay);
     m_tableW = new QTableWidget;
     mainLay->addWidget(m_tableW);
     m_pageIndicator = new PageIndicator;
     m_pageIndicator->hide();
-    hlay = new QHBoxLayout;
-    hlay->addWidget(m_pageIndicator);
-    hlay->setAlignment(Qt::AlignCenter);
-    mainLay->addLayout(hlay);
-    mainLay->setContentsMargins(30,20,10,10);
+    mainLay->addWidget(m_pageIndicator);
+    mainLay->setContentsMargins(40,40,40,40);
+    mainLay->setSpacing(20);
+
+//    titleBar_ = new WindowTitleBar;
+//    QVBoxLayout *winLay = new QVBoxLayout;
+//    winLay->addLayout(mainLay);
+//    winLay->addWidget(titleBar_);
     setLayout(mainLay);
 
     menu_ = new QMenu(this);
@@ -123,23 +128,25 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
         setOid(m_tableW->item(m_tableW->currentRow(),1)->text());
     });
     menu_->addAction(tr("Scene analysis"),[&]{
-        BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-        RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+        ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+        RestServiceI *serviceI = factoryI->makeRestServiceI();
         WaitingLabel *label = new WaitingLabel(this);
         connect(serviceI,&RestServiceI::sigError,this,[this,label](QString str){
             label->close();
             delete label;
-            QMessageBox::information(this,tr("Scene"),str);
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(userStyle());
+            infoDialog.setMessage(str);
+            infoDialog.exec();
             menu_->setEnabled(true);
         });
-        connect(serviceI,&RestServiceI::sigSceneImage,this,[&,label](const QImage img){
+        connect(serviceI,&RestServiceI::sigSceneInfo,this,[&,label](const RestServiceI::SceneInfo sinfo){
             label->close();
             delete label;
-            slotOnScenePic(img);
+            slotOnSceneInfo(sinfo);
             menu_->setEnabled(true);
         });
-        serviceI->getScenePic(m_tableW->item(m_tableW->currentRow(),1)->data(Qt::UserRole).toString());
-        startWorker(worker);
+        serviceI->getSceneInfo(m_tableW->item(m_tableW->currentRow(),1)->data(Qt::UserRole).toString());
         label->show(500);
         menu_->setEnabled(false);
     });
@@ -150,7 +157,10 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
             return;
         }
         if(!m_tableW->item(m_tableW->currentRow(),0)->data(Qt::UserRole).value<QImage>().save(filePath)){
-            QMessageBox::information(this,tr("Save face image"),tr("Operation failed!"));
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(userStyle());
+            infoDialog.setMessage("Operation failed!");
+            infoDialog.exec();
         }
     });
     m_tableW->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -165,15 +175,21 @@ FaceSearch::FaceSearch(WidgetManagerI *wm, WidgetI *parent):
     m_pageIndicator->setPageInfo(0,0);
     m_tableW->setIconSize(QSize(112,112));
     m_tableW->setFocusPolicy(Qt::NoFocus);
+    m_tableW->setFrameStyle(QFrame::NoFrame);
+    m_tableW->setEditTriggers(QTableView::NoEditTriggers);
     m_tableW->horizontalHeader()->setHighlightSections(false);
     m_tableW->horizontalHeader()->setDefaultSectionSize(112);
     m_tableW->verticalHeader()->setDefaultSectionSize(112);
+    m_tableW->horizontalHeader()->setMinimumHeight(60);
     m_tableW->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_tableW->setColumnCount(5);
     m_tableW->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     m_tableW->horizontalHeader()->setSectionResizeMode(0,QHeaderView::Fixed);
     m_tableW->setHorizontalHeaderLabels(QStringList() << tr("人脸") << tr("ID号") << tr("位置") << tr("相似度") << tr("时间"));
     m_tableW->horizontalHeader()->setSortIndicatorShown(true);
+    noDataW_ = new NoDataTip(m_tableW);
+
+    setUserStyle(userStyle());
     getCameraInfo();
 }
 
@@ -188,190 +204,272 @@ void FaceSearch::setOid(QString s)
     oidStr_ = s;
 }
 
-void FaceSearch::setUserStyle(WidgetManagerI::SkinStyle s)
+void FaceSearch::setUserStyle(int s)
 {
     QPalette pal;
     QFont f;
-    if(s == WidgetManagerI::Danyahei){
-        f = font();
-        f.setFamily("Arial");
-        setFont(f);
+    if(s == 0){
         f = cameraLabel_->font();
-        f.setPixelSize(18);
-        f.setFamily("Arial");
+        f.setPixelSize(14);
         cameraLabel_->setFont(f);
         recordCountL_->setFont(f);
         startTimeL_->setFont(f);
         endTimeL_->setFont(f);
         similarL_->setFont(f);
+        cameraCombox_->setFont(f);
+        topCombox_->setFont(f);
+        startTimeEdit_->setFont(f);
+        endTimeEdit_->setFont(f);
+        m_searchBtn->setFont(f);
 
         pal = cameraLabel_->palette();
-        pal.setColor(QPalette::Foreground,Qt::white);
+        pal.setColor(QPalette::Foreground,QColor(255,255,255,191));
         cameraLabel_->setPalette(pal);
         recordCountL_->setPalette(pal);
         startTimeL_->setPalette(pal);
         endTimeL_->setPalette(pal);
         similarL_->setPalette(pal);
 
-        menu_->setStyleSheet("QMenu{"
-                             "background-color: rgb(75,75,75);"
-                             "}"
-                             "QMenu::item:selected{"
-                             "background-color: rgba(255,255,255,0.4);"
-                             "}");
         m_imgBtn->setStyleSheet("QPushButton{"
-                                 "background-color: transparent;"
-                                 "}");
-        m_tableW->setStyleSheet(
-                    "QTableView{"
-                    "color: white;border:1px solid #CECECE;"
-                    "font-size: 18px;"
-                    "background-color: transparent;"
-                    "selection-background-color: rgba(206,206,206,40);"
-                    "}"
-                    "QTableView QTableCornerButton::section{"
-                    "background: rgba(206,206,206,40);"
-                    "}"
-                    "QHeaderView{"
-                    "background-color: rgba(206,206,206,20);"
-                    "}"
-                    "QHeaderView::section{"
-                    "color: white;"
-                    "background-color: rgba(206,206,206,40);"
-                    "}");
-        m_tableW->verticalScrollBar()->setStyleSheet(
-                                                    "QScrollBar:vertical{"
-                                                    "background: transparent;"
-                                                    "border-radius: 10px;"
-                                                    "border: none;"
-                                                    "width: 13px;"
-                                                    "}"
-                                                    "QScrollBar::handle:vertical{"
-                                                    "background: rgba(255,255,255,0.5);"
-                                                    "border-radius: 5px;"
-                                                    "}"
-                                                    "QScrollBar::add-line:vertical{"
-                                                    "background: transparent;"
-                                                    "border:0px solid #274168;"
-                                                    "border-radius: 5px;"
-                                                    "min-height: 10px;"
-                                                    "width: 13px;"
-                                                    "}"
-                                                    "QScrollBar::sub-line:vertical{"
-                                                    "background: transparent;"
-                                                    "border:0px solid #274168;"
-                                                    "min-height: 10px;"
-                                                    "width: 13px;"
-                                                    "}"
-                                                    "QScrollBar::up-arrow:vertical{"
-                                                    "subcontrol-origin: margin;"
-                                                    "height: 0px;"
-                                                    "border:0 0 0 0;"
-                                                    "visible:false;"
-                                                    "}"
-                                                    "QScrollBar::down-arrow:vertical{"
-                                                    "subcontrol-origin: margin;"
-                                                    "height: 0px;"
-                                                    "visible:false;"
-                                                    "}"
-                                                    "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
-                                                    "background: transparent;"
-                                                    "border-radius: 10px;"
-                                                    "}");
+                                "border-image: url(images/person-face-back.png);"
+                                "}");
+        m_tableW->setStyleSheet("QTableView{"
+                                "color: rgba(255,255,255,0.75);"
+                                "font-size: 14px;"
+                                "background-color: #383F4F;"
+                                "border-radius: 4px;"
+                                "selection-background-color: rgba(206,206,206,40);"
+                                "}"
+                                "QTableView QTableCornerButton::section{"
+                                "background: rgba(206,206,206,20);"
+                                "}"
+                                "QHeaderView{"
+                                "background-color: rgb(65,73,92);"
+                                "border: none;"
+                                "border-radius: 0px;"
+                                "}"
+                                "QHeaderView::section{"
+                                "color: rgba(255,255,255,191);"
+                                "background-color: transparent;"
+                                "border: none;"
+                                "border-radius: 0px;"
+                                "}");
+        m_tableW->verticalScrollBar()->setStyleSheet("QScrollBar:vertical{"
+                                                     "background: transparent;"
+                                                     "border-radius: 10px;"
+                                                     "border: none;"
+                                                     "width: 13px;"
+                                                     "}"
+                                                     "QScrollBar::handle:vertical{"
+                                                     "background: rgba(255,255,255,0.5);"
+                                                     "border-radius: 5px;"
+                                                     "}"
+                                                     "QScrollBar::add-line:vertical{"
+                                                     "background: transparent;"
+                                                     "border:0px solid #274168;"
+                                                     "border-radius: 5px;"
+                                                     "min-height: 10px;"
+                                                     "width: 13px;"
+                                                     "}"
+                                                     "QScrollBar::sub-line:vertical{"
+                                                     "background: transparent;"
+                                                     "border:0px solid #274168;"
+                                                     "min-height: 10px;"
+                                                     "width: 13px;"
+                                                     "}"
+                                                     "QScrollBar::up-arrow:vertical{"
+                                                     "subcontrol-origin: margin;"
+                                                     "height: 0px;"
+                                                     "border:0 0 0 0;"
+                                                     "visible:false;"
+                                                     "}"
+                                                     "QScrollBar::down-arrow:vertical{"
+                                                     "subcontrol-origin: margin;"
+                                                     "height: 0px;"
+                                                     "visible:false;"
+                                                     "}"
+                                                     "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
+                                                     "background: transparent;"
+                                                     "border-radius: 10px;"
+                                                     "}");
 
         m_pageIndicator->setUserStyle();
 
         m_searchBtn->setStyleSheet("QPushButton{"
-                                   "border: 0px;"
-                                   "color:white;"
-                                   "background: #B4A06C;"
-                                   "border-radius: 6px;"
-                                   "font-size:18px;"
+                                   "background-color: rgb(83,77,251);"
+                                   "color: white;"
+                                   "border-radius: 4px;"
                                    "}"
                                    "QPushButton:pressed{"
-                                   "padding: 1px;"
+                                   "padding: 2px;"
+                                   "background-color: #312DA6;"
                                    "}");
-        cameraCombox_->setStyleSheet(
-                    "QComboBoxListView{"
-                    "color: #CECECE;"
-                    "background-color: #525964;"
-                    "}"
-                    "QComboBox{"
-                    "color: white;"
-                    "font-size: 18px;"
-                    "background-color: transparent;"
-                    "border: 1px solid #CECECE;"
-                    "border-radius: 6px;"
-                    "}"
-                    "QComboBox QAbstractItemView{"
-                    "selection-color: white;"
-                    "outline: 0px;"
-                    "selection-background-color: #CECECE;"
-                    "}"
-                    "QComboBox::drop-down{"
-                    "subcontrol-position: center right;border-image: url(images/dropdown2.png);width:11px;height:8px;subcontrol-origin: padding;margin-right:5px;"
-                    "}");
+        cameraCombox_->setStyleSheet("QComboBoxListView{"
+                                     "color: #CECECE;"
+                                     "background-color: transparent;"
+                                     "border-radius: 0px;"
+                                     "border: none;"
+                                     "}"
+                                     "QComboBox{"
+                                     "color: rgba(255,255,255,0.75);"
+                                     "font-size: 14px;"
+                                     "background-color: rgba(255,255,255,0.1);"
+                                     "border: none;"
+                                     "border-radius: 4px;"
+                                     "padding-left: 10px;"
+                                     "}"
+                                     "QComboBox QAbstractItemView{"
+                                     "background-color: rgb(43,49,61);"
+                                     "border-radius: 0px;"
+                                     "selection-color: white;"
+                                     "outline: 0px;"
+                                     "selection-background-color: rgba(255,255,255,0.1);"
+                                     "}"
+                                     "QComboBox::drop-down{"
+                                     "subcontrol-position: center right;"
+                                     "border-image: url(images/dropdown2.png);"
+                                     "width:11px;"
+                                     "height:8px;"
+                                     "subcontrol-origin: padding;"
+                                     "margin-right:5px;"
+                                     "}"
+                                     "QScrollBar:vertical{"
+                                     "background: transparent;"
+                                     "border: 0px solid gray;"
+                                     "width: 13px;"
+                                     "}"
+                                     "QScrollBar::handle:vertical{"
+                                     "background: rgba(255,255,255,0.5);"
+                                     "border-radius: 5px;"
+                                     "}"
+                                     "QScrollBar::add-line:vertical{"
+                                     "background: transparent;"
+                                     "border:0px solid #274168;"
+                                     "border-radius: 5px;"
+                                     "min-height: 10px;"
+                                     "width: 13px;"
+                                     "}"
+                                     "QScrollBar::sub-line:vertical{"
+                                     "background: transparent;"
+                                     "border:0px solid #274168;"
+                                     "min-height: 10px;"
+                                     "width: 13px;"
+                                     "}"
+                                     "QScrollBar::up-arrow:vertical{"
+                                     "subcontrol-origin: margin;"
+                                     "height: 0px;"
+                                     "border:0 0 0 0;"
+                                     "visible:false;"
+                                     "}"
+                                     "QScrollBar::down-arrow:vertical{"
+                                     "subcontrol-origin: margin;"
+                                     "height: 0px;"
+                                     "visible:false;"
+                                     "}"
+                                     "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
+                                     "background: transparent;"
+                                     "border: none;"
+                                     "border-radius: 0px;"
+                                     "}");
 
-        topCombox_->setStyleSheet(
-                    "QComboBoxListView{"
-                    "color: #CECECE;"
-                    "background-color: #525964;"
-                    "}"
-                    "QComboBox{"
-                    "color: white;"
-                    "font-size: 18px;"
-                    "background-color: transparent;"
-                    "border: 1px solid #CECECE;"
-                    "border-radius: 6px;"
-                    "}"
-                    "QComboBox QAbstractItemView{"
-                    "selection-color: white;"
-                    "outline: 0px;"
-                    "selection-background-color: #CECECE;"
-                    "}"
-                    "QComboBox::drop-down{"
-                    "subcontrol-position: center right;border-image: url(images/dropdown2.png);width:11px;height:8px;subcontrol-origin: padding;margin-right:5px;"
-                    "}");
+        topCombox_->setStyleSheet("QComboBoxListView{"
+                                  "color: #CECECE;"
+                                  "background-color: transparent;"
+                                  "border-radius: 0px;"
+                                  "border: none;"
+                                  "}"
+                                  "QComboBox{"
+                                  "color: rgba(255,255,255,0.75);"
+                                  "font-size: 14px;"
+                                  "background-color: rgba(255,255,255,0.1);"
+                                  "border: none;"
+                                  "border-radius: 4px;"
+                                  "padding-left: 10px;"
+                                  "}"
+                                  "QComboBox QAbstractItemView{"
+                                  "background-color: rgb(43,49,61);"
+                                  "border-radius: 0px;"
+                                  "selection-color: white;"
+                                  "outline: 0px;"
+                                  "selection-background-color: rgba(255,255,255,0.1);"
+                                  "}"
+                                  "QComboBox::drop-down{"
+                                  "subcontrol-position: center right;"
+                                  "border-image: url(images/dropdown2.png);"
+                                  "width:11px;"
+                                  "height:8px;"
+                                  "subcontrol-origin: padding;"
+                                  "margin-right:5px;"
+                                  "}"
+                                  "QScrollBar:vertical{"
+                                  "background: transparent;"
+                                  "border: 0px solid gray;"
+                                  "width: 13px;"
+                                  "}"
+                                  "QScrollBar::handle:vertical{"
+                                  "background: rgba(255,255,255,0.5);"
+                                  "border-radius: 5px;"
+                                  "}"
+                                  "QScrollBar::add-line:vertical{"
+                                  "background: transparent;"
+                                  "border:0px solid #274168;"
+                                  "border-radius: 5px;"
+                                  "min-height: 10px;"
+                                  "width: 13px;"
+                                  "}"
+                                  "QScrollBar::sub-line:vertical{"
+                                  "background: transparent;"
+                                  "border:0px solid #274168;"
+                                  "min-height: 10px;"
+                                  "width: 13px;"
+                                  "}"
+                                  "QScrollBar::up-arrow:vertical{"
+                                  "subcontrol-origin: margin;"
+                                  "height: 0px;"
+                                  "border:0 0 0 0;"
+                                  "visible:false;"
+                                  "}"
+                                  "QScrollBar::down-arrow:vertical{"
+                                  "subcontrol-origin: margin;"
+                                  "height: 0px;"
+                                  "visible:false;"
+                                  "}"
+                                  "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{"
+                                  "background: transparent;"
+                                  "border: none;"
+                                  "border-radius: 0px;"
+                                  "}");
 
         startTimeEdit_->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
-            "color:#CECECE;"
-            "border:1px solid #CECECE;"
-            "border-radius:4px;"
-            "background-color: transparent;"
-                                       "}");
+                                      "color: rgba(255,255,255,0.75);"
+                                      "border-radius:4px;"
+                                      "background-color: rgba(255,255,255,0.1);"
+                                      "padding-left: 10px;"
+                                      "}");
         endTimeEdit_->setStyleSheet("QDateEdit,QTimeEdit,QComboBox,QDateTimeEdit,QSpinBox,QDoubleSpinBox{"
-            "color:#CECECE;"
-            "border:1px solid #CECECE;"
-            "border-radius:4px;"
-            "background-color: transparent;"
-            "}");
+                                    "color: rgba(255,255,255,0.75);"
+                                    "border-radius:4px;"
+                                    "background-color: rgba(255,255,255,0.1);"
+                                    "padding-left: 10px;"
+                                    "}");
         similarSpin_->setStyleSheet("QSpinBox{"
-                                 "padding-right: 15px;"
-                                 "border-width: 3;"
-                                 "background-color: transparent;"
-                                 "border:1px solid #CECECE;"
-                                    "border-radius:6px;"
-                                 "color: white;"
-                                 "font-size: 18px;"
-                                 "}"
-                                 "QSpinBox::up-button{"
-                                 "subcontrol-origin: border;"
-                                 "subcontrol-position: top right;"
-                                 "width: 16px;"
-                                 "border-image: url(images/on.png) 1;"
-                                 "}"
-                                 "QSpinBox::down-button{"
-                                 "subcontrol-origin: border;"
-                                 "subcontrol-position: bottom right;"
-                                 "width: 16px;"
-                                 "border-image: url(images/under.png) 1;"
-                                 "}");
+                                    "padding-right: 15px;"
+                                    "border-width: 3;"
+                                    "color: rgba(255,255,255,0.75);"
+                                    "border-radius:4px;"
+                                    "background-color: rgba(255,255,255,0.1);"
+                                    "font-size: 14px;"
+                                    "padding-left: 10px;"
+                                    "}");
+        noDataW_->setUserStyle(s);
     }
 }
 
 void FaceSearch::slotAddRow(QVector<RestServiceI::DataRectureItem> info)
 {
-    m_tableW->model()->removeRows(0,m_tableW->rowCount());
+    if(info.isEmpty()){
+        noDataW_->show();
+    }
     for(const RestServiceI::DataRectureItem &itemData : info){
         m_tableW->insertRow(m_tableW->rowCount());
         QTableWidgetItem *item = new QTableWidgetItem;
@@ -391,7 +489,9 @@ void FaceSearch::slotAddRow(QVector<RestServiceI::DataRectureItem> info)
         m_tableW->setItem(m_tableW->rowCount() - 1,2,item);
 
         item = new QTableWidgetItem;
-        item->setText(QString::number(itemData.similarity));
+        QString similarityStr;
+        similarityStr.setNum(itemData.similarity * 100,'g',4);
+        item->setText(similarityStr + '%');
         item->setTextAlignment(Qt::AlignCenter);
         m_tableW->setItem(m_tableW->rowCount() - 1,3,item);
 
@@ -406,18 +506,16 @@ bool FaceSearch::event(QEvent *event)
 {
     if(event->type() == QEvent::Show){
         endTimeEdit_->setDateTime(QDateTime::currentDateTime());
-        return true;
     }
     return WidgetI::event(event);
 }
 
 void FaceSearch::getCameraInfo()
 {
-    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
     connect(serviceI,SIGNAL(sigCameraInfo(QVector<RestServiceI::CameraInfo>)),this,SLOT(slotOnCameraInfo(QVector<RestServiceI::CameraInfo>)));
     serviceI->getCameraInfo();
-    startWorker(worker);
 }
 
 void FaceSearch::slotOnCameraInfo(QVector<RestServiceI::CameraInfo> data)
@@ -445,29 +543,28 @@ void FaceSearch::slotSectionClicked(int index)
 
 void FaceSearch::slotSearchClicked()
 {
-    if(faceImg_.isNull() && oidStr_.isEmpty()){
-        return;
-    }
-    BLL::Worker * worker = new BLL::RestService(widgetManger()->workerManager());
-    RestServiceI *serviceI = dynamic_cast<RestServiceI*>(worker);
-    WaitingLabel *label = new WaitingLabel(this);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serviceI = factoryI->makeRestServiceI();
+    WaitingLabel *label = new WaitingLabel(m_tableW);
     connect(serviceI,&RestServiceI::sigError,this,[this,label](const QString str){
         label->close();
         delete label;
-        oidStr_.clear();
-        QMessageBox::information(this,objectName(),str);
+        InformationDialog infoDialog(m_tableW);
+        infoDialog.setUserStyle(userStyle());
+        infoDialog.setMessage(str);
+        infoDialog.exec();
         m_searchBtn->setEnabled(true);
         m_pageIndicator->setEnabled(true);
+        noDataW_->show();
     });
     connect(serviceI,&RestServiceI::sigSearchByImage,this,[&,label](const QVector<RestServiceI::DataRectureItem> value){
         label->close();
         delete label;
-        oidStr_.clear();
         slotAddRow(value);
         m_searchBtn->setEnabled(true);
         m_pageIndicator->setEnabled(true);
         if(value.isEmpty()){
-            QMessageBox::information(this,objectName(),tr("No matched result!"));
+            noDataW_->show();
             return;
         }
     });
@@ -481,41 +578,43 @@ void FaceSearch::slotSearchClicked()
     args.startT = startTimeEdit_->dateTime();
     args.endT = endTimeEdit_->dateTime();
     serviceI->searchByImage(args);
-    startWorker(worker);
     label->show(500);
     m_searchBtn->setEnabled(false);
     m_pageIndicator->setEnabled(false);
+    noDataW_->hide();
+    m_tableW->model()->removeRows(0,m_tableW->rowCount());
 }
 
 void FaceSearch::slotImgBtnClicked()
 {
-    QString filePath = QFileDialog::getOpenFileName(this,tr("添加图片"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),"*.png *.jpg *.tmp");
-    if(filePath.isEmpty()){
+    QString filePath = QFileDialog::getOpenFileName(this,tr("添加图片"),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),tr("Images (*.png *.xpm *.jpg)"));
+    faceImg_ = QImage(filePath);
+    if(filePath.isEmpty() || faceImg_.isNull()){
         m_imgBtn->setIcon(m_imgBtn->property("default-pix").value<QPixmap>().scaled(m_imgBtn->iconSize()));
-
+        qSwap(QImage(),faceImg_);
     }else{
-        faceImg_ = QImage(filePath);
         m_imgBtn->setIcon(QPixmap::fromImage(faceImg_).scaled(m_imgBtn->iconSize()));
+        oidStr_.clear();
     }
 }
 
-void FaceSearch::slotOnScenePic(QImage img)
+void FaceSearch::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
 {
 #if 1
     SceneImageDialog dialog;
-    dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
-    dialog.setUserStyle(widgetManger()->currentStyle());
-    dialog.setImage(img);
-    connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](const QVector<QImage> images){
+    dialog.setUserStyle(userStyle());
+    dialog.setSceneInfo(sinfo);
+    SceneImageDialog *dialogPtr = &dialog;
+    connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this,dialogPtr](const QVector<QImage> images){
         if(images.isEmpty()){
             return;
         }else{
             faceImg_ = images.first();
             m_imgBtn->setIcon(QPixmap::fromImage(faceImg_).scaled(m_imgBtn->iconSize()));
+            dialogPtr->accept();
             slotSearchClicked();
         }
     });
-    dialog.setRectLinePen(Qt::yellow);
     dialog.exec();
 #else
     QDialog dialog;

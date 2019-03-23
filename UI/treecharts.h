@@ -10,10 +10,14 @@ class TreeBridge : public QObject
 public:
     TreeBridge(QObject *parent = nullptr): QObject(parent){}
     void updateData(QJsonObject &);
+    void startWaiting();
+    void stopWaiting();
     bool isInited();
 
 signals:
     void sigDataChanged(QJsonObject);
+    void sigStartWaiting();
+    void sigStopWaiting();
 
 public slots:
     void onInitsized();
@@ -29,6 +33,8 @@ class TreeCharts : public QWebEngineView
 public:
     TreeCharts(QWidget *parent = Q_NULLPTR);
     void updateData(QJsonObject &jsObj);
+    void startWaiting();
+    void stopWaiting();
 
 private:
     TreeBridge *webBridge_{nullptr};

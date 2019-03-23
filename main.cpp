@@ -5,9 +5,7 @@
 #include <QDebug>
 #include <QTranslator>
 #include "mainwindow.h"
-#include "service/core/baseworkermanager.h"
-#include "UI/koalawidgetmanager.h"
-#include "service/notifyservice.h"
+#include "service/servicefacetory.h"
 #include "UI/logindialog.h"
 
 #pragma execution_character_set("utf-8")
@@ -31,22 +29,21 @@ void installTranslators()
 int main(int argc, char *argv[])
 {
 #if (QT_VERSION >= QT_VERSION_CHECK(5,9,0))
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+//    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+//    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 //    qputenv("QT_AUTO_SCREEN_SCALE_FACTOR","1");
 #endif
+    qputenv("QTWEBENGINE_REMOTE_DEBUGGING", "9223");
     QApplication a(argc, argv);
     installTranslators();
 
     a.setAttribute(Qt::AA_ShareOpenGLContexts);
-    a.setApplicationName(QObject::tr("四川省公安边防总队智慧机场"));
+    a.setApplicationName(QObject::tr("Intelligent Security Surveillance System"));
 
-    BLL::WorkerManager *wm = new BLL::BaseWorkerManager(QThreadPool::globalInstance());
-    KoalaWidgetManager *widgetM = new KoalaWidgetManager;
-    widgetM->setWorkerManager(wm);
-    BLL::Worker *worker = new BLL::NotifyService(wm);
-    wm->installWorker("NotifyService",worker);
-    a.setProperty("WorkerManager",reinterpret_cast<unsigned long long>(wm));
+    ServiceFactoryI *facetory = new ServiceFactory;
+    a.setProperty("ServiceFactoryI",reinterpret_cast<unsigned long long>(facetory));
+    NotifyServiceI *serviceI = facetory->makeNotifyServiceI();
+    a.setProperty("NotifyServiceI",reinterpret_cast<unsigned long long>(serviceI));
 
 //    LoginDialog loginD;
 //    loginD.setUserStyle(WidgetManagerI::Danyahei);
@@ -58,10 +55,9 @@ int main(int argc, char *argv[])
 //        return -1;
 //    }
 
-    MainWindow w(widgetM);
+    MainWindow w;
     w.setWindowFlag(Qt::FramelessWindowHint);
     w.showMaximized();
-    widgetM->notifyUserStyle(WidgetManagerI::Danyahei);
 
     QDir dir("font");
     if (dir.exists()){
@@ -72,12 +68,10 @@ int main(int argc, char *argv[])
         }
     }
 
-    QObject::connect(&a,&QApplication::lastWindowClosed,&a,[wm,widgetM]{
-        widgetM->setWorkerManager(nullptr);
-        delete wm;
+    QObject::connect(&a,&QApplication::aboutToQuit,&a,[serviceI]{
+        delete serviceI;
     });
-    dynamic_cast<NotifyServiceI*>(worker)->initsize();
-    wm->startWorker(worker);
+    serviceI->start();
 
     return a.exec();
 }

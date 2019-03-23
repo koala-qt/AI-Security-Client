@@ -3,7 +3,7 @@
 
 #include <QDialog>
 #include "widgetinterface.h"
-#include "service/restservicei.h"
+#include "service/servicei.h"
 QT_FORWARD_DECLARE_CLASS(QLabel)
 QT_FORWARD_DECLARE_CLASS(QComboBox)
 QT_FORWARD_DECLARE_CLASS(QTableWidget)
@@ -12,10 +12,10 @@ class RealMonitorSetting : public QDialog
 {
     Q_OBJECT
 public:
-    RealMonitorSetting(BLL::WorkerManager *wm,QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
+    RealMonitorSetting(QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
     void setScreenIndex(int screenCount);
     void screenSelected(int * rows,int * cols,int *bigRow,int *bigCol,int *rowSpan,int *colSpan);
-    void setUserStyle(WidgetManagerI::SkinStyle s);
+    void setUserStyle(int s);
 
 private:
     QLabel *screenCountL_{nullptr},*videoL_{nullptr},*timeCostL_{nullptr},*startLocationL_{nullptr},*endLocationL_{nullptr},*arrorL_{nullptr};
@@ -24,7 +24,6 @@ private:
     QPushButton *addStatisBtn_{nullptr};
     QString curStartLocation_,curEndLocation_;
     int curRmRow_;
-    BLL::WorkerManager *wm_{nullptr};
 
     void addStatis();
     void updateStatis();

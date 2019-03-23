@@ -13,7 +13,7 @@
 #include <QPainter>
 #include <QTimer>
 #include <QDebug>
-#include "service/restservice.h"
+#include "service/restserviceconcureent.h"
 #include "waitinglabel.h"
 #include "logindialog.h"
 
@@ -122,7 +122,6 @@ LoginDialog::LoginDialog(QWidget *parent, Qt::WindowFlags f):
     connect(ptnClose_,SIGNAL(clicked(bool)),this,SLOT(reject()));
     connect(ptnSurce_,SIGNAL(clicked(bool)),this,SLOT(slotSureBtnClicked()));
     connect(ptnCancell_,SIGNAL(clicked(bool)),this,SLOT(reject()));
-    workerM_ = reinterpret_cast<BLL::WorkerManager*>(qApp->property("WorkerManager").toULongLong());
 }
 
 LoginDialog::~LoginDialog()
@@ -158,7 +157,7 @@ void LoginDialog::paintEvent(QPaintEvent *event)
     painter.drawRoundRect(rect().adjusted(0,0,-painter.pen().width(),-painter.pen().width()),5,5);
 }
 
-void LoginDialog::setUserStyle(WidgetManagerI::SkinStyle s)
+void LoginDialog::setUserStyle(int s)
 {
     QPalette pal;
     QFont f = font();
@@ -170,7 +169,7 @@ void LoginDialog::setUserStyle(WidgetManagerI::SkinStyle s)
     pal.setColor(QPalette::Foreground,Qt::white);
     setPalette(pal);
     setAutoFillBackground(true);
-    if(s == WidgetManagerI::Danyahei){
+    if(s == 0){
 
         pal.setColor(QPalette::Background,QColor(52,162,255,85));
         logoBackW_->setPalette(pal);
@@ -206,35 +205,45 @@ void LoginDialog::setUserStyle(WidgetManagerI::SkinStyle s)
                                "lineedit-password-character: 42;"
                                "}");
         ptnSurce_->setStyleSheet("QPushButton{"
-                                 "color:white;"
-                                 "background-color:rgb(58,126,186);"
+                                 "background-color: rgb(83,77,251);"
+                                 "color: white;"
+                                 "border-radius: 6px;"
+                                 "font-size: 18px;"
                                  "}"
-                                 "QPushButton:hover{"
-                                 "background-color:rgb(58,156,176);"
+                                 "QPushButton:pressed{"
+                                 "padding: 2px;"
+                                 "background-color: #312DA6;"
                                  "}");
         ptnCancell_->setStyleSheet("QPushButton{"
-                                 "color:white;"
-                                 "background-color:rgb(58,126,186);"
-                                 "}"
-                                 "QPushButton:hover{"
-                                 "background-color:rgb(58,156,176);"
-                                 "}");
+                                   "background-color: rgb(83,77,251);"
+                                   "color: white;"
+                                   "border-radius: 6px;"
+                                   "font-size: 18px;"
+                                   "}"
+                                   "QPushButton:pressed{"
+                                   "padding: 2px;"
+                                   "background-color: #312DA6;"
+                                   "}");
         ptnClose_->setStyleSheet("QPushButton{"
-                                 "color:white;"
+                                 "background-color: rgb(83,77,251);"
+                                 "color: white;"
+                                 "border-radius: 6px;"
                                  "font-size: 18px;"
-                                 "background-color:rgb(58,126,186);"
                                  "}"
-                                 "QPushButton:hover{"
-                                 "background-color:rgb(58,156,176);"
+                                 "QPushButton:pressed{"
+                                 "padding: 2px;"
+                                 "background-color: #312DA6;"
                                  "}");
         ptnMinsized_->setStyleSheet("QPushButton{"
-                                 "color:white;"
-                                 "font-size: 18px;"
-                                 "background-color:rgb(58,126,186);"
-                                 "}"
-                                 "QPushButton:hover{"
-                                 "background-color:rgb(58,156,176);"
-                                 "}");
+                                    "background-color: rgb(83,77,251);"
+                                    "color: white;"
+                                    "border-radius: 6px;"
+                                    "font-size: 18px;"
+                                    "}"
+                                    "QPushButton:pressed{"
+                                    "padding: 2px;"
+                                    "background-color: #312DA6;"
+                                    "}");
         portSpinBox_->setStyleSheet("QSpinBox{"
                                  "padding-right: 15px;"
                                  "border-width: 3;"
@@ -320,8 +329,8 @@ void LoginDialog::slotSureBtnClicked()
     serI->login(args);
     workerM_->startWorker(w);
 #else
-    BLL::Worker *w = new BLL::RestService(workerM_);
-    RestServiceI *serI = dynamic_cast<RestServiceI*>(w);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serI = factoryI->makeRestServiceI();
     connect(serI,&RestServiceI::sigResultState,this,[this,waitL](bool res){
         waitL->close();
         setEnabled(true);
@@ -358,8 +367,7 @@ void LoginDialog::slotSureBtnClicked()
     loginArgs.password = pswEdit_->text();
     loginArgs.authenticationMethod = 1;
     loginArgs.xprotectProductFamily = 0;
-    serI->login(loginArgs);
-    workerM_->startWorker(w);
+//    serI->login(loginArgs);
 #endif
     waitL->show(500);
     setEnabled(false);

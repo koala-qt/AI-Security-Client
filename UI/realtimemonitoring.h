@@ -5,8 +5,7 @@
 #include <QImage>
 #include <QTreeWidgetItem>
 #include "widgetinterface.h"
-#include "service/notifyservicei.h"
-#include "service/restservicei.h"
+#include "service/servicei.h"
 QT_FORWARD_DECLARE_CLASS(QTreeWidget)
 QT_FORWARD_DECLARE_CLASS(RealPlayManager)
 QT_FORWARD_DECLARE_CLASS(QLabel)
@@ -14,59 +13,61 @@ QT_FORWARD_DECLARE_CLASS(QPushButton)
 QT_FORWARD_DECLARE_CLASS(QListWidget)
 QT_FORWARD_DECLARE_CLASS(QMenu)
 QT_FORWARD_DECLARE_CLASS(QComboBox)
-#define TIMEITEMCOUNT 4
+QT_FORWARD_DECLARE_CLASS(QStandardItemModel)
 #define FACEITEMCOUNT 8
-#define EVENTITEMCOUNT 8
+#define EVENTITEMCOUNT 5
+
 class RealtimeMonitoring : public WidgetI
 {
     Q_OBJECT
 public:
-    RealtimeMonitoring(WidgetManagerI *wm,WidgetI *parent = nullptr);
+    RealtimeMonitoring(WidgetI *parent = nullptr);
     ~RealtimeMonitoring();
-    void setUserStyle(WidgetManagerI::SkinStyle s) override;
+    void setUserStyle(int s) override;
+
+signals:
+    void sigSwitchBtnClicked();
 
 protected:
-    void resizeEvent(QResizeEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
+    bool eventFilter(QObject *watched, QEvent *event)override;
 
 private:
-    QComboBox *cameraCombox_{nullptr};
-    QLabel *m_timeLeftL{nullptr},*m_timeRightL{nullptr},*m_faceListL{nullptr},*m_eventListL{nullptr},*stayPersonL_{nullptr},*stayPersonTitleL_{nullptr},
-    *waitingTimeTitleL_{nullptr},*waitingTimeL_{nullptr};
-    QWidget * stayPersonBack_{nullptr};
-    QPushButton *m_settingBtn{nullptr};
+    QComboBox *eventCombox_{nullptr};
+    QLabel *m_faceListL{nullptr};
+    QWidget *cameraGoupBackW_{nullptr},*faceCaptureBackW_{nullptr},*eventBackW_{nullptr};
+    QPushButton *m_settingBtn{nullptr},*switchToMap_{nullptr};
     QTreeWidget *m_treeW{nullptr};
     RealPlayManager *m_realPlayM{nullptr};
-    QListWidget *m_timeList{nullptr},*m_faceList{nullptr},*m_eventList{nullptr};
-    int m_timeItemH = 0;
-    QString eventItemIntruderStyleSheet_,eventItemBlackAlarStyleSheet_,eventItemABDoor_,faceItemStyleSheet_;
-    QSize m_faceItemSize,m_eventItemSize;
+    QListWidget *m_faceList{nullptr},*eventList_{nullptr};
+    QLineEdit *posEdit_{nullptr};
+    QStandardItemModel *complterModel_{nullptr};
+
+    QImage backImg_;
+    QSize eventItemSize_;
+    QString faceItemStyleSheet_;
+    QSize m_faceItemSize;
     QMenu *faceItemMenu_{nullptr},*eventItemMenu_{nullptr};
     NotifyServiceI *notifyServiceI_{nullptr};
+    QMap<QString,QString> curCameraMap_;
+
     void updateCamera();
     void getCameraGroup(QTreeWidgetItem*, QString);
     void getCameraDevice(QTreeWidgetItem*,QString);
     QString findCameraNameById(QString &);
-    int m_nBeginIndex = 0;
-    int m_nEndIndex = 0;
-    int totalTime_ = 0,noNumbersPersonDataCount_ = 0;
-    int totalPerson_ = 0;
-    QTimer *numberPersonTimer_{nullptr};
-    QImage backImg_;
-    QMap<QString,QString> curCameraMap_;
 
 private slots:
-    void slotCameraComboxIndexChanged(int);
+    void slotEventComboxIndexChanged(int);
     void slotTreeItemDoubleClicked(QTreeWidgetItem*,int);
-    void slotAddTimeitem(QMap<QString,QVariant>);
-    void slotAddFaceitem(QStringList,QImage);
-    void slotAddEventitem(QStringList,QImage);
+    void slotAddFaceitem(NotifyPersonI::FaceSnapEventData);
+    void slotOnIntruderEvent(NotifyEventI::IntruderEventData);
+    void slotOnPersonEvent(NotifyEventI::PersonEventData);
+    void slotOnAbDoorEvent(NotifyEventI::ABDoorEventData);
+    void slotOnClimbEvent(NotifyEventI::ClimbEventData);
+    void slotOngGatherEvent(NotifyEventI::GatherEventData);
     void slotAddDevice(QVector<RestServiceI::CameraInfo>);
     void slotOnCameraGroup(QVector<RestServiceI::CameraGoup>);
-    void slotOnScenePic(QImage);
-    void slotPersonStayInfoTimeout();
-    void slotPersonTotalCountTimeout();
-    void slotPersonCountTimer();
+    void slotOnSceneInfo(RestServiceI::SceneInfo sinfo);
 };
 
 #endif // REALTIMEMONITORING_H

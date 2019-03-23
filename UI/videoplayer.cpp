@@ -11,10 +11,11 @@
 #include <QRadioButton>
 #include <QMessageBox>
 #include <QDebug>
-#include "service/restservice.h"
+#include "service/servicei.h"
 #include "components/PaintAera/paintarea.h"
 #include "canvaswidget.h"
 #include "videoplayer.h"
+#include "informationdialog.h"
 
 #pragma execution_character_set("utf-8")
 VideoPlayer::VideoPlayer(QWidget *parent):
@@ -31,7 +32,10 @@ VideoPlayer::VideoPlayer(QWidget *parent):
     menu_ = new QMenu(this);
     menu_->addAction(tr("设置警戒区"),this,[&]{
         if(playState() != Playing){
-            QMessageBox::information(this,tr("设置警戒区"),tr("需要在视频播放情况下设置"));
+            InformationDialog infoDialog(this);
+            infoDialog.setUserStyle(0);
+            infoDialog.setMessage("Video stream not working");
+            infoDialog.exec();
             return;
         }
         QDialog setWaringAreaDialog(this);
@@ -40,41 +44,53 @@ VideoPlayer::VideoPlayer(QWidget *parent):
         setWaringAreaDialog.setPalette(pal);
         setWaringAreaDialog.setAutoFillBackground(true);
         QDialogButtonBox *buttonBox = new QDialogButtonBox;
-        QPushButton *okBtn = buttonBox->addButton(tr("确定"),QDialogButtonBox::AcceptRole);
+        QPushButton *okBtn = buttonBox->addButton(tr("OK"),QDialogButtonBox::AcceptRole);
         okBtn->setStyleSheet("QPushButton{"
                              "color: white;"
-                             "background-color: rgb(59,69,78);"
+                             "width: 120px;"
+                             "height: 44px;"
+                             "background-color: #4741F2;"
+                             "border: none;"
+                             "border-radius: 4px;"
                              "}"
                              "QPushButton:pressed{"
-                             "background-color: rgb(49,54,57);"
+                             "background-color: #312DA6;"
+                             "border:1px solid rgba(71,65,242,1);"
+                             "padding: 2px;"
                              "}");
-        QPushButton *cancelBtn = buttonBox->addButton(tr("取消"),QDialogButtonBox::RejectRole);
+        QPushButton *cancelBtn = buttonBox->addButton(tr("CANCLE"),QDialogButtonBox::RejectRole);
         cancelBtn->setStyleSheet("QPushButton{"
-                             "color: white;"
-                             "background-color: rgb(59,69,78);"
-                             "}"
-                             "QPushButton:pressed{"
-                             "background-color: rgb(49,54,57);"
-                             "}");
+                                 "color: white;"
+                                 "width: 120px;"
+                                 "height: 44px;"
+                                 "background-color: rgba(71,65,242,0.3);"
+                                 "border: none;"
+                                 "border-radius: 4px;"
+                                 "border:1px solid rgba(71,65,242,1);"
+                                 "}"
+                                 "QPushButton:pressed{"
+                                 "background-color: #312DA6;"
+                                 "padding: 2px;"
+                                 "}");
 
         PaintArea *paintArea = new PaintArea;
         QHBoxLayout *hlay = new QHBoxLayout;
         QGroupBox *groupBox = new QGroupBox;
-        QRadioButton *radioBtn = new QRadioButton(tr("普通门报警"));
+        QRadioButton *radioBtn = new QRadioButton(tr("Intrusion"));
         pal = radioBtn->palette();
         pal.setColor(QPalette::Foreground,Qt::white);
         radioBtn->setPalette(pal);
         radioBtn->setChecked(true);
         QPalette normalPal,ABPalette;
         normalPal.setColor(QPalette::Foreground,Qt::red);
-        ABPalette.setColor(QPalette::Foreground,Qt::yellow);
+        ABPalette.setColor(QPalette::Foreground,Qt::green);
         paintArea->setPalette(normalPal);
         connect(radioBtn,&QRadioButton::clicked,paintArea,[paintArea,&normalPal]{
             paintArea->setPalette(normalPal);
             paintArea->update();
         });
         hlay->addWidget(radioBtn);
-        radioBtn = new QRadioButton(tr("AB门报警"));
+        radioBtn = new QRadioButton(tr("Trailing"));
         pal = radioBtn->palette();
         pal.setColor(QPalette::Foreground,Qt::white);
         radioBtn->setPalette(pal);
@@ -117,17 +133,18 @@ VideoPlayer::VideoPlayer(QWidget *parent):
                 areas << qMakePair(ty,polygon);
             }
 
-            BLL::Worker *w = new BLL::RestService(workerM_);
-            RestServiceI *serI = dynamic_cast<RestServiceI*>(w);
+            ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+            RestServiceI *serI = factoryI->makeRestServiceI();
             connect(serI,&RestServiceI::sigResultState,this,[&,areas](bool s){
                 if(s){
                     slotSetPolygons(areas);
                 }else{
-                    QMessageBox::information(this,tr("设置警戒区"),tr("设置失败"));
+                    InformationDialog infoDialog(this);
+                    infoDialog.setUserStyle(0);
+                    infoDialog.setMessage("Setting failed");
                 }
             });
             serI->setWaringArea(m_deviceId,areas);
-            workerM_->startWorker(w);
         }else if(returnRole == QDialog::Rejected){
             qDebug() << "rejected";
         }
@@ -153,14 +170,6 @@ VideoPlayer::VideoPlayer(QWidget *parent):
         menu_->move(mapToGlobal(p));
         menu_->show();
     });
-    connect(qApp,&QApplication::lastWindowClosed,this,[this]{
-        workerM_ = nullptr;
-    });
-}
-
-void VideoPlayer::setWorkerManager(BLL::WorkerManager *wm)
-{
-    workerM_ = wm;
 }
 
 void VideoPlayer::play(QString url, QString decoderFactoryName, QString id, QString name)
@@ -193,7 +202,7 @@ void VideoPlayer::slotSetPolygons(QVector<QPair<int, QPolygonF> > points)
             if(value.first == AreaType::FORBIDDENZONE){
                 c = Qt::red;
             }else if(value.first == AreaType::ABDOOR){
-                c = Qt::yellow;
+                c = Qt::green;
             }
             return qMakePair(c,value.second);
         });
@@ -212,16 +221,12 @@ void VideoPlayer::slotSetRects(QVector<QRect> rs)
 
 void VideoPlayer::slotOnStarted(int w, int h)
 {
-    if(!workerM_){
-        return;
-    }
     oldRtsp_.clear();
     reconnectCount_ = 0;
     m_canvas->slotSetPainterCoordinate(w,h);
 
-    BLL::Worker *worker = new BLL::RestService(workerM_);
-    RestServiceI *serI = dynamic_cast<RestServiceI*>(worker);
+    ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
+    RestServiceI *serI = factoryI->makeRestServiceI();
     connect(serI,SIGNAL(sigWaringAreas(QVector<QPair<int,QPolygonF> >)),this,SLOT(slotSetPolygons(QVector<QPair<int, QPolygonF> >)));
     serI->getWaringArea(m_deviceId);
-    workerM_->startWorker(worker);
 }
