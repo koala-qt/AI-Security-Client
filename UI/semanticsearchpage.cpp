@@ -87,6 +87,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     setLayout(mainLay);
 
     attributTreeW_->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Preferred);
+    attributTreeW_->setIconSize(QSize(14, 17));
     dataMenu_->addAction(tr("Profile"),[this]{
         ServiceFactoryI *factoryI = reinterpret_cast<ServiceFactoryI*>(qApp->property("ServiceFactoryI").toULongLong());
         RestServiceI *serviceI = factoryI->makeRestServiceI();
@@ -584,14 +585,18 @@ void SemanticSearchPage::setUserStyle(int s)
                                       "}"
                                       "QTreeView::item{"
                                       "color: rgba(255,255,255,0.75);"
-                                      "border:none;"
+                                      "border:none;background-color: transparent;}"
                                       "}"
                                       "QTreeView::item:selected{"
                                       "color: rgba(255,255,255,0.75);"
                                       "border:none;"
                                       "}"
+                                      "QTreeWidget::indicator {width:30px;height:18px;background-color:transparent;}"
+                                      "QTreeWidget::indicator:checked {image: url(images/open.png);}"
+                                      "QTreeWidget::indicator:unchecked {image: url(images/close.png);}"
+                                              //"QTreeWidget::indicator:indeterminate {image: url(:/Images/bxz.png);}"
                                       "QTreeWidget::indicator:disabled {"
-                                      "background:gray;"
+                                      "background:transparent;"
                                       "}"
                                       "QTreeView::branch:has-children:!has-siblings:closed,"
                                       "QTreeView::branch:closed:has-children:has-siblings{"
@@ -1271,12 +1276,20 @@ void SemanticSearchPage::slotTreeItemChanged(QTreeWidgetItem *item, int column)
 
 void SemanticSearchPage::createTreeItem(QTreeWidget *treeW, QTreeWidgetItem *parentItem, SemanticSearchPage::itemData &items)
 {
+    static int imgIndex = 0;
+    QString strIconPath = QString("images/attributes/%1%2").arg(imgIndex).arg(".png");
+    //qDebug() << Q_FUNC_INFO << strIconPath;
     QTreeWidgetItem *item{nullptr};
     if(parentItem){
         item = new QTreeWidgetItem(parentItem, QStringList() << items.name, items.childrens.isEmpty());
     }else{
         item = new QTreeWidgetItem(treeW, QStringList() << items.name, items.childrens.isEmpty());
     }
+    if (0 != imgIndex)
+    {
+        item->setIcon(0, QIcon(strIconPath));
+    }
+    imgIndex++;
     if(item->type()){
         item->setCheckState(0,Qt::Unchecked);
         item->setDisabled(true);

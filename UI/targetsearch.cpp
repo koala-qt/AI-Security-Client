@@ -42,10 +42,10 @@ TargetSearch::TargetSearch( WidgetI *parent):
 
     stackedW_->addWidget(semanticSearchPage_);
     stackedW_->addWidget(faceSearchPage_);
-    stackedW_->addWidget(combinationPage_);
     stackedW_->addWidget(multiPleSearchPage_);
     stackedW_->addWidget(facelinkPage_);
     stackedW_->addWidget(trackingPage_);
+    stackedW_->addWidget(combinationPage_);
     stackedW_->addWidget(portraitSearchPage_);
     stackedW_->addWidget(m_pMultFaceAnalysis);
     stackedW_->addWidget(videoAnalysisPage_);
@@ -62,10 +62,10 @@ TargetSearch::TargetSearch( WidgetI *parent):
     items.value = 0;
 #if 1
     items.childrens << itemData{tr("Search By Upload"),1, QVector<itemData>() << itemData{faceSearchPage_->objectName(),1,QVector<itemData>()}
-                                                                              << itemData{combinationPage_->objectName(),2,QVector<itemData>()}
-                                                                              << itemData{multiPleSearchPage_->objectName(),3,QVector<itemData>()}
-                                                                              << itemData{facelinkPage_->objectName(),4,QVector<itemData>()}
-                                                                              << itemData{trackingPage_->objectName(),5,QVector<itemData>()}};
+                                                                              << itemData{multiPleSearchPage_->objectName(),2,QVector<itemData>()}
+                                                                              << itemData{facelinkPage_->objectName(),3,QVector<itemData>()}
+                                                                              << itemData{trackingPage_->objectName(),4,QVector<itemData>()}
+                                                                              << itemData{combinationPage_->objectName(),5,QVector<itemData>()}};
     devicesVec << items;
     items.childrens.clear();
     items.name = tr("Imported Photo Database");
@@ -194,9 +194,12 @@ void TargetSearch::createTreeItem(QTreeWidget *treeW, QTreeWidgetItem *parentIte
     }else{
         item = new QTreeWidgetItem(treeW, QStringList() << items.name, items.childrens.isEmpty());
     }
+    QString strIconPath = QString("images/crop/ic_%1%2").arg(item->text(0)).arg(".png");
+    qDebug() << "strIconPath" << strIconPath;
+    item->setIcon(0, QIcon(strIconPath));
     item->setData(0,Qt::UserRole,items.value);
     item->setSizeHint(0,QSize(-1,34));
-    if(items.value == 4){
+    if(items.value == 3){
         treeW->setItemHidden(item,true);
     }
     for(auto value : items.childrens){

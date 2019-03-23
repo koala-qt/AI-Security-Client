@@ -413,7 +413,7 @@
     <message>
         <location filename="../UI/facesearch.cpp" line="33"/>
         <source>Single Face</source>
-        <translation type="unfinished">单个人脸</translation>
+        <translation type="unfinished">单张人脸</translation>
     </message>
     <message>
         <location filename="../UI/facesearch.cpp" line="49"/>
@@ -947,7 +947,7 @@ Please adjust the conditions to re-query</source>
     <message>
         <location filename="../UI/nodatatip.cpp" line="10"/>
         <source>No results found</source>
-        <translation type="unfinished">未找到结果</translation>
+        <translation type="unfinished">未检索到结果</translation>
     </message>
     <message>
         <location filename="../UI/nodatatip.cpp" line="10"/>
@@ -957,7 +957,7 @@ Please adjust the conditions to re-query</source>
     <message>
         <location filename="../UI/nodatatip.cpp" line="23"/>
         <source>&lt;div&gt;&lt;span style=&apos;color:white&apos;&gt;No results found&lt;/span&gt;&lt;br/&gt;&lt;span style=&apos;color:rgba(255,255,255,100)&apos;&gt;Please adjust the conditions to re-query&lt;/span&gt;&lt;/div&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;div&gt;&lt;span style=&apos;color:white&apos;&gt;未检索到结果&lt;/span&gt;&lt;br/&gt;&lt;span style=&apos;color:rgba(255,255,255,100)&apos;&gt;请输入查询条件&lt;/span&gt;&lt;/div&gt;</translation>
     </message>
 </context>
 <context>
