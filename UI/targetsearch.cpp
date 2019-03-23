@@ -195,7 +195,7 @@ void TargetSearch::createTreeItem(QTreeWidget *treeW, QTreeWidgetItem *parentIte
         item = new QTreeWidgetItem(treeW, QStringList() << items.name, items.childrens.isEmpty());
     }
     QString strIconPath = QString("images/crop/ic_%1%2").arg(item->text(0)).arg(".png");
-    qDebug() << "strIconPath" << strIconPath;
+    //qDebug() << "strIconPath" << strIconPath;
     item->setIcon(0, QIcon(strIconPath));
     item->setData(0,Qt::UserRole,items.value);
     item->setSizeHint(0,QSize(-1,34));
