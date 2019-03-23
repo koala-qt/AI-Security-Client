@@ -2094,7 +2094,7 @@ GetEnabledAttr:%2</source>
     <message>
         <location filename="../UI/targetsearch.cpp" line="22"/>
         <source>Search</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">查询</translation>
     </message>
     <message>
         <location filename="../UI/targetsearch.cpp" line="23"/>
@@ -2104,12 +2104,12 @@ GetEnabledAttr:%2</source>
     <message>
         <location filename="../UI/targetsearch.cpp" line="64"/>
         <source>Search By Upload</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">上传图片检索</translation>
     </message>
     <message>
         <location filename="../UI/targetsearch.cpp" line="71"/>
         <source>Imported Photo Database</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">以图搜图</translation>
     </message>
 </context>
 <context>
@@ -2117,32 +2117,32 @@ GetEnabledAttr:%2</source>
     <message>
         <location filename="../UI/trackingpage.cpp" line="23"/>
         <source>Trajectory</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">轨迹查询</translation>
     </message>
     <message>
         <location filename="../UI/trackingpage.cpp" line="25"/>
         <source>Search</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">查询</translation>
     </message>
     <message>
         <location filename="../UI/trackingpage.cpp" line="26"/>
         <source>Starting Time</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">开始时间</translation>
     </message>
     <message>
         <location filename="../UI/trackingpage.cpp" line="27"/>
         <source>Ending Time</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">结束时间</translation>
     </message>
     <message>
         <location filename="../UI/trackingpage.cpp" line="28"/>
         <source>Threshold</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">阈值</translation>
     </message>
     <message>
         <location filename="../UI/trackingpage.cpp" line="172"/>
         <source>add image</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">添加图像</translation>
     </message>
 </context>
 <context>
@@ -2188,7 +2188,7 @@ GetEnabledAttr:%2</source>
     <message>
         <location filename="../UI/uploadvideoprogress.cpp" line="17"/>
         <source>cancel</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">取消</translation>
     </message>
     <message>
         <location filename="../UI/uploadvideoprogress.cpp" line="91"/>
@@ -2201,7 +2201,7 @@ GetEnabledAttr:%2</source>
     <message>
         <location filename="../UI/videoanalysis.cpp" line="17"/>
         <source>Uploaded Videos</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">上传视频</translation>
     </message>
 </context>
 <context>
@@ -2209,17 +2209,17 @@ GetEnabledAttr:%2</source>
     <message>
         <location filename="../UI/videoanalysisdata.cpp" line="23"/>
         <source>Analysis result</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">分析结果</translation>
     </message>
     <message>
         <location filename="../UI/videoanalysisdata.cpp" line="26"/>
         <source>back</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">返回</translation>
     </message>
     <message>
         <location filename="../UI/videoanalysisdata.cpp" line="125"/>
         <source>end</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">终点</translation>
     </message>
     <message>
         <location filename="../UI/videoanalysisdata.cpp" line="142"/>
@@ -2287,22 +2287,22 @@ cameraId:%2
     <message>
         <location filename="../UI/videoplayer.cpp" line="47"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">确定</translation>
     </message>
     <message>
         <location filename="../UI/videoplayer.cpp" line="61"/>
         <source>CANCLE</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">取消</translation>
     </message>
     <message>
         <location filename="../UI/videoplayer.cpp" line="79"/>
         <source>Intrusion</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">闯入</translation>
     </message>
     <message>
         <location filename="../UI/videoplayer.cpp" line="93"/>
         <source>Trailing</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">尾随</translation>
     </message>
     <message>
         <location filename="../UI/videoplayer.cpp" line="157"/>
