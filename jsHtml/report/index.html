@@ -20,7 +20,7 @@
                     <img src="./img/logo.png" alt="">
                 </div>
                 <div class="choose-box">
-                    <div class="title">CMCC  REPORT</div>
+                    <div class="title">Jumeirah  REPORT</div>
                     <div class="choose-nav">
                         <div>
                             <label class="jelabel">Time interval：</label>
@@ -165,14 +165,14 @@
                     <div class="footer-page">
                     </div>
                 </div>
-                <!--CMCC basic resource comparison-->
+                <!--Jumeirah basic resource comparison-->
                 <!-- 副 -->
                 <div class="nav-box shallow-bg" v-for="(tabledex, tableIndex) in Math.ceil(basicResource.length / 6)">
                     <div class="tag-img ">
                         <img src="./img/biaoqian.png" alt="" class="content-nav-img">
                     </div>
                     <div class="content-res-center">
-                        <div class="basic-table-title" v-if="tableIndex === 0">{{basicResource.length>0?basicResource[0].firstTime:'xxxx-xx'}}----{{basicResource.length>0?basicResource[0].treTime:'xxxx-xx'}} CMCC basic resource comparison</div>
+                        <div class="basic-table-title" v-if="tableIndex === 0">{{basicResource.length>0?basicResource[0].firstTime:'xxxx-xx'}}----{{basicResource.length>0?basicResource[0].treTime:'xxxx-xx'}} Jumeirah basic resource comparison</div>
                         <table class="basic-table-box" id="basicResource">
                             <thead>
                                 <tr>
@@ -375,7 +375,7 @@
                         </div>
 
                         <div>
-                            <div class="basic-table-title">{{alermData.length>0?alermData[0].firstTime:'xxxx-xx'}}----{{alermData.length>0?alermData[0].treTime:'xxxx-xx'}} CMCC basic resource comparison</div>
+                            <div class="basic-table-title">{{alermData.length>0?alermData[0].firstTime:'xxxx-xx'}}----{{alermData.length>0?alermData[0].treTime:'xxxx-xx'}} Jumeirah basic resource comparison</div>
                             <table class="basic-table-box" id="basicResourceTable">
                                 <thead>
                                 <tr>
@@ -927,14 +927,14 @@
                     this._getChart();
 
 
-                    axios.get(MY_IPA+'/cmcc/report/analysis/active',{
+                    axios.get(MY_IPA+'/Jumeirah/report/analysis/active',{
                         params:{
                             'endTime':this.chooseTimeData
                         }
                     }).then(resp => {
                         // that.setActivit(resp.data.data.items, 'container19')
                     })
-                    axios.get(MY_IPA+'/cmcc/report/analysis/highalarm',{
+                    axios.get(MY_IPA+'/Jumeirah/report/analysis/highalarm',{
                         params:{
                             'endTime':this.chooseTimeData
                         }
@@ -942,7 +942,7 @@
                         // that.setActivit(resp.data.data.items, 'container20')
                     })
 
-                    axios.get(MY_IPA+'/cmcc/index/top_statistics',{
+                    axios.get(MY_IPA+'/Jumeirah/index/top_statistics',{
                         params:{
                             'endTime':this.chooseTimeData
                         }
@@ -957,7 +957,7 @@
                     this.registrationsNum={regArr:[],total:0};
                     this.centerNum={regArr:[],total:0};
                     this.immigratioNum={regArr:[],total:0};
-                    axios.get(MY_IPA+'/cmcc/report/basic-resource/totalsink',{
+                    axios.get(MY_IPA+'/Jumeirah/report/basic-resource/totalsink',{
                         params:{
                             'endTime':this.chooseTimeData
                         }
@@ -1023,7 +1023,7 @@
                 },
                 //获取第3页基础资源概述
                 _getData(){
-                    axios.get(MY_IPA+'/cmcc/report/basic-resource/overview',{
+                    axios.get(MY_IPA+'/Jumeirah/report/basic-resource/overview',{
                         params:{
                             'endTime':this.chooseTimeData
                         }
@@ -1040,7 +1040,7 @@
                 },
                 //第4页摄像头接入
                 _getCamera(){
-                    axios.get(MY_IPA+'/cmcc/report/basic-resource/camera',{
+                    axios.get(MY_IPA+'/Jumeirah/report/basic-resource/camera',{
                         params: {
                             'endTime': this.chooseTimeData
                         }
@@ -1121,7 +1121,7 @@
                 },
                 //第5页场所接入
                 _getPlace(){
-                    axios.get(MY_IPA+'/cmcc/report/basic-resource/place',{
+                    axios.get(MY_IPA+'/Jumeirah/report/basic-resource/place',{
                         params:{
                             'endTime':this.chooseTimeData
                         }
@@ -1193,7 +1193,7 @@
                 },
                 //第8页注册人员
                 _getTablePer(){
-                    axios.get(MY_IPA+'/cmcc/report/persons/table',{
+                    axios.get(MY_IPA+'/Jumeirah/report/persons/table',{
                         params:{
                             'endTime':this.chooseTimeData
                         }
@@ -1207,7 +1207,7 @@
                 },
                 //第9页注册人员柱状图
                 _getTablePerView(){
-                    axios.get(MY_IPA+'/cmcc/report/persons/view',{
+                    axios.get(MY_IPA+'/Jumeirah/report/persons/view',{
                         params:{
                             'endTime':this.chooseTimeData
                         }
@@ -1286,7 +1286,7 @@
                 },
                 //第11页抓拍与报警
                 _getAlerm(){
-                    axios.get(MY_IPA+'/cmcc/report/alerm/table',{
+                    axios.get(MY_IPA+'/Jumeirah/report/alerm/table',{
                         params:{
                             'endTime':this.chooseTimeData
                         }
@@ -1321,7 +1321,7 @@
                 },
                 /*第12页报警时间分布*/
                 _getChart(){
-                    axios.get(MY_IPA+'/cmcc/report/alerm/chart',{
+                    axios.get(MY_IPA+'/Jumeirah/report/alerm/chart',{
                         params:{
                             'endTime':this.chooseTimeData
                         }
@@ -1377,7 +1377,7 @@
                 },
                 /*第13-14页白名单*/
                 _getWhitelist(){
-                    axios.get(MY_IPA+'/cmcc/report/alerm/whitelist',{
+                    axios.get(MY_IPA+'/Jumeirah/report/alerm/whitelist',{
                         params:{
                             'endTime':this.chooseTimeData
                         }
@@ -1416,7 +1416,7 @@
                 },
                 //第14-15页黑名单
                 _getBlacklist(){
-                        axios.get(MY_IPA+'/cmcc/report/alerm/blacklist',{
+                        axios.get(MY_IPA+'/Jumeirah/report/alerm/blacklist',{
                             params:{
                                 'endTime':this.chooseTimeData
                             }
@@ -1431,7 +1431,7 @@
                 },
                 /*其他事件*/
                 _getEventlist(){
-                    axios.get(MY_IPA+'/cmcc/report/alerm/eventlist',{
+                    axios.get(MY_IPA+'/Jumeirah/report/alerm/eventlist',{
                         params:{
                             'endTime':this.chooseTimeData
                         },
@@ -1649,7 +1649,7 @@
                             doc.addImage(base, 'JPEG', 30,120, 800, 300);
                             doc.setTextColor('#203864')
                             doc.setFontSize(24)
-                            doc.text(150, 100, `${this.basicResource.length>0?this.basicResource[0].firstTime:'xxxx-xx'}----${this.basicResource.length>0?this.basicResource[0].treTime:'xxxx-xx'} CMCC basic resource comparison`);
+                            doc.text(150, 100, `${this.basicResource.length>0?this.basicResource[0].firstTime:'xxxx-xx'}----${this.basicResource.length>0?this.basicResource[0].treTime:'xxxx-xx'} Jumeirah basic resource comparison`);
                             // 第四张 Camera access
                             this.getBase('container').then((base) => {
                                 doc.addPage()
@@ -1728,7 +1728,7 @@
                                                     doc.text(50, 100, `${str6.substr(0, 90)}`);
                                                     doc.text(50, 130, `${str6.substr(90, str6.length)}`);
                                                     doc.setTextColor('#203864');
-                                                    doc.text(160, 160, `${this.alermData.length>0?this.alermData[0].firstTime:'xxxx-xx'}----${this.alermData.length>0?this.alermData[0].treTime:'xxxx-xx'} CMCC basic resource comparison`);
+                                                    doc.text(160, 160, `${this.alermData.length>0?this.alermData[0].firstTime:'xxxx-xx'}----${this.alermData.length>0?this.alermData[0].treTime:'xxxx-xx'} Jumeirah basic resource comparison`);
                                                     doc.addImage(deepBg, 'JPEG', 0, 500, 700, 40);
 
                                                     // Alarm event distribution
