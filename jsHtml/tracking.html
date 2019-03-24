@@ -300,7 +300,10 @@
                 },
                 tableList:   [],
                 isShowLoad: false,
-                pieChartData: [],
+                pieChartData: [{
+                  GroupCount: 3,
+                  GroupName: 'SPA'
+                }]
             }
         },
         methods: {
@@ -379,7 +382,7 @@
                 legend: {
                     type: 'scroll',
                     orient: 'vertical',
-                    right: 60,
+                    right: '3%',
                     bottom: 40,
                     textStyle: {
                         color: '#CECECE'
@@ -391,7 +394,7 @@
                         name: 'place',
                         type: 'pie',
                         radius : '55%',
-                        center: ['30%', '50%'],
+                        center: ['40%', '50%'],
                         label: {
                             normal: {
                                 position: 'outer',
@@ -414,7 +417,7 @@
 
                     }
                 ],
-                color: ['rgb(94,97,98)','rgb(106,111,115)','rgb(119,120,115)','rgb(158,143,103)','rgb(180,160,108)']
+                color: ['#4CF8DC', '#3A3BC1', '#B78B4C', '#B7434C', '#D1CE57', '#3E78C5']
             };
                 myChart.setOption(option)
           }

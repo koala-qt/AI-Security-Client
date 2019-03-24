@@ -238,7 +238,8 @@ EventSearch::EventSearch( WidgetI *parent):
 
     QVector<std::tuple<QString,QString,QString,QColor>> subTypeAlarmVec;
     subTypeAlarmVec << std::make_tuple(tr("smsr_alarm_black"),tr("Blacklist"),tr("100010001008"),Qt::transparent)
-                    << std::make_tuple(tr("smsr_alarm_vip"),tr("VIP"),tr("100010001007"),Qt::transparent);
+                    << std::make_tuple(tr("smsr_alarm_vip"),tr("VIP"),tr("100010001007"),Qt::transparent)
+                    << std::make_tuple(tr("smsr_alarm_face"),tr("Staff"),tr("100010001005"),Qt::transparent);
     for(int i = 0; i < subTypeAlarmVec.count(); i++){
         QString personTypeNo = std::get<2>(subTypeAlarmVec.at(i));
         waringColorMap_.insert(std::get<1>(subTypeAlarmVec.at(i)),std::get<3>(subTypeAlarmVec.at(i)));
