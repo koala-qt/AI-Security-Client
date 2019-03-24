@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        html {
+            height: 100%
+        }
+
+        body {
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+            background-color: #081837
+        }
+
+        #Ids{
+           
+            width: 100%;
+           height: 30.4%;
+           background:rgba(0,0,0,0.2);
+            box-shadow:0px 10px 20px rgba(0,0,0,1);
+            opacity:1;
+            overflow: hidden;
+        }
+        #idsC{
+            width: 100%;
+            height: 76.7%;
+        }
+        #camerasC{
+            width: 100%;
+            height: 76.7%;
+        }
+        #cameras{
+            margin-top: 1.85%;
+            width: 100%;
+            height: 30.4%;
+            background:rgba(0,0,0,0.2);
+            box-shadow:0px 10px 20px rgba(0,0,0,1);
+            opacity:1;
+            overflow: hidden;
+        }
+        #locationC{
+            width: 100%;
+            height: 76.7%;
+        }
+        #location{
+            margin-top: 1.85%;
+            width: 100%;
+            height: 30.4%;
+            background:rgba(0,0,0,0.2);
+            box-shadow:0px 10px 20px rgba(0,0,0,1);
+            opacity:1;
+            overflow: hidden;
+        }
+        .echarts{
+            padding-top: 5.74%;
+            height: 85.2%;
+        }
+        .title{
+            font-size: 18px;
+            font-family: calibri;
+            margin: 20px;
+            color: white
+        }
+        .bottom{
+            width: 100%;
+            height: 21.1%;
+        }
+        #bottomC{
+            width: 100%;
+            height: 73.2%;
+        }
+    </style>
+    <script src="js/echarts.min.js"></script>
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/vue.js"></script>
+</head>
+
+<body>
+    <div class="echarts">
+        <div id='Ids'>
+            <div class="title">New IDs in the last 7 days</div>
+            <div id="idsC"></div>
+        </div>
+        <div id="cameras">
+            <div class="title">New cameras in the last 7 days</div>
+            <div id="camerasC"></div>
+        </div>
+        <div id="location">
+            <div class="title">New location in the last 7 days</div>
+            <div id="locationC"></div>
+        </div>
+    </div>
+    <div class="bottom">
+        <div class="title">New Alarms in the last 30 days</div>
+        <div id="bottomC"></div>
+    </div>
+
+
+    <script type="text/javascript">
+        //接口数据转换echarts格式
+        var dataTest = [{
+                count: 1,
+                showName: '2019-02-07'
+            },
+            {
+                count: 0,
+                showName: '2019-02-08'
+            },
+
+            {
+                count: 20,
+                showName: '2019-02-09'
+            },
+            {
+                count: 0,
+                showName: '2019-02-10'
+            },
+            {
+                count: 0,
+                showName: '2019-02-11'
+            },
+            {
+                count: 0,
+                showName: '2019-02-12'
+            },
+            {
+                count: 0,
+                showName: '2019-02-13'
+            },
+            {
+                count: 0,
+                showName: '2019-02-14'
+            },
+            {
+                count: 30,
+                showName: '2019-02-15'
+            },
+            {
+                count: 20,
+                showName: '2019-02-16'
+            },
+            {
+                count: 0,
+                showName: '2019-02-17'
+            },
+            {
+                count: 60,
+                showName: '2019-02-18'
+            },
+        ]
+        var header
+        function transferData(data) {
+            var finalData = []
+
+             header = Object.keys(data[0])
+            finalData.push(header)
+            for (let index = 0; index < data.length; index++) {
+                const element = data[index];
+                var item = [element[header[0]], transferTime(element[header[1]])]
+                if (data.length > 7) {
+                    if (index > data.length - 8) {
+                        finalData.push(item)
+                    }
+                } else {
+                    finalData.push(item)
+                }
+
+            }
+
+          
+           
+            console.log(finalData)
+            return finalData
+        }
+        function transferTime(time) {
+                var a = time.split('-')
+                var newtime
+
+                if (a[1].indexOf('0') == 0) {
+                    // console.log(a[1].slice(1))
+                    newtime = a[1].slice(1) + '/'
+                } else {
+                    newtime = a[1] + '/'
+                }
+                if (a[2].indexOf('0') == 0) {
+                    // console.log(a[1].slice(1))
+                    newtime = newtime + a[2].slice(1)
+                } else {
+                    newtime = newtime + a[2]
+                }
+                return newtime
+
+            }
+        // transferData(dataTest)
+        //七天人员
+        function getId(data) {
+            let datas = transferData(data)
+            let mychart = echarts.init(document.getElementById('idsC'))
+            let option = {
+                dataset: {
+                    source: datas
+                },
+                grid: {
+                    top: "5%",
+                    left: "5%",
+                    right: "5%",
+                    bottom: "5%"
+                },
+                xAxis: {
+                    splitLine: {
+                        show: false
+                    },
+                    show: false,
+                },
+                yAxis: {
+                    splitLine: {
+                        show: false
+                    },
+                    type: 'category',
+                    axisLine: {
+                        show: false
+                    },
+                    nameTextStyle: {
+
+                    },
+                    axisLabel: {
+                        textStyle: {
+                            color: 'rgba(255,255,255,0.75)', //坐标值得具体的颜色
+                            fontSize: 10
+                        }
+                    },
+                    axisTick: {
+                        show: false
+                    }
+                },
+
+                series: [{
+                    type: 'bar',
+                    encode: {
+                        // Map the "amount" column to X axis.
+                        x: header[0],
+                        // Map the "product" column to Y axis
+                        y: header[1]
+                    },
+                    itemStyle: {
+                        normal: {
+                            label: {
+                                show: true, //开启显示
+                                position: 'right', //在上方显示
+                                textStyle: { //数值样式
+                                    color: 'rgba(255,255,255,0.75)',
+                                    fontSize: 12
+                                }
+                            },
+                            color: '#EF7272',
+
+                        }
+
+
+                    },
+
+                }]
+            };
+            mychart1.setOption(option);
+        }
+        // getId(dataTest)
+        // 七天摄像头
+        function getCamera(data) {
+            var datas = transferData(data)
+            var mychart2 = echarts.init(document.getElementById('camerasC'))
+            var option2 = {
+                dataset: {
+                    source: datas
+                    // [
+                    //     ['score', 'amount', 'product'],
+                    //     [89.3, 58212, '3/1'],
+                    //     [57.1, 78254, '3/2'],
+                    //     [74.4, 41032, '3/3'],
+                    //     [50.1, 12755, '3/4'],
+                    //     [89.7, 20145, '3/5'],
+                    //     [68.1, 79146, '3/6'],
+                    //     [19.6, 91852, '3/7'],
+
+                    // ]
+                },
+                grid: {
+                    top: "0",
+                    left: "45",
+                    right: "10",
+                    bottom: "20"
+                },
+                xAxis: {
+                    splitLine: {
+                        show: false
+                    },
+                    show: false,
+
+
+                },
+                yAxis: {
+                    splitLine: {
+                        show: false
+                    },
+                    type: 'category',
+                    axisLine: {
+                        show: false
+                    },
+                    nameTextStyle: {
+
+                    },
+                    axisLabel: {
+                        textStyle: {
+                            color: 'rgba(255,255,255,0.75)', //坐标值得具体的颜色
+                            fontSize: 10
+                        }
+                    },
+                    axisTick: {
+                        show: false
+                    }
+                },
+
+                series: [{
+                    type: 'bar',
+                    encode: {
+                        // Map the "amount" column to X axis.
+                        x: header[0],
+                        // Map the "product" column to Y axis
+                        y: header[1]
+                    },
+                    itemStyle: {
+                        normal: {
+                            label: {
+                                show: true, //开启显示
+                                position: 'right', //在上方显示
+                                textStyle: { //数值样式
+                                    color: 'rgba(255,255,255,0.75)',
+                                    fontSize: 12
+                                }
+                            },
+                            color: '#4741F2',
+
+                        }
+
+
+                    },
+
+                }]
+            };
+            mychart2.setOption(option2);
+        }
+        // getCamera(dataTest)
+        //七天场所 
+        function getLocation(data) {
+            var datas = transferData(data)
+            var mychart3 = echarts.init(document.getElementById('locationC'))
+            var option3 = {
+                dataset: {
+                    source: datas
+                    //  [
+                    //     ['score', 'amount', 'product'],
+                    //     [89.3, 58212, '3/1'],
+                    //     [57.1, 78254, '3/2'],
+                    //     [74.4, 41032, '3/3'],
+                    //     [50.1, 12755, '3/4'],
+                    //     [89.7, 20145, '3/5'],
+                    //     [68.1, 79146, '3/6'],
+                    //     [19.6, 91852, '3/7'],
+
+                    // ]
+                },
+                grid: {
+                    top: "0",
+                    left: "45",
+                    right: "10",
+                    bottom: "20"
+                },
+                xAxis: {
+                    splitLine: {
+                        show: false
+                    },
+                    show: false,
+
+
+                },
+                yAxis: {
+                    splitLine: {
+                        show: false
+                    },
+                    type: 'category',
+                    axisLine: {
+                        show: false
+                    },
+                    nameTextStyle: {
+
+                    },
+                    axisLabel: {
+                        textStyle: {
+                            color: 'rgba(255,255,255,0.75)', //坐标值得具体的颜色
+                            fontSize: 10
+                        }
+                    },
+                    axisTick: {
+                        show: false
+                    }
+                },
+
+                series: [{
+                    type: 'bar',
+                    encode: {
+                        // Map the "amount" column to X axis.
+                        x: header[0],
+                        // Map the "product" column to Y axis
+                        y: header[1]
+                    },
+                    itemStyle: {
+                        normal: {
+                            label: {
+                                show: true, //开启显示
+                                position: 'right', //在上方显示
+                                textStyle: { //数值样式
+                                    color: 'rgba(255,255,255,0.75)',
+                                    fontSize: 12
+                                }
+                            },
+                            color: '#4CF8DC',
+                        }
+                    },
+
+                }]
+            };
+            mychart3.setOption(option3);
+        }
+        // getLocation(dataTest)
+        //三十天数据
+        function getAlarm(data) {
+            var xArray = []
+            var yArray = []
+            for (let index = 0; index < data.length; index++) {
+                const element = data[index];
+                xArray.push(transferTime(element.showName) )
+                yArray.push(element.count)
+            }
+            // var datas = transferData(data)
+            var mychart4 = echarts.init(document.getElementById('bottomC'))
+            var option4 = {
+                xAxis: {
+                    type: 'category',
+                    data: xArray,
+                    splitLine: {
+                        show: false
+                    },
+                    axisLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        textStyle: {
+                            color: 'rgba(255,255,255,0.75)', //坐标值得具体的颜色
+                            fontSize: 10
+                        }
+                    },
+                },
+                yAxis: {
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    axisLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        textStyle: {
+                            color: 'rgba(255,255,255,0.75)', //坐标值得具体的颜色
+                            fontSize: 10
+                        }
+                    },
+                },
+                grid: {
+                    top: "10",
+                    left: "45",
+                    right: "10",
+                    bottom: "20"
+                },
+               
+                series: [{
+                    data: yArray,
+                    type: 'bar',
+                    itemStyle: {
+                        normal: {
+                            
+                            color: '#4741F2',
+
+                        }
+
+
+                    },
+                }]
+            };
+            mychart4.setOption(option4);
+        }
+        getAlarm(dataTest)
+    </script>
+</body>
+
+</html>

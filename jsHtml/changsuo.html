@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>场所</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+    <style type="text/css">
+        html {
+            height: 100%
+        }
+
+        body {
+            height: 100%;
+            margin: 0px;
+            padding: 0px
+        }
+
+        #container {
+            height: 100%
+        }
+
+        #side {
+
+            height: 100%;
+            width: 0;
+            display: none;
+            float: left;
+            border-right: 1px solid black
+        }
+
+        .col {
+            background-color: red;
+            margin-left: 5px;
+            margin-top: 40px;
+        }
+
+        .BMap_cpyCtrl {
+            display: none;
+        }
+
+        .anchorBL {
+            display: none;
+        }
+    </style>
+
+    <script type="text/javascript" src="map_load.js"></script>
+    <script type="text/javascript" src="TextIconOverlay_min.js"></script>
+    <script type="text/javascript" src="MarkerClusterer_min.js"></script>
+</head>
+
+<body>
+    <div id="side">
+        <p style="margin-top:250px">摄像头总数：432次</p>
+        <p>在线：234次</p>
+        <p>黑名单报警：456次</p>
+        <p>白名单提示：99次</p>
+    </div>
+    <div id="container"></div>
+    <script src="js/jquery-3.3.1.min.js"></script>
+
+
+    <script src="js/bootstrap.js"></script>
+    <script type="text/javascript">
+        var ws = new WebSocket('ws://192.168.100.65:18082/websocket');
+        ws.onopen = function () {
+            // Web Socket 已连接上，使用 send() 方法发送数据
+
+        };
+        ws.onmessage = function (res) {
+            // console.log(res.data)
+           
+            var data = JSON.parse(res.data)
+            if (data.eventType) {
+                // alertMessage(data)
+            }
+        }
+        ws.onclose = function () {
+
+        }
+
+        function alertMessage(res) {
+            var point = new BMap.Point(54.534919, 24.345037)
+            var allOverlay = map.getOverlays()
+            var date = new Date(res.timeStamp);
+            Y = date.getFullYear() + '-';
+            M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+            D = date.getDate() + ' ';
+            h = date.getHours() + ':';
+            m = date.getMinutes() + ':';
+            s = date.getSeconds();
+
+            var time = Y + M + D + h + m + s
+            var sContent = "<h4 style='margin:0 0 5px 0;padding:0.2em 0'>" + res.personTypeName + "</h4>" +
+                "<img style='float:right;margin:4px' id='imgDemo' src=" + res.url +"?token=7d1e52d3cf0142e19b5901eb1ef91372"+
+                " width='139' height='104' title=''/>" +
+                "<p style='margin:0;line-height:1.5;font-size:13px;text-indent:2em'>" + time + "</p>"
+            var infoWindow = new BMap.InfoWindow(sContent); 
+            map.openInfoWindow(infoWindow,point)
+            setTimeout(() => {
+                map.closeInfoWindow()
+            }, 5000);
+        }
+
+        function slide() {
+
+            $('#side').show()
+            $('#side').animate({
+                width: '30%'
+            })
+
+        }
+
+        function slideoff(e) {
+            if (e.overlay == null) {
+                $('#side').animate({
+                    width: '0'
+                })
+            }
+
+
+        }
+
+        var outputPath = 'tiles/'; //地图瓦片所在的文件夹
+        var fromat = ".jpg"; //格式
+
+        /*var tileLayer = new BMap.TileLayer();
+        tileLayer.getTilesUrl = function (tileCoord, zoom) {
+        	var x = tileCoord.x;
+        	var y = tileCoord.y;
+        	var url = outputPath + zoom + '/' + x + '/' + y + fromat;
+        	return url;
+        }
+        var tileMapType = new BMap.MapType('tileMapType', tileLayer);*/
+
+        var map = new BMap.Map("container")
+//         var mapStyle={  style : "midnight" }  
+// map.setMapStyle(mapStyle);
+      
+        map.centerAndZoom(new BMap.Point(54.534919, 24.345037), 18);
+        map.addEventListener("click", function (e) {
+            slideoff(e)
+        });
+      
+        var opts = {
+            width: 150, // 信息窗口宽度
+            height: 80, // 信息窗口高度
+            title: "摄像头详情", // 信息窗口标题
+            enableMessage: true //设置允许信息窗发送短息
+        };
+        var myIcon = new BMap.Icon("images/camera.png", new BMap.Size(32, 32), {
+            // 指定定位位置。   
+            // 当标注显示在地图上时，其所指向的地理位置距离图标左上    
+            // 角各偏移10像素和25像素。您可以看到在本例中该位置即是   
+            // 图标中央下端的尖角位置。    
+            anchor: new BMap.Size(10, 25),
+            // 设置图片偏移。   
+            // 当您需要从一幅较大的图片中截取某部分作为标注图标时，您   
+            // 需要指定大图的偏移位置，此做法与css sprites技术类似。    
+            imageOffset: new BMap.Size() // 设置图片偏移    
+        });
+
+        // 创建标注对象并添加到地图   
+        // var marker1 = new BMap.Marker(point1, {
+        // 	icon: myIcon
+        // });
+
+        var markerArray = []
+        var points = []
+        for (var i = 0; i < 10; i++) {
+            var a = new BMap.Point(54.534919 + Math.random() * 0.1, 24.345037 + Math.random() * 0.07)
+            var marker = new BMap.Marker(a);
+            marker.addEventListener("click", function (e) {
+            console.log(e)
+                slide(e)
+            });
+            if (i < 10) {
+                points.push(a)
+            }
+            // 创建标注
+            markerArray.push(marker)
+            // map.addOverlay(marker); // 将标注添加到地图中
+
+            // marker.setLabel(label);
+            // addClickHandler(content, marker);
+        }
+        var markerClusterer = new BMapLib.MarkerClusterer(map, {
+            markers: markerArray
+        });
+        var allOverlay = map.getOverlays()
+
+        //根据事件变换图标样式
+        var alertIcon = new BMap.Icon("images/alertCamera.png", new BMap.Size(32, 32), {
+            // 指定定位位置。   
+            // 当标注显示在地图上时，其所指向的地理位置距离图标左上    
+            // 角各偏移10像素和25像素。您可以看到在本例中该位置即是   
+            // 图标中央下端的尖角位置。    
+            anchor: new BMap.Size(10, 25),
+            // 设置图片偏移。   
+            // 当您需要从一幅较大的图片中截取某部分作为标注图标时，您   
+            // 需要指定大图的偏移位置，此做法与css sprites技术类似。    
+            imageOffset: new BMap.Size() // 设置图片偏移    
+        });
+        // allOverlay[1].setIcon(alertIcon)
+
+        function addClickHandler(content, marker) {
+
+        }
+
+        function openInfo(content, e) {
+            var p = e.target;
+            var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+            var infoWindow = new BMap.InfoWindow(content, opts); // 创建信息窗口对象 
+            map.openInfoWindow(infoWindow, point); //开启信息窗口
+        }
+        // 创建标注    
+        // map.addOverlay(marker1); // 初始化地图，设置中心点坐标和地图级别  
+
+        //添加地图类型控件
+        map.addControl(new BMap.MapTypeControl({
+            mapTypes: [
+                BMAP_NORMAL_MAP,
+
+            ]
+        }));
+
+
+        function ZoomControl() {
+            // 设置默认停靠位置和偏移量  
+            this.defaultAnchor = BMAP_ANCHOR_TOP_LEFT;
+            this.defaultOffset = new BMap.Size(10, 10);
+        }
+        // 通过JavaScript的prototype属性继承于BMap.Control   
+        ZoomControl.prototype = new BMap.Control();
+        ZoomControl.prototype.initialize = function (map) {
+            // 创建一个DOM元素   
+            var div = document.createElement("div");
+            // 添加文字说明    
+            div.appendChild(document.createTextNode("轨迹画线"));
+            // 设置样式    
+            div.style.cursor = "pointer";
+            div.style.border = "1px solid gray";
+            div.style.backgroundColor = "white";
+            // 绑定事件，点击一次放大两级  
+
+            div.onclick = function (e) {
+                // map.zoomTo(map.getZoom() + 2);
+                console.log()
+
+                // for (let index = 0; index < data_info.length; index++) {
+                // 	var point = new BMap.Point(data_info[index][0], data_info[index][1]);
+                // 	points.push(point)
+
+                // }
+
+                //画直线
+                var sy = new BMap.Symbol(BMap_Symbol_SHAPE_BACKWARD_OPEN_ARROW, {
+                    scale: 0.6, //图标缩放大小
+                    strokeColor: '#fff', //设置矢量图标的线填充颜色
+                    strokeWeight: '2', //设置线宽
+                });
+                var icons = new BMap.IconSequence(sy, '10', '30');
+                var polyline = new BMap.Polyline(points, {
+                    // strokeColor: "red",
+                    // strokeWeight: 4,
+                    // strokeOpacity: 0.9
+                    // enableEditing: false, //是否启用线编辑，默认为false
+                    // enableClicking: false, //是否响应点击事件，默认为true
+                    icons: [icons],
+                    strokeWeight: '8', //折线的宽度，以像素为单位
+                    strokeOpacity: 0.8, //折线的透明度，取值范围0 - 1
+                    strokeColor: "#18a45b" //折线颜色
+                })
+                map.addOverlay(polyline);
+                //画路线
+
+
+                // var walking = new BMap.WalkingRoute(map, {
+                // 	renderOptions: {
+                // 		map: map
+                // 	}
+                // });
+                // walking.search(new BMap.Point(54.534919, 24.345037), new BMap.Point(54.53633, 24.345054));失效
+
+
+            }
+            // 添加DOM元素到地图中   
+            map.getContainer().appendChild(div);
+            // 将DOM元素返回 
+
+            return div;
+        }
+        var myZoomCtrl = new ZoomControl();
+        // 添加到地图当中    
+        map.addControl(myZoomCtrl);
+        map.setCurrentCity("北京"); // 设置地图显示的城市 此项是必须设置的
+        map.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
+        //单击获取点击的经纬度
+        // map.addEventListener("click", function (e) {
+        // 	alert(e.point.lng + "," + e.point.lat);
+        // });
+    </script>
+</body>
+
+</html>

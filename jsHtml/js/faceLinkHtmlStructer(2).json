@@ -1,0 +1,198 @@
+{
+    "status": 200,
+    "message": "操作成功!",
+    "data": [
+        {
+            "id": 575,
+            "name": "5c484739ce57d11b2562fc57",
+            "symbol": "image://http://192.168.100.60:8085/graph/node/picture/5c484739ce57d11b2562fc57",
+            "symbolSize": [
+                60,
+                60
+            ],
+            "children": [
+                {
+                    "id": 519,
+                    "name": "5c484739ce57d11b2562fc58",
+                    "intimacy": "1",
+                    "symbol": "image://http://192.168.100.60:8085/graph/node/picture/5c484739ce57d11b2562fc58",
+                    "symbolSize": [
+                        60,
+                        60
+                    ],
+                    "children": [
+                        {
+                            "id": 584,
+                            "name": "5c405900a97ba663a029e73f",
+                            "intimacy": "3",
+                            "symbol": "image://http://192.168.100.60:8085/graph/node/picture/5c405900a97ba663a029e73f",
+                            "symbolSize": [
+                                60,
+                                60
+                            ],
+                            "children": [
+                                {
+                                    "id": 433,
+                                    "name": "5c405900a97ba663a029e743",
+                                    "intimacy": "3",
+                                    "symbol": "image://http://192.168.100.60:8085/graph/node/picture/5c405900a97ba663a029e743",
+                                    "symbolSize": [
+                                        60,
+                                        60
+                                    ],
+                                    "children": []
+                                },
+                                {
+                                    "id": 441,
+                                    "name": "5c405900a97ba663a029e741",
+                                    "intimacy": "3",
+                                    "symbol": "image://http://192.168.100.60:8085/graph/node/picture/5c405900a97ba663a029e741",
+                                    "symbolSize": [
+                                        60,
+                                        60
+                                    ],
+                                    "children": []
+                                },
+                                {
+                                    "id": 136,
+                                    "name": "5c405904a97ba663a029e75a",
+                                    "intimacy": "3",
+                                    "symbol": "image://http://192.168.100.60:8085/graph/node/picture/5c405904a97ba663a029e75a",
+                                    "symbolSize": [
+                                        60,
+                                        60
+                                    ],
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "id": 501,
+                            "name": "5c402e82a97ba613960acf8d",
+                            "intimacy": "6",
+                            "symbol": "image://http://192.168.100.60:8085/graph/node/picture/5c402e82a97ba613960acf8d",
+                            "symbolSize": [
+                                60,
+                                60
+                            ],
+                            "children": [
+                                {
+                                    "id": 370,
+                                    "name": "5c402906a97ba611d75481c5",
+                                    "intimacy": "13",
+                                    "symbol": "image://http://192.168.100.60:8085/graph/node/picture/5c402906a97ba611d75481c5",
+                                    "symbolSize": [
+                                        60,
+                                        60
+                                    ],
+                                    "children": []
+                                },
+                                {
+                                    "id": 470,
+                                    "name": "5c40298ea97ba613960ac445",
+                                    "intimacy": "14",
+                                    "symbol": "image://http://192.168.100.60:8085/graph/node/picture/5c40298ea97ba613960ac445",
+                                    "symbolSize": [
+                                        60,
+                                        60
+                                    ],
+                                    "children": []
+                                },
+                                {
+                                    "id": 544,
+                                    "name": "5c402939a97ba613960ac335",
+                                    "intimacy": "12",
+                                    "symbol": "image://http://192.168.100.60:8085/graph/node/picture/5c402939a97ba613960ac335",
+                                    "symbolSize": [
+                                        60,
+                                        60
+                                    ],
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "id": 555,
+                            "name": "5c3761ea4f8b57142130ac4f",
+                            "intimacy": "3",
+                            "symbol": "image://http://192.168.100.60:8085/graph/node/picture/5c3761ea4f8b57142130ac4f",
+                            "symbolSize": [
+                                60,
+                                60
+                            ],
+                            "children": [
+                                {
+                                    "id": 460,
+                                    "name": "5c3f3728a97ba62d7020f284",
+                                    "intimacy": "6",
+                                    "symbol": "image://http://192.168.100.60:8085/graph/node/picture/5c3f3728a97ba62d7020f284",
+                                    "symbolSize": [
+                                        60,
+                                        60
+                                    ],
+                                    "children": []
+                                },
+                                {
+                                    "id": 577,
+                                    "name": "5c3741754f8b570014751411",
+                                    "intimacy": "8",
+                                    "symbol": "image://http://192.168.100.60:8085/graph/node/picture/5c3741754f8b570014751411",
+                                    "symbolSize": [
+                                        60,
+                                        60
+                                    ],
+                                    "children": []
+                                },
+                                {
+                                    "id": 493,
+                                    "name": "5c3761e64f8b57142130ac45",
+                                    "intimacy": "5",
+                                    "symbol": "image://http://192.168.100.60:8085/graph/node/picture/5c3761e64f8b57142130ac45",
+                                    "symbolSize": [
+                                        60,
+                                        60
+                                    ],
+                                    "children": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": 576,
+                    "name": "5c484731ce57d11b2562fc52",
+                    "intimacy": "1",
+                    "symbol": "image://http://192.168.100.60:8085/graph/node/picture/5c484731ce57d11b2562fc52",
+                    "symbolSize": [
+                        60,
+                        60
+                    ],
+                    "children": [
+                        {
+                            "id": 415,
+                            "name": "5c484735ce57d11b2562fc55",
+                            "intimacy": "1",
+                            "symbol": "image://http://192.168.100.60:8085/graph/node/picture/5c484735ce57d11b2562fc55",
+                            "symbolSize": [
+                                60,
+                                60
+                            ],
+                            "children": []
+                        },
+                        {
+                            "id": 492,
+                            "name": "5c48472cce57d11b2562fc51",
+                            "intimacy": "1",
+                            "symbol": "image://http://192.168.100.60:8085/graph/node/picture/5c48472cce57d11b2562fc51",
+                            "symbolSize": [
+                                60,
+                                60
+                            ],
+                            "children": []
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

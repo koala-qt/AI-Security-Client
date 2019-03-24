@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="js/jquery.min.js"></script>
+    <script src="./js/qwebchannel.js"></script>
+    <script src="./js/vue.js"></script>
+    <script type="text/javascript" src="js/echarts-all-3.js"></script>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+    body {
+        margin: 0;
+        background: #252934;
+    }
+    #container {
+        width: 100%;
+        top: 100px;
+        bottom: 0;
+        position: absolute;
+    }
+    .track-box {
+    position: absolute;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    }
+    .content-left {
+    flex: 11;
+    padding: 0 40px;
+    }
+    .content-right {
+    position: relative;
+    flex: 10;
+    }
+    .content-right .top {
+        position: absolute;
+        background: #303644;
+        width: 94%;
+        top: 83px;
+        color: #CECECE;
+        height: 218px;
+    }
+
+    .content-right-bottom {
+        display: flex;
+        padding-left: 40px;
+    }
+    .content-right .top .person-id {
+      padding: 40px 0 20px 40px;
+    }
+    .content-right .top .person-img {
+        /* background-image: url('./img/head.jpg');
+        background-repeat:no-repeat;
+        background-size:100% 100%;
+        -moz-background-size:100% 100%; */
+        width: 100px;
+        height: 100px;
+    }
+    .person-img img {
+        width: 100px;
+        height: 100px;
+    }
+    .content-right .content{
+    display: flex;
+    flex-direction: column;
+    padding-left: 20px;
+    }
+    .content-right .content-b{
+    flex: 1;
+    }
+    .content-right .bottom {
+        position: absolute;
+        background: #303644;
+        width: 94%;
+        top: 320px;
+        bottom: 20px;
+    }
+    .content-right .bottom .charts-title {
+        padding:40px 0 0 40px;
+        font-size: 16px;
+        color: #CECECE;
+    }
+    .person-img .content {
+    }
+    .person-img .content .content-b {
+        padding-top: 4px;
+    }
+    .content .bottom {
+        position: absolute;
+        top: 238px;
+        bottom: 0;
+    }
+    table {
+    border-collapse:separate;
+    border-spacing:0px 0px;
+    }
+    .basic-table-box{
+        width: 965px;
+    }
+
+    .first-table tr {
+        height: 60px;
+    }
+    .second-table tr{
+        height: 80px;
+
+    }
+    .basic-table-box tr th {
+        background: #41495C;
+        color: #CECECE;
+        font-size: 12px;
+    }
+    .basic-table-box tr th:last-child {
+        /* border-right: 1px solid #DEDEDE; */
+    }
+    .basic-table-box tr td{
+        text-align: center;
+        font-size: 16px;
+        color:#FFFFFF;
+        background-color: #303644;
+        opacity:0.5;
+    }
+    .basic-table-box tr td:first-child{
+        width: 198px;
+    }
+    .basic-table-box tr td:last-child{
+
+    }
+    .content-left-title {
+    padding: 40px 0 20px 0;
+    color: #CECECE;
+    }
+    .container {
+        position: absolute;
+        width: 100%;
+        top: 68px;
+        bottom: 0;
+    }
+    .img-scene {
+        width: 96px;
+        height: 54px;
+    }
+    .table-auto {
+        position: absolute;
+        overflow: auto;
+        top: 142px;
+        bottom: 18px;
+    }
+    .big-scene {
+        position: absolute;
+    }
+    .big-scene-img {
+        width: 960px;
+        height: 540px;
+    }
+    .bg-scene {
+        width: 100%;
+        z-index: 2;
+        position: fixed;
+        background-color: #000;
+        opacity: 0.2;
+        height: 100%;
+    }
+    .show-scene {
+        position: absolute;
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+        display: flex;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+    }
+    ::-webkit-scrollbar {
+        position: absolute;
+        width: 10px;
+        margin-left: -10px;
+        -webkit-appearance: none;
+    }
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+        border-width: 1px 2px;
+        border-style: solid;
+        border-color: transparent;
+        background: transparent;
+        background-clip: content-box;
+    }
+    :hover::-webkit-scrollbar-track{
+        background:none;
+    }
+    :hover::-webkit-scrollbar-thumb {
+        background:rgba(216,216,216,0.1);
+        border-radius: 5px;
+    }
+    .show-load {
+        align-items: center;
+        display: flex;
+        justify-content: center;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 998;
+        background: rgba(0, 0, 0, 0.66);
+        vertical-align: middle;
+    }
+    .show-load img {
+        width: 80px;
+        height: 80px;
+    }
+    [v-cloak] {
+        display: none;
+    }
+</style>
+<body>
+    <div class="track-box" id='track-box' v-cloak>
+        <div v-show="isShowLoad" class="show-load">
+          <img src="./img/loading.gif">
+        </div>
+        <!-- <div class="bg-scene" v-show="showBigScene"></div> -->
+        <!-- <div class="show-scene"  @click="showBigScene = !showBigScene" v-show="showBigScene" id="kuang">
+                <img class="big-scene-img" :src="bigSceneSrc">
+        </div> -->
+
+        <div class="content-left">
+            <div class="content-left-title">
+                Tracking
+            </div>
+            <table class="basic-table-box first-table">
+                <thead>
+                    <tr>
+                        <th style="width:80px">Photo</th>
+                        <th style="width:240px">Time</th>
+                        <th style="width:440px">Position</th>
+                        <!-- <th>Residence time</th> -->
+                    </tr>
+                </thead>
+            </table>
+            <div class="table-auto">
+                <table class="basic-table-box second-table">
+                        <tbody>
+                            <tr v-for="item in tableList">
+                                <td style="width:80px">
+                                    <img :src="`${item.personImg}?token=7d1e52d3cf0142e19b5901eb1ef91372`" class="img-scene" @click="getScenes(item.sceneId)">
+                                </td>
+                                <td style="width:240px">{{item.grabTime}}</td>
+                                <!-- <td style="width:400px">{{item.name.split(' ').splice(1, item.name.split(' ').length).join(' ')}}</td> -->
+                                <td style="width:400px">{{item.name}}</td>
+                                <!-- <td>{{item.pos.lat}}°, {{item.pos.lng}}°</td> -->
+                            </tr>
+                        </tbody>
+                </table>
+            </div>
+
+        </div>
+        <div class="content-right">
+           <div class="top">
+               <div class="person-id">Person ID</div>
+               <div class="content-right-bottom">
+                    <div class="person-img">
+                       <img v-if="personName.personFace" :src="`data:image/jpeg;base64,${personName.personFace}`">
+                       <img v-else src="./img/head.jpg">
+                    </div>
+                    <div class="content">
+                      <div class="content-b" v-if="personName.personName">Name: {{personName.personName}}</div>
+                      <div class="content-b" v-if="personName.similarity">Similarity: {{personName.similarity}}</div>
+                      <div class="content-b" v-if="personName.personType">Type: {{personName.personType}}</div>
+                    </div>
+               </div>
+           </div>
+           <div class="bottom">
+               <div class="charts-title">Preferences Analysis</div>
+               <div class="container" id="container"></div>
+           </div>
+        </div>
+    </div>
+    <!-- <div id="container">
+
+    </div> -->
+</body>
+
+<script>
+     var app = new Vue({
+        el: '#track-box',
+        data(){
+            return{
+                locIp: '',
+                showBigScene: true,
+                bigSceneSrc: '',
+                personName: {
+                    personFace: null,
+                    personName: null,
+                    similarity: null,
+                    personType: null
+                },
+                tableList:   [],
+                isShowLoad: false,
+                pieChartData: [],
+            }
+        },
+        methods: {
+          getScenes(objId) {
+            Bridge.onFaceClicked(objId)
+            // let self = this
+            //   let url = `${this.locIp}/api/v2/external/monitor-detail/find-document?collection=snap_scene&requiredFields=face_bbox,face_id,body_bbox,body_id,snapshot&objId=${objId}&token=7d1e52d3cf0142e19b5901eb1ef91372`
+
+            //   $.ajax({
+            //     url,
+            //     data: {
+            //     },
+            //     type: "GET",
+            //     dataType: 'json',
+            //     success: function(data) {
+            //         let imgUrl = `${self.locIp}${data.data.url}`
+            //         let newImgUrl = imgUrl.replace(/amp;/ig, '')
+            //         $("#kuang").empty()
+            //         let html = `<canvas id="sceneCanvas" width="960" height="540" style='position:absolute;z-index:1'></canvas>`
+            //         let newW = 960 * 2
+            //         let newH = 540 * 2
+            //         $("#kuang").append(`<img src=${newImgUrl} style='position:absolute;width:960px;height:540px'>`)
+
+            //         $("#kuang").append(html)
+
+            //         let sceneCanvas = document.getElementById("sceneCanvas");
+            //         let ctx = sceneCanvas.getContext("2d");
+
+            //         // let imgs = new Image();
+            //         // imgs.src = data.data.url;
+            //         // ctx.drawImage(imgs, 0, 0, 960, 540);
+            //         // this.bigSceneSrc = data.data.url
+            //         let box = data.data.faceBbox[0]
+
+            //         let wb = 960 / newW;
+            //         let hb = 540 / newH;
+            //         ctx.beginPath() //注意此处
+            //         ctx.strokeStyle = 'red';//设置线条颜色
+            //         ctx.lineWidth = 2;
+
+            //         ctx.moveTo(wb * box[0],hb * box[1]);
+
+            //         ctx.lineTo(wb * (box[0] + box[2]),hb * box[1]);
+            //         ctx.lineTo(wb * (box[0] + box[2]),hb * (box[1] + box[3]));
+            //         ctx.lineTo(wb * box[0],hb * (box[1] + box[3]));
+            //         ctx.lineTo(wb * box[0],hb * box[1]);
+
+            //         ctx.stroke();
+            //         ctx.closePath()
+
+            //         self.showBigScene = true
+            //     }
+            //   })
+          },
+          setChart() {
+            let newPieData = []
+            let legendData = []
+            this.pieChartData.forEach((item) => {
+                newPieData.push({
+                    name: item.GroupName,
+                    value: item.GroupCount
+                })
+                legendData.push(item.GroupName)
+            })
+            var dom = document.getElementById("container");
+            var myChart = echarts.init(dom);
+            data= {
+                legendData,
+                seriesData: newPieData
+            }
+            option = {
+                tooltip : {
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                },
+                legend: {
+                    type: 'scroll',
+                    orient: 'vertical',
+                    right: 60,
+                    bottom: 40,
+                    textStyle: {
+                        color: '#CECECE'
+                    },
+                    data: data.legendData
+                },
+                series : [
+                    {
+                        name: 'place',
+                        type: 'pie',
+                        radius : '55%',
+                        center: ['30%', '50%'],
+                        label: {
+                            normal: {
+                                position: 'outer',
+                                textStyle: {
+                                    color: '#CECECE'
+                                },
+                                formatter: function(info) {
+                                  return `${info.percent}%`
+                                }
+                            },
+                        },
+                        data: data.seriesData,
+                        itemStyle: {
+                            emphasis: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        },
+
+                    }
+                ],
+                color: ['rgb(94,97,98)','rgb(106,111,115)','rgb(119,120,115)','rgb(158,143,103)','rgb(180,160,108)']
+            };
+                myChart.setOption(option)
+          }
+        },
+        mounted() {
+            // this.getScenes()
+            let self = this
+            if(typeof qt != "undefined") {
+                new QWebChannel(qt.webChannelTransport, function(channel){
+                    window.Bridge = channel.objects.Bridge;
+                    Bridge.sigTrackingDataChanged.connect(function(dataObj) { //连接Qt中brideg类的信号并定义执行代码
+                        // alert(JSON.stringify(dataObj))
+                        self.tableList = JSON.parse(JSON.stringify(dataObj))
+                        self.setChart()
+                    });
+                    Bridge.sigPersonInfo.connect(function(personInfo) { //连接Qt
+                        // alert(JSON.stringify(personInfo))
+                        self.personName = personInfo
+                    });
+                    Bridge.sigMovieingStart.connect(function () { //连接Qt中brideg类的信号并定义执行代码sigMovieStop
+                      self.isShowLoad = true
+                    });
+                    Bridge.sigMovieStop.connect(function () { //连接Qt中brideg类的信号并定义执行代码
+                      self.isShowLoad = false
+                    });
+                    Bridge.sigGroupStatistics.connect(function (dataJson) { //连接Qt中brideg类的信号并定义执行代码
+                    //   alert(JSON.stringify(dataJson))
+                      self.pieChartData = dataJson
+                      self.setChart()
+                    });
+                    Bridge.sigHostNameChanged.connect(function(ip) { //连接Qt中brideg类的信号并定义执行代码
+                        self.locIp = ip
+                    });
+
+                    Bridge.onInitsized(); //调用Qt内的函数
+                });
+            }
+            // self.tableList = dataObj
+            // self.setChart()
+        }
+    })
+
+</script>
+</html>
