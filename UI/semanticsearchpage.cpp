@@ -41,7 +41,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     personTypeCombox_ = new QComboBox;
     posL_ = new QLabel(tr("    Position"));
     posCombox_ = new QComboBox;
-    startTimeL_ = new QLabel(tr("Starting Time"));
+    startTimeL_ = new QLabel(tr("Start Time"));
     startTimeEdit_ = new QDateTimeEdit;
     endTimeL_ = new QLabel(tr("    Ending Time"));
     endTimeEdit_ = new QDateTimeEdit;

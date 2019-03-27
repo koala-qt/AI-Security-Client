@@ -27,9 +27,9 @@ MultipleSearch::MultipleSearch( WidgetI *parent):
     QVBoxLayout *mainLay = new QVBoxLayout;
     imgList_ = new QListWidget;
     dataList_ = new QListWidget;
-    positionL_ = new QLabel(tr("Position"));
-    startTimeL_ = new QLabel(tr("Starting Time"));
-    endTimeL_ = new QLabel(tr("Ending Time"));
+    positionL_ = new QLabel(tr("Regional location"));
+    startTimeL_ = new QLabel(tr("Start Time"));
+    endTimeL_ = new QLabel(tr("End Time"));
     searchBtn_ = new QPushButton(tr("Search"));
     posCombox_ = new QComboBox;
     startTimeEdit_ = new QDateTimeEdit;

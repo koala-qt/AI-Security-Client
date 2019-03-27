@@ -213,7 +213,7 @@ void GlViewMapWidget::init()
     vLay->setContentsMargins(5, 20, 5, 20);
     parentWgt->setLayout(vLay);
     pMidVlay->addWidget(parentWgt);
-    labTitle = new QLabel(tr("Total ID Numbers"));
+    labTitle = new QLabel(tr("Total Number of IDs"));
     labTitle->setStyleSheet(strTitleStyle);
     labTitle->setAlignment(Qt::AlignLeft);
     vLay->addWidget(labTitle);

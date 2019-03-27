@@ -7,7 +7,7 @@ NoDataTip::NoDataTip(QWidget *parent):
     QWidget(parent)
 {
     imgLabel_ = new QLabel;
-    errorL_ = new QLabel(tr("No results found \nPlease adjust the conditions to re-query"));
+    errorL_ = new QLabel(tr("No results found \nPlease adjust search query"));
 
     QVBoxLayout *mainLay = new QVBoxLayout;
     imgLabel_->setAlignment(Qt::AlignCenter);
@@ -23,7 +23,7 @@ NoDataTip::NoDataTip(QWidget *parent):
     setTipText(tr("<div>"
                   "<span style='color:white'>No results found</span>"
                   "<br/>"
-                  "<span style='color:rgba(255,255,255,100)'>Please adjust the conditions to re-query</span>"
+                  "<span style='color:rgba(255,255,255,100)'>Please adjust search query</span>"
                   "</div>"));
 }
 
