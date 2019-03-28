@@ -73,6 +73,7 @@ void NotifyEventByWebSocket::onTextMessageReceived(QString message)
     if(jsObj.value("type") != "snap-alarm-type")return;
     jsObj = jsObj.value("data").toObject();
     QString eventType = jsObj.value("eventType").toString();
+    qDebug() << eventType << "---------------";
     if(eventType == "smsr_alarm_intruder"){
         IntruderEventData evData;
         evData.bodyId = jsObj.value("bodyId").toString();
@@ -129,7 +130,7 @@ void NotifyEventByWebSocket::onTextMessageReceived(QString message)
             qDebug() << str;
         });
         serviceI->getImageByUrl(jsObj.value("url").toString());
-    }else if(eventType == tr("smsr_alarm_climb")){
+    }else if(eventType == "smsr_alarm_climb"){
         ClimbEventData evData;
         evData.bodyId = jsObj.value("bodyId").toString();
         evData.deviceName = jsObj.value("deviceName").toString();
@@ -160,7 +161,7 @@ void NotifyEventByWebSocket::onTextMessageReceived(QString message)
             qDebug() << str;
         });
         serviceI->getImageByUrl(jsObj.value("url").toString());
-    }else if(eventType == tr("smsr_alarm_gather")){
+    }else if(eventType == "smsr_alarm_gather"){ //smsr_alarm_gather
         GatherEventData evData;
         evData.deviceName = jsObj.value("deviceName").toString();
         evData.eventType = eventType;
@@ -169,14 +170,17 @@ void NotifyEventByWebSocket::onTextMessageReceived(QString message)
         evData.sceneId = jsObj.value("sceneId").toString();
         evData.sourceId = jsObj.value("sourceId").toString();
         evData.timeStamp = QDateTime::fromMSecsSinceEpoch(jsObj.value("timeStamp").toVariant().toULongLong());
+        qDebug() << jsObj.value("url").toString();
         RestServiceI *serviceI = serFactory_->makeRestServiceI();
         connect(serviceI,&RestServiceI::sigDownloadImage,this,[this,evData](QImage img){
             GatherEventData newData = evData;
             newData.sceneImg = img;
             emit sigGatherEventData(newData);
+            qDebug() << "gather emited---------------------------------------------gather";
         });
         connect(serviceI,&RestServiceI::sigError,this,[this](QString str){
             qDebug() << str;
+            qDebug() << "gather canceled+++++++++++++++++++++++++++++++++++";
         });
         serviceI->getImageByUrl(jsObj.value("url").toString());
     }else if(eventType == "smsr_alarm_face"){

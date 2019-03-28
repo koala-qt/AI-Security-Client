@@ -1,2 +1,0 @@
-webpackJsonp([32],{SKOA:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var a={render:function(){var e=this.$createElement,t=this._self._c||e;return t("div",{staticClass:"page-content"},[t("div",{staticClass:"page-content-style"},[t("router-view")],1)])},staticRenderFns:[]};var r=n("VU/8")({name:"people_manage",components:{},data:function(){return{navber:[]}}},a,!1,function(e){n("p/7w")},"data-v-58897f9e",null);t.default=r.exports},"p/7w":function(e,t){}});
-//# sourceMappingURL=32.cdf0b972d9a2aa5bf66e.js.map

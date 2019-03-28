@@ -1,6 +1,6 @@
 #include <windows.h>
 
-IDI_ICON1	ICON	DISCARDABLE	"E:\\koala_client\\appLogo.ico"
+IDI_ICON1	ICON	DISCARDABLE	"D:\\git\\AI-Security-Client\\appLogo.ico"
 
 VS_VERSION_INFO VERSIONINFO
 	FILEVERSION 0,0,0,0
