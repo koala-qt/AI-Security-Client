@@ -45,7 +45,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     posCombox_ = new QComboBox;
     startTimeL_ = new QLabel(tr("Start Time"));
     startTimeEdit_ = new QDateTimeEdit;
-    endTimeL_ = new QLabel(tr("    End Time"));
+    endTimeL_ = new QLabel(tr("End Time"));
     endTimeEdit_ = new QDateTimeEdit;
     searchBtn_ = new QPushButton(tr("Search"));
     attributTreeW_ = new QTreeWidget;
