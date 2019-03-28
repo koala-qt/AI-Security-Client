@@ -41,11 +41,11 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     setObjectName(tr("Surveillance Database"));
     personTypeL_ = new QLabel(tr("Source"));
     personTypeCombox_ = new QComboBox;
-    posL_ = new QLabel(tr("    Position"));
+    posL_ = new QLabel(tr("Regional location"));
     posCombox_ = new QComboBox;
     startTimeL_ = new QLabel(tr("Start Time"));
     startTimeEdit_ = new QDateTimeEdit;
-    endTimeL_ = new QLabel(tr("    Ending Time"));
+    endTimeL_ = new QLabel(tr("    End Time"));
     endTimeEdit_ = new QDateTimeEdit;
     searchBtn_ = new QPushButton(tr("Search"));
     attributTreeW_ = new QTreeWidget;
