@@ -28,8 +28,15 @@ DLL::CloudHttpDao::CloudHttpDao()
 
 QString DLL::CloudHttpDao::getCameraInfo(QVector<RestServiceI::CameraInfo> *cameras)
 {
-    //QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-camera-map"); // from mongo
-    QString urlStr = host_ + "/api/v2/cmcc/device/device-scene/find-camera-map"; // from mysql
+    QString urlStr;
+    if (host_.contains("100.10"))
+    {
+        urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-camera-map"); // from mongo
+    }
+    else
+    {
+        urlStr = host_ + "/api/v2/cmcc/device/device-scene/find-camera-map"; // from mysql
+    }
     int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),5);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
