@@ -46,7 +46,7 @@ FaceSearch::FaceSearch(WidgetI *parent):
     hlay->addWidget(m_imgBtn);
 
     QGridLayout *gridLay = new QGridLayout;
-    cameraLabel_ = new QLabel(tr("Position"));
+    cameraLabel_ = new QLabel(tr("Regional location"));
     cameraLabel_->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     cameraCombox_ = new QComboBox;
     cameraCombox_->setIconSize(QSize(1,30));
@@ -76,12 +76,12 @@ FaceSearch::FaceSearch(WidgetI *parent):
     similarSpin_->setMinimumWidth(200);
     similarSpin_->setValue(40);
     similarSpin_->setSingleStep(5);
-    startTimeL_ = new QLabel(tr("Starting Time"));
+    startTimeL_ = new QLabel(tr("Start Time"));
     startTimeEdit_ = new QDateTimeEdit;
     startTimeEdit_->setMinimumSize(200,34);
     startTimeEdit_->setDisplayFormat("yyyy/MM/dd HH:mm:ss");
     startTimeEdit_->setDate(QDateTime::currentDateTime().addDays(-1).date());
-    endTimeL_ = new QLabel(tr("Ending Time"));
+    endTimeL_ = new QLabel(tr("End Time"));
     endTimeEdit_ = new QDateTimeEdit;
     endTimeEdit_->setDisplayFormat("yyyy/MM/dd HH:mm:ss");
     endTimeEdit_->setMinimumSize(200,34);

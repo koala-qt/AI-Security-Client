@@ -33,11 +33,11 @@ FacelinkTable::FacelinkTable( WidgetI *parent):
     WidgetI(parent)
 {
     setObjectName(tr("Face link"));
-    posL_ = new QLabel(tr("Position"));
+    posL_ = new QLabel(tr("Regional location"));
     posCombox_ = new QComboBox;
-    startTimeL_ = new QLabel(tr("Starting time"));
+    startTimeL_ = new QLabel(tr("Start Time"));
     startTimeEdit_ = new QDateTimeEdit;
-    endTimeL_ = new QLabel(tr("Ending time"));
+    endTimeL_ = new QLabel(tr("End Time"));
     endTimeEdit_ = new QDateTimeEdit;
     searchBtn_ = new QPushButton(tr("Search"));
     dataListW_ = new QListWidget;

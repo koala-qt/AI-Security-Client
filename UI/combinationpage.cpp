@@ -33,9 +33,9 @@ CombinationPage::CombinationPage( WidgetI *parent):
     searchBtn_ = new QPushButton(tr("Search"));
     similarityL_ = new QLabel(tr("Similarity"));
     queryCountL_ = new QLabel(tr("Query Count"));
-    positionL_ = new QLabel(tr("Position"));
-    startTimeL_ = new QLabel(tr("Starting Time"));
-    endTimeL_ = new QLabel(tr("Ending Time"));
+    positionL_ = new QLabel(tr("Regional location"));
+    startTimeL_ = new QLabel(tr("Start Time"));
+    endTimeL_ = new QLabel(tr("End Time"));
     quanzhongL_ = new QLabel(tr("Tradeoff"));
     quanzhongSpin_ = new QSpinBox;
     similaritySpin_ = new QSpinBox;
@@ -242,7 +242,7 @@ CombinationPage::CombinationPage( WidgetI *parent):
     faceTable_->setColumnCount(4);
     faceTable_->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     faceTable_->horizontalHeader()->setSectionResizeMode(0,QHeaderView::Fixed);
-    faceTable_->setHorizontalHeaderLabels(QStringList() << tr("Face")  << tr("Position") << tr("Similarity") << tr("Time"));
+    faceTable_->setHorizontalHeaderLabels(QStringList() << tr("Face")  << tr("Regional location") << tr("Similarity") << tr("Time"));
     faceTable_->horizontalHeader()->setSortIndicatorShown(true);
     faceTable_->setShowGrid(false);
     faceTable_->setFrameStyle(QFrame::NoFrame);
@@ -259,7 +259,7 @@ CombinationPage::CombinationPage( WidgetI *parent):
     bodyTable_->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     bodyTable_->horizontalHeader()->setSectionResizeMode(0,QHeaderView::Fixed);
     bodyTable_->horizontalHeader()->setSectionResizeMode(1,QHeaderView::Fixed);
-    bodyTable_->setHorizontalHeaderLabels(QStringList() << tr("Face") << tr("Body") << tr("Position") << tr("Similarity") << tr("Time"));
+    bodyTable_->setHorizontalHeaderLabels(QStringList() << tr("Face") << tr("Body") << tr("Regional location") << tr("Similarity") << tr("Time"));
     bodyTable_->horizontalHeader()->setSortIndicatorShown(true);
     bodyTable_->setShowGrid(false);
     bodyTable_->setFrameStyle(QFrame::NoFrame);

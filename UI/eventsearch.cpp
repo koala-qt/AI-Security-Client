@@ -41,12 +41,12 @@ EventSearch::EventSearch( WidgetI *parent):
     m_waringTyleL = new QLabel(tr("Alarm Type "));
     waringTypeMenu_ = new QMenu();
     waringTypeBtn_ = new QPushButton;
-    m_startTimeL = new QLabel(tr("Starting Time"));
+    m_startTimeL = new QLabel(tr("Start Time"));
     m_startTimeEdit = new QDateTimeEdit;
     m_startTimeEdit->setDisplayFormat("yyyy-MM-dd HH:mm:ss");
     m_startTimeEdit->setDate(QDateTime::currentDateTime().addDays(-1).date());
     m_startTimeEdit->setMinimumSize(160,40);
-    m_endTimeL = new QLabel(tr("Ending Time"));
+    m_endTimeL = new QLabel(tr("End Time"));
     m_endTimeEdit = new QDateTimeEdit;
     m_endTimeEdit->setDisplayFormat("yyyy-MM-dd HH:mm:ss");
     m_endTimeEdit->setDate(QDateTime::currentDateTime().addDays(1).date());

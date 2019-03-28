@@ -30,8 +30,8 @@ FaceLinkPage::FaceLinkPage( WidgetI *parent) :
     levelLabel_ = new QLabel(tr("Level"));
     maxnumL_ = new QLabel(tr("Max Number"));
     maxnumEdit_ = new QLineEdit;
-    startTimeL_ = new QLabel(tr("Starting Time"));
-    endTimeL_ = new QLabel(tr("Ending Time"));
+    startTimeL_ = new QLabel(tr("Start Time"));
+    endTimeL_ = new QLabel(tr("End Time"));
     startTimeEdit_ = new QDateTimeEdit;
     endTimeEdit_ = new QDateTimeEdit;
     dataView_ = new TreeCharts;
