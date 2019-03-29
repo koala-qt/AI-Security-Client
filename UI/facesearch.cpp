@@ -232,6 +232,7 @@ void FaceSearch::setUserStyle(int s)
 
         m_imgBtn->setStyleSheet("QPushButton{"
                                 "border-image: url(images/person-face-back.png);"
+                                "background: transparent;"
                                 "}");
         m_tableW->setStyleSheet("QTableView{"
                                 "color: rgba(255,255,255,0.75);"

@@ -7,8 +7,9 @@
 #include <QJsonObject>
 #include <QApplication>
 #include <QJsonArray>
+#include <QFile>
 #include "notifyeventbywebsocket.h"
-
+QFile gLogFile("websocketLog.txt");
 NotifyEventByWebSocket::NotifyEventByWebSocket(QObject *parent):
     NotifyEventI(parent)
 {
@@ -26,6 +27,7 @@ NotifyEventByWebSocket::NotifyEventByWebSocket(QObject *parent):
     websocket_->open(curUrl_);
 
     moveToThread(this);
+    gLogFile.open(QIODevice::WriteOnly);
 }
 
 NotifyEventByWebSocket::~NotifyEventByWebSocket()
@@ -71,9 +73,12 @@ void NotifyEventByWebSocket::onTextMessageReceived(QString message)
     }
     QJsonObject jsObj = jsDoc.object();
     if(jsObj.value("type") != "snap-alarm-type")return;
+
+    gLogFile.write(message.toLatin1() + "\r\n");
+    gLogFile.flush();
+
     jsObj = jsObj.value("data").toObject();
     QString eventType = jsObj.value("eventType").toString();
-    qDebug() << eventType << "---------------";
     if(eventType == "smsr_alarm_intruder"){
         IntruderEventData evData;
         evData.bodyId = jsObj.value("bodyId").toString();
@@ -176,11 +181,9 @@ void NotifyEventByWebSocket::onTextMessageReceived(QString message)
             GatherEventData newData = evData;
             newData.sceneImg = img;
             emit sigGatherEventData(newData);
-            qDebug() << "gather emited---------------------------------------------gather";
         });
         connect(serviceI,&RestServiceI::sigError,this,[this](QString str){
             qDebug() << str;
-            qDebug() << "gather canceled+++++++++++++++++++++++++++++++++++";
         });
         serviceI->getImageByUrl(jsObj.value("url").toString());
     }else if(eventType == "smsr_alarm_face"){
