@@ -105,7 +105,7 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
     faceItemMenu_->addAction(tr("Search using an image"),[&]{
         FaceSearch *faceDialog = new FaceSearch(this);
         faceDialog->setAttribute(Qt::WA_DeleteOnClose);
-        faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+        faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint | Qt::FramelessWindowHint);
         faceDialog->setWindowModality(Qt::ApplicationModal);
         QPalette pal = faceDialog->palette();
         pal.setColor(QPalette::Background,QColor(37,41,52));
@@ -892,7 +892,7 @@ void RealtimeMonitoring::slotOnSceneInfo(RestServiceI::SceneInfo sinfo)
         }
         FaceSearch *faceDialog = new FaceSearch(this);
         faceDialog->setAttribute(Qt::WA_DeleteOnClose);
-        faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+        faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint | Qt::FramelessWindowHint);
         faceDialog->setWindowModality(Qt::ApplicationModal);
         QPalette pal = faceDialog->palette();
         pal.setColor(QPalette::Background,QColor(37,41,52));

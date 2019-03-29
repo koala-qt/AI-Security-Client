@@ -94,6 +94,10 @@ MainWindow::MainWindow(WidgetI *parent)
     resourceXialaMenu_->setMinimumWidth(m_topList->item(m_topList->count() - 1)->sizeHint().width());
     m_topList->setFixedWidth(viewW + (m_topList->count() + 1) * m_topList->spacing() + 2 * m_topList->frameWidth());
     QAction *ac = new QAction(tr("Devices"),resourceXialaMenu_);
+    QIcon icon;
+    icon.addPixmap(QPixmap("images/ic_device.png"),QIcon::Normal);
+    icon.addPixmap(QPixmap("images/ic_device_selected.png"),QIcon::Active);
+    ac->setIcon(icon);
     ac->setData(m_centerW->count() - 1);
     connect(ac,&QAction::triggered,resourceXialaMenu_,[this,ac,resouPage]{
         m_centerW->setCurrentIndex(ac->data().toInt());
@@ -101,6 +105,10 @@ MainWindow::MainWindow(WidgetI *parent)
     });
     resourceXialaMenu_->addAction(ac);
     ac = new QAction(tr("ID Database"),resourceXialaMenu_);
+    icon.swap(QIcon());
+    icon.addPixmap(QPixmap("images/ic_id.png"),QIcon::Normal);
+    icon.addPixmap(QPixmap("images/ic_id_selected.png"),QIcon::Active);
+    ac->setIcon(icon);
     ac->setData(m_centerW->count() - 1);
     connect(ac,&QAction::triggered,resourceXialaMenu_,[this,ac,resouPage]{
         m_centerW->setCurrentIndex(ac->data().toInt());
@@ -108,6 +116,10 @@ MainWindow::MainWindow(WidgetI *parent)
     });
     resourceXialaMenu_->addAction(ac);
     ac = new QAction(tr("Registration Database"),resourceXialaMenu_);
+    icon.swap(QIcon());
+    icon.addPixmap(QPixmap("images/ic_registered.png"),QIcon::Normal);
+    icon.addPixmap(QPixmap("images/ic_registered_selected.png"),QIcon::Active);
+    ac->setIcon(icon);
     ac->setData(m_centerW->count() - 1);
     connect(ac,&QAction::triggered,resourceXialaMenu_,[this,ac,resouPage]{
         m_centerW->setCurrentIndex(ac->data().toInt());
@@ -210,7 +222,7 @@ void MainWindow::setUserStyle(int s)
                                           "}"
                                           "QMenu::item{"
                                           "height: 30px;"
-                                          "padding-left: 15px;"
+//                                          "padding-left: 15px;"
                                           "}"
                                           "QMenu::item:selected{"
                                           "color: white;"

@@ -112,10 +112,8 @@ QString DLL::CloudHttpDao::getDevice(QString groupNo, QVector<RestServiceI::Came
     std::transform(jsArray.begin(),jsArray.end(),std::back_inserter(*devices),[](const QJsonValue &jsVal){
         RestServiceI::CameraInfo camera;
         QJsonObject cameraObj = jsVal.toObject();
-        QString rtspStr = cameraObj.value("sourceAddress").toString();
-        camera.rtsp = rtspStr;
-        int spiteIndex = rtspStr.lastIndexOf('/');
-        camera.cameraId = rtspStr.mid(spiteIndex+1);
+        camera.rtsp = cameraObj.value("sourceAddress").toString();
+        camera.cameraId = cameraObj.value("sourceId").toString();
         camera.cameraPos = cameraObj.value("name").toString();
         camera.isMonitor = cameraObj.value("isMonitor").toInt();
         return camera;

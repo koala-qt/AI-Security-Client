@@ -46,6 +46,7 @@ Portrait::Portrait( WidgetI *parent):
     hlay->addWidget(saveBtn_);
     hlay->setAlignment(Qt::AlignRight);
     mainLay->addLayout(hlay);
+    mainLay->setContentsMargins(20,10,20,10);
     setLayout(mainLay);
 
     saveBtn_->setMinimumSize(139,33);

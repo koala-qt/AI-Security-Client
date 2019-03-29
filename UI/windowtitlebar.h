@@ -1,20 +1,20 @@
 #ifndef WINDOWTITLEBAR_H
 #define WINDOWTITLEBAR_H
 
-#include "widgetinterface.h"
+#include <QWidget>
 QT_FORWARD_DECLARE_CLASS(QPushButton)
-class WindowTitleBar : public WidgetI
+class WindowTitleBar : public QWidget
 {
     Q_OBJECT
 public:
-    WindowTitleBar(WidgetI *parent = nullptr);
-    void setUserStyle(int s) override;
-
-protected:
-    bool event(QEvent *event) override;
+    WindowTitleBar(QWidget *parent = nullptr);
+    void setUserStyle(int s);
 
 private:
     QPushButton *closeBtn_{nullptr};
+
+private slots:
+    void slotCloseBtnClicked();
 };
 
 #endif // WINDOWTITLEBAR_H

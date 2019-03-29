@@ -180,7 +180,7 @@ PersonInfo::PersonInfo(WidgetI *parent):
     menu_->addAction(tr("Capture Search"),[this]{
         FaceSearch *faceDialog = new FaceSearch(this);
         faceDialog->setAttribute(Qt::WA_DeleteOnClose);
-        faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+        faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint | Qt::FramelessWindowHint);
         faceDialog->setWindowModality(Qt::ApplicationModal);
         QPalette pal = faceDialog->palette();
         pal.setColor(QPalette::Background,QColor(37,41,52));
@@ -197,7 +197,7 @@ PersonInfo::PersonInfo(WidgetI *parent):
     menu_->addAction(tr("Registration Search"),[this]{
         PortraitSearch *portSearchDialog = new PortraitSearch(this);
         portSearchDialog->setAttribute(Qt::WA_DeleteOnClose);
-        portSearchDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+        portSearchDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint | Qt::FramelessWindowHint);
         portSearchDialog->setWindowModality(Qt::ApplicationModal);
         QPalette pal = portSearchDialog->palette();
         pal.setColor(QPalette::Background,QColor(37,41,52));
@@ -219,7 +219,7 @@ PersonInfo::PersonInfo(WidgetI *parent):
         view->setAutoFillBackground(true);
         view->setUserStyle(userStyle());
         view->setAttribute(Qt::WA_DeleteOnClose);
-        view->setWindowFlags(Qt::Window | Qt::Dialog);
+        view->setWindowFlags(Qt::Window | Qt::Dialog | Qt::FramelessWindowHint);
         view->setWindowModality(Qt::ApplicationModal);
         view->setMinimumSize(1655,924);
         view->setImgageOid(imgListW_->currentItem()->data(Qt::UserRole).value<QImage>(),QString());
@@ -233,7 +233,7 @@ PersonInfo::PersonInfo(WidgetI *parent):
         faceLinkP->setPalette(pal);
         faceLinkP->setAutoFillBackground(true);
         faceLinkP->setAttribute(Qt::WA_DeleteOnClose);
-        faceLinkP->setWindowFlags(Qt::Window | Qt::Dialog);
+        faceLinkP->setWindowFlags(Qt::Window | Qt::Dialog | Qt::FramelessWindowHint);
         faceLinkP->setWindowModality(Qt::ApplicationModal);
         faceLinkP->setFaceLinkOidAndImg("", QPixmap::fromImage(imgListW_->currentItem()->data(Qt::UserRole).value<QImage>()));
         faceLinkP->resize(1200,900);

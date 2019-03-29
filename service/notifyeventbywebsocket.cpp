@@ -9,7 +9,6 @@
 #include <QJsonArray>
 #include <QFile>
 #include "notifyeventbywebsocket.h"
-QFile gLogFile("websocketLog.txt");
 NotifyEventByWebSocket::NotifyEventByWebSocket(QObject *parent):
     NotifyEventI(parent)
 {
@@ -27,7 +26,6 @@ NotifyEventByWebSocket::NotifyEventByWebSocket(QObject *parent):
     websocket_->open(curUrl_);
 
     moveToThread(this);
-    gLogFile.open(QIODevice::WriteOnly);
 }
 
 NotifyEventByWebSocket::~NotifyEventByWebSocket()
@@ -73,9 +71,6 @@ void NotifyEventByWebSocket::onTextMessageReceived(QString message)
     }
     QJsonObject jsObj = jsDoc.object();
     if(jsObj.value("type") != "snap-alarm-type")return;
-
-    gLogFile.write(message.toLatin1() + "\r\n");
-    gLogFile.flush();
 
     jsObj = jsObj.value("data").toObject();
     QString eventType = jsObj.value("eventType").toString();

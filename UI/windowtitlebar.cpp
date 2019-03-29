@@ -4,15 +4,18 @@
 #include <QDebug>
 #include "windowtitlebar.h"
 
-WindowTitleBar::WindowTitleBar(WidgetI *parent)
+WindowTitleBar::WindowTitleBar(QWidget *parent):
+    QWidget(parent)
 {
     closeBtn_ = new QPushButton(tr("×"));
     QHBoxLayout *mainLay = new QHBoxLayout;
     mainLay->addWidget(closeBtn_);
+    mainLay->setAlignment(Qt::AlignRight);
+    mainLay->setContentsMargins(0,0,20,20);
     setLayout(mainLay);
-    hide();
 
-    setUserStyle(userStyle());
+    connect(closeBtn_,SIGNAL(clicked(bool)),this,SLOT(slotCloseBtnClicked()));
+    setUserStyle(0);
 }
 
 void WindowTitleBar::setUserStyle(int s)
@@ -26,13 +29,9 @@ void WindowTitleBar::setUserStyle(int s)
     }
 }
 
-bool WindowTitleBar::event(QEvent *event)
+void WindowTitleBar::slotCloseBtnClicked()
 {
-    if(event->type() == QEvent::Show){
-        qDebug() << parentWidget()->isWindow() << (parentWidget()->windowFlags() & Qt::FramelessWindowHint);
-        if(parentWidget() && parentWidget()->isWindow() && (parentWidget()->windowFlags() & Qt::FramelessWindowHint)){
-            show();
-        }
+    if(parentWidget()){
+        parentWidget()->close();
     }
-    return WidgetI::event(event);
 }
