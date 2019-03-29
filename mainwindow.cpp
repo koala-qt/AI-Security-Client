@@ -82,9 +82,10 @@ MainWindow::MainWindow(WidgetI *parent)
 
         QListWidgetItem *item = new QListWidgetItem;
         item->setText(tr(" ") + m_centerW->widget(i)->objectName());
-        item->setData(Qt::UserRole,QPixmap::fromImage(iconDefaultImage));
-        item->setData(Qt::UserRole + 1,QPixmap::fromImage(iconSelectedImage));
-        item->setIcon(QPixmap::fromImage(iconDefaultImage));
+        QIcon icon;
+        icon.addPixmap(QPixmap::fromImage(iconDefaultImage),QIcon::Normal);
+        icon.addPixmap(QPixmap::fromImage(iconSelectedImage),QIcon::Selected);
+        item->setIcon(icon);
         item->setTextAlignment(Qt::AlignLeft + Qt::AlignVCenter);
         item->setSizeHint(QSize(topListfs.width(item->text()) + 40 + m_topList->iconSize().width(),-1));
         viewW += item->sizeHint().width();
@@ -93,6 +94,10 @@ MainWindow::MainWindow(WidgetI *parent)
     resourceXialaMenu_->setMinimumWidth(m_topList->item(m_topList->count() - 1)->sizeHint().width());
     m_topList->setFixedWidth(viewW + (m_topList->count() + 1) * m_topList->spacing() + 2 * m_topList->frameWidth());
     QAction *ac = new QAction(tr("Devices"),resourceXialaMenu_);
+    QIcon icon;
+    icon.addPixmap(QPixmap("images/ic_device.png"),QIcon::Normal);
+    icon.addPixmap(QPixmap("images/ic_device_selected.png"),QIcon::Active);
+    ac->setIcon(icon);
     ac->setData(m_centerW->count() - 1);
     connect(ac,&QAction::triggered,resourceXialaMenu_,[this,ac,resouPage]{
         m_centerW->setCurrentIndex(ac->data().toInt());
@@ -100,6 +105,10 @@ MainWindow::MainWindow(WidgetI *parent)
     });
     resourceXialaMenu_->addAction(ac);
     ac = new QAction(tr("ID Database"),resourceXialaMenu_);
+    icon.swap(QIcon());
+    icon.addPixmap(QPixmap("images/ic_id.png"),QIcon::Normal);
+    icon.addPixmap(QPixmap("images/ic_id_selected.png"),QIcon::Active);
+    ac->setIcon(icon);
     ac->setData(m_centerW->count() - 1);
     connect(ac,&QAction::triggered,resourceXialaMenu_,[this,ac,resouPage]{
         m_centerW->setCurrentIndex(ac->data().toInt());
@@ -107,6 +116,10 @@ MainWindow::MainWindow(WidgetI *parent)
     });
     resourceXialaMenu_->addAction(ac);
     ac = new QAction(tr("Registration Database"),resourceXialaMenu_);
+    icon.swap(QIcon());
+    icon.addPixmap(QPixmap("images/ic_registered.png"),QIcon::Normal);
+    icon.addPixmap(QPixmap("images/ic_registered_selected.png"),QIcon::Active);
+    ac->setIcon(icon);
     ac->setData(m_centerW->count() - 1);
     connect(ac,&QAction::triggered,resourceXialaMenu_,[this,ac,resouPage]{
         m_centerW->setCurrentIndex(ac->data().toInt());
@@ -129,7 +142,6 @@ MainWindow::MainWindow(WidgetI *parent)
     mainLay->setSpacing(0);
     setLayout(mainLay);
     connect(m_topList,SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(slotItemClicked(QListWidgetItem*)));
-    connect(m_topList,SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),this,SLOT(slotCurentItemChanged(QListWidgetItem*,QListWidgetItem*)));
     m_topList->itemClicked(m_topList->item(0));
     m_topList->setCurrentRow(0);
     m_topList->currentItemChanged(m_topList->item(0),nullptr);
@@ -152,6 +164,8 @@ void MainWindow::setUserStyle(int s)
     f.setWeight(QFont::Bold);
     f.setPixelSize(16);
     m_topList->setFont(f);
+    f.setPixelSize(14);
+    resourceXialaMenu_->setFont(f);
 
     f = appNameL_->font();
     f.setWeight(QFont::Bold);
@@ -188,18 +202,6 @@ void MainWindow::setUserStyle(int s)
                                  "color: white;"
                                  "background-color: rgb(71,65,242);"
                                  "}");
-        resourceXialaMenu_->setStyleSheet("QMenu{"
-                                          "color: rgb(126,140,177);"
-                                          "background-color: rgb(43,49,61);"
-                                          "}"
-                                          "QMenu::item{"
-                                          "height: 60px;"
-                                          "padding-left: 15px;"
-                                          "}"
-                                          "QMenu::item:selected{"
-                                          "color: white;"
-                                          "background-color: rgb(71,65,242);"
-                                          "}");
         qApp->setStyleSheet("QMenu{"
                             "background-color: #2B313D;"
                             "color: rgba(255,255,255,0.75);"
@@ -214,6 +216,18 @@ void MainWindow::setUserStyle(int s)
                             "QMenu::item:disabled:hover{"
                             "background-color: #2B313D;"
                             "}");
+        resourceXialaMenu_->setStyleSheet("QMenu{"
+                                          "color: rgb(126,140,177);"
+                                          "background-color: rgb(43,49,61);"
+                                          "}"
+                                          "QMenu::item{"
+                                          "height: 30px;"
+//                                          "padding-left: 15px;"
+                                          "}"
+                                          "QMenu::item:selected{"
+                                          "color: white;"
+                                          "background-color: rgb(71,65,242);"
+                                          "}");
     }
 }
 
@@ -259,13 +273,5 @@ void MainWindow::slotItemClicked(QListWidgetItem *item)
         resourceXialaMenu_->show();
     }else{
         m_centerW->setCurrentIndex(index);
-    }
-}
-
-void MainWindow::slotCurentItemChanged(QListWidgetItem *cur, QListWidgetItem *pre)
-{
-    cur->setIcon(cur->data(Qt::UserRole + 1).value<QPixmap>());
-    if(pre){
-        pre->setIcon(pre->data(Qt::UserRole).value<QPixmap>());
     }
 }

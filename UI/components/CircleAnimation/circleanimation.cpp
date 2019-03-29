@@ -40,19 +40,20 @@ void CircleAnimation::paintEvent(QPaintEvent *event)
     QPainter p(this);
     p.setRenderHint(QPainter::Antialiasing);
     p.setPen(Qt::NoPen);
-    int radius = std::min(rect().width() - p.pen().width(),rect().height() - p.pen().width());
+    QRect areaRt = rect().adjusted(0,0,-p.pen().width(),-p.pen().width());
+    int radius = std::min(areaRt.width(),areaRt.height());
     QRect rt;
     rt.setSize(QSize(radius,radius));
-    rt.moveCenter(rect().center());
+    rt.moveCenter(areaRt.center());
 
-    QRadialGradient rg(rt.center(),radius >> 1,rt.center());
+    QRadialGradient rg(rt.center(),qreal(radius)/2,rt.center());
     rg.setColorAt(0,Qt::transparent);
     rg.setColorAt(0.8,Qt::transparent);
     QColor c("#292966");
     rg.setColorAt(0.81,c);
     rg.setColorAt(1,c);
     p.setBrush(rg);
-    p.drawEllipse(rt.center(),radius >> 1,radius >> 1);
+    p.drawEllipse(QPointF(rt.center()),qreal(radius) / 2,qreal(radius) / 2);
 
     c.setNamedColor("#4741F2");
     rg.setColorAt(0.81,c);

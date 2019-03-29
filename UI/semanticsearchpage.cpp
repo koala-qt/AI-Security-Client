@@ -106,7 +106,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
             delete label;
             Portrait *detailsW = new Portrait(this);
             detailsW->setAttribute(Qt::WA_DeleteOnClose);
-            detailsW->setWindowFlags(Qt::Dialog);
+            detailsW->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
             detailsW->setWindowModality(Qt::ApplicationModal);
             detailsW->setUserStyle(userStyle());
             detailsW->slotSetData(resData);
@@ -143,7 +143,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
                 }
                 FaceSearch *faceDialog = new FaceSearch(this);
                 faceDialog->setAttribute(Qt::WA_DeleteOnClose);
-                faceDialog->setWindowFlags(Qt::Dialog);
+                faceDialog->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint | Qt::FramelessWindowHint);
                 faceDialog->setWindowModality(Qt::ApplicationModal);
                 QPalette pal = faceDialog->palette();
                 pal.setColor(QPalette::Background,QColor(37,41,52));
@@ -165,7 +165,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     dataMenu_->addAction(tr("Capture Search"),[this]{
         FaceSearch *faceDialog = new FaceSearch(this);
         faceDialog->setAttribute(Qt::WA_DeleteOnClose);
-        faceDialog->setWindowFlags(Qt::Dialog);
+        faceDialog->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint | Qt::FramelessWindowHint);
         faceDialog->setWindowModality(Qt::ApplicationModal);
         QPalette pal = faceDialog->palette();
         pal.setColor(QPalette::Background,QColor(37,41,52));
@@ -181,7 +181,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     dataMenu_->addAction(tr("Registration Search"),[this]{
         PortraitSearch *portSearchDialog = new PortraitSearch(this);
         portSearchDialog->setAttribute(Qt::WA_DeleteOnClose);
-        portSearchDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+        portSearchDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint | Qt::FramelessWindowHint);
         portSearchDialog->setWindowModality(Qt::ApplicationModal);
         QPalette pal = portSearchDialog->palette();
         pal.setColor(QPalette::Background,QColor(37,41,52));
@@ -201,7 +201,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
         faceLinkP->setPalette(pal);
         faceLinkP->setAutoFillBackground(true);
         faceLinkP->setAttribute(Qt::WA_DeleteOnClose);
-        faceLinkP->setWindowFlags(Qt::Dialog);
+        faceLinkP->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint | Qt::FramelessWindowHint);
         faceLinkP->setWindowModality(Qt::ApplicationModal);
         QPixmap pix = QPixmap::fromImage(dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>());
         faceLinkP->setFaceLinkOidAndImg(dataListW_->currentItem()->data(Qt::UserRole + 4).toString(),pix);
@@ -216,7 +216,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
         view->setAutoFillBackground(true);
         view->setUserStyle(userStyle());
         view->setAttribute(Qt::WA_DeleteOnClose);
-        view->setWindowFlags(Qt::Dialog);
+        view->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint | Qt::FramelessWindowHint);
         view->setWindowModality(Qt::ApplicationModal);
         view->setMinimumSize(1655,924);
         view->setImgageOid(dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>(),

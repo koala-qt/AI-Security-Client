@@ -81,7 +81,6 @@ MultipleSearch::MultipleSearch( WidgetI *parent):
             delete label;
             SceneImageDialog dialog;
             dialog.setUserStyle(userStyle());
-            dialog.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
             dialog.setSceneInfo(sinfo);
             connect(&dialog,&SceneImageDialog::sigImages,&dialog,[this](QVector<QImage> images){
                 if(!images.count()){
@@ -89,7 +88,7 @@ MultipleSearch::MultipleSearch( WidgetI *parent):
                 }
                 FaceSearch *faceDialog = new FaceSearch(this);
                 faceDialog->setAttribute(Qt::WA_DeleteOnClose);
-                faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+                faceDialog->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint | Qt::FramelessWindowHint);
                 faceDialog->setWindowModality(Qt::ApplicationModal);
                 QPalette pal = faceDialog->palette();
                 pal.setColor(QPalette::Background,QColor(37,41,52));

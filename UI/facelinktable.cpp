@@ -175,7 +175,7 @@ FacelinkTable::FacelinkTable( WidgetI *parent):
         faceLinkP->setAutoFillBackground(true);
         faceLinkP->setUserStyle(userStyle());
         faceLinkP->setAttribute(Qt::WA_DeleteOnClose);
-        faceLinkP->setWindowFlags(Qt::Window | Qt::Dialog);
+        faceLinkP->setWindowFlags(Qt::Window | Qt::Dialog | Qt::FramelessWindowHint);
         faceLinkP->setWindowModality(Qt::ApplicationModal);
         QPixmap pix = QPixmap::fromImage(dataListW_->currentItem()->data(Qt::UserRole + 1).value<QImage>());
         faceLinkP->setFaceLinkOidAndImg(dataListW_->currentItem()->data(Qt::UserRole + 4).toString(),pix);

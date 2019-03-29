@@ -33,7 +33,6 @@ private:
 
 private slots:
     void slotItemClicked(QListWidgetItem*);
-    void slotCurentItemChanged(QListWidgetItem*,QListWidgetItem*);
 };
 
 #endif // MAINWINDOW_H
