@@ -282,6 +282,15 @@ EventSearch::EventSearch( WidgetI *parent):
                 });
                 connect(serviceI,&RestServiceI::sigError,typeMenu,[typeMenu,this](QString str){
                     qDebug() << str;
+                    QAction *act = new QAction(tr("All"));
+                    act->setData("");
+                    connect(act,&QAction::triggered,act,[this,act,typeMenu]{
+                        waringTypeBtn_->setProperty("personType",typeMenu->property("personType").toString());
+                        waringTypeBtn_->setProperty("groupNo","");
+                        waringTypeBtn_->setProperty("alarm type","");
+                        waringTypeBtn_->setText(typeMenu->title());
+                    });
+                    typeMenu->addAction(act);
                 });
                 serviceI->getPersonGoupInfos(typeMenu->property("groupNo").toString());
             });

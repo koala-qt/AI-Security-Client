@@ -29,13 +29,13 @@ DLL::CloudHttpDao::CloudHttpDao()
 QString DLL::CloudHttpDao::getCameraInfo(QVector<RestServiceI::CameraInfo> *cameras)
 {
     QString urlStr;
-    if (host_.contains("100.10"))
+    if (host_.contains("100.64"))
     {
-        urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-camera-map"); // from mongo
+        urlStr = host_ + "/api/v2/cmcc/device/device-scene/find-camera-map"; // from mysql
     }
     else
     {
-        urlStr = host_ + "/api/v2/cmcc/device/device-scene/find-camera-map"; // from mysql
+        urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-camera-map"); // from mongo
     }
     int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),5);
     if(resCode != CURLE_OK){
@@ -151,7 +151,7 @@ QString DLL::CloudHttpDao::faceLink(RestServiceI::FaceLinkArgs &args)
                       {"file",QString::fromLatin1(imgArray.toBase64())}};
     QJsonDocument jsDoc(jsObj);
     QByteArray argsJsonArray = jsDoc.toJson();
-    int resCode = send(DLL::POST,urlStr.toStdString(),argsJsonArray.toStdString(),60);
+    int resCode = send(DLL::POST,urlStr.toStdString(),argsJsonArray.toStdString(),180);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -191,7 +191,7 @@ QString DLL::CloudHttpDao::faceLink_(RestServiceI::FaceLinkArgs &args, QString *
                       {"base64",QString::fromLatin1(imgArray.toBase64(QByteArray::Base64UrlEncoding))}};
     QJsonDocument jsDoc(jsObj);
     QByteArray argsJsonArray = jsDoc.toJson();
-    int resCode = send(DLL::POST,urlStr.toStdString(),argsJsonArray.toStdString(),60);
+    int resCode = send(DLL::POST,urlStr.toStdString(),argsJsonArray.toStdString(),180);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -286,7 +286,7 @@ QString DLL::CloudHttpDao::tracking(RestServiceI::FaceTrackingArgs &args, QVecto
             .arg(QString(imgArray.toBase64(QByteArray::Base64UrlEncoding)),args.oid)
             .arg(args.thresh)
             .arg(args.startT.toString("yyyy-MM-dd HH:mm:ss"),args.endT.toString("yyyy-MM-dd HH:mm:ss"));
-    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),60);
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),180);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -619,7 +619,7 @@ QString DLL::CloudHttpDao::captureSearch(RestServiceI::CaptureSearchArgs &args, 
             .arg(args.pageCount);
     qDebug() << "all" << urlStr;
     qDebug() << "all" << postData;
-    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),60);
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),180);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -669,7 +669,7 @@ QString DLL::CloudHttpDao::semanticSearch(RestServiceI::SemanticSearchArgs &args
             .arg(args.pageSize);
     qDebug() << "semantic" << urlStr;
     qDebug() << "semantic" << postData;
-    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),60);
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),180);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -725,7 +725,7 @@ QString DLL::CloudHttpDao::searchByImage(RestServiceI::SearchUseImageArgs &args,
             .arg(args.startT.toString("yyyy-MM-dd HH:mm:ss"))
             .arg(args.endT.toString("yyyy-MM-dd HH:mm:ss"));
     qDebug() << urlStr;
-    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),60);
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),180);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -848,7 +848,7 @@ QString DLL::CloudHttpDao::multipleSearch(RestServiceI::MultipleSearchArgs &args
             .arg(imgsBase64StrList.join(','))
             .arg(args.cameraId);
 #endif
-    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),60);
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),180);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -886,7 +886,7 @@ QString DLL::CloudHttpDao::getFaceLinkDataColl(RestServiceI::FaceLinkDataCollArg
             .arg(args.pageNo)
             .arg(args.pageSize);
     qDebug() << "facelink" << urlStr;
-    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),60);
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),180);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -992,7 +992,7 @@ QString DLL::CloudHttpDao::searchAvailableAttribute(RestServiceI::SearchAttrsArg
     QString urlStr = host_ + QObject::tr("api/v2/external/monitor-detail/query/face-attributes?mode=%1&faceAttrs=%2&startTime=%3&finishTime=%4&cameraId=%5")
             .arg(args.model,args.faceAttrs.join(','),args.startT.toString("yyyy-MM-dd%20HH:mm:ss"),args.endT.toString("yyyy-MM-dd%20HH:mm:ss"),args.cameraId);
     qDebug() << "search availabel attribute" << urlStr;
-    int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),60);
+    int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),180);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -1159,7 +1159,7 @@ QString DLL::CloudHttpDao::portraitLibCompSearch(RestServiceI::PortraitLibCompAr
     {
         postData.append(QString("&personName=%1").arg(args.strPersonName));
     }
-    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),60);
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),180);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }
@@ -1283,7 +1283,7 @@ QString DLL::CloudHttpDao::mnFaceAnalysisSearch(RestServiceI::MNFaceAnalysisArgs
         postData.append(QString("&personName=%1").arg(args.strPersonName));
     }
 #endif
-    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),60);
+    int resCode = send(DLL::POST,urlStr.toStdString(),postData.toStdString(),180);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
     }

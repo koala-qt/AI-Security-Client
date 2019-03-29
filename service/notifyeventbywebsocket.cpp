@@ -69,10 +69,69 @@ void NotifyEventByWebSocket::onTextMessageReceived(QString message)
         qDebug() << "No search results";
         return;
     }
+    //qDebug() << "onTextMessageReceived:" << m_eventType << ":" << message;
+
     QJsonObject jsObj = jsDoc.object();
     if(jsObj.value("type") != "snap-alarm-type")return;
     jsObj = jsObj.value("data").toObject();
     QString eventType = jsObj.value("eventType").toString();
+    QString personType = jsObj.value("personType").toString();
+
+    bool bNoFilter = true;
+    switch (m_eventType)
+    {
+    case ALL:
+        break;
+    case Intrusion:
+    {
+        if (eventType != "smsr_alarm_intruder")
+        {
+            bNoFilter = false;
+        }
+    }
+        break;
+    case Trailing:
+    {
+        if (eventType != "smsr_alarm_abdoor")
+        {
+            bNoFilter = false;
+        }
+    }
+        break;
+    case Climbing:
+    {
+        if (eventType != "smsr_alarm_climb")
+        {
+            bNoFilter = false;
+        }
+    }
+        break;
+    case Gathering:
+    {
+        if (eventType != "smsr_alarm_gather")
+        {
+            bNoFilter = false;
+        }
+    }
+        break;
+    case Blacklist:
+    {
+        if ((eventType != "smsr_alarm_face") || (personType != "100010001008"))
+        {
+            bNoFilter = false;
+        }
+    }
+        break;
+    case VIP:
+    {
+        if ((eventType != "smsr_alarm_face") || (personType != "100010001007"))
+        {
+            bNoFilter = false;
+        }
+    }
+        break;
+    }
+    if (!bNoFilter) return;
     if(eventType == "smsr_alarm_intruder"){
         IntruderEventData evData;
         evData.bodyId = jsObj.value("bodyId").toString();
@@ -229,4 +288,8 @@ void NotifyEventByWebSocket::onSslErrors(const QList<QSslError> &errors)
 void NotifyEventByWebSocket::slotSocketError(QAbstractSocket::SocketError e)
 {
     qDebug() << metaObject()->className() << e;
+    websocket_->close();
+    if(!timer_->isActive()){
+        timer_->start(5000);
+    }
 }

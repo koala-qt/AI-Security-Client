@@ -19,6 +19,11 @@ QT_FORWARD_DECLARE_CLASS(QStandardItemModel)
 
 class RealtimeMonitoring : public WidgetI
 {
+    enum DbEventType
+    {
+        BalckList = 5,
+        VIP = 6
+    };
     Q_OBJECT
 public:
     RealtimeMonitoring(WidgetI *parent = nullptr);
@@ -27,6 +32,7 @@ public:
 
 signals:
     void sigSwitchBtnClicked();
+    void sigEventyType(int);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -50,6 +56,7 @@ private:
     QMenu *faceItemMenu_{nullptr},*eventItemMenu_{nullptr};
     NotifyServiceI *notifyServiceI_{nullptr};
     QMap<QString,QString> curCameraMap_;
+    int m_curEventIndex = 0;
 
     void updateCamera();
     void getCameraGroup(QTreeWidgetItem*, QString);

@@ -582,7 +582,28 @@ signals:
 class NotifyEventI : public QThread
 {
     Q_OBJECT
+
+public slots:
+    void slotEventyType(int eventType)
+    {
+        m_eventType = eventType;
+    }
+
+protected:
+    int m_eventType = 0;
+
 public:
+    enum NotifyEventType
+    {
+        ALL,
+        Intrusion,
+        Trailing,
+        Climbing,
+        Gathering,
+        Blacklist,
+        VIP
+    };
+
     struct IntruderEventData
     {
         qreal lat;
@@ -699,5 +720,6 @@ signals:
     void sigVideoFacePicture(QString,QImage);
     void sigGatherEventData(NotifyEventI::GatherEventData);
     void sigClimbEventData(NotifyEventI::ClimbEventData);
+    void sigEventyType(int);
 };
 #endif // SERVICEI_H
