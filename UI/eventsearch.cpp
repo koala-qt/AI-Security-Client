@@ -601,6 +601,7 @@ void EventSearch::slotSearchPageAlarmHistory(int page)
     label->show(500);
     m_searchBtn->setEnabled(false);
     m_pageindicator->setEnabled(false);
+    m_tableW->model()->removeRows(0,m_tableW->rowCount());
     noDataTipW_->hide();
 }
 
@@ -676,7 +677,6 @@ void EventSearch::slotAlarmHistory(RestServiceI::EventSearchReturn data)
         m_pageindicator->setPageInfo(data.totalPage,data.total);
         needUpdatePageInfo_ = false;
     }
-    m_tableW->model()->removeRows(0,m_tableW->rowCount());
     for(RestServiceI::EventSearchItem &itemData : data.data){
         m_tableW->insertRow(m_tableW->rowCount());
 
