@@ -145,7 +145,7 @@ MainWindow::MainWindow(WidgetI *parent)
     m_topList->itemClicked(m_topList->item(0));
     m_topList->setCurrentRow(0);
     m_topList->currentItemChanged(m_topList->item(0),nullptr);
-    appNameL_->hide();
+    //appNameL_->hide();
 }
 
 MainWindow::~MainWindow()
@@ -169,9 +169,10 @@ void MainWindow::setUserStyle(int s)
 
     f = appNameL_->font();
     f.setWeight(QFont::Bold);
-    f.setPixelSize(14);
+    f.setPixelSize(16);
     appNameL_->setFont(f);
     if(s == 0){
+        appNameL_->setStyleSheet("color:white;");
         pal = palette();
         pal.setColor(QPalette::Background,QColor(37,41,52));
         setPalette(pal);

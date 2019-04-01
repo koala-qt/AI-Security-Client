@@ -32,6 +32,7 @@ private:
     typedef struct item_
     {
         QString name;
+        QString iconName;
         int value;
         QVector<item_> childrens;
     }itemData;

@@ -372,7 +372,7 @@ void PortraitSearch::init()
     m_tableW->setColumnCount(6);
     m_tableW->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     m_tableW->horizontalHeader()->setSectionResizeMode(0,QHeaderView::Fixed);
-    m_tableW->setHorizontalHeaderLabels(QStringList() << tr("Photo") << tr("Name") << tr("ID") << tr("Similarity") << tr("Type") << tr("Type")); // Big type and small type.  << tr("Type"))
+    m_tableW->setHorizontalHeaderLabels(QStringList() << tr("Photo") << tr("Name") << tr("ID") << tr("Similarity") << tr("Type") << tr("Sub Type")); // Big type and small type.  << tr("Type"))
     m_tableW->setColumnWidth(ImageCol, 180);
     m_tableW->horizontalHeader()->setSortIndicatorShown(true);
     m_tableW->horizontalHeader()->setMinimumHeight(60);
