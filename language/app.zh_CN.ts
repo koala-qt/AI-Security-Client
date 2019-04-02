@@ -28,7 +28,6 @@
     <name>CombinationPage</name>
     <message>
         <location filename="../UI/combinationpage.cpp" line="31"/>
-        <location filename="../UI/combinationpage.cpp" line="262"/>
         <source>Body</source>
         <translation type="unfinished">人体检索</translation>
     </message>
@@ -1466,6 +1465,11 @@ Please adjust the conditions to re-query</source>
         <source>Gender</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../UI/combinationpage.cpp" line="262"/>
+        <source>Body</source>
+        <translation type="unfinished">人体</translation>
+    </message>
 </context>
 <context>
     <name>RealMonitorSetting</name>
@@ -2123,12 +2127,12 @@ GetEnabledAttr:%2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/targetsearch.cpp" line="64"/>
+        <location filename="../UI/targetsearch.cpp" line="65"/>
         <source>Search By Upload</source>
         <translation type="unfinished">上传图片检索</translation>
     </message>
     <message>
-        <location filename="../UI/targetsearch.cpp" line="71"/>
+        <location filename="../UI/targetsearch.cpp" line="72"/>
         <source>Imported Photo Database</source>
         <translation type="unfinished">以图搜图</translation>
     </message>

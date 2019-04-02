@@ -86,7 +86,6 @@
     <name>CombinationPage</name>
     <message>
         <location filename="../UI/combinationpage.cpp" line="31"/>
-        <location filename="../UI/combinationpage.cpp" line="262"/>
         <source>Body</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1655,6 +1654,11 @@
         <source>Gender</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../UI/combinationpage.cpp" line="262"/>
+        <source>Body</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RealMonitorSetting</name>
@@ -2398,12 +2402,12 @@ GetEnabledAttr:%2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/targetsearch.cpp" line="64"/>
+        <location filename="../UI/targetsearch.cpp" line="65"/>
         <source>Search By Upload</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/targetsearch.cpp" line="71"/>
+        <location filename="../UI/targetsearch.cpp" line="72"/>
         <source>Imported Photo Database</source>
         <translation type="unfinished"></translation>
     </message>
