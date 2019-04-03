@@ -338,12 +338,28 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/eventsearch.cpp" line="256"/>
+        <location filename="../UI/eventsearch.cpp" line="242"/>
+        <source>smsr_alarm_face</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../UI/eventsearch.cpp" line="242"/>
+        <source>Staff</source>
+        <translation type="unfinished">职员</translation>
+    </message>
+    <message>
+        <location filename="../UI/eventsearch.cpp" line="242"/>
+        <source>100010001005</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../UI/eventsearch.cpp" line="257"/>
+        <location filename="../UI/eventsearch.cpp" line="285"/>
         <source>All</source>
         <translation type="unfinished">全部</translation>
     </message>
     <message>
-        <location filename="../UI/eventsearch.cpp" line="654"/>
+        <location filename="../UI/eventsearch.cpp" line="664"/>
         <source>不限</source>
         <translation type="unfinished"></translation>
     </message>
@@ -594,42 +610,42 @@
 <context>
     <name>GlViewMapWidget</name>
     <message>
-        <location filename="../UI/glviewmapwidget.cpp" line="175"/>
+        <location filename="../UI/glviewmapwidget.cpp" line="186"/>
         <source>Location Access</source>
-        <translation type="unfinished">地点</translation>
+        <translation type="unfinished">场所接入</translation>
     </message>
     <message>
-        <location filename="../UI/glviewmapwidget.cpp" line="179"/>
+        <location filename="../UI/glviewmapwidget.cpp" line="190"/>
         <source>100</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/glviewmapwidget.cpp" line="182"/>
+        <location filename="../UI/glviewmapwidget.cpp" line="193"/>
         <source>Camera Access</source>
-        <translation type="unfinished">摄像头</translation>
+        <translation type="unfinished">摄像头接入</translation>
     </message>
     <message>
-        <location filename="../UI/glviewmapwidget.cpp" line="186"/>
+        <location filename="../UI/glviewmapwidget.cpp" line="197"/>
         <source>1200</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/glviewmapwidget.cpp" line="189"/>
+        <location filename="../UI/glviewmapwidget.cpp" line="200"/>
         <source>Total ID Numbers</source>
-        <translation type="unfinished">总ID号</translation>
+        <translation type="unfinished">ID注册总数</translation>
     </message>
     <message>
-        <location filename="../UI/glviewmapwidget.cpp" line="193"/>
+        <location filename="../UI/glviewmapwidget.cpp" line="204"/>
         <source>710</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/glviewmapwidget.cpp" line="196"/>
+        <location filename="../UI/glviewmapwidget.cpp" line="207"/>
         <source>Data Storage</source>
-        <translation type="unfinished">储存数据</translation>
+        <translation type="unfinished">储存数据量</translation>
     </message>
     <message>
-        <location filename="../UI/glviewmapwidget.cpp" line="200"/>
+        <location filename="../UI/glviewmapwidget.cpp" line="211"/>
         <source>10GB</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1266,7 +1282,6 @@ Please adjust the conditions to re-query</source>
         <location filename="../dao/cloudhttpdao.cpp" line="1339"/>
         <location filename="../dao/cpphttpdao.cpp" line="34"/>
         <location filename="../dao/cpphttpdao.cpp" line="82"/>
-        <location filename="../service/notifyeventbywebsocket.cpp" line="69"/>
         <source>No search results</source>
         <translation type="unfinished">没有搜索结果</translation>
     </message>
@@ -1461,14 +1476,83 @@ Please adjust the conditions to re-query</source>
         <translation type="unfinished">实时监控</translation>
     </message>
     <message>
-        <location filename="../UI/customwidget.cpp" line="10"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="284"/>
         <source>Gender</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">性别</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="298"/>
+        <source>Hair</source>
+        <translation type="unfinished">毛发</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="319"/>
+        <source>Beard</source>
+        <translation type="unfinished">胡子</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="335"/>
+        <source>Accessories</source>
+        <translation type="unfinished">装饰</translation>
+    </message>
+    <message>
+        <source>Face</source>
+        <translation type="obsolete">抓拍人脸</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="378"/>
+        <source>Generation</source>
+        <translation type="unfinished">年龄段</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="391"/>
+        <source>Expression</source>
+        <translation type="unfinished">表情</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="404"/>
+        <source>Other</source>
+        <translation type="unfinished">其他</translation>
     </message>
     <message>
         <location filename="../UI/combinationpage.cpp" line="262"/>
         <source>Body</source>
         <translation type="unfinished">人体</translation>
+    </message>
+    <message>
+        <location filename="../UI/glviewmapwidget.cpp" line="118"/>
+        <source>Intrusion</source>
+        <translation type="unfinished">入侵事件</translation>
+    </message>
+    <message>
+        <location filename="../UI/glviewmapwidget.cpp" line="129"/>
+        <source>Trailing</source>
+        <translation type="unfinished">尾随事件</translation>
+    </message>
+    <message>
+        <location filename="../UI/glviewmapwidget.cpp" line="141"/>
+        <source>BlackList</source>
+        <translation type="unfinished">黑名单</translation>
+    </message>
+    <message>
+        <location filename="../UI/glviewmapwidget.cpp" line="145"/>
+        <source>VIP</source>
+        <translation type="unfinished">白名单</translation>
+    </message>
+    <message>
+        <location filename="../UI/glviewmapwidget.cpp" line="149"/>
+        <source>Staff</source>
+        <translation type="unfinished">职员</translation>
+    </message>
+    <message>
+        <location filename="../UI/glviewmapwidget.cpp" line="160"/>
+        <source>Climbing</source>
+        <translation type="unfinished">攀爬事件</translation>
+    </message>
+    <message>
+        <location filename="../UI/glviewmapwidget.cpp" line="170"/>
+        <source>Gathering</source>
+        <translation type="unfinished">聚集事件</translation>
     </message>
 </context>
 <context>
@@ -1587,66 +1671,66 @@ Please adjust the conditions to re-query</source>
         <translation type="unfinished">切换预览</translation>
     </message>
     <message>
-        <location filename="../UI/realtimemonitoring.cpp" line="105"/>
+        <location filename="../UI/realtimemonitoring.cpp" line="107"/>
         <source>Search using an image</source>
         <translation type="unfinished">以图搜图</translation>
     </message>
     <message>
-        <location filename="../UI/realtimemonitoring.cpp" line="121"/>
-        <location filename="../UI/realtimemonitoring.cpp" line="154"/>
+        <location filename="../UI/realtimemonitoring.cpp" line="123"/>
+        <location filename="../UI/realtimemonitoring.cpp" line="156"/>
         <source>Scene analysis</source>
         <translation type="unfinished">场景图分析</translation>
     </message>
     <message>
-        <location filename="../UI/realtimemonitoring.cpp" line="228"/>
+        <location filename="../UI/realtimemonitoring.cpp" line="230"/>
         <source>Search</source>
         <translation type="unfinished">查询</translation>
     </message>
     <message>
-        <location filename="../UI/realtimemonitoring.cpp" line="233"/>
+        <location filename="../UI/realtimemonitoring.cpp" line="235"/>
         <source>All</source>
         <translation type="unfinished">全部</translation>
     </message>
     <message>
-        <location filename="../UI/realtimemonitoring.cpp" line="234"/>
+        <location filename="../UI/realtimemonitoring.cpp" line="236"/>
         <source>Intrusion</source>
-        <translation type="unfinished">入侵报警</translation>
+        <translation type="unfinished">入侵事件</translation>
     </message>
     <message>
-        <location filename="../UI/realtimemonitoring.cpp" line="235"/>
+        <location filename="../UI/realtimemonitoring.cpp" line="237"/>
         <source>Trailing</source>
         <translation type="unfinished">尾随事件</translation>
     </message>
     <message>
-        <location filename="../UI/realtimemonitoring.cpp" line="236"/>
+        <location filename="../UI/realtimemonitoring.cpp" line="238"/>
         <source>Climbing</source>
         <translation type="unfinished">攀爬事件</translation>
     </message>
     <message>
-        <location filename="../UI/realtimemonitoring.cpp" line="237"/>
+        <location filename="../UI/realtimemonitoring.cpp" line="239"/>
         <source>Gathering</source>
         <translation type="unfinished">聚集事件</translation>
     </message>
     <message>
-        <location filename="../UI/realtimemonitoring.cpp" line="238"/>
+        <location filename="../UI/realtimemonitoring.cpp" line="240"/>
         <source>Blacklist</source>
         <translation type="unfinished">黑名单</translation>
     </message>
     <message>
-        <location filename="../UI/realtimemonitoring.cpp" line="239"/>
+        <location filename="../UI/realtimemonitoring.cpp" line="241"/>
         <source>VIP</source>
         <translation type="unfinished">白名单</translation>
     </message>
     <message>
-        <location filename="../UI/realtimemonitoring.cpp" line="567"/>
-        <location filename="../UI/realtimemonitoring.cpp" line="857"/>
+        <location filename="../UI/realtimemonitoring.cpp" line="571"/>
+        <location filename="../UI/realtimemonitoring.cpp" line="893"/>
         <source>position:%1
 cameraId:%2
 %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/realtimemonitoring.cpp" line="851"/>
+        <location filename="../UI/realtimemonitoring.cpp" line="887"/>
         <source>Cameras</source>
         <translation type="unfinished">摄像机</translation>
     </message>
@@ -1656,7 +1740,7 @@ cameraId:%2
     <message>
         <location filename="../UI/reportpage.cpp" line="15"/>
         <source>Report</source>
-        <translation type="unfinished">报表</translation>
+        <translation type="unfinished">报告</translation>
     </message>
     <message>
         <location filename="../UI/reportpage.cpp" line="16"/>
@@ -1674,7 +1758,7 @@ cameraId:%2
     <message>
         <location filename="../UI/resourcemanagepage.cpp" line="15"/>
         <source>Resource</source>
-        <translation type="unfinished">资源</translation>
+        <translation type="unfinished">资源管理</translation>
     </message>
     <message>
         <location filename="../UI/resourcemanagepage.cpp" line="16"/>
@@ -1781,335 +1865,340 @@ cameraId:%2
 <context>
     <name>SemanticSearchPage</name>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="39"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="41"/>
         <source>Surveillance Database</source>
         <translation type="unfinished">抓拍检索</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="40"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="42"/>
         <source>Source</source>
         <translation type="unfinished">数据源</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="42"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="44"/>
         <source>    Position</source>
         <translation type="unfinished">地点</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="44"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="46"/>
         <source>Starting Time</source>
         <translation type="unfinished">开始时间</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="46"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="48"/>
         <source>    Ending Time</source>
         <translation type="unfinished">结束时间</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="48"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="50"/>
         <source>Search</source>
         <translation type="unfinished">查询</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="52"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="54"/>
         <source>Attributes Reset</source>
         <translation type="unfinished">查询</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="91"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="111"/>
         <source>Profile</source>
         <translation type="unfinished">人物画像</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="121"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="141"/>
         <source>Scene Analysis</source>
         <translation type="unfinished">场景分析</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="165"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="185"/>
         <source>Capture Search</source>
         <translation type="unfinished">抓拍检索</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="181"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="201"/>
         <source>Registration Search</source>
         <translation type="unfinished">人像库检索</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="197"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="217"/>
         <source>Facelink</source>
         <translation type="unfinished">人物关系</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="211"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="231"/>
         <source>Trajectory</source>
         <translation type="unfinished">轨迹追踪</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="226"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="246"/>
         <source>Register</source>
         <translation type="unfinished">人像标记</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="233"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="253"/>
         <source>Successed</source>
         <translation type="unfinished">成功</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="237"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="257"/>
         <source>Save Image</source>
         <translation type="unfinished">保存图片</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="239"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="259"/>
         <source>Save face image</source>
         <translation type="unfinished">保存人脸图像</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="239"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="259"/>
         <source>Images (*.png *.jpg)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="264"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="302"/>
+        <source>Black Hair</source>
+        <translation type="unfinished">黑头发</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="303"/>
+        <source>Blond Hair</source>
+        <translation type="unfinished">金色头发</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="304"/>
+        <source>Brown Hair</source>
+        <translation type="unfinished">棕色头发</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="305"/>
+        <source>Gray Hair</source>
+        <translation type="unfinished">灰白发</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="306"/>
+        <source>Straight Hair</source>
+        <translation type="unfinished">直发</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="307"/>
+        <source>Wavy Hair</source>
+        <translation type="unfinished">卷发</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="309"/>
+        <source>Receding Hairline</source>
+        <translation type="unfinished">发际线后退</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="324"/>
+        <source>No Beard</source>
+        <translation type="unfinished">没有胡子</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="338"/>
+        <source>Wearing Earrings</source>
+        <translation type="unfinished">戴耳环</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="339"/>
+        <source>Wearing Hat</source>
+        <translation type="unfinished">戴着帽子</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="340"/>
+        <source>Wearing Lipstick</source>
+        <translation type="unfinished">涂了口红</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="341"/>
+        <source>Heavy Makeup</source>
+        <translation type="unfinished">浓妆</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="352"/>
+        <source>Face</source>
+        <translation type="unfinished">脸部</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="355"/>
+        <source>Bags Under Eyes</source>
+        <translation type="unfinished">眼袋</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="356"/>
+        <source>Arched Eyebrows</source>
+        <translation type="unfinished">拱形的眉毛</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="357"/>
+        <source>Mouth Slightly Open</source>
+        <translation type="unfinished">大嘴</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="358"/>
+        <source>Bushy Eyebrows</source>
+        <translation type="unfinished">浓密的眉毛</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="359"/>
+        <source>Narrow Eyes</source>
+        <translation type="unfinished">小眼睛</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="360"/>
+        <source>Pointy Nose</source>
+        <translation type="unfinished">尖鼻子</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="361"/>
+        <source>Rosy Cheeks</source>
+        <translation type="unfinished">红扑扑的脸</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="362"/>
+        <source>Big Lips</source>
+        <translation type="unfinished">厚嘴唇</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="363"/>
+        <source>Big Nose</source>
+        <translation type="unfinished">大鼻子</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="364"/>
+        <source>Oval Face</source>
+        <translation type="unfinished">鹅蛋脸</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="365"/>
+        <source>High Cheekbones</source>
+        <translation type="unfinished">高颧骨</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="367"/>
+        <source>Double Chin</source>
+        <translation type="unfinished">双下巴</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="368"/>
+        <source>Pale Skin</source>
+        <translation type="unfinished">白色皮肤</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="407"/>
+        <source>Obstruction</source>
+        <translation type="unfinished">遮挡</translation>
+    </message>
+    <message>
+        <location filename="../UI/semanticsearchpage.cpp" line="422"/>
         <source>Face Attributes</source>
         <translation type="unfinished">人脸属性</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="266"/>
-        <source>5_o_Clock_Shadow </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="266"/>
-        <source>Arched_Eyebrows</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="267"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="408"/>
         <source>Attractive</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">有吸引力</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="267"/>
-        <source>Bags_Under_Eyes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="268"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="308"/>
         <source>Bald</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">秃</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="268"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="301"/>
         <source>Bangs</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">前刘海</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="269"/>
-        <source>Big_Lips</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="269"/>
-        <source>Big_Nose</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="270"/>
-        <source>Black_Hair</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="270"/>
-        <source>Blond_Hair</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="271"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="409"/>
         <source>Blurry</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">模糊</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="271"/>
-        <source>Brown_Hair</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="272"/>
-        <source>Bushy_Eyebrows</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="272"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="366"/>
         <source>Chubby</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">丰满的</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="273"/>
-        <source>Double_Chin</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="273"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="342"/>
         <source>Eyeglasses</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">戴眼镜</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="274"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="322"/>
         <source>Goatee</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">山羊胡</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="274"/>
-        <source>Gray_Hair</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="275"/>
-        <source>Heavy_Makeup</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="275"/>
-        <source>High_Cheekbones</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="276"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="287"/>
         <source>Male</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">男性</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="276"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="288"/>
         <source>Female</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">女性</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="277"/>
-        <source>Mouth_Slightly_Open</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="278"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="323"/>
         <source>Mustache</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">有胡子</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="278"/>
-        <source>Narrow_Eyes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="279"/>
-        <source>No_Beard</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="279"/>
-        <source>Oval_Face</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="280"/>
-        <source>Pale_Skin</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="280"/>
-        <source>Pointy_Nose</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="281"/>
-        <source>Receding_Hairline</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="281"/>
-        <source>Rosy_Cheeks</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="282"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="325"/>
         <source>Sideburns</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">两鬓胡须</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="282"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="394"/>
         <source>Smiling</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">微笑</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="283"/>
-        <source>Straight_Hair</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="283"/>
-        <source>Wavy_Hair</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="284"/>
-        <source>Wearing_Earrings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="284"/>
-        <source>Wearing_Hat</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="285"/>
-        <source>Wearing_Lipstick</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="285"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="381"/>
         <source>Young</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">青年</translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="291"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="469"/>
         <source>Attributes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="781"/>
-        <location filename="../UI/semanticsearchpage.cpp" line="898"/>
-        <location filename="../UI/semanticsearchpage.cpp" line="1137"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="966"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="1089"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="1337"/>
         <source>Data:%2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="783"/>
-        <location filename="../UI/semanticsearchpage.cpp" line="900"/>
-        <location filename="../UI/semanticsearchpage.cpp" line="1060"/>
-        <location filename="../UI/semanticsearchpage.cpp" line="1139"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="968"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="1091"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="1259"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="1339"/>
         <source>Data:%1
 GetEnabledAttr:%2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="808"/>
-        <location filename="../UI/semanticsearchpage.cpp" line="925"/>
-        <location filename="../UI/semanticsearchpage.cpp" line="1164"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="994"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="1117"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="1365"/>
         <source>GetEnabledAttr:%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="1025"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="1222"/>
         <source>Data:%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="1058"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="1257"/>
         <source>GetEnabledAttr:%2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/semanticsearchpage.cpp" line="1252"/>
+        <location filename="../UI/semanticsearchpage.cpp" line="1458"/>
         <source>Unlimited</source>
         <translation type="unfinished">全部</translation>
     </message>

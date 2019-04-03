@@ -90,7 +90,9 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
     vboxLay->addWidget(eventList_);
     eventBackW_->setLayout(vboxLay);
     QVBoxLayout *vlay = new QVBoxLayout;
+#if 0
     vlay->addWidget(switchToMap_,36);
+#endif
     vlay->addWidget(eventBackW_,894);
     vlay->setMargin(0);
     vlay->setSpacing(10);
@@ -243,6 +245,8 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
     connect(eventCombox_,SIGNAL(currentIndexChanged(int)),this,SLOT(slotEventComboxIndexChanged(int)));
     notifyServiceI_ = reinterpret_cast<NotifyServiceI*>(qApp->property("NotifyServiceI").toULongLong());
     connect(notifyServiceI_,SIGNAL(sigFaceSnap(NotifyPersonI::FaceSnapEventData)),this,SLOT(slotAddFaceitem(NotifyPersonI::FaceSnapEventData)));
+    connect(this, SIGNAL(sigEventyType(int)), notifyServiceI_, SIGNAL(sigEventyType(int)));
+
     connect(m_treeW,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),this,SLOT(slotTreeItemDoubleClicked(QTreeWidgetItem*,int)));
     connect(switchToMap_,SIGNAL(clicked(bool)),this,SIGNAL(sigSwitchBtnClicked()));
     m_settingBtn->hide();
@@ -597,6 +601,8 @@ QString RealtimeMonitoring::findCameraNameById(QString &id)
 
 void RealtimeMonitoring::slotEventComboxIndexChanged(int index)
 {
+    m_curEventIndex = index;
+    emit sigEventyType(m_curEventIndex);
     disconnect(notifyServiceI_,SIGNAL(sigABDoorEventData(NotifyEventI::ABDoorEventData)),this,SLOT(slotOnAbDoorEvent(NotifyEventI::ABDoorEventData)));
     disconnect(notifyServiceI_,SIGNAL(sigIntruderEvent(NotifyEventI::IntruderEventData)),this,SLOT(slotOnIntruderEvent(NotifyEventI::IntruderEventData)));
     disconnect(notifyServiceI_,SIGNAL(sigPersonEventData(NotifyEventI::PersonEventData)),this,SLOT(slotOnPersonEvent(NotifyEventI::PersonEventData)));
@@ -617,6 +623,9 @@ void RealtimeMonitoring::slotEventComboxIndexChanged(int index)
     }else if(index == 4){
         connect(notifyServiceI_,SIGNAL(sigGatherEventData(NotifyEventI::GatherEventData)),this,SLOT(slotOngGatherEvent(NotifyEventI::GatherEventData)));
     }else if(index == 5){
+        connect(notifyServiceI_,SIGNAL(sigPersonEventData(NotifyEventI::PersonEventData)),this,SLOT(slotOnPersonEvent(NotifyEventI::PersonEventData)),Qt::UniqueConnection);
+    }else if (6 == index)
+    {
         connect(notifyServiceI_,SIGNAL(sigPersonEventData(NotifyEventI::PersonEventData)),this,SLOT(slotOnPersonEvent(NotifyEventI::PersonEventData)),Qt::UniqueConnection);
     }
     if (0 != index)
@@ -721,6 +730,33 @@ void RealtimeMonitoring::slotOnIntruderEvent(NotifyEventI::IntruderEventData evD
 
 void RealtimeMonitoring::slotOnPersonEvent(NotifyEventI::PersonEventData evData)
 {
+    bool bFilter = true;
+    switch (m_curEventIndex)
+    {
+    case 0:
+        bFilter = false;
+        break;
+    case BalckList:
+    {
+        if ("100010001008" == evData.personType)
+        {
+            bFilter = false;
+        }
+    }
+        break;
+    case VIP:
+    {
+        if ("100010001007" == evData.personType)
+        {
+            bFilter = false;
+        }
+    }
+        break;
+    default:
+        break;
+    }
+    if (bFilter) return;
+    // qDebug() << Q_FUNC_INFO << evData.personType << evData.personTypenName;
     if(!eventItemSize_.isValid() || (eventList_->rect().contains(eventList_->mapFromGlobal(QCursor::pos())) && eventList_->isVisible()))return;
     if(eventList_->count() >= EVENTITEMCOUNT){
         QListWidgetItem *delItem = eventList_->takeItem(EVENTITEMCOUNT - 1);

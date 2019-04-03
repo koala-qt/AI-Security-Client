@@ -349,7 +349,7 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     m_attrVlay->addWidget(attrWgt);
 
     itemData itemAttr5;
-    itemAttr5.name = QObject::tr("Face");
+    itemAttr5.name = tr("Face");
     itemAttr5.strValue = "Face";
     itemAttr5.value = 0;
     itemAttr5.childrens  << itemData{tr("Bags Under Eyes"),"Bags_Under_Eyes",0,QVector<itemData>()}
@@ -422,45 +422,45 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     items.name = tr("Face Attributes");
     items.strValue = "Face Attributes";
     items.value = 0;
-    items.childrens << itemData{tr("Obstruction"),tr("5_o_Clock_Shadow"),0,QVector<itemData>()}
-                    << itemData{tr("Arched Eyebrows"),tr("Arched_Eyebrows"),0,QVector<itemData>()}
-                    << itemData{tr("Attractive"),tr("Attractive"),0,QVector<itemData>()}
-                    << itemData{tr("Bags Under Eyes"),tr("Bags_Under_Eyes"),0,QVector<itemData>()}
-                    << itemData{tr("Bald"),tr("Bald"),0,QVector<itemData>()}
-                    << itemData{tr("Bangs"),tr("Bangs"),0,QVector<itemData>()}
-                    << itemData{tr("Big Lips"),tr("Big_Lips"),0,QVector<itemData>()}
-                    << itemData{tr("Big Nose"),tr("Big_Nose"),0,QVector<itemData>()}
-                    << itemData{tr("Black Hair"),tr("Black_Hair"),0,QVector<itemData>()}
-                    << itemData{tr("Blond Hair"),tr("Blond_Hair"),0,QVector<itemData>()}
-                    << itemData{tr("Blurry"),tr("Blurry"),0,QVector<itemData>()}
-                    << itemData{tr("Brown Hair"),tr("Brown_Hair"),0,QVector<itemData>()}
-                    << itemData{tr("Bushy Eyebrows"),tr("Bushy_Eyebrows"),0,QVector<itemData>()}
-                    << itemData{tr("Chubby"),tr("Chubby"),0,QVector<itemData>()}
-                    << itemData{tr("Double Chin"),tr("Double_Chin"),0,QVector<itemData>()}
-                    << itemData{tr("Eyeglasses"),tr("Eyeglasses"),0,QVector<itemData>()}
-                    << itemData{tr("Goatee"),tr("Goatee"),0,QVector<itemData>()}
-                    << itemData{tr("Gray Hair"),tr("Gray_Hair"),0,QVector<itemData>()}
-                    << itemData{tr("Heavy Makeup"),tr("Heavy_Makeup"),0,QVector<itemData>()}
-                    << itemData{tr("High Cheekbones"),tr("High_Cheekbones"),0,QVector<itemData>()}
-                    << itemData{tr("Male"),tr("Male"),0,QVector<itemData>()}
-                    << itemData{tr("Female"),tr("Female"),0,QVector<itemData>()}
-                    << itemData{tr("Mouth Slightly Open"),tr("Mouth_Slightly_Open"),0,QVector<itemData>()}
-                    << itemData{tr("Mustache"),tr("Mustache"),0,QVector<itemData>()}
-                    << itemData{tr("Narrow Eyes"),tr("Narrow_Eyes"),0,QVector<itemData>()}
-                    << itemData{tr("No Beard"),tr("No_Beard"),0,QVector<itemData>()}
-                    << itemData{tr("Oval Face"),tr("Oval_Face"),0,QVector<itemData>()}
-                    << itemData{tr("Pale Skin"),tr("Pale_Skin"),0,QVector<itemData>()}
-                    << itemData{tr("Pointy Nose"),tr("Pointy_Nose"),0,QVector<itemData>()}
-                    << itemData{tr("Receding Hairline"),tr("Receding_Hairline"),0,QVector<itemData>()}
-                    << itemData{tr("Rosy Cheeks"),tr("Rosy_Cheeks"),0,QVector<itemData>()}
-                    << itemData{tr("Sideburns"),tr("Sideburns"),0,QVector<itemData>()}
-                    << itemData{tr("Smiling"),tr("Smiling"),0,QVector<itemData>()}
-                    << itemData{tr("Straight Hair"),tr("Straight_Hair"),0,QVector<itemData>()}
-                    << itemData{tr("Wavy Hair"),tr("Wavy_Hair"),0,QVector<itemData>()}
-                    << itemData{tr("Wearing Earrings"),tr("Wearing_Earrings"),0,QVector<itemData>()}
-                    << itemData{tr("Wearing Hat"),tr("Wearing_Hat"),0,QVector<itemData>()}
-                    << itemData{tr("Wearing Lipstick"),tr("Wearing_Lipstick"),0,QVector<itemData>()}
-                    << itemData{tr("Young"),tr("Young"),0,QVector<itemData>()};
+    //    items.childrens << itemData{tr("Obstruction"),tr("5_o_Clock_Shadow"),0,QVector<itemData>()}
+    //                    << itemData{tr("Arched Eyebrows"),tr("Arched_Eyebrows"),0,QVector<itemData>()}
+    //                    << itemData{tr("Attractive"),tr("Attractive"),0,QVector<itemData>()}
+    //                    << itemData{tr("Bags Under Eyes"),tr("Bags_Under_Eyes"),0,QVector<itemData>()}
+    //                    << itemData{tr("Bald"),tr("Bald"),0,QVector<itemData>()}
+    //                    << itemData{tr("Bangs"),tr("Bangs"),0,QVector<itemData>()}
+    //                    << itemData{tr("Big Lips"),tr("Big_Lips"),0,QVector<itemData>()}
+    //                    << itemData{tr("Big Nose"),tr("Big_Nose"),0,QVector<itemData>()}
+    //                    << itemData{tr("Black Hair"),tr("Black_Hair"),0,QVector<itemData>()}
+    //                    << itemData{tr("Blond Hair"),tr("Blond_Hair"),0,QVector<itemData>()}
+    //                    << itemData{tr("Blurry"),tr("Blurry"),0,QVector<itemData>()}
+    //                    << itemData{tr("Brown Hair"),tr("Brown_Hair"),0,QVector<itemData>()}
+    //                    << itemData{tr("Bushy Eyebrows"),tr("Bushy_Eyebrows"),0,QVector<itemData>()}
+    //                    << itemData{tr("Chubby"),tr("Chubby"),0,QVector<itemData>()}
+    //                    << itemData{tr("Double Chin"),tr("Double_Chin"),0,QVector<itemData>()}
+    //                    << itemData{tr("Eyeglasses"),tr("Eyeglasses"),0,QVector<itemData>()}
+    //                    << itemData{tr("Goatee"),tr("Goatee"),0,QVector<itemData>()}
+    //                    << itemData{tr("Gray Hair"),tr("Gray_Hair"),0,QVector<itemData>()}
+    //                    << itemData{tr("Heavy Makeup"),tr("Heavy_Makeup"),0,QVector<itemData>()}
+    //                    << itemData{tr("High Cheekbones"),tr("High_Cheekbones"),0,QVector<itemData>()}
+    //                    << itemData{tr("Male"),tr("Male"),0,QVector<itemData>()}
+    //                    << itemData{tr("Female"),tr("Female"),0,QVector<itemData>()}
+    //                    << itemData{tr("Mouth Slightly Open"),tr("Mouth_Slightly_Open"),0,QVector<itemData>()}
+    //                    << itemData{tr("Mustache"),tr("Mustache"),0,QVector<itemData>()}
+    //                    << itemData{tr("Narrow Eyes"),tr("Narrow_Eyes"),0,QVector<itemData>()}
+    //                    << itemData{tr("No Beard"),tr("No_Beard"),0,QVector<itemData>()}
+    //                    << itemData{tr("Oval Face"),tr("Oval_Face"),0,QVector<itemData>()}
+    //                    << itemData{tr("Pale Skin"),tr("Pale_Skin"),0,QVector<itemData>()}
+    //                    << itemData{tr("Pointy Nose"),tr("Pointy_Nose"),0,QVector<itemData>()}
+    //                    << itemData{tr("Receding Hairline"),tr("Receding_Hairline"),0,QVector<itemData>()}
+    //                    << itemData{tr("Rosy Cheeks"),tr("Rosy_Cheeks"),0,QVector<itemData>()}
+    //                    << itemData{tr("Sideburns"),tr("Sideburns"),0,QVector<itemData>()}
+    //                    << itemData{tr("Smiling"),tr("Smiling"),0,QVector<itemData>()}
+    //                    << itemData{tr("Straight Hair"),tr("Straight_Hair"),0,QVector<itemData>()}
+    //                    << itemData{tr("Wavy Hair"),tr("Wavy_Hair"),0,QVector<itemData>()}
+    //                    << itemData{tr("Wearing Earrings"),tr("Wearing_Earrings"),0,QVector<itemData>()}
+    //                    << itemData{tr("Wearing Hat"),tr("Wearing_Hat"),0,QVector<itemData>()}
+    //                    << itemData{tr("Wearing Lipstick"),tr("Wearing_Lipstick"),0,QVector<itemData>()}
+    //                    << itemData{tr("Young"),tr("Young"),0,QVector<itemData>()};
     devicesVec << items;
     for(auto value : devicesVec){
         createTreeItem(attributTreeW_,nullptr,value);

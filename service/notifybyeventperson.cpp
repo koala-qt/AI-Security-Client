@@ -16,6 +16,7 @@ NotifyByEventPerson::NotifyByEventPerson(NotifyEventI *notifyEvI, NotifyPersonI 
     connect(notifyPersonI_,SIGNAL(sigFaceSnap(NotifyPersonI::FaceSnapEventData)),this,SIGNAL(sigFaceSnap(NotifyPersonI::FaceSnapEventData)));
     connect(notifyPersonI_,SIGNAL(sigNetWorkError(QString)),this,SIGNAL(sigNetWorkError(QString)));
     connect(notifyPersonI_,SIGNAL(sigVideoFacePicture(QString,QImage)),this,SIGNAL(sigVideoFacePicture(QString,QImage)));
+    connect(this, SIGNAL(sigEventyType(int)), notifyEventI_, SLOT(slotEventyType(int)));
 }
 
 NotifyByEventPerson::~NotifyByEventPerson()

@@ -115,7 +115,7 @@ void GlViewMapWidget::slotOnIntruderEvent(NotifyEventI::IntruderEventData info)
     glInfo.deviceId = info.sourceId;
     glInfo.deviceName = info.deviceName;
     glInfo.image = info.sceneImg;
-    glInfo.strEventType = "Intrusion";
+    glInfo.strEventType = QObject::tr("Intrusion");
     allEventWarning(glInfo);
 #endif
 }
@@ -126,7 +126,7 @@ void GlViewMapWidget::slotOnAbDoorEvent(NotifyEventI::ABDoorEventData info)
     glInfo.deviceId = info.sourceId;
     glInfo.deviceName = info.deviceName;
     glInfo.image = info.sceneImg;
-    glInfo.strEventType = "Trailing";
+    glInfo.strEventType = QObject::tr("Trailing");
     allEventWarning(glInfo);
 }
 
@@ -136,7 +136,18 @@ void GlViewMapWidget::slotOnPersonEvent(NotifyEventI::PersonEventData info)
     glInfo.deviceId = info.sourceId;
     glInfo.deviceName = info.deviceName;
     glInfo.image = info.image;
-    glInfo.strEventType = "BlackList";
+    if ("100010001008" == info.personType)
+    {
+        glInfo.strEventType = QObject::tr("BlackList");
+    }
+    else if ("100010001007" == info.personType)
+    {
+        glInfo.strEventType = QObject::tr("VIP");
+    }
+    else if ("100010001005" == info.personType)
+    {
+        glInfo.strEventType = QObject::tr("Staff");
+    }
     allEventWarning(glInfo);
 }
 
@@ -146,7 +157,7 @@ void GlViewMapWidget::slotOnClimbEvent(NotifyEventI::ClimbEventData info)
     glInfo.deviceId = info.sourceId;
     glInfo.deviceName = info.deviceName;
     glInfo.image = info.sceneImg;
-    glInfo.strEventType = "Climbing";
+    glInfo.strEventType = QObject::tr("Climbing");
     allEventWarning(glInfo);
 }
 
@@ -156,7 +167,7 @@ void GlViewMapWidget::slotOngGatherEvent(NotifyEventI::GatherEventData info)
     glInfo.deviceId = info.sourceId;
     glInfo.deviceName = info.deviceName;
     glInfo.image = info.sceneImg;
-    glInfo.strEventType = "Gathering";
+    glInfo.strEventType = QObject::tr("Gathering");
     allEventWarning(glInfo);
 }
 
@@ -171,7 +182,7 @@ void GlViewMapWidget::init()
     pMidVlay->addSpacing(300);
     pMidVlay->setSpacing(10);
     mainHlay->addLayout(pMidVlay);
-    QString strTitleStyle = "font-size:16px;color:white;";
+    QString strTitleStyle = "font-size:16px;color:white;font:bold;";
     QLabel *labTitle = new QLabel(tr("Location Access"));
     labTitle->setStyleSheet(strTitleStyle);
     labTitle->setAlignment(Qt::AlignRight);
