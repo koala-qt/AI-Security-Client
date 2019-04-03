@@ -170,7 +170,7 @@
     <message>
         <location filename="../UI/eventsearch.cpp" line="30"/>
         <source>Event</source>
-        <translation type="unfinished">事件查询</translation>
+        <translation type="unfinished">事件追溯</translation>
     </message>
     <message>
         <location filename="../UI/eventsearch.cpp" line="31"/>
@@ -774,17 +774,17 @@
     <message>
         <location filename="../mainwindow.cpp" line="96"/>
         <source>Devices</source>
-        <translation type="unfinished">设备</translation>
+        <translation type="unfinished">设备管理</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="107"/>
         <source>ID Database</source>
-        <translation type="unfinished">ID数据库</translation>
+        <translation type="unfinished">人像ID库</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="118"/>
         <source>Registration Database</source>
-        <translation type="unfinished">注册数据库</translation>
+        <translation type="unfinished">人像标记库</translation>
     </message>
 </context>
 <context>
@@ -1145,7 +1145,7 @@ Please adjust the conditions to re-query</source>
     <message>
         <location filename="../UI/portraitsearch.cpp" line="29"/>
         <source>Single Face</source>
-        <translation type="unfinished">人像库检索</translation>
+        <translation type="unfinished">以图搜图</translation>
     </message>
     <message>
         <location filename="../UI/portraitsearch.cpp" line="174"/>
@@ -1453,7 +1453,7 @@ Please adjust the conditions to re-query</source>
     <message>
         <location filename="../main.cpp" line="47"/>
         <source>Intelligent Security Surveillance System</source>
-        <translation type="unfinished">智能安全系统</translation>
+        <translation type="unfinished">智能安防系统</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="98"/>
@@ -1760,7 +1760,7 @@ cameraId:%2
     <message>
         <location filename="../UI/selectuploadvide.cpp" line="15"/>
         <source>Upload and analysis</source>
-        <translation type="unfinished">上传检索</translation>
+        <translation type="unfinished">上传</translation>
     </message>
     <message>
         <location filename="../UI/selectuploadvide.cpp" line="17"/>
@@ -1813,17 +1813,17 @@ cameraId:%2
     <message>
         <location filename="../UI/semanticsearchpage.cpp" line="52"/>
         <source>Attributes Reset</source>
-        <translation type="unfinished">属性查询</translation>
+        <translation type="unfinished">查询</translation>
     </message>
     <message>
         <location filename="../UI/semanticsearchpage.cpp" line="91"/>
         <source>Profile</source>
-        <translation type="unfinished">轮廓</translation>
+        <translation type="unfinished">人物画像</translation>
     </message>
     <message>
         <location filename="../UI/semanticsearchpage.cpp" line="121"/>
         <source>Scene Analysis</source>
-        <translation type="unfinished">场景图分析</translation>
+        <translation type="unfinished">场景分析</translation>
     </message>
     <message>
         <location filename="../UI/semanticsearchpage.cpp" line="165"/>
@@ -1833,7 +1833,7 @@ cameraId:%2
     <message>
         <location filename="../UI/semanticsearchpage.cpp" line="181"/>
         <source>Registration Search</source>
-        <translation type="unfinished">注册检索</translation>
+        <translation type="unfinished">人像库检索</translation>
     </message>
     <message>
         <location filename="../UI/semanticsearchpage.cpp" line="197"/>
@@ -1848,7 +1848,7 @@ cameraId:%2
     <message>
         <location filename="../UI/semanticsearchpage.cpp" line="226"/>
         <source>Register</source>
-        <translation type="unfinished">注册</translation>
+        <translation type="unfinished">人像标记</translation>
     </message>
     <message>
         <location filename="../UI/semanticsearchpage.cpp" line="233"/>
@@ -1858,7 +1858,7 @@ cameraId:%2
     <message>
         <location filename="../UI/semanticsearchpage.cpp" line="237"/>
         <source>Save Image</source>
-        <translation type="unfinished">保存图像</translation>
+        <translation type="unfinished">保存图片</translation>
     </message>
     <message>
         <location filename="../UI/semanticsearchpage.cpp" line="239"/>
@@ -2119,7 +2119,7 @@ GetEnabledAttr:%2</source>
     <message>
         <location filename="../UI/targetsearch.cpp" line="22"/>
         <source>Search</source>
-        <translation type="unfinished">查询</translation>
+        <translation type="unfinished">目标检索</translation>
     </message>
     <message>
         <location filename="../UI/targetsearch.cpp" line="23"/>
@@ -2134,7 +2134,7 @@ GetEnabledAttr:%2</source>
     <message>
         <location filename="../UI/targetsearch.cpp" line="72"/>
         <source>Imported Photo Database</source>
-        <translation type="unfinished">以图搜图</translation>
+        <translation type="unfinished">人像库检索</translation>
     </message>
 </context>
 <context>

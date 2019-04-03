@@ -20,6 +20,7 @@
 #include <QStandardPaths>
 #include <QSettings>
 #include <QApplication>
+#include <QScrollArea>
 #include "semanticsearchpage.h"
 #include "pageindicator.h"
 #include "waitinglabel.h"
@@ -32,6 +33,7 @@
 #include "nodatatip.h"
 #include "portraitsearch.h"
 #include "personmark.h"
+#include "customwidget.h"
 
 SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     WidgetI(parent)
@@ -76,12 +78,30 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     mainLay->addLayout(vlay);
     mainLay->addWidget(centeVSplieL_);
     vlay = new QVBoxLayout;
+    vlay->setSpacing(0);
+    mainLay->addLayout(vlay);
+
     QHBoxLayout *hlay = new QHBoxLayout;
     hlay->addWidget(flushAttrBtn_);
     vlay->addLayout(hlay);
+    vlay->addSpacing(10);
+#if 0
     vlay->addWidget(attributTreeW_);
-    vlay->setSpacing(0);
-    mainLay->addLayout(vlay);
+#endif
+    m_attrBigContainerWgt = new QWidget;
+    //m_attrBigContainerWgt->setMaximumWidth(380);
+//    vlay->addWidget(attrBigContainerWgt);
+    m_attrScrollArea = new QScrollArea();
+    m_attrScrollArea->setWidgetResizable(true);
+    m_attrScrollArea->setMaximumWidth(285);
+    m_attrScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_attrScrollArea->setFrameShape(QFrame::NoFrame);
+    vlay->addWidget(m_attrScrollArea);
+    vlay = new QVBoxLayout;
+    vlay->setMargin(0);
+    m_attrBigContainerWgt->setLayout(vlay);
+    m_attrScrollArea->setWidget(m_attrBigContainerWgt);
+    m_attrVlay = vlay;
     mainLay->setSpacing(20);
     mainLay->setContentsMargins(40,40,40,40);
     setLayout(mainLay);
@@ -259,30 +279,188 @@ SemanticSearchPage::SemanticSearchPage(WidgetI *parent):
     dataListW_->setResizeMode(QListWidget::Adjust);
     dataListW_->setViewMode(QListWidget::IconMode);
     centeVSplieL_->setFixedWidth(1);
+
+    itemData itemAttr;
+    itemAttr.name = QObject::tr("Gender");
+    itemAttr.strValue = "Gender";
+    itemAttr.value = 0;
+    itemAttr.childrens << itemData{tr("Male"),"Male",0,QVector<itemData>()}
+                    << itemData{tr("Female"),"Female",0,QVector<itemData>()};
+    CustomWidget *attrWgt = new CustomWidget(itemAttr.name);
+    connect(attrWgt, &CustomWidget::sigAppendAttr, this, &SemanticSearchPage::slotAppendAttr);
+    connect(attrWgt, &CustomWidget::sigRemoveAttr, this, &SemanticSearchPage::slotRemoveAttr);
+    connect(attrWgt, &CustomWidget::sigSizeChanged, this, &SemanticSearchPage::slotSizeChanged);
+    attrWgt->addAttributes(itemAttr);
+    m_lstAttrWgt.append(attrWgt);
+    m_attrVlay->addWidget(attrWgt);
+
+    itemData itemAttr2;
+    itemAttr2.name = QObject::tr("Hair");
+    itemAttr2.strValue = "Hair";
+    itemAttr2.value = 0;
+    itemAttr2.childrens  << itemData{tr("Bangs"),"Bangs",0,QVector<itemData>()}
+                         << itemData{tr("Black Hair"),"Black_Hair",0,QVector<itemData>()}
+                         << itemData{tr("Blond Hair"),"Blond_Hair",0,QVector<itemData>()}
+                         << itemData{tr("Brown Hair"),"Brown_Hair",0,QVector<itemData>()}
+                         << itemData{tr("Gray Hair"),"Gray_Hair",0,QVector<itemData>()}
+                         << itemData{tr("Straight Hair"),"Straight_Hair",0,QVector<itemData>()}
+                         << itemData{tr("Wavy Hair"),"Wavy_Hair",0,QVector<itemData>()}
+                         << itemData{tr("Bald"),"Bald",0,QVector<itemData>()}
+                         << itemData{tr("Receding Hairline"),"Receding_Hairline",0,QVector<itemData>()};
+    attrWgt = new CustomWidget(itemAttr2.name);
+    connect(attrWgt, &CustomWidget::sigAppendAttr, this, &SemanticSearchPage::slotAppendAttr);
+    connect(attrWgt, &CustomWidget::sigRemoveAttr, this, &SemanticSearchPage::slotRemoveAttr);
+    connect(attrWgt, &CustomWidget::sigSizeChanged, this, &SemanticSearchPage::slotSizeChanged);
+    attrWgt->addAttributes(itemAttr2, itemAttr.childrens.count());
+    m_lstAttrWgt.append(attrWgt);
+    m_attrVlay->addWidget(attrWgt);
+
+    itemData itemAttr3;
+    itemAttr3.name = QObject::tr("Beard");
+    itemAttr3.strValue = "Beard";
+    itemAttr3.value = 0;
+    itemAttr3.childrens  << itemData{tr("Goatee"),"Goatee",0,QVector<itemData>()}
+                            << itemData{tr("Mustache"),"Mustache",0,QVector<itemData>()}
+                               << itemData{tr("No Beard"),"No_Beard",0,QVector<itemData>()}
+                                  << itemData{tr("Sideburns"),"Sideburns",0,QVector<itemData>()};
+    attrWgt = new CustomWidget(itemAttr3.name);
+    connect(attrWgt, &CustomWidget::sigAppendAttr, this, &SemanticSearchPage::slotAppendAttr);
+    connect(attrWgt, &CustomWidget::sigRemoveAttr, this, &SemanticSearchPage::slotRemoveAttr);
+    connect(attrWgt, &CustomWidget::sigSizeChanged, this, &SemanticSearchPage::slotSizeChanged);
+    attrWgt->addAttributes(itemAttr3, itemAttr.childrens.count() + itemAttr2.childrens.count());
+    m_lstAttrWgt.append(attrWgt);
+    m_attrVlay->addWidget(attrWgt);
+
+    itemData itemAttr4;
+    itemAttr4.name = QObject::tr("Accessories");
+    itemAttr4.strValue = "Accessories";
+    itemAttr4.value = 0;
+    itemAttr4.childrens  << itemData{tr("Wearing Earrings"),"Wearing_Earrings",0,QVector<itemData>()}
+                         << itemData{tr("Wearing Hat"),"Wearing_Hat",0,QVector<itemData>()}
+                         << itemData{tr("Wearing Lipstick"),"Wearing_Lipstick",0,QVector<itemData>()}
+                         << itemData{tr("Heavy Makeup"),"Heavy_Makeup",0,QVector<itemData>()}
+                         << itemData{tr("Eyeglasses"),"Eyeglasses",0,QVector<itemData>()};
+    attrWgt = new CustomWidget(itemAttr4.name);
+    connect(attrWgt, &CustomWidget::sigAppendAttr, this, &SemanticSearchPage::slotAppendAttr);
+    connect(attrWgt, &CustomWidget::sigRemoveAttr, this, &SemanticSearchPage::slotRemoveAttr);
+    connect(attrWgt, &CustomWidget::sigSizeChanged, this, &SemanticSearchPage::slotSizeChanged);
+    attrWgt->addAttributes(itemAttr4, itemAttr.childrens.count() + itemAttr2.childrens.count() + itemAttr3.childrens.count());
+    m_lstAttrWgt.append(attrWgt);
+    m_attrVlay->addWidget(attrWgt);
+
+    itemData itemAttr5;
+    itemAttr5.name = QObject::tr("Face");
+    itemAttr5.strValue = "Face";
+    itemAttr5.value = 0;
+    itemAttr5.childrens  << itemData{tr("Bags Under Eyes"),"Bags_Under_Eyes",0,QVector<itemData>()}
+                         << itemData{tr("Arched Eyebrows"),"Arched_Eyebrows",0,QVector<itemData>()}
+                         << itemData{tr("Mouth Slightly Open"),"Mouth_Slightly_Open",0,QVector<itemData>()}
+                         << itemData{tr("Bushy Eyebrows"),"Bushy_Eyebrows",0,QVector<itemData>()}
+                         << itemData{tr("Narrow Eyes"),"Narrow_Eyes",0,QVector<itemData>()}
+                         << itemData{tr("Pointy Nose"),"Pointy_Nose",0,QVector<itemData>()}
+                         << itemData{tr("Rosy Cheeks"),"Rosy_Cheeks",0,QVector<itemData>()}
+                         << itemData{tr("Big Lips"),"Big_Lips",0,QVector<itemData>()}
+                         << itemData{tr("Big Nose"),"Big_Nose",0,QVector<itemData>()}
+                         << itemData{tr("Oval Face"),"Oval_Face",0,QVector<itemData>()}
+                         << itemData{tr("High Cheekbones"),"High_Cheekbones",0,QVector<itemData>()}
+                         << itemData{tr("Chubby"),"Chubby",0,QVector<itemData>()}
+                         << itemData{tr("Double Chin"),"Double_Chin",0,QVector<itemData>()}
+                         << itemData{tr("Pale Skin"),"Pale_Skin",0,QVector<itemData>()};
+    attrWgt = new CustomWidget(itemAttr5.name);
+    connect(attrWgt, &CustomWidget::sigAppendAttr, this, &SemanticSearchPage::slotAppendAttr);
+    connect(attrWgt, &CustomWidget::sigRemoveAttr, this, &SemanticSearchPage::slotRemoveAttr);
+    connect(attrWgt, &CustomWidget::sigSizeChanged, this, &SemanticSearchPage::slotSizeChanged);
+    attrWgt->addAttributes(itemAttr5, itemAttr.childrens.count() + itemAttr2.childrens.count() + itemAttr3.childrens.count() + itemAttr4.childrens.count());
+    m_lstAttrWgt.append(attrWgt);
+    m_attrVlay->addWidget(attrWgt);
+
+    itemData itemAttr6;
+    itemAttr6.name = QObject::tr("Generation");
+    itemAttr6.strValue = "Generation";
+    itemAttr6.value = 0;
+    itemAttr6.childrens << itemData{tr("Young"),"Young",0,QVector<itemData>()};
+    attrWgt = new CustomWidget(itemAttr6.name);
+    connect(attrWgt, &CustomWidget::sigAppendAttr, this, &SemanticSearchPage::slotAppendAttr);
+    connect(attrWgt, &CustomWidget::sigRemoveAttr, this, &SemanticSearchPage::slotRemoveAttr);
+    connect(attrWgt, &CustomWidget::sigSizeChanged, this, &SemanticSearchPage::slotSizeChanged);
+    attrWgt->addAttributes(itemAttr6, itemAttr.childrens.count() + itemAttr2.childrens.count() + itemAttr3.childrens.count() + itemAttr4.childrens.count() + itemAttr5.childrens.count());
+    m_lstAttrWgt.append(attrWgt);
+    m_attrVlay->addWidget(attrWgt);
+
+    itemData itemAttr7;
+    itemAttr7.name = QObject::tr("Expression");
+    itemAttr7.strValue = "Expression";
+    itemAttr7.value = 0;
+    itemAttr7.childrens << itemData{tr("Smiling"),"Smiling",0,QVector<itemData>()};
+    attrWgt = new CustomWidget(itemAttr7.name);
+    connect(attrWgt, &CustomWidget::sigAppendAttr, this, &SemanticSearchPage::slotAppendAttr);
+    connect(attrWgt, &CustomWidget::sigRemoveAttr, this, &SemanticSearchPage::slotRemoveAttr);
+    connect(attrWgt, &CustomWidget::sigSizeChanged, this, &SemanticSearchPage::slotSizeChanged);
+    attrWgt->addAttributes(itemAttr7, itemAttr.childrens.count() + itemAttr2.childrens.count() + itemAttr3.childrens.count() + itemAttr4.childrens.count() + itemAttr5.childrens.count() + itemAttr6.childrens.count());
+    m_lstAttrWgt.append(attrWgt);
+    m_attrVlay->addWidget(attrWgt);
+
+    itemData itemAttr8;
+    itemAttr8.name = QObject::tr("Other");
+    itemAttr8.strValue = "Other";
+    itemAttr8.value = 0;
+    itemAttr8.childrens << itemData{tr("Obstruction"),"5_o_Clock_Shadow",0,QVector<itemData>()}
+                        << itemData{tr("Attractive"),"Attractive",0,QVector<itemData>()}
+                        << itemData{tr("Blurry"),"Blurry",0,QVector<itemData>()};
+    attrWgt = new CustomWidget(itemAttr8.name);
+    connect(attrWgt, &CustomWidget::sigAppendAttr, this, &SemanticSearchPage::slotAppendAttr);
+    connect(attrWgt, &CustomWidget::sigRemoveAttr, this, &SemanticSearchPage::slotRemoveAttr);
+    connect(attrWgt, &CustomWidget::sigSizeChanged, this, &SemanticSearchPage::slotSizeChanged);
+    attrWgt->addAttributes(itemAttr8, itemAttr.childrens.count() + itemAttr2.childrens.count() + itemAttr3.childrens.count() + itemAttr4.childrens.count() + itemAttr5.childrens.count() + itemAttr6.childrens.count() + itemAttr7.childrens.count());
+    m_lstAttrWgt.append(attrWgt);
+    m_attrVlay->addWidget(attrWgt);
+
+    m_attrVlay->addStretch();
+
     QVector<itemData> devicesVec;
     itemData items;
     items.name = tr("Face Attributes");
+    items.strValue = "Face Attributes";
     items.value = 0;
-    items.childrens << itemData{tr("5_o_Clock_Shadow "),0,QVector<itemData>()} << itemData{tr("Arched_Eyebrows"),0,QVector<itemData>()}
-                    << itemData{tr("Attractive"),0,QVector<itemData>()} << itemData{tr("Bags_Under_Eyes"),0,QVector<itemData>()}
-                    << itemData{tr("Bald"),0,QVector<itemData>()} << itemData{tr("Bangs"),0,QVector<itemData>()}
-                    << itemData{tr("Big_Lips"),0,QVector<itemData>()} << itemData{tr("Big_Nose"),0,QVector<itemData>()}
-                    << itemData{tr("Black_Hair"),0,QVector<itemData>()} << itemData{tr("Blond_Hair"),0,QVector<itemData>()}
-                    << itemData{tr("Blurry"),0,QVector<itemData>()} << itemData{tr("Brown_Hair"),0,QVector<itemData>()}
-                    << itemData{tr("Bushy_Eyebrows"),0,QVector<itemData>()} << itemData{tr("Chubby"),0,QVector<itemData>()}
-                    << itemData{tr("Double_Chin"),0,QVector<itemData>()} << itemData{tr("Eyeglasses"),0,QVector<itemData>()}
-                    << itemData{tr("Goatee"),0,QVector<itemData>()} << itemData{tr("Gray_Hair"),0,QVector<itemData>()}
-                    << itemData{tr("Heavy_Makeup"),0,QVector<itemData>()} << itemData{tr("High_Cheekbones"),0,QVector<itemData>()}
-                    << itemData{tr("Male"),0,QVector<itemData>()} << itemData{tr("Female"),0,QVector<itemData>()}
-                    << itemData{tr("Mouth_Slightly_Open"),0,QVector<itemData>()}
-                    << itemData{tr("Mustache"),0,QVector<itemData>()} << itemData{tr("Narrow_Eyes"),0,QVector<itemData>()}
-                    << itemData{tr("No_Beard"),0,QVector<itemData>()} << itemData{tr("Oval_Face"),0,QVector<itemData>()}
-                    << itemData{tr("Pale_Skin"),0,QVector<itemData>()} << itemData{tr("Pointy_Nose"),0,QVector<itemData>()}
-                    << itemData{tr("Receding_Hairline"),0,QVector<itemData>()} << itemData{tr("Rosy_Cheeks"),0,QVector<itemData>()}
-                    << itemData{tr("Sideburns"),0,QVector<itemData>()} << itemData{tr("Smiling"),0,QVector<itemData>()}
-                    << itemData{tr("Straight_Hair"),0,QVector<itemData>()} << itemData{tr("Wavy_Hair"),0,QVector<itemData>()}
-                    << itemData{tr("Wearing_Earrings"),0,QVector<itemData>()} << itemData{tr("Wearing_Hat"),0,QVector<itemData>()}
-                    << itemData{tr("Wearing_Lipstick"),0,QVector<itemData>()} << itemData{tr("Young"),0,QVector<itemData>()};
+    items.childrens << itemData{tr("Obstruction"),tr("5_o_Clock_Shadow"),0,QVector<itemData>()}
+                    << itemData{tr("Arched Eyebrows"),tr("Arched_Eyebrows"),0,QVector<itemData>()}
+                    << itemData{tr("Attractive"),tr("Attractive"),0,QVector<itemData>()}
+                    << itemData{tr("Bags Under Eyes"),tr("Bags_Under_Eyes"),0,QVector<itemData>()}
+                    << itemData{tr("Bald"),tr("Bald"),0,QVector<itemData>()}
+                    << itemData{tr("Bangs"),tr("Bangs"),0,QVector<itemData>()}
+                    << itemData{tr("Big Lips"),tr("Big_Lips"),0,QVector<itemData>()}
+                    << itemData{tr("Big Nose"),tr("Big_Nose"),0,QVector<itemData>()}
+                    << itemData{tr("Black Hair"),tr("Black_Hair"),0,QVector<itemData>()}
+                    << itemData{tr("Blond Hair"),tr("Blond_Hair"),0,QVector<itemData>()}
+                    << itemData{tr("Blurry"),tr("Blurry"),0,QVector<itemData>()}
+                    << itemData{tr("Brown Hair"),tr("Brown_Hair"),0,QVector<itemData>()}
+                    << itemData{tr("Bushy Eyebrows"),tr("Bushy_Eyebrows"),0,QVector<itemData>()}
+                    << itemData{tr("Chubby"),tr("Chubby"),0,QVector<itemData>()}
+                    << itemData{tr("Double Chin"),tr("Double_Chin"),0,QVector<itemData>()}
+                    << itemData{tr("Eyeglasses"),tr("Eyeglasses"),0,QVector<itemData>()}
+                    << itemData{tr("Goatee"),tr("Goatee"),0,QVector<itemData>()}
+                    << itemData{tr("Gray Hair"),tr("Gray_Hair"),0,QVector<itemData>()}
+                    << itemData{tr("Heavy Makeup"),tr("Heavy_Makeup"),0,QVector<itemData>()}
+                    << itemData{tr("High Cheekbones"),tr("High_Cheekbones"),0,QVector<itemData>()}
+                    << itemData{tr("Male"),tr("Male"),0,QVector<itemData>()}
+                    << itemData{tr("Female"),tr("Female"),0,QVector<itemData>()}
+                    << itemData{tr("Mouth Slightly Open"),tr("Mouth_Slightly_Open"),0,QVector<itemData>()}
+                    << itemData{tr("Mustache"),tr("Mustache"),0,QVector<itemData>()}
+                    << itemData{tr("Narrow Eyes"),tr("Narrow_Eyes"),0,QVector<itemData>()}
+                    << itemData{tr("No Beard"),tr("No_Beard"),0,QVector<itemData>()}
+                    << itemData{tr("Oval Face"),tr("Oval_Face"),0,QVector<itemData>()}
+                    << itemData{tr("Pale Skin"),tr("Pale_Skin"),0,QVector<itemData>()}
+                    << itemData{tr("Pointy Nose"),tr("Pointy_Nose"),0,QVector<itemData>()}
+                    << itemData{tr("Receding Hairline"),tr("Receding_Hairline"),0,QVector<itemData>()}
+                    << itemData{tr("Rosy Cheeks"),tr("Rosy_Cheeks"),0,QVector<itemData>()}
+                    << itemData{tr("Sideburns"),tr("Sideburns"),0,QVector<itemData>()}
+                    << itemData{tr("Smiling"),tr("Smiling"),0,QVector<itemData>()}
+                    << itemData{tr("Straight Hair"),tr("Straight_Hair"),0,QVector<itemData>()}
+                    << itemData{tr("Wavy Hair"),tr("Wavy_Hair"),0,QVector<itemData>()}
+                    << itemData{tr("Wearing Earrings"),tr("Wearing_Earrings"),0,QVector<itemData>()}
+                    << itemData{tr("Wearing Hat"),tr("Wearing_Hat"),0,QVector<itemData>()}
+                    << itemData{tr("Wearing Lipstick"),tr("Wearing_Lipstick"),0,QVector<itemData>()}
+                    << itemData{tr("Young"),tr("Young"),0,QVector<itemData>()};
     devicesVec << items;
     for(auto value : devicesVec){
         createTreeItem(attributTreeW_,nullptr,value);
@@ -608,7 +786,7 @@ void SemanticSearchPage::setUserStyle(int s)
                                       "border-image: none;"
                                       "image: url(images/tree_expand.png);"
                                       "}");
-        attributTreeW_->verticalScrollBar()->setStyleSheet(
+        m_attrScrollArea->verticalScrollBar()->setStyleSheet(
                                                     "QScrollBar:vertical{"
                                                     "background: transparent;"
                                                     "border-radius: 10px;"
@@ -668,6 +846,8 @@ void SemanticSearchPage::setUserStyle(int s)
                                      "padding: 2px;"
                                      "background-color: #312DA6;"
                                      "}");
+        m_attrBigContainerWgt->setStyleSheet(".QWidget{background-color:transparent;}");
+        m_attrScrollArea->setStyleSheet(".QScrollArea{background-color:transparent;}");
 
         noDataW_->setUserStyle(s);
     }
@@ -722,6 +902,11 @@ void SemanticSearchPage::setEnableAttrs(const QStringList & attrs)
                 break;
             }
         }
+    }
+
+    for (CustomWidget *attrWgt : m_lstAttrWgt)
+    {
+        attrWgt->setEnabledAtts(attrs);
     }
 }
 
@@ -790,6 +975,7 @@ void SemanticSearchPage::slotSemanticSearch(int page,bool attrAsync)
                 searchBtn_->setEnabled(true);
                 attributTreeW_->setEnabled(true);
                 flushAttrBtn_->setEnabled(true);
+                setAttrWgtEnable(true);
                 preIsSearch_ = false;
                 isClearnAttrSelected_ = false;
             }
@@ -813,6 +999,7 @@ void SemanticSearchPage::slotSemanticSearch(int page,bool attrAsync)
                     searchBtn_->setEnabled(true);
                     attributTreeW_->setEnabled(true);
                     flushAttrBtn_->setEnabled(true);
+                    setAttrWgtEnable(true);
                     preIsSearch_ = false;
                     isClearnAttrSelected_ = false;
                     return;
@@ -825,6 +1012,7 @@ void SemanticSearchPage::slotSemanticSearch(int page,bool attrAsync)
                 searchBtn_->setEnabled(true);
                 attributTreeW_->setEnabled(true);
                 flushAttrBtn_->setEnabled(true);
+                setAttrWgtEnable(true);
                 preIsSearch_ = false;
                 isClearnAttrSelected_ = false;
             }
@@ -841,6 +1029,7 @@ void SemanticSearchPage::slotSemanticSearch(int page,bool attrAsync)
             pageIndicator_->setEnabled(true);
             searchBtn_->setEnabled(true);
             attributTreeW_->setEnabled(true);
+            setAttrWgtEnable(true);
             noDataW_->show();
             preIsSearch_ = false;
             isClearnAttrSelected_ = false;
@@ -857,6 +1046,7 @@ void SemanticSearchPage::slotSemanticSearch(int page,bool attrAsync)
             pageIndicator_->setEnabled(true);
             searchBtn_->setEnabled(true);
             attributTreeW_->setEnabled(true);
+            setAttrWgtEnable(true);
             preIsSearch_ = false;
             isClearnAttrSelected_ = false;
         });
@@ -874,6 +1064,7 @@ void SemanticSearchPage::slotSemanticSearch(int page,bool attrAsync)
     pageIndicator_->setEnabled(false);
     searchBtn_->setEnabled(false);
     attributTreeW_->setEnabled(false);
+    setAttrWgtEnable(false);
     noDataW_->hide();
     dataListW_->clear();
     preIsSearch_ = true;
@@ -907,6 +1098,7 @@ void SemanticSearchPage::slotSearchFaceLink(int page, bool attrAsync)
                 searchBtn_->setEnabled(true);
                 attributTreeW_->setEnabled(true);
                 flushAttrBtn_->setEnabled(true);
+                setAttrWgtEnable(true);
                 preIsSearch_ = false;
                 isClearnAttrSelected_ = false;
             }
@@ -930,6 +1122,7 @@ void SemanticSearchPage::slotSearchFaceLink(int page, bool attrAsync)
                     searchBtn_->setEnabled(true);
                     attributTreeW_->setEnabled(true);
                     flushAttrBtn_->setEnabled(true);
+                    setAttrWgtEnable(true);
                     preIsSearch_ = false;
                     isClearnAttrSelected_ = false;
                     return;
@@ -942,6 +1135,7 @@ void SemanticSearchPage::slotSearchFaceLink(int page, bool attrAsync)
                 searchBtn_->setEnabled(true);
                 attributTreeW_->setEnabled(true);
                 flushAttrBtn_->setEnabled(true);
+                setAttrWgtEnable(true);
                 preIsSearch_ = false;
                 isClearnAttrSelected_ = false;
             }
@@ -958,6 +1152,7 @@ void SemanticSearchPage::slotSearchFaceLink(int page, bool attrAsync)
             pageIndicator_->setEnabled(true);
             searchBtn_->setEnabled(true);
             attributTreeW_->setEnabled(true);
+            setAttrWgtEnable(true);
             noDataW_->show();
             preIsSearch_ = false;
             isClearnAttrSelected_ = false;
@@ -974,6 +1169,7 @@ void SemanticSearchPage::slotSearchFaceLink(int page, bool attrAsync)
             pageIndicator_->setEnabled(true);
             searchBtn_->setEnabled(true);
             attributTreeW_->setEnabled(true);
+            setAttrWgtEnable(true);
             preIsSearch_ = false;
             isClearnAttrSelected_ = false;
         });
@@ -990,6 +1186,7 @@ void SemanticSearchPage::slotSearchFaceLink(int page, bool attrAsync)
     pageIndicator_->setEnabled(false);
     searchBtn_->setEnabled(false);
     attributTreeW_->setEnabled(false);
+    setAttrWgtEnable(false);
     noDataW_->hide();
     dataListW_->clear();
     preIsSearch_ = true;
@@ -1029,6 +1226,7 @@ void SemanticSearchPage::getAvailableAttrs(WaitingLabel *label)
                 pageIndicator_->setEnabled(true);
                 searchBtn_->setEnabled(true);
                 attributTreeW_->setEnabled(true);
+                setAttrWgtEnable(true);
                 preIsSearch_ = false;
                 isClearnAttrSelected_ = false;
                 flushAttrBtn_->setEnabled(true);
@@ -1042,6 +1240,7 @@ void SemanticSearchPage::getAvailableAttrs(WaitingLabel *label)
             searchBtn_->setEnabled(true);
             attributTreeW_->setEnabled(true);
             flushAttrBtn_->setEnabled(true);
+            setAttrWgtEnable(true);
             preIsSearch_ = false;
             isClearnAttrSelected_ = false;
         }
@@ -1067,6 +1266,7 @@ void SemanticSearchPage::getAvailableAttrs(WaitingLabel *label)
             searchBtn_->setEnabled(true);
             attributTreeW_->setEnabled(true);
             flushAttrBtn_->setEnabled(true);
+            setAttrWgtEnable(true);
             preIsSearch_ = false;
             isClearnAttrSelected_ = false;
         }
@@ -1146,6 +1346,7 @@ void SemanticSearchPage::slotSearchAll(int page, bool attrAsync)
                 searchBtn_->setEnabled(true);
                 attributTreeW_->setEnabled(true);
                 flushAttrBtn_->setEnabled(true);
+                setAttrWgtEnable(true);
                 preIsSearch_ = false;
                 isClearnAttrSelected_ = false;
             }
@@ -1168,6 +1369,7 @@ void SemanticSearchPage::slotSearchAll(int page, bool attrAsync)
                     searchBtn_->setEnabled(true);
                     attributTreeW_->setEnabled(true);
                     flushAttrBtn_->setEnabled(true);
+                    setAttrWgtEnable(true);
                     preIsSearch_ = false;
                     isClearnAttrSelected_ = false;
                     noDataW_->show();
@@ -1182,6 +1384,7 @@ void SemanticSearchPage::slotSearchAll(int page, bool attrAsync)
                 searchBtn_->setEnabled(true);
                 attributTreeW_->setEnabled(true);
                 flushAttrBtn_->setEnabled(true);
+                setAttrWgtEnable(true);
                 preIsSearch_ = false;
                 isClearnAttrSelected_ = false;
             }
@@ -1198,6 +1401,7 @@ void SemanticSearchPage::slotSearchAll(int page, bool attrAsync)
             pageIndicator_->setEnabled(true);
             searchBtn_->setEnabled(true);
             attributTreeW_->setEnabled(true);
+            setAttrWgtEnable(true);
             noDataW_->show();
             preIsSearch_ = false;
             isClearnAttrSelected_ = false;
@@ -1214,6 +1418,7 @@ void SemanticSearchPage::slotSearchAll(int page, bool attrAsync)
             pageIndicator_->setEnabled(true);
             searchBtn_->setEnabled(true);
             attributTreeW_->setEnabled(true);
+            setAttrWgtEnable(true);
             preIsSearch_ = false;
             isClearnAttrSelected_ = false;
         });
@@ -1230,6 +1435,7 @@ void SemanticSearchPage::slotSearchAll(int page, bool attrAsync)
     pageIndicator_->setEnabled(false);
     searchBtn_->setEnabled(false);
     attributTreeW_->setEnabled(false);
+    setAttrWgtEnable(false);
     noDataW_->hide();
     dataListW_->clear();
     preIsSearch_ = true;
@@ -1274,7 +1480,7 @@ void SemanticSearchPage::slotTreeItemChanged(QTreeWidgetItem *item, int column)
     }
 }
 
-void SemanticSearchPage::createTreeItem(QTreeWidget *treeW, QTreeWidgetItem *parentItem, SemanticSearchPage::itemData &items)
+void SemanticSearchPage::createTreeItem(QTreeWidget *treeW, QTreeWidgetItem *parentItem, itemData &items)
 {
     static int imgIndex = 0;
     QString strIconPath = QString("images/attributes/%1%2").arg(imgIndex).arg(".png");
@@ -1307,5 +1513,47 @@ void SemanticSearchPage::onSourceCurrentIndexChanged(int index)
         {
             endTimeEdit_->setDateTime(startTimeEdit_->dateTime().addDays(3));
         }
+    }
+}
+
+void SemanticSearchPage::slotAppendAttr(QString strAttr)
+{
+    curfaceAttrList_.append(strAttr);
+    onSearchHistory();
+}
+
+void SemanticSearchPage::slotRemoveAttr(QString strAttr)
+{
+    curfaceAttrList_.removeOne(strAttr);
+    onSearchHistory();
+}
+
+void SemanticSearchPage::slotSizeChanged()
+{
+    //m_attrScrollArea->adjustSize();
+    m_attrBigContainerWgt->adjustSize();
+}
+
+void SemanticSearchPage::onSearchHistory()
+{
+    curCameraId_ = posCombox_->currentData().toString();
+    curMode_ = personTypeCombox_->currentIndex();
+    curStartTime_ = startTimeEdit_->dateTime();
+    curEndTime_ = endTimeEdit_->dateTime();
+    needUpdatePageInfo_ = true;
+    if(curMode_ == 0){
+        slotSearchAll(1,true);
+    }else if(curMode_ == 1){
+        slotSemanticSearch(1,true);
+    }else if(curMode_ == 2){
+        slotSearchFaceLink(1,true);
+    }
+}
+
+void SemanticSearchPage::setAttrWgtEnable(bool bEnable)
+{
+    for (auto itemWgt : m_lstAttrWgt)
+    {
+        itemWgt->setEnabled(bEnable);
     }
 }

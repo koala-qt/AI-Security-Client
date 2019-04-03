@@ -3,6 +3,7 @@
 
 #include "widgetinterface.h"
 #include "service/servicei.h"
+#include "dataformatdefine.h"
 QT_FORWARD_DECLARE_CLASS(QListWidget)
 QT_FORWARD_DECLARE_CLASS(QStackedWidget)
 QT_FORWARD_DECLARE_CLASS(QLabel)
@@ -16,6 +17,10 @@ QT_FORWARD_DECLARE_CLASS(PageIndicator)
 QT_FORWARD_DECLARE_CLASS(QMenu)
 QT_FORWARD_DECLARE_CLASS(NoDataTip)
 QT_FORWARD_DECLARE_CLASS(WaitingLabel)
+QT_FORWARD_DECLARE_CLASS(QScrollArea)
+
+class CustomWidget;
+
 class SemanticSearchPage : public WidgetI
 {
     Q_OBJECT
@@ -28,12 +33,6 @@ protected:
     bool event(QEvent *event) override;
 
 private:
-    typedef struct item_
-    {
-        QString name;
-        int value;
-        QVector<item_> childrens;
-    }itemData;
     QLabel *personTypeL_{nullptr}, *posL_{nullptr},*startTimeL_{nullptr},*endTimeL_{nullptr};
     QComboBox *personTypeCombox_{nullptr}, *posCombox_{nullptr};
     QDateTimeEdit *startTimeEdit_{nullptr},*endTimeEdit_{nullptr};
@@ -79,6 +78,21 @@ private slots:
     void createTreeItem(QTreeWidget *treeW,QTreeWidgetItem *parentItem,itemData &items);
 
     void onSourceCurrentIndexChanged(int index);
+
+    void slotAppendAttr(QString strAttr);
+    void slotRemoveAttr(QString strAttr);
+    void slotSizeChanged();
+
+private:
+    void onSearchHistory();
+    void setAttrWgtEnable(bool bEnable);
+
+private:
+    QList<CustomWidget *> m_lstAttrWgt;
+    QVBoxLayout *m_attrVlay{nullptr};
+    QScrollArea *m_attrScrollArea{nullptr};
+    QWidget *m_attrBigContainerWgt{nullptr};
+    //QStringList m_attrbuteList;
 };
 
 #endif // SEMANTICSEARCHPAGE_H

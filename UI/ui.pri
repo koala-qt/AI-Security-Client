@@ -56,7 +56,9 @@ HEADERS += \
     $$PWD/personmark.h \
     $$PWD/golbalviewwidget.h \
     $$PWD/glviewmapwidget.h \
-    $$PWD/windowtitlebar.h
+    $$PWD/windowtitlebar.h \
+    $$PWD/customwidget.h \
+    $$PWD/dataformatdefine.h
 
 SOURCES += \
     $$PWD/videoplayback.cpp \
@@ -113,4 +115,5 @@ SOURCES += \
     $$PWD/personmark.cpp \
     $$PWD/golbalviewwidget.cpp \
     $$PWD/glviewmapwidget.cpp \
-    $$PWD/windowtitlebar.cpp
+    $$PWD/windowtitlebar.cpp \
+    $$PWD/customwidget.cpp
