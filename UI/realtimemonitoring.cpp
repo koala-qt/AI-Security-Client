@@ -90,7 +90,7 @@ RealtimeMonitoring::RealtimeMonitoring( WidgetI *parent):
     vboxLay->addWidget(eventList_);
     eventBackW_->setLayout(vboxLay);
     QVBoxLayout *vlay = new QVBoxLayout;
-#if 0
+#if 1
     vlay->addWidget(switchToMap_,36);
 #endif
     vlay->addWidget(eventBackW_,894);

@@ -1483,7 +1483,7 @@ Please adjust the conditions to re-query</source>
     <message>
         <location filename="../UI/semanticsearchpage.cpp" line="298"/>
         <source>Hair</source>
-        <translation type="unfinished">毛发</translation>
+        <translation type="unfinished">发型</translation>
     </message>
     <message>
         <location filename="../UI/semanticsearchpage.cpp" line="319"/>
