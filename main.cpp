@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
         golbalWin->setWindowFlag(Qt::FramelessWindowHint);
         golbalWin->setGeometry(deskTopW->availableGeometry(config.value("ScreenOrder/GolbalWindow").toInt()));
         golbalWin->show();
-    }else if(screenCount == 3){
+    }else if(screenCount >= 3){
         w.move(deskTopW->availableGeometry(config.value("ScreenOrder/MainWindow").toInt()).topLeft());
         w.showMaximized();
 
