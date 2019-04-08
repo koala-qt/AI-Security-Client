@@ -59,22 +59,25 @@ TargetSearch::TargetSearch( WidgetI *parent):
     QVector<itemData> devicesVec;
     itemData items;
     items.name = semanticSearchPage_->objectName();
+    items.iconName = "ic_database.png";
     items.value = 0;
 #if 1
-    items.childrens << itemData{tr("Search By Upload"),1, QVector<itemData>() << itemData{faceSearchPage_->objectName(),1,QVector<itemData>()}
-                                                                              << itemData{multiPleSearchPage_->objectName(),2,QVector<itemData>()}
-                                                                              << itemData{facelinkPage_->objectName(),3,QVector<itemData>()}
-                                                                              << itemData{trackingPage_->objectName(),4,QVector<itemData>()}
-                                                                              << itemData{combinationPage_->objectName(),5,QVector<itemData>()}};
+    items.childrens << itemData{tr("Search By Upload"),"ic_upload.png",1, QVector<itemData>() << itemData{faceSearchPage_->objectName(),"ic_single.png",1,QVector<itemData>()}
+                                                                              << itemData{multiPleSearchPage_->objectName(),"ic_multiple.png",2,QVector<itemData>()}
+                                                                              << itemData{facelinkPage_->objectName(),"",3,QVector<itemData>()}
+                                                                              << itemData{trackingPage_->objectName(),"ic_trajectory.png",4,QVector<itemData>()}
+                                                                              << itemData{combinationPage_->objectName(),"ic_body.png",5,QVector<itemData>()}};
     devicesVec << items;
     items.childrens.clear();
     items.name = tr("Imported Photo Database");
+    items.iconName = "ic_photodatabase.png";
     items.value = 6;
-    items.childrens << itemData{portraitSearchPage_->objectName(),6,QVector<itemData>()}
-                                                                                 << itemData{m_pMultFaceAnalysis->objectName(),7,QVector<itemData>()};
+    items.childrens << itemData{portraitSearchPage_->objectName(),"ic_single.png",6,QVector<itemData>()}
+                                                                                 << itemData{m_pMultFaceAnalysis->objectName(),"ic_multiple.png",7,QVector<itemData>()};
     devicesVec << items;
     items.childrens.clear();
     items.name = videoAnalysisPage_->objectName();
+    items.iconName = "ic_uploaded videos.png";
     items.value = 8;
     devicesVec << items;
 #else
@@ -101,8 +104,8 @@ void TargetSearch::setUserStyle(int s)
     if(0 == s){
         treeW_->setStyleSheet("QTreeView{"
                               "border:none;"
-                              "font-size: 14px;"
-                              "font-weight:bold;"
+                              "font-size: 16px;font:bold;"
+                              //"font-weight:bold;"
                               "color: #CECECE;"
                               "border-radius: 4px;"
                               "background-color: rgba(0,0,0,0.4);"
@@ -194,8 +197,8 @@ void TargetSearch::createTreeItem(QTreeWidget *treeW, QTreeWidgetItem *parentIte
     }else{
         item = new QTreeWidgetItem(treeW, QStringList() << items.name, items.childrens.isEmpty());
     }
-    QString strIconPath = QString("images/crop/ic_%1%2").arg(item->text(0)).arg(".png");
-    qDebug() << "strIconPath" << strIconPath;
+    QString strIconPath = QString("images/crop/%1").arg(items.iconName);
+    //qDebug() << "strIconPath" << strIconPath;
     item->setIcon(0, QIcon(strIconPath));
     item->setData(0,Qt::UserRole,items.value);
     item->setSizeHint(0,QSize(-1,34));

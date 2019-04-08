@@ -7,8 +7,8 @@
 #include <QJsonObject>
 #include <QApplication>
 #include <QJsonArray>
-#include <QFile>
 #include "notifyeventbywebsocket.h"
+
 NotifyEventByWebSocket::NotifyEventByWebSocket(QObject *parent):
     NotifyEventI(parent)
 {
@@ -66,14 +66,72 @@ void NotifyEventByWebSocket::onTextMessageReceived(QString message)
     QJsonParseError jsError;
     QJsonDocument jsDoc = QJsonDocument::fromJson(message.toLatin1(),&jsError);
     if(jsError.error != QJsonParseError::NoError){
-        qDebug() << QObject::tr("No search results");
+        qDebug() << "No search results";
         return;
     }
+    //qDebug() << "onTextMessageReceived:" << m_eventType << ":" << message;
+
     QJsonObject jsObj = jsDoc.object();
     if(jsObj.value("type") != "snap-alarm-type")return;
-
     jsObj = jsObj.value("data").toObject();
     QString eventType = jsObj.value("eventType").toString();
+    QString personType = jsObj.value("personType").toString();
+
+    bool bNoFilter = true;
+    switch (m_eventType)
+    {
+    case ALL:
+        break;
+    case Intrusion:
+    {
+        if (eventType != "smsr_alarm_intruder")
+        {
+            bNoFilter = false;
+        }
+    }
+        break;
+    case Trailing:
+    {
+        if (eventType != "smsr_alarm_abdoor")
+        {
+            bNoFilter = false;
+        }
+    }
+        break;
+    case Climbing:
+    {
+        if (eventType != "smsr_alarm_climb")
+        {
+            bNoFilter = false;
+        }
+    }
+        break;
+    case Gathering:
+    {
+        if (eventType != "smsr_alarm_gather")
+        {
+            bNoFilter = false;
+        }
+    }
+        break;
+    case Blacklist:
+    {
+        if ((eventType != "smsr_alarm_face") || (personType != "100010001008"))
+        {
+            bNoFilter = false;
+        }
+    }
+        break;
+    case VIP:
+    {
+        if ((eventType != "smsr_alarm_face") || (personType != "100010001007"))
+        {
+            bNoFilter = false;
+        }
+    }
+        break;
+    }
+    if (!bNoFilter) return;
     if(eventType == "smsr_alarm_intruder"){
         IntruderEventData evData;
         evData.bodyId = jsObj.value("bodyId").toString();
@@ -161,7 +219,7 @@ void NotifyEventByWebSocket::onTextMessageReceived(QString message)
             qDebug() << str;
         });
         serviceI->getImageByUrl(jsObj.value("url").toString());
-    }else if(eventType == "smsr_alarm_gather"){ //smsr_alarm_gather
+    }else if(eventType == "smsr_alarm_gather"){
         GatherEventData evData;
         evData.deviceName = jsObj.value("deviceName").toString();
         evData.eventType = eventType;
@@ -170,7 +228,6 @@ void NotifyEventByWebSocket::onTextMessageReceived(QString message)
         evData.sceneId = jsObj.value("sceneId").toString();
         evData.sourceId = jsObj.value("sourceId").toString();
         evData.timeStamp = QDateTime::fromMSecsSinceEpoch(jsObj.value("timeStamp").toVariant().toULongLong());
-        qDebug() << jsObj.value("url").toString();
         RestServiceI *serviceI = serFactory_->makeRestServiceI();
         connect(serviceI,&RestServiceI::sigDownloadImage,this,[this,evData](QImage img){
             GatherEventData newData = evData;
@@ -231,4 +288,8 @@ void NotifyEventByWebSocket::onSslErrors(const QList<QSslError> &errors)
 void NotifyEventByWebSocket::slotSocketError(QAbstractSocket::SocketError e)
 {
     qDebug() << metaObject()->className() << e;
+    websocket_->close();
+    if(!timer_->isActive()){
+        timer_->start(5000);
+    }
 }

@@ -259,7 +259,7 @@ CombinationPage::CombinationPage( WidgetI *parent):
     bodyTable_->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     bodyTable_->horizontalHeader()->setSectionResizeMode(0,QHeaderView::Fixed);
     bodyTable_->horizontalHeader()->setSectionResizeMode(1,QHeaderView::Fixed);
-    bodyTable_->setHorizontalHeaderLabels(QStringList() << tr("Face") << tr("Body") << tr("Position") << tr("Similarity") << tr("Time"));
+    bodyTable_->setHorizontalHeaderLabels(QStringList() << tr("Face") << QObject::tr("Body") << tr("Position") << tr("Similarity") << tr("Time"));
     bodyTable_->horizontalHeader()->setSortIndicatorShown(true);
     bodyTable_->setShowGrid(false);
     bodyTable_->setFrameStyle(QFrame::NoFrame);

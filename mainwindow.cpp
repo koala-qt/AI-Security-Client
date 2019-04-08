@@ -145,7 +145,7 @@ MainWindow::MainWindow(WidgetI *parent)
     m_topList->itemClicked(m_topList->item(0));
     m_topList->setCurrentRow(0);
     m_topList->currentItemChanged(m_topList->item(0),nullptr);
-    appNameL_->hide();
+    //appNameL_->hide();
 }
 
 MainWindow::~MainWindow()
@@ -158,7 +158,11 @@ void MainWindow::setUserStyle(int s)
     QPalette pal;
     QFont f = font();
     f.setFamily("微软雅黑"); //DINCond-Bold、PingFang SC Regular、微软雅黑 Microsoft YaHei UI、Source Sans Pro
-    f.setWeight(QFont::Normal);
+#if 0
+    f.setWeight(QFont::ExtraBold);
+    f.setBold(true);
+#endif
+    f.setPixelSize(12);
     qApp->setFont(f);
 
     f.setWeight(QFont::Bold);
@@ -169,9 +173,10 @@ void MainWindow::setUserStyle(int s)
 
     f = appNameL_->font();
     f.setWeight(QFont::Bold);
-    f.setPixelSize(14);
+    f.setPixelSize(18);
     appNameL_->setFont(f);
     if(s == 0){
+        appNameL_->setStyleSheet("color:white;font:bold;");
         pal = palette();
         pal.setColor(QPalette::Background,QColor(37,41,52));
         setPalette(pal);
@@ -193,6 +198,7 @@ void MainWindow::setUserStyle(int s)
         setPalette(pal);
 
         m_topList->setStyleSheet("QListWidget{"
+                                 "font:bold;font-size:18px;"
                                  "background-color: transparent;"
                                  "}"
                                  "QListWidget::item{"
