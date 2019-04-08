@@ -255,7 +255,7 @@ void FacelinkTable::setUserStyle(int s)
                     "selection-background-color: #CECECE;"
                     "}"
                     "QComboBox::drop-down{"
-                    "subcontrol-position: center right;border-image: url(images/dropdown2.png);width:11px;height:8px;subcontrol-origin: padding;margin-right:5px;"
+                    "subcontrol-position: center right;border-image: url(images/dropdown2.png);width:10px;height:6px;subcontrol-origin: padding;margin-right:5px;"
                     "}"
                     "QScrollBar:vertical{"
                     "background: transparent;"

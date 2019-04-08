@@ -199,7 +199,11 @@ void TargetSearch::createTreeItem(QTreeWidget *treeW, QTreeWidgetItem *parentIte
     }
     QString strIconPath = QString("images/crop/%1").arg(items.iconName);
     //qDebug() << "strIconPath" << strIconPath;
-    item->setIcon(0, QIcon(strIconPath));
+    QIcon icon;
+    QPixmap pixmap(strIconPath);
+    icon.addPixmap(pixmap, QIcon::Normal);
+    icon.addPixmap(pixmap, QIcon::Selected);
+    item->setIcon(0, icon);
     item->setData(0,Qt::UserRole,items.value);
     item->setSizeHint(0,QSize(-1,34));
     if(items.value == 3){
