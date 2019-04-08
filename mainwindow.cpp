@@ -173,10 +173,10 @@ void MainWindow::setUserStyle(int s)
 
     f = appNameL_->font();
     f.setWeight(QFont::Bold);
-    f.setPixelSize(16);
+    f.setPixelSize(18);
     appNameL_->setFont(f);
     if(s == 0){
-        appNameL_->setStyleSheet("color:white;");
+        appNameL_->setStyleSheet("color:white;font:bold;");
         pal = palette();
         pal.setColor(QPalette::Background,QColor(37,41,52));
         setPalette(pal);
