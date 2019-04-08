@@ -149,7 +149,7 @@ bool HomPage::eventFilter(QObject *watched, QEvent *event)
         }
     }else if(watchWid == webView_ && event->type() == QEvent::Show){
         if(webView_->url().isEmpty()){
-#if 0
+#if 1
             QUrl url(qApp->applicationDirPath() + "/jsHtml/index.html?lang=zh");
             webView_->load(url);
 #else

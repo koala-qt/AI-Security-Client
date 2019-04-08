@@ -182,7 +182,7 @@ void GlViewMapWidget::init()
     pMidVlay->addSpacing(300);
     pMidVlay->setSpacing(10);
     mainHlay->addLayout(pMidVlay);
-    QString strTitleStyle = "font-size:16px;color:white;font:bold;";
+    QString strTitleStyle = "font-size:18px;color:white;font:bold;";
     QLabel *labTitle = new QLabel(tr("Location Access"));
     labTitle->setStyleSheet(strTitleStyle);
     labTitle->setAlignment(Qt::AlignRight);

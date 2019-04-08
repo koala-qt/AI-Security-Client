@@ -158,7 +158,11 @@ void MainWindow::setUserStyle(int s)
     QPalette pal;
     QFont f = font();
     f.setFamily("微软雅黑"); //DINCond-Bold、PingFang SC Regular、微软雅黑 Microsoft YaHei UI、Source Sans Pro
-    f.setWeight(QFont::Normal);
+#if 0
+    f.setWeight(QFont::ExtraBold);
+    f.setBold(true);
+#endif
+    f.setPixelSize(12);
     qApp->setFont(f);
 
     f.setWeight(QFont::Bold);
@@ -194,6 +198,7 @@ void MainWindow::setUserStyle(int s)
         setPalette(pal);
 
         m_topList->setStyleSheet("QListWidget{"
+                                 "font:bold;font-size:18px;"
                                  "background-color: transparent;"
                                  "}"
                                  "QListWidget::item{"

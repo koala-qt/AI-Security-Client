@@ -104,8 +104,8 @@ void TargetSearch::setUserStyle(int s)
     if(0 == s){
         treeW_->setStyleSheet("QTreeView{"
                               "border:none;"
-                              "font-size: 14px;"
-                              "font-weight:bold;"
+                              "font-size: 16px;font:bold;"
+                              //"font-weight:bold;"
                               "color: #CECECE;"
                               "border-radius: 4px;"
                               "background-color: rgba(0,0,0,0.4);"

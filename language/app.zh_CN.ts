@@ -1897,7 +1897,7 @@ cameraId:%2
     <message>
         <location filename="../UI/semanticsearchpage.cpp" line="54"/>
         <source>Attributes Reset</source>
-        <translation type="unfinished">查询</translation>
+        <translation type="unfinished">属性查询</translation>
     </message>
     <message>
         <location filename="../UI/semanticsearchpage.cpp" line="111"/>
