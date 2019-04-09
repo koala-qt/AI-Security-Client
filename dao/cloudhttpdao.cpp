@@ -28,7 +28,7 @@ DLL::CloudHttpDao::CloudHttpDao()
 
 QString DLL::CloudHttpDao::getCameraInfo(QVector<RestServiceI::CameraInfo> *cameras)
 {
-    QString urlStr = host_ +  QObject::tr("api/v2/external/monitor-detail/find-camera-map");
+    QString urlStr = host_ +  QObject::tr("api/v2/cmcc/device/device-scene/find-camera-map");
     int resCode = send(DLL::GET,urlStr.toStdString(),std::string(),5);
     if(resCode != CURLE_OK){
         return curl_easy_strerror(CURLcode(resCode));
@@ -50,6 +50,10 @@ QString DLL::CloudHttpDao::getCameraInfo(QVector<RestServiceI::CameraInfo> *came
         RestServiceI::CameraInfo camera;
         QJsonObject cameraObj = jsVal.toObject();
         camera.cameraId = QString::number(cameraObj.value("id").toInt());
+        if ("0" == camera.cameraId)
+        {
+            camera.cameraId = cameraObj.value("id").toString();
+        }
         camera.cameraPos = cameraObj.value("pos").toString();
         camera.rtsp = cameraObj.value("client_rtsp").toString();
         return camera;

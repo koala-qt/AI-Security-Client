@@ -10,12 +10,12 @@ PageIndicator::PageIndicator(QWidget *parent):
     QWidget(parent)
 {
     QHBoxLayout *mainLay = new QHBoxLayout;
-    m_prePageBtn = new QPushButton;
+    m_prePageBtn = new QPushButton("<");
     m_listW = new QListWidget;
     m_listW->setFlow(QListWidget::LeftToRight);
     m_listW->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     m_listW->setFocusPolicy(Qt::NoFocus);
-    m_nextPageBtn = new QPushButton;
+    m_nextPageBtn = new QPushButton(">");
     m_infoL = new QLabel;
     mainLay->addWidget(m_prePageBtn);
     mainLay->addWidget(m_listW);
@@ -25,14 +25,17 @@ PageIndicator::PageIndicator(QWidget *parent):
     mainLay->setAlignment(Qt::AlignRight | Qt::AlignBottom);
     setLayout(mainLay);
 
-    m_listW->setFixedHeight(48);
-    m_prePageBtn->setFixedSize(m_listW->height(),m_listW->height());
-    m_nextPageBtn->setFixedSize(m_listW->height(),m_listW->height());
+    m_listW->setFixedHeight(30);
+    //m_prePageBtn->setFixedSize(m_listW->height(),m_listW->height());
+    //m_nextPageBtn->setFixedSize(m_listW->height(),m_listW->height());
     m_prePageBtn->setFocusPolicy(Qt::NoFocus);
     m_nextPageBtn->setFocusPolicy(Qt::NoFocus);
+    m_listW->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     int itemH = m_listW->height() - m_listW->spacing() * 2 - m_listW->frameWidth() * 2;
     m_itemSize.setWidth(itemH);
-    m_itemSize.setHeight(itemH);
+    //m_itemSize.setHeight(itemH);
+    //m_itemSize.setWidth(30);
+    m_itemSize.setHeight(28);
     connect(m_listW,SIGNAL(currentRowChanged(int)),this,SLOT(slotRowChanged(int)));
     connect(m_prePageBtn,SIGNAL(clicked(bool)),this,SLOT(slotPrePageClicked()));
     connect(m_nextPageBtn,SIGNAL(clicked(bool)),this,SLOT(slotNextPageClicked()));
@@ -54,6 +57,8 @@ void PageIndicator::setPageInfo(int pageCount, int totalRecord)
         }
         m_listW->setFixedSize(QSize(pageCount * m_itemSize.width() + (pageCount + 1) * m_listW->spacing() + m_listW->frameWidth() * 2, m_listW->height()));
     }else{
+        int tempWidth = 25 * (QString::number(pageCount).length() / 2);
+        m_itemSize.setWidth(tempWidth > 30 ? tempWidth : 30);
         for(int i = 0; i < ITEMCOUNT; i++){
             QListWidgetItem *item = new QListWidgetItem;
             item->setSizeHint(m_itemSize);
@@ -69,6 +74,12 @@ void PageIndicator::setPageInfo(int pageCount, int totalRecord)
         m_listW->setFixedSize(QSize(ITEMCOUNT * m_itemSize.width() + (ITEMCOUNT + 1) * m_listW->spacing() + m_listW->frameWidth() * 2, m_listW->height()));
     }
     m_listW->setVisible(pageCount);
+    static bool bFirstLoading = true;
+    if ((pageCount > 0) && bFirstLoading)
+    {
+        m_listW->item(0)->setSelected(true);
+        //bFirstLoading = false;
+    }
 }
 
 void PageIndicator::adjustRow()
@@ -84,32 +95,36 @@ void PageIndicator::setUserStyle()
                            "background-color: transparent;"
                            "}"
                            "QListWidget::item{"
-                           "color: rgba(255,255,255,191);"
-                           "background-color: transparent"
+                           "color: white;"
+                           "background-color: #383F4F;"
+                           "border-radius: 4px;margin:1px;"
                            "}"
                            "QListWidget::item:hover{"
-                           "background: rgba(206,206,206,40);"
-                           "border: none;"
+                           "background: #5D57FF"
                            "}"
                            "QListWidget::item:selected{"
-                           "border: 1px solid #CECECE;"
-                           "border-radius: 4px;"
+                           "background-color:#5D57FF;"
                            "}");
 
     m_prePageBtn->setStyleSheet("QPushButton{"
                                "border: 0px;"
-                               "image: url(images/pre_page_btn.png);"
+                               //"image: url(images/pre_page_btn.png);"
+                               "background-color:#383F4F;border-radius:2px;"
+                               "width:30px;height:30px;color:white;"
                                "}"
                                "QPushButton:pressed{"
-                               "padding: 3px;"
+                               //"padding: 3px;"
+                               "background-color:#383F4F;"
                                "}");
     m_nextPageBtn->setStyleSheet("QPushButton{"
-                               "border: 0px;"
-                               "image: url(images/next_page_btn.png);"
-                               "}"
-                               "QPushButton:pressed{"
-                               "padding: 3px;"
-                               "}");
+                                 "border: 0px;"
+                                 //"image: url(images/next_page_btn.png);"
+                                 "background-color:#383F4F;border-radius:2px;"
+                                 "width:30px;height:30px;color:white;"
+                                 "}"
+                                 "QPushButton:pressed{"
+                                 //"padding: 3px;"
+                                 "}");
 
     QPalette pal;
     QFont f = m_infoL->font();
