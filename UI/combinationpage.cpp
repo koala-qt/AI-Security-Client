@@ -657,7 +657,7 @@ void CombinationPage::setUserStyle(int s)
                                      "width:10px;"
                                      "height:6px;"
                                      "subcontrol-origin: padding;"
-                                     "margin-right:2px;"
+                                     "margin-right:5px;"
                                      "}"
                                      "QScrollBar:vertical{"
                                      "background: transparent;"
