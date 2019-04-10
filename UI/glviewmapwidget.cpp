@@ -252,8 +252,8 @@ void GlViewMapWidget::allEventWarning(NotifyEventI::GlEventData info)
     {
         std::random_device device;
         std::mt19937 gen(device());
-        std::uniform_int_distribution<int> dis(-300, 50); // height
-        std::uniform_int_distribution<int> disWidth(-250, 90); // width
+        std::uniform_int_distribution<int> dis(-350, 0); // height
+        std::uniform_int_distribution<int> disWidth(-350, 10); // width
 
         MovieLabel *ml = Q_NULLPTR;
         ml = new MovieLabel(info, this);
