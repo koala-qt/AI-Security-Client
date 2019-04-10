@@ -648,6 +648,91 @@ void RealtimeMonitoring::slotEventComboxIndexChanged(int index)
     if (0 != index)
     {
         eventList_->clear();
+        m_loadingData = true;
+        switch (index)
+        {
+        case IntruderEvent:
+        {
+            // Avoid switching data back and forth
+            for (auto evData : m_lstIntruder)
+            {
+                slotOnIntruderEvent(evData);
+            }
+        }
+            break;
+        case ABDoorEvent:
+        {
+            for (auto evData : m_lstAbDoorEvent)
+            {
+                slotOnAbDoorEvent(evData);
+            }
+        }
+            break;
+        case ClimbEvent:
+        {
+            for (auto evData : m_lstClimbeEvent)
+            {
+                slotOnClimbEvent(evData);
+            }
+        }
+            break;
+        case GatherEvent:
+        {
+            for (auto evData : m_lstGatherEvent)
+            {
+                slotOngGatherEvent(evData);
+            }
+        }
+            break;
+        case BalckList:
+        {
+            for (auto evData : m_lstPersonBlackList)
+            {
+                slotOnPersonEvent(evData);
+            }
+        }
+            break;
+        case VIP:
+        {
+            for (auto evData : m_lstPersonVipEvent)
+            {
+                slotOnPersonEvent(evData);
+            }
+        }
+            break;
+        }
+        m_loadingData = false;
+    }
+    else
+    {
+        if (0 == eventList_->count())
+        {
+            m_loadingData = true;
+            int nCount = 0;
+            for (auto evData : m_lstIntruder)
+            {
+                slotOnIntruderEvent(evData);
+                nCount++;
+            }
+#if 0
+            if (nCount < EVENTITEMCOUNT)
+            {
+                for (auto evData : m_lstAbDoorEvent)
+                {
+                    if (nCount < EVENTITEMCOUNT)
+                    {
+                        slotOnAbDoorEvent(evData);
+                        nCount++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+#endif
+            m_loadingData = false;
+        }
     }
 }
 
@@ -693,7 +778,7 @@ void RealtimeMonitoring::slotAddFaceitem(NotifyPersonI::FaceSnapEventData faceEv
 
 void RealtimeMonitoring::slotOnIntruderEvent(NotifyEventI::IntruderEventData evData)
 {
-    if(!eventItemSize_.isValid() || (eventList_->rect().contains(eventList_->mapFromGlobal(QCursor::pos())) && eventList_->isVisible()))return;
+    if(!eventItemSize_.isValid() || (eventList_->rect().contains(eventList_->mapFromGlobal(QCursor::pos())) && eventList_->isVisible() && !m_loadingData))return;
     if(eventList_->count() >= EVENTITEMCOUNT){
         QListWidgetItem *delItem = eventList_->takeItem(EVENTITEMCOUNT - 1);
         eventList_->removeItemWidget(delItem);
@@ -726,6 +811,17 @@ void RealtimeMonitoring::slotOnIntruderEvent(NotifyEventI::IntruderEventData evD
 #endif
     mainLay->setContentsMargins(0,5,0,5);
     eventList_->setItemWidget(item,itemW);
+    if (m_loadingData)
+    {
+        return;
+    }
+    m_mutex.lock();
+    if (m_lstIntruder.count() >= EVENTITEMCOUNT)
+    {
+        m_lstIntruder.pop();
+    }
+    m_lstIntruder.push(evData);
+    m_mutex.unlock();
 }
 
 void RealtimeMonitoring::slotOnPersonEvent(NotifyEventI::PersonEventData evData)
@@ -741,6 +837,16 @@ void RealtimeMonitoring::slotOnPersonEvent(NotifyEventI::PersonEventData evData)
         if ("100010001008" == evData.personType)
         {
             bFilter = false;
+            if (!m_loadingData)
+            {
+                m_mutex.lock();
+                if (m_lstPersonBlackList.count() >= EVENTITEMCOUNT)
+                {
+                    m_lstPersonBlackList.pop();
+                }
+                m_lstPersonBlackList.push(evData);
+                m_mutex.unlock();
+            }
         }
     }
         break;
@@ -749,6 +855,16 @@ void RealtimeMonitoring::slotOnPersonEvent(NotifyEventI::PersonEventData evData)
         if ("100010001007" == evData.personType)
         {
             bFilter = false;
+            if (!m_loadingData)
+            {
+                m_mutex.lock();
+                if (m_lstPersonVipEvent.count() >= EVENTITEMCOUNT)
+                {
+                    m_lstPersonBlackList.pop();
+                }
+                m_lstPersonBlackList.push(evData);
+                m_mutex.unlock();
+            }
         }
     }
         break;
@@ -757,7 +873,7 @@ void RealtimeMonitoring::slotOnPersonEvent(NotifyEventI::PersonEventData evData)
     }
     if (bFilter) return;
     // qDebug() << Q_FUNC_INFO << evData.personType << evData.personTypenName;
-    if(!eventItemSize_.isValid() || (eventList_->rect().contains(eventList_->mapFromGlobal(QCursor::pos())) && eventList_->isVisible()))return;
+    if(!eventItemSize_.isValid() || (eventList_->rect().contains(eventList_->mapFromGlobal(QCursor::pos())) && eventList_->isVisible() && !m_loadingData))return;
     if(eventList_->count() >= EVENTITEMCOUNT){
         QListWidgetItem *delItem = eventList_->takeItem(EVENTITEMCOUNT - 1);
         eventList_->removeItemWidget(delItem);
@@ -777,11 +893,12 @@ void RealtimeMonitoring::slotOnPersonEvent(NotifyEventI::PersonEventData evData)
                        "}");
 #endif
     eventList_->setItemWidget(item,itemW);
+
 }
 
 void RealtimeMonitoring::slotOnAbDoorEvent(NotifyEventI::ABDoorEventData evData)
 {
-    if(!eventItemSize_.isValid() || (eventList_->rect().contains(eventList_->mapFromGlobal(QCursor::pos())) && eventList_->isVisible()))return;
+    if(!eventItemSize_.isValid() || (eventList_->rect().contains(eventList_->mapFromGlobal(QCursor::pos())) && eventList_->isVisible() && !m_loadingData))return;
     if(eventList_->count() >= EVENTITEMCOUNT){
         QListWidgetItem *delItem = eventList_->takeItem(EVENTITEMCOUNT - 1);
         eventList_->removeItemWidget(delItem);
@@ -814,11 +931,22 @@ void RealtimeMonitoring::slotOnAbDoorEvent(NotifyEventI::ABDoorEventData evData)
 #endif
     mainLay->setContentsMargins(0,5,0,5);
     eventList_->setItemWidget(item,itemW);
+    if (m_loadingData)
+    {
+        return;
+    }
+    m_mutex.lock();
+    if (m_lstAbDoorEvent.count() >= EVENTITEMCOUNT)
+    {
+        m_lstAbDoorEvent.pop();
+    }
+    m_lstAbDoorEvent.push(evData);
+    m_mutex.unlock();
 }
 
 void RealtimeMonitoring::slotOnClimbEvent(NotifyEventI::ClimbEventData evData)
 {
-    if(!eventItemSize_.isValid() || (eventList_->rect().contains(eventList_->mapFromGlobal(QCursor::pos())) && eventList_->isVisible()))return;
+    if(!eventItemSize_.isValid() || (eventList_->rect().contains(eventList_->mapFromGlobal(QCursor::pos())) && eventList_->isVisible() && !m_loadingData))return;
     if(eventList_->count() >= EVENTITEMCOUNT){
         QListWidgetItem *delItem = eventList_->takeItem(EVENTITEMCOUNT - 1);
         eventList_->removeItemWidget(delItem);
@@ -851,11 +979,22 @@ void RealtimeMonitoring::slotOnClimbEvent(NotifyEventI::ClimbEventData evData)
 #endif
     mainLay->setContentsMargins(0,5,0,5);
     eventList_->setItemWidget(item,itemW);
+    if (m_loadingData)
+    {
+        return;
+    }
+    m_mutex.lock();
+    if (m_lstClimbeEvent.count() >= EVENTITEMCOUNT)
+    {
+        m_lstClimbeEvent.pop();
+    }
+    m_lstClimbeEvent.push(evData);
+    m_mutex.unlock();
 }
 
 void RealtimeMonitoring::slotOngGatherEvent(NotifyEventI::GatherEventData evData)
 {
-    if(!eventItemSize_.isValid() || (eventList_->rect().contains(eventList_->mapFromGlobal(QCursor::pos())) && eventList_->isVisible()))return;
+    if(!eventItemSize_.isValid() || (eventList_->rect().contains(eventList_->mapFromGlobal(QCursor::pos())) && eventList_->isVisible() && !m_loadingData))return;
     if(eventList_->count() >= EVENTITEMCOUNT){
         QListWidgetItem *delItem = eventList_->takeItem(EVENTITEMCOUNT - 1);
         eventList_->removeItemWidget(delItem);
@@ -880,6 +1019,17 @@ void RealtimeMonitoring::slotOngGatherEvent(NotifyEventI::GatherEventData evData
 #endif
     mainLay->setContentsMargins(0,5,0,5);
     eventList_->setItemWidget(item,itemW);
+    if (m_loadingData)
+    {
+        return;
+    }
+    m_mutex.lock();
+    if (m_lstGatherEvent.count() >= EVENTITEMCOUNT)
+    {
+        m_lstGatherEvent.pop();
+    }
+    m_lstGatherEvent.push(evData);
+    m_mutex.unlock();
 }
 
 void RealtimeMonitoring::slotAddDevice(QVector<RestServiceI::CameraInfo> data)
