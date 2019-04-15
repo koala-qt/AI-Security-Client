@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>追踪</title>
+  <link rel="stylesheet" type="text/css" href="jquery.pageslide.css" />
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+  <style type="text/css">
+    @font-face {
+      font-family: 'SF Pro Text';
+
+      src: url('css/SF-Pro-Text-Regular.otf') format('woff'), url('css/SF-Pro-Text-Regular.otf') format('truetype');
+      /*non-IE*/
+    }
+
+    html {
+      height: 100%
+    }
+
+    body {
+      height: 100%;
+      margin: 0px;
+      padding: 0px
+    }
+
+    #container {
+      height: 100%
+    }
+
+    .BMap_cpyCtrl {
+      display: none;
+    }
+
+    .anchorBL {
+      display: none;
+    }
+
+    .loadingGif {
+      margin: auto;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+    }
+
+    .loading {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 998;
+      background: rgba(0, 0, 0, 0.66);
+      vertical-align: middle;
+     display: none;
+    }
+
+    .haveData {
+      display: none
+    }
+
+    .noData {
+      text-align: center;
+      color: white;
+      position: absolute;
+      top: 40%;
+      left: 40%;
+    }
+
+    .noData span {
+      display: block;
+    }
+
+    .noData img {}
+
+    .sceneImg {
+      width: 80%;
+      height: 100%;
+    }
+
+    .modal-dialog {
+      max-width: 1000px
+    }
+
+    #aside {
+      width: 15%;
+      height: 100%;
+      float: right;
+      overflow: auto;
+      background-color: #303644;
+      color: rgba(126, 140, 177, 1);
+      font-weight: 400;
+      padding-left: 20px;
+      border-left: 2px solid rgba(255, 255, 255, 0.1)
+    }
+
+    #container {
+      width: 84%;
+      float: left;
+    }
+
+
+    .faceSnap {
+      float: right;
+      width: 20%;
+      text-align: center
+    }
+
+    .faceImg {
+      width: 80%
+    }
+
+    body {
+      background-color: #303644
+    }
+
+    .asideItem {
+      margin-top: 10px;
+      margin-left: -12px;
+      padding-left: 20px;
+      margin-right: 10px;
+      padding-top: 2px;
+      padding-bottom: 2px;
+      /* background-color: #4741F2 */
+    }
+  </style>
+
+  <script type="text/javascript" src="map_load.js"></script>
+  <script type="text/javascript" src="TextIconOverlay_min.js"></script>
+  <script type="text/javascript" src="MarkerClusterer_min.js"></script>
+  <script src="./qwebchannel.js"></script>
+  <script src="AreaRestriction_min.js"></script>
+  <script src="LuShu.js"> </script>
+  <script src="js/ip.js"></script>
+</head>
+
+<body>
+  <div class="loading">
+    <img src="img/Rolling-1s-80px.gif" alt="" class="loadingGif">
+  </div>
+  <div id="container"></div>
+  <div id="aside" style="font-size: 13px">
+    <!-- <div class="asideItem">
+    <div style='margin:10px 8px;position: relative;'>
+      <div style="margin-left:-15px"> <img src="images/blueAside.png" alt="" class="asideIcon">  Etihad Tower</div>
+       <div>replaceState</div>
+       <div>2019-09-23 18:00:00</div> 
+    </div>
+  </div> -->
+
+  </div>
+  <!-- dialog -->
+  <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+
+        <div class="modal-body">
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <!-- </div> -->
+  <!-- <div class="noData" id="noData">
+    <img src="./img/组 320.png" alt="">
+    <span>No results found</span>
+    <span>Please adjust the conditions to re-query</span>
+  </div> -->
+  <!--  -->
+
+
+
+  <script src="js/jquery-3.3.1.min.js"></script>
+  <script src="js/bootstrap.js"></script>
+  <script type="text/javascript">
+ 
+    var markerArray = []
+    var points
+    if (typeof qt != "undefined") {
+      new QWebChannel(qt.webChannelTransport, function (channel) {
+        window.Bridge = channel.objects.Bridge;
+        Bridge.sigTrackingDataChanged.connect(function (arr) { //连接Qt中brideg类的信号并定义执行代码
+          console.log(JSON.stringify(arr))
+          QTcreate(arr)
+          drawline()
+        });
+        Bridge.sigHostNameChanged.connect(function (host) { //连接Qt中brideg类的信号并定义执行代码
+          console.log(host)
+        });
+        Bridge.sigMovieingStart.connect(function () { //连接Qt中brideg类的信号并定义执行代码sigMovieStop
+          startLoading()
+        });
+        Bridge.sigMovieStop.connect(function () { //连接Qt中brideg类的信号并定义执行代码
+          endLoading()
+        });
+        Bridge.onInitsized(); //调用Qt内的函数
+      });
+    } else {
+      alert("qt对象获取失败！");
+    }
+    var outputPath = 'tiles/'; //地图瓦片所在的文件夹
+    var fromat = ".jpg"; //格式
+
+    /*var tileLayer = new BMap.TileLayer();
+    tileLayer.getTilesUrl = function (tileCoord, zoom) {
+    	var x = tileCoord.x;
+    	var y = tileCoord.y;
+    	var url = outputPath + zoom + '/' + x + '/' + y + fromat;
+    	return url;
+    }
+    var tileMapType = new BMap.MapType('tileMapType', tileLayer);*/
+
+    var map = new BMap.Map("container", {
+      minZoom: 12,
+      maxZoom: 18
+    })
+    //抓点方法
+    // function showInfo(e) {
+    //     alert(e.point.lng + ", " + e.point.lat);
+    // }
+    // map.addEventListener("click", showInfo);
+    //
+    var b = new BMap.Bounds(new BMap.Point(103.520268,30.432392), new BMap.Point(104.623531,30.89115));
+    try {
+      BMapLib.AreaRestriction.setBounds(map, b);
+    } catch (e) {
+      alert(e);
+    }
+    map.enableScrollWheelZoom(true);
+
+    map.centerAndZoom(new BMap.Point(104.072187,30.663537), 12);
+    //生成自定义标注
+    //QT调用
+    var test = [{
+      "grabTime": "2019-02-26 15:48:56",
+      "holdTime": "2513",
+      "name": "P3-i77 Manager Desk-5/ RECEPTION 4",
+      "personImg": "images/1221.jpg",
+      "pos": {
+        "lat": 54.319009,
+        "lng": 24.455566
+      },
+      "sceneId": "5c7548f48771f485d86b32d1"
+    }, {
+      "grabTime": "2019-02-26 16:37:53",
+      "holdTime": "4",
+      "name": "P3-i77 Manager Desk-5/ RECEPTION 4",
+      "personImg": "images/1221.jpg",
+      "pos": {
+        "lat": 54.322027,
+        "lng": 24.458905
+      },
+      "sceneId": "5c7548f48771f485d86b32d2"
+    }, {
+      "grabTime": "2019-02-26 16:37:53",
+      "holdTime": "4",
+      "name": "P3-i77 Manager Desk-5/ RECEPTION 4",
+      "personImg": "images/1221.jpg",
+      "pos": {
+        "lat": 54.339877,
+        "lng": 24.470704
+      },
+      "sceneId": "5c7548f48771f485d86b32d3"
+    }]
+
+    // QTcreate(test)
+    //  drawline()
+    function changeIcon(lng, lat) {
+      //点击效果
+
+      //................................
+      var myIcon = new BMap.Icon("images/camera45.png", new BMap.Size(45, 45));
+      var defaultIcon = new BMap.Icon("images/camera20.png", new BMap.Size(21, 21));
+      var allOverlay = map.getOverlays()
+      console.log(allOverlay)
+      for (let i = 0; i < allOverlay.length; i++) {
+        const element = allOverlay[i];
+
+        if (element.point != null) {
+          if (element.getIcon().imageUrl == 'images/camera45.png') {
+            element.setIcon(defaultIcon)
+            console.log('1')
+          }
+
+          if (element.point.lng == lng && element.point.lat == lat) {
+            console.log('find')
+            var point = element.getPosition()
+            var zoom = map.getZoom()
+            map.centerAndZoom(point, zoom);
+            console.log(element.getIcon())
+            if (element.getIcon().imageUrl != 'images/jiantou2.png' && element.getIcon().imageUrl !=
+              'images/marker_red_sprite.png' && element.getIcon().imageUrl) {
+              element.setIcon(myIcon)
+
+            }
+
+          }
+        }
+
+      }
+    }
+
+    function QTcreate(res) {
+      points = []
+      saveArr = JSON.parse(JSON.stringify(res))
+      if (saveArr.length < 1) {
+        // noData()
+        endLoading()
+      } else {
+        endLoading()
+        // showData()
+      }
+      map.clearOverlays()
+      $("#aside").empty()
+      for (var i = 0; i < res.length; i++) {
+        if (res[i].pos.lat != 0.0 && res[i].pos.lng != 0.0) {
+          var a = new BMap.Point(res[i].pos.lat, res[i].pos.lng)
+          points.push(a)
+        }
+
+        if (i == 0 || i == res.length - 1) {
+          console.log(i)
+          var myIcon = new BMap.Icon("images/jiantou2.png", new BMap.Size(33, 33));
+          var marker = new BMap.Marker(a, {
+            icon: myIcon,
+            offset: {
+              width: -8,
+              height: -8
+            }
+          });
+          map.addOverlay(marker);
+          createmarker(a, res[i], true)
+        } else {
+          // var myIcon = new BMap.Icon("images/jiantou2.png", new BMap.Size(33, 33));
+          // var marker = new BMap.Marker(a, {
+          //   icon: myIcon,
+          //   offset: {
+          //     width: -8,
+          //     height: -8
+          //   }
+          // });
+          // map.addOverlay(marker);
+
+
+          //..............................................我是有没有hover特效的分割线.............................................................
+          createmarker(a, res[i], false)
+          var myIcon = new BMap.Icon("images/camera20.png", new BMap.Size(21, 21));
+          var marker = new BMap.Marker(a, {
+            icon: myIcon
+          });
+          marker.setZIndex(888)
+          marker.sceneId = res[i].sceneId
+          var _i = i
+          marker.index = i
+          var _res = res
+          marker.addEventListener("click", function () {
+           
+            $('.modal-body').empty()
+            $('#exampleModalCenter').modal('show')
+            // $(".first").click()
+            $.ajax({
+              type: 'GET',
+              url: ipAddress + "/api/v2/external/monitor-detail/find-document",
+              data: {
+                collection: "snap_scene",
+                requiredFields: "face_bbox,face_id,snapshot",
+                token: "7d1e52d3cf0142e19b5901eb1ef91372",
+                objId: res[this.index].sceneId
+              },
+              async: false,
+              dataType: 'json',
+              success: res => {
+                // var content = "<img src='" + ipAddress + res.data.url +
+                //   "&token=7d1e52d3cf0142e19b5901eb1ef91372" + "' alt='' class='sceneImg'>"
+                var content = " <img src='" + ipAddress + res.data.url +
+                  "&token=7d1e52d3cf0142e19b5901eb1ef91372" +
+                  "' alt='' class='sceneImg'><div class='faceSnap'> <div ><p>Face Snap</p><img src=" + _res[
+                    _i].personImg +'?token=7d1e52d3cf0142e19b5901eb1ef91372'+ " alt='' class='faceImg'></div> </div>"
+                $('.modal-body').append(content)
+              }
+            })
+          });
+          // marker.addEventListener("mouseover",function(){
+          //   console.log(this)
+          //   var all = map.getOverlays()
+          //   for (let index = 0; index < all.length; index++) {
+          //     const element = all[index];
+          //     if(element.type == 'custom'){
+          //       if(element.sceneId==this.sceneId){
+          //         element.show()
+          //         this.hide()
+          //       }
+          //     }
+          //   }
+
+          // })
+
+          map.addOverlay(marker); // 将标注添加到地图中
+        }
+        if (res[i].pos.lat != 0.0 && res[i].pos.lng != 0.0) {
+          var dContent = "<div class='asideItem'> <div style='margin:20px 8px;cursor:pointer' onclick='changeIcon(" +
+            marker.point.lng + ',' + marker.point.lat +
+            ")'> <div style='margin-left:-15px'> <img src='images/blueAside.png' alt='' class='asideIcon'>  Etihad Tower</div> <div>" +
+            res[i].name + "</div><div>" +
+            res[i].grabTime + "</div> </div></div>"
+        } else {
+          var dContent =
+            "<div class='asideItem'> <div style='margin:20px 8px;cursor:pointer' onclick='alertNoPoint()'> <div style='margin-left:-15px'>  Etihad Tower</div> <div>" +
+            res[i].name + "</div><div>" +
+            res[i].grabTime + "</div> </div></div>"
+        }
+
+        $('#aside').append(dContent)
+      }
+      var items = $(".asideItem");
+      items.click(function () {
+        $(this).css({
+          'background-color': '#4741F2',
+          'color': 'white'
+        }).siblings().css({
+          'background-color': 'inherit',
+          'color': '#7E8CB1'
+        })
+        $('.asideIcon').attr('src', 'images/blueAside.png')
+        $(this).find('.asideIcon').attr('src', 'images/whiteAside.png')
+      })
+    }
+
+    function alertNoPoint() {
+      Bridge.alertNoPoint("The camera don't have a location")
+    }
+
+    function startLoading() { //loading gif 显示方法
+      $('.loading').show()
+    }
+
+    function endLoading() { //loading gif 隐藏方法
+      $('.loading').hide()
+    }
+
+    // function showData() {
+    //   $('#noData').hide()
+    //   $('#haveData').show()
+    // }
+
+    // function noData() {
+    //   $('#noData').show()
+    //   $('#haveData').hide()
+    // }
+    //画直线
+    function drawline() {
+      var lushu = new BMapLib.LuShu(map, points, {
+        speed: 500,
+        landmarkPois: {}
+      });
+      lushu.start()
+      map.centerAndZoom(points[0], 16);
+      var sy = new BMap.Symbol(BMap_Symbol_SHAPE_BACKWARD_OPEN_ARROW, {
+        scale: 0.4, //图标缩放大小
+        strokeColor: '#fff', //设置矢量图标的线填充颜色
+        strokeWeight: '1.5', //设置线宽
+      });
+      var icons = new BMap.IconSequence(sy, '5', '15');
+      var polyline = new BMap.Polyline(points, {
+        // strokeColor: "red",
+        // strokeWeight: 4,
+        // strokeOpacity: 0.9
+        // enableEditing: false, //是否启用线编辑，默认为false
+        // enableClicking: false, //是否响应点击事件，默认为true
+        icons: [icons],
+        strokeWeight: '5', //折线的宽度，以像素为单位
+        strokeOpacity: 0.8, //折线的透明度，取值范围0 - 1
+        strokeColor: "#4741F2" //折线颜色
+      })
+      map.addOverlay(polyline);
+      //画路线
+    }
+
+    function createmarker(a, detail, isTrue) {
+      function ComplexCustomOverlay(point) {
+        this._point = point;
+
+      }
+      ComplexCustomOverlay.prototype = new BMap.Overlay();
+      ComplexCustomOverlay.prototype.initialize = function (map) {
+        this._map = map;
+        var div = this._div = document.createElement("div");
+        div.style.position = "absolute";
+        div.style.zIndex = BMap.Overlay.getZIndex(this._point.lat);
+        // div.style.backgroundColor = "white";
+        // div.style.border = "1px solid red";
+        div.style.color = "white";
+        div.style.width = "60px";
+        div.style.borderRadius = "50%"
+        div.style.height = "60px";
+        div.style.padding = "5px";
+        div.style.lineHeight = "18px";
+        div.style.whiteSpace = "nowrap";
+        div.style.MozUserSelect = "none";
+        div.style.fontSize = "12px"
+        //   var span = this._span = document.createElement("span");
+        //   div.appendChild(span);
+        //   span.appendChild(document.createTextNode(this._text));      
+        var that = this;
+
+        var img = this._img = document.createElement("img");
+        img.src = detail.personImg+'?token=7d1e52d3cf0142e19b5901eb1ef91372';
+        //   img.style.position = "absolute";
+        img.style.width = "60px";
+        img.style.height = "60px";
+        img.style.borderRadius = "50%";
+        img.style.border = "1px solid white"
+        img.style.top = "22px";
+        img.style.left = "10px";
+        img.style.overflow = "hidden";
+        img.style.cursor = 'pointer'
+        div.appendChild(img);
+        div.onclick = function () {
+          $('.modal-body').empty()
+          $('#exampleModalCenter').modal('show')
+          // $(".first").click()
+          console.log(detail)
+          $.ajax({
+            type: 'GET',
+            url: ipAddress + "/api/v2/external/monitor-detail/find-document",
+            data: {
+              collection: "snap_scene",
+              requiredFields: "face_bbox,face_id,snapshot",
+              token: "7d1e52d3cf0142e19b5901eb1ef91372",
+              objId: detail.sceneId
+            },
+            async: false,
+            dataType: 'json',
+            success: res => {
+              // var content = "<img src='" + ipAddress+ res.data.url +
+              //   "&token=7d1e52d3cf0142e19b5901eb1ef91372" + "' alt='' class='sceneImg'>"
+              var content = " <img src='" + ipAddress + res.data.url +
+                "&token=7d1e52d3cf0142e19b5901eb1ef91372" +
+                "' alt='' class='sceneImg'><div class='faceSnap'> <div ><p>Face Snap</p><img src=" + detail.personImg +'?token=7d1e52d3cf0142e19b5901eb1ef91372'+
+                " alt='' class='faceImg'></div> </div>"
+              $('.modal-body').append(content)
+            }
+          })
+
+        }
+        //小箭头
+        // var arrow = this._arrow = document.createElement("div");
+        // arrow.style.background = "url('images/label.png') no-repeat";
+        // // arrow.style.position = "absolute";
+        // arrow.style.width = "11px";
+        // arrow.style.height = "10px";
+        // arrow.style.top = "32px";
+        // arrow.style.left = "10px";
+        // arrow.style.overflow = "hidden";
+        // div.appendChild(arrow);
+        //
+        //抓拍时间
+        // var timeSpan = this._timeSpan = document.createElement("span");
+        // timeSpan.style.color = 'red';
+        // timeSpan.style.position = 'absolute'
+        // div.appendChild(timeSpan);
+        // timeSpan.appendChild(document.createTextNode('2019-02-20'));
+
+
+        map.getPanes().labelPane.appendChild(div);
+
+        return div;
+      }
+      ComplexCustomOverlay.prototype.draw = function () {
+        var map = this._map;
+        var pixel = map.pointToOverlayPixel(this._point);
+        this._div.style.left = pixel.x - 68 + "px";
+        this._div.style.top = pixel.y - 68 + "px";
+      }
+
+
+      var myCompOverlay = new ComplexCustomOverlay(a);
+      myCompOverlay.sceneId = detail.sceneId;
+      myCompOverlay.type = 'custom'
+      map.addOverlay(myCompOverlay);
+      if (isTrue == false) {
+        myCompOverlay.hide()
+      }
+
+      // function ZoomControl() {
+      //   // 设置默认停靠位置和偏移量  
+      //   this.defaultAnchor = BMAP_ANCHOR_TOP_LEFT;
+      //   this.defaultOffset = new BMap.Size(10, 10);
+      // }
+      // // 通过JavaScript的prototype属性继承于BMap.Control   
+      // ZoomControl.prototype = new BMap.Control();
+      // ZoomControl.prototype.initialize = function (map) {
+      //   // 创建一个DOM元素   
+      //   var div = document.createElement("div");
+      //   // 添加文字说明    
+      //   div.appendChild(document.createTextNode("轨迹画线"));
+      //   // 设置样式    
+      //   div.style.cursor = "pointer";
+      //   div.style.border = "1px solid gray";
+      //   div.style.backgroundColor = "white";
+      //   // 绑定事件，点击一次放大两级  
+
+      //   div.onclick = function (e) {
+      //     // map.zoomTo(map.getZoom() + 2);
+      //     console.log()
+      //     drawline()
+      //     // for (let index = 0; index < data_info.length; index++) {
+      //     // 	var point = new BMap.Point(data_info[index][0], data_info[index][1]);
+      //     // 	points.push(point)
+
+      //     // }
+
+
+
+      //     // var walking = new BMap.WalkingRoute(map, {
+      //     // 	renderOptions: {
+      //     // 		map: map
+      //     // 	}
+      //     // });
+      //     // walking.search(new BMap.Point(54.534919, 24.345037), new BMap.Point(54.53633, 24.345054));失效
+
+
+      //   }
+      //   // 添加DOM元素到地图中   
+      //   map.getContainer().appendChild(div);
+      //   // 将DOM元素返回 
+
+      //   return div;
+      // }
+      // var myZoomCtrl = new ZoomControl();
+      // // 添加到地图当中    
+      // map.addControl(myZoomCtrl);
+      // map.setCurrentCity("北京");
+    }
+  </script>
+</body>
+
+</html>

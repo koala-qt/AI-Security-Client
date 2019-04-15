@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>首页</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+
+
+    <style type="text/css">
+        @font-face {
+            font-family: 'SF Pro Text';
+
+            src: url('css/SF-Pro-Text-Regular.otf') format('woff'), url('css/SF-Pro-Text-Regular.otf') format('truetype');
+            /*non-IE*/
+        }
+
+        html {
+            height: 100%
+        }
+
+        body {
+
+            height: 100%;
+            margin: 0px;
+            padding: 0px
+        }
+
+        #container {
+            height: 100%
+        }
+
+        #side {
+            margin-top: 40px;
+            background: rgba(2, 4, 18, 0.83);
+            border: 1px solid rgba(0, 0, 0, 0);
+            box-shadow: 0px 30px 50px rgba(0, 0, 0, 0.6);
+            opacity: 1;
+            border-radius: 4px;
+            height: 90%;
+            width: 14.58%;
+            float: left;
+
+            position: absolute;
+            z-index: 999;
+            margin-left: 40px
+        }
+
+        .switch {
+            font-size: 14px;
+            margin-top: 40px;
+            background: rgba(2, 4, 18, 0.83);
+            border: 1px solid rgba(0, 0, 0, 0);
+            line-height: 35px;
+            opacity: 1;
+            border-radius: 4px;
+            height: 37px;
+            width: 15.72%;
+            float: left;
+            position: absolute;
+            z-index: 999;
+            right: 40px;
+            text-align: center;
+            vertical-align: middle;
+            color: rgba(255, 255, 255, 0.75);
+            cursor: pointer;
+        }
+
+        .rSide {
+            margin-top: 87px;
+            background: rgba(2, 4, 18, 0.83);
+            border: 1px solid rgba(0, 0, 0, 0);
+            box-shadow: 0px 30px 50px rgba(0, 0, 0, 0.6);
+            opacity: 1;
+            border-radius: 4px;
+            height: 86%;
+            width: 15.72%;
+            float: left;
+            position: absolute;
+            z-index: 999;
+            right: 40px
+        }
+
+        .col-4 {
+
+            font-size: 12px;
+
+            font-weight: 200;
+            color: rgba(255, 255, 255, 0.75);
+            height: 76px;
+            margin-top: 20px;
+            padding: 0 5.35%;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+
+        .BMap_cpyCtrl {
+            display: none;
+        }
+
+        .anchorBL {
+            display: none;
+        }
+
+        .row {
+            font-size: 14px;
+            margin: 0;
+            text-align: center;
+            display: flex;
+        }
+
+        .detail {
+            display: none;
+            color: white
+        }
+
+        .hideBtn {
+            width: 20px;
+            height: 36px;
+            background: rgba(2, 4, 18, 0.83);
+            border: 1px solid rgba(0, 0, 0, 0);
+            box-shadow: 0px 30px 50px rgba(0, 0, 0, 0.6);
+            opacity: 1;
+            border-radius: 0px 4px 4px 0px;
+            right: -20px;
+            top: 27px;
+            position: absolute;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .icon {
+            width: 77.1%;
+            height: 77.1%;
+            margin-bottom: 10px
+        }
+
+        #info1,
+        #info2,
+        #info3,
+        #info4 {
+            width: 64%;
+            height: 9.9%;
+            position: absolute;
+            right: -71.1%;
+            background: rgba(2, 4, 18, 0.83);
+            box-shadow: 0px 30px 50px rgba(0, 0, 0, 0.45);
+            opacity: 1;
+            border-radius: 4px;
+            color: white;
+            text-align: center;
+        }
+
+        #info1 {
+            top: 54%;
+        }
+
+        #info2 {
+            top: 66%;
+        }
+
+        #info3 {
+            top: 78%;
+        }
+
+        #info4 {
+            top: 90%;
+        }
+
+        .infofi {
+            font-size: 12px;
+            margin-top: 5%
+        }
+
+        .infose {
+            font-size: 230%;
+
+        }
+
+        .drop {
+            cursor: pointer;
+            height: 45px;
+            font-size: 97%;
+            font-family: 'SF Pro Text';
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.75);
+            line-height: 45px;
+            margin-left: 6.62%;
+            position: relative;
+        }
+
+        #category {
+            font-size: 12px;
+            font-family: 'SF Pro Text';
+
+            line-height: 0px;
+            color: white;
+        }
+
+        #name {
+            font-size: 16px;
+            font-family: 'SF Pro Text';
+            font-weight: bold;
+            line-height: 0px;
+            color: white;
+        }
+
+        .detailH {
+            margin: 0 20px;
+            margin-top: 20px;
+            color: white
+        }
+
+        .border_bottom {
+            padding-bottom: 7px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .backH {
+            margin-top: 33px;
+            margin-left: 20px;
+            font-size: 16px;
+            cursor: pointer;
+            color: white
+        }
+
+        .closeBtn {
+            margin-top: 5px
+        }
+
+        .alertH {
+            margin: 0;
+            padding: 0.13em 0;
+            background: url('images/red.png') no-repeat;
+            color: white;
+            margin-left: 13.33px;
+            text-align: right;
+            font-size: 18.66px;
+            padding-right: 13.33px
+        }
+
+        .alertW {
+            margin: 0;
+            padding: 0.13em 0;
+            background: url('images/black.png') no-repeat;
+            color: white;
+            margin-left: 13.33px;
+            text-align: right;
+            font-size: 18.66px;
+            padding-right: 13.33px
+        }
+
+        .alertContent {
+            height: 84px;
+            background: rgba(241, 75, 63, 0.8);
+            position: relative;
+        }
+
+        .infoBox img:first-child {
+            display: none
+        }
+
+        .alertContent img:first-child {
+            display: inline-block
+        }
+
+        .line {
+            position: absolute;
+            left: -76px;
+            top: 0
+        }
+
+        .alContent1 {
+            padding-top: 16px;
+            font-size: 12px;
+            color: white;
+            margin-left: 10px;
+
+        }
+
+        .alContent2 {
+            padding-top: 5px;
+            font-size: 12px;
+            color: white;
+            margin-left: 10px;
+
+        }
+
+        .safeContent {
+            height: 84px;
+            background: rgba(0, 0, 0, 0.7);
+            position: relative;
+        }
+
+        .selectItem {
+            background: rgba(43, 49, 61, 1);
+            box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            height: 43px;
+            color: white;
+            padding-left: 20px;
+            line-height: 43px;
+        }
+
+        #drop {
+            /* height: 87px; */
+            display: none;
+            position: absolute;
+            z-index: 999;
+            width: 100%;
+        }
+
+        #list {
+            width: 87%;
+            margin: 0 6.62%;
+            height: 94%
+        }
+
+        .slideIcon {
+            width: 5.7%;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 87%;
+            right: 0;
+            margin: auto 0;
+        }
+
+        .listItem {
+            height: 20%;
+        }
+
+        .listI {
+            width: 100%;
+            height: 90%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .col {
+            color: white;
+            font-size: 12px;
+            padding: 0
+        }
+
+        .itemH {
+            font-size: 14px;
+            font-weight: 500;
+            color: white
+        }
+
+        .circle {
+            width: 100%;
+            margin-top: 40px
+        }
+
+        .mycanvas {
+            position: absolute;
+            left: 0
+        }
+
+        #modal1 {
+            max-width: 800px;
+        }
+
+        .model2 {
+            max-width: 682px;
+        }
+
+        .modal-body {
+            position: relative;
+        }
+
+        .nav {
+            color: white
+        }
+
+        .ulli ul li {
+            list-style: none;
+            flex: 1;
+            text-align: center;
+            color: white;
+            padding-bottom: 4px;
+        }
+
+        .ulli ul li:first-child {
+            color: white;
+            border-bottom: 2px solid white
+        }
+
+        .ulli ul {
+            display: flex;
+            font-weight: bold;
+            font-family: 'SF Pro Text';
+            margin: 0 auto;
+            margin-top: 20px;
+            font-size: 16px;
+            padding: 0;
+            width: 80%;
+        }
+
+        ul li {
+            list-style: none;
+        }
+
+        .cd-accordion-menu {
+            padding: 0;
+            font-size: 14px
+        }
+
+        .has-children {
+            height: 34px;
+        }
+
+        .has-children ul {
+            padding: 0
+        }
+
+        .imgDemo {
+            cursor: pointer;
+        }
+
+        .selectItem {
+            cursor: pointer;
+        }
+
+        .boxIcon {
+            margin-top: -3px;
+            margin-right: 5px
+        }
+
+        .modal-dialog2 {
+            max-width: 593px;
+        }
+
+        .modal-bodyB {
+            padding: 34px;
+            height: 329px;
+            background: rgba(48, 54, 68, 1);
+            box-shadow: 0px 30px 50px rgba(0, 0, 0, 0.6);
+
+            font-family: SF Pro Text;
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        #modelName {
+            font-size: 18px;
+            margin-bottom: 34px;
+        }
+
+        .modelCL,
+        .modelCR {
+            float: left;
+            font-size: 15px;width: 300px;
+        }
+
+        .modelCL {
+            width: 270px;
+            height: 100%;
+            padding-right: 40px;
+            margin-right: 40px;
+            border-right: 2px solid rgba(255, 255, 255, 0.1)
+        }
+
+        .modelContent {
+            height: 137px;
+        }
+
+        #modelReg {
+            margin-left: 20px;
+        }
+
+        .modal-footer {
+            border: none;
+            background: rgba(48, 54, 68, 1);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(180deg, rgba(71, 65, 242, 1) 0%, rgba(71, 65, 242, 1) 100%);
+            box-shadow: 0px 3px 6px rgba(71, 65, 242, 0.2);
+            width: 120px;
+            height: 44px;
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            border: none
+        }
+
+        .CRlist {
+            margin-top: 4px
+        }
+        .listItem{
+            cursor: pointer;
+        }
+        .switchV{
+            font-family: 'microsoft yahei';
+        }
+    </style>
+
+    <script type="text/javascript" src="map_load.js"></script>
+    <script type="text/javascript" src="TextIconOverlay_min.js"></script>
+    <script type="text/javascript" src="MarkerClusterer_min.js"></script>
+    <script src="AreaRestriction_min.js"></script>
+    <script src="./qwebchannel.js"></script>
+    <script src="InfoBox.js"></script>
+    <script src="js/vue.js"></script>
+    <script src="js/index.js"></script>
+    <script src="js/reconnecting-websocket.min.js"></script>
+
+</head>
+
+<body>
+    <div id="side">
+        <div id="info1">
+            <div class="infofi">Online Camera</div>
+            <div class="infose">1200</div>
+        </div>
+        <div id="info2">
+            <div class="infofi">Broken Camera</div>
+            <div class="infose">0</div>
+        </div>
+        <div id="info3">
+            <div class="infofi">Capture Images</div>
+            <div class="infose" id="capture">0</div>
+        </div>
+        <div id="info4">
+            <div class="infofi">Alarm Events</div>
+            <div class="infose" id="alarm">0</div>
+        </div>
+        <div class="hideBtn" onclick="hideShow()"><img src="images/close.png" alt="" class="closeBtn"></div>
+        <!-- <div style="border-bottom:2px solid rgba(126,140,177,0.2)" class="ulli">
+            <ul>
+                <li class="navL">Place</li>
+                <li class="navL">Camera</li>
+            </ul>
+        </div> -->
+        <!-- <div class="cameraList">
+            
+                <el-menu
+                class="el-menu-vertical-demo"
+              >
+                <el-submenu :index='index' v-for="(item, index) in typeTestList" >
+                  <template slot="title">
+                  
+                    <span>{{item.description}}</span>
+                  </template>
+                   
+                    <el-menu-item  v-for="(iitem, index) in item.list" :key="index" >{{iitem.name}}</el-menu-item>
+                   
+               
+                 
+                </el-submenu>
+                
+               
+                
+              </el-menu>
+        </div> -->
+
+        <div class="row">
+            <!-- <div class='col-4' onclick='getmarker(10021001,"Restaurant")'> <div><img src='images/7.png' alt='' class='icon'></div><div>
+                    </div></div></div> -->
+
+        </div>
+        <div class="detail">
+            <!-- <p id="cameraNo" style="margin-top:250px">3123</p>
+
+            <p id="blackNo">2131</p>
+            <p id="whiteNo">1231</p>
+            <button onclick="back()">back</button> -->
+            <div class="backH" onclick="back()">
+                <img src="images/icon_back.png" alt="" style="width:13px">
+                <span>Back</span>
+            </div>
+            <div class="detailH">
+                <div style="float: left;width:77.5%;">
+                    <div><span id="category"></span></div>
+                    <div><span id="name"></span></div>
+                </div>
+                <div style="">
+                    <img src="images/1.png" alt="" style="width: 18%" id="typeIcon">
+                </div>
+            </div>
+            <div class="detailH border_bottom" style="clear:both">
+
+                <div><span id="category">Total Cameras</span></div>
+                <div style="margin-top: 5px"><span id="cameraNo" style="font-size:24px;"></span></div>
+
+            </div>
+            <div class="detailH border_bottom" style="clear:both">
+                <div><span id="category">Online</span></div>
+                <div style="margin-top: 5px"><span id="onlineNo" style="font-size:24px;">521</span></div>
+            </div>
+            <div class="detailH border_bottom" style="clear:both">
+                <div><span id="category">Blacklist Alarms</span></div>
+                <div style="margin-top: 5px"><span id="blackNo" style="font-size:24px;"></span></div>
+            </div>
+            <div class="detailH border_bottom" style="clear:both">
+                <div><span id="category">White List Reminder</span></div>
+                <div style="margin-top: 5px"><span id="whiteNo" style="font-size:24px;"></span></div>
+            </div>
+        </div>
+    </div>
+    <div class="switch" onclick="switchView()">
+        <img src="images/switch.png" alt="" style="margin-top: -4px;"> <span class='switchV'>Switch View</span>
+    </div>
+    <div class="rSide">
+        <div class="drop" onclick="drop()"><span id="eventName">All</span>
+            <img src="images/shezhi.png" alt="" class="slideIcon">
+        </div>
+        <div id='drop'>
+            <div class="selectItem">All</div>
+            <div class="selectItem">Intrusion</div>
+            <div class="selectItem">Trailing</div>
+            <div class="selectItem">Climbing</div>
+            <div class="selectItem">Gathering</div>
+            <div class="selectItem">Blacklist</div>
+            <div class="selectItem">VIP</div>
+        </div>
+
+        <div id="list">
+            <!-- <div class="listItem">
+                <div class="listI">
+                    <img src="images/dev.jpg" alt="" style="width:256px;height: 144px;">
+                    <canvas class="kuang" width="256" height="144"></canvas>
+                </div>
+            </div> -->
+           <!-- <div class="listItem">
+            <div class="listI">
+                    <div class="itemH">White List</div>
+                    <div style="display:flex;">
+                        <div class="col">
+                            <div style="margin-bottom:7px">Captured photo</div>
+                            <img src="images/1221.jpg" alt="" style="width:100%">
+                        </div>
+                        <div class="col">
+                               
+                            <div class="circle"></div>
+                        </div>
+                        <div class="col">
+                            <div style="margin-bottom:7px">Captured photo</div>
+                            <img src="images/guide.png" alt="" style="width:100%">
+                        </div>
+                    </div>
+                </div>
+            </div>  -->
+        </div>
+    </div>
+    <!-- 弹出框 -->
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document" id="modal1">
+            <div class="modal-content">
+
+                <div class="modal-body">
+                    <img src="" alt="" style="width: 768px;height: 432px;" id="bigImg">
+                    <canvas width="768" height="432" style="position:absolute;top:1rem" id="bigCanvas"></canvas>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- 黑名单弹出框 -->
+    <div class="modal fade" id="exampleModalCenter2" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered model2" role="document">
+            <div class="modal-content">
+                <div class="modal-bodyB">
+                    <div id="modelName">Black list</div>
+                    <div class="modelContent">
+                        <div class="modelCL" style="display:flex">
+
+                            <div class="col"><img src="images/1221.jpg" alt="" style="width:100%" id='modelCapture'></div>
+                            <div class="col"><img src="images/1221.jpg" alt="" style="width:100%" id="modelReg"></div>
+
+                        </div>
+                        <div class="modelCR">
+                            <div><span>ID:&nbsp&nbsp</span><span id="modelId"></span></div>
+                            <div class="CRlist"><span>Name:&nbsp&nbsp</span><span id="modelNameC"></span></div>
+                            <div class="CRlist"><span>Person Type:&nbsp&nbsp</span><span id="modelType"></span></div>
+                            <div class="CRlist"><span>Time:&nbsp&nbsp</span><span id="modelTime"></span></div>
+                            <div class="CRlist"><span>Position:&nbsp&nbsp</span><span id="modelPosition"></span></div>
+                        </div>
+                        <div></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- ..... -->
+    <div id="container"></div>
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/circleChart.min.js"></script>
+    <script src="js/ip.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script type="text/javascript">
+        // new Vue({
+        //     el: '#side',
+        //     data: function () {
+        //         return {
+        //             typeList: [],
+        //             typeTestList:[]
+        //         }
+        //     },
+        //     created() {
+        //         this.getCameraList()
+        //         console.log(this.typeList)
+        //     },
+        //     methods: {
+        //         getCameraList: function () {
+        //             // console.log(this.typeList)
+        //             var _this = this
+        //             this.getType('1005')
+
+        //            Vue.set(this.typeTestList,0,this.typeList)
+
+        //         },
+        //          getType:function(groupNo, i) {
+        //                 console.log(i)
+        //                 var _this = this
+
+        //                 $.ajax({
+        //                     type: "GET",
+        //                     url: ipAddress + "/api/v2/device/group/find",
+        //                     data: {
+        //                         groupNo: groupNo,
+        //                         token: "7d1e52d3cf0142e19b5901eb1ef91372"
+        //                     },
+        //                     dataType: "json",
+        //                     success: function (res) {
+        //                         for (let index = 0; index < res.data.length; index++) {
+        //                             const element = res.data[index];
+        //                             //type
+
+        //                             if (i >= 0) {
+        //                                 // console.log(i)
+        //                                 _this.getCamera(element.groupNo, i)
+        //                             } else {
+        //                                 _this.typeList.push(element)
+        //                                 _this.typeList[index].list = []
+        //                                 _this.getCamera(element.groupNo, index)
+        //                             }
+
+        //                             if (res.data.length > 0) {
+        //                                 // console.log(index)
+        //                                _this.getType(element.groupNo, index)
+        //                             //    _this.typeTestList=_this.typeList
+        //                             }
+        //                         }
+        //                     }
+        //                 })
+
+        //             },
+        //             getCamera:function(groupNo, index) {
+        //                 console.log(index)
+        //                 var _this = this
+        //                 $.ajax({
+        //                     type: "GET",
+        //                     url: ipAddress + "/api/v2/device/info/find",
+        //                     data: {
+        //                         groupNo: groupNo,
+        //                         type: 1,
+        //                         pageSize: 10000,
+        //                         pageNo: 1,
+        //                         token: "7d1e52d3cf0142e19b5901eb1ef91372"
+        //                     },
+        //                     dataType: "json",
+        //                     success: function (res) {
+        //                         for (let i = 0; i < res.data.length; i++) {
+        //                             const element = res.data[i]; //type
+        //                             // this.typeList[index].list.push(res.data[i])
+        //                             Vue.set( _this.typeList[index].list,_this.typeList[index].list.length,res.data[i])
+        //                           _this.typeTestList =   JSON.parse(JSON.stringify(_this.typeList))
+
+        //                         }
+        //                     }
+        //                 })
+
+        //             }
+        //     },
+        // })
+
+        //导航添加事件+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        // var navs = $('.navL')
+        // navs.click(function () {
+        //     $(this).css({
+        //         'border-bottom': '2px solid white',
+        //         'color': 'white'
+        //     }).siblings().css({
+        //         'border': 'none',
+        //         'color': '#7E8CB1'
+        //     })
+        //     console.log($(this).text())
+        //     if ($(this).text() == 'Place') {
+        //         console.log('1213')
+        //         $('.row').css({
+        //             'display': 'flex'
+        //         })
+        //         $('.cameraList').hide()
+        //     } else {
+        //         $('.cameraList').show()
+        //         $('.row').css({
+        //             'display': 'none'
+        //         })
+        //     }
+        // })
+        //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        /////循环查询摄像头列表
+        // var typeList = []
+
+        // function getCameraList() {
+
+
+        // }
+        // getCameraList()
+        // console.log(typeList)
+        ///..............................
+        if (typeof qt != "undefined") {
+            new QWebChannel(qt.webChannelTransport, function (channel) {
+                window.Bridge = channel.objects.Bridge;
+                Bridge.sigHostNameChanged.connect(function (host) { //连接Qt中brideg类的信号并定义执行代码
+                    console.log(host)
+                });
+                Bridge.onInitsized(); //调用Qt内的函数
+            });
+        } else {
+            alert("qt对象获取失败！");
+        }
+        var ws = new ReconnectingWebSocket('ws://' + websocketIp + '/websocket');
+        ws.timeoutInterval = 5000
+        ws.onopen = function () {
+            // Web Socket 已连接上，使用 send() 方法发送数据
+
+        };
+        ws.onmessage = function (res) {
+            // console.log(res.data)
+            var a = 0
+            var data = JSON.parse(res.data)
+            if (data.data.eventType) {
+                // console.log(JSON.stringify(data.data))
+                alertMessage(data.data) //弹出告警框
+            }
+            if (data.type == 'snap-face-type') {
+                $('#capture').empty()
+                $('#capture').append(data.countNumber)
+            } else if (data.type == 'snap-alarm-type') {
+                $('#alarm').empty()
+                $('#alarm').append(data.countNumber)
+            }
+            if ($('#eventName').text() == 'All') {
+                if (data.data.eventType == 'smsr_alarm_face') {
+
+                    addItem(data.data, 1)
+                } else {
+                    if (data.data.eventType) {
+                        addItem(data.data, 0)
+                    }
+
+                }
+            } else if ($('#eventName').text() == 'Intrusion') {
+                if (data.data.eventType == 'smsr_alarm_intruder') {
+                    addItem(data.data, 0)
+                }
+            } else if ($('#eventName').text() == 'Trailing') {
+                if (data.data.eventType == 'smsr_alarm_abdoor') {
+                    addItem(data.data, 0)
+                }
+            } else if ($('#eventName').text() == 'Climbing') {
+                if (data.data.eventType == 'smsr_alarm_climb') {
+                    addItem(data.data, 0)
+                }
+            } else if ($('#eventName').text() == 'Gathering') {
+                if (data.data.eventType == 'smsr_alarm_gather') {
+                    addItem(data.data, 0)
+                }
+            } else if ($('#eventName').text() == 'Blacklist') {
+                if (data.data.eventType == 'smsr_alarm_face') {
+                    if (data.data.personTypeName.indexOf('black') != -1) {
+                        addItem(data.data, 1)
+                    }
+
+                }
+            } else if ($('#eventName').text() == 'VIP') {
+                // console.log(data.data.personTypeName)
+                if (data.data.eventType == 'smsr_alarm_face') {
+                    if (data.data.personTypeName.indexOf('VIP') != -1) {
+                        addItem(data.data, 1)
+                    }
+
+                }
+            }
+        }
+        ws.onclose = function () {
+
+        }
+        ws.onerror = function(){
+
+        }
+        //菜单下拉
+        function drop() {
+            $('#drop').slideToggle();
+        }
+
+        function switchView() {
+            Bridge.onSwitchToVideoClicked()
+        }
+        //
+        //菜单添加事件
+        var selectItems = $(".selectItem")
+        selectItems.click(function () {
+            $('#eventName').empty()
+            $('#eventName').append($(this).text())
+            $('#drop').slideToggle();
+        })
+        ///
+        var isClose = false
+        var isDetail = false
+
+        function hideShow() {
+            if (isClose == false) {
+                $('.detail').hide()
+                $("#side").animate({
+                    width: "0px",
+                    marginLeft: "0px"
+                });
+                $("#side").css({
+                    border: "none",
+                });
+                $("#info1,#info2,#info3,#info4").css({
+                    color: 'black',
+                    fontWeight: 'bold'
+                })
+                $(".closeBtn").attr('src', 'images/zhankai.png')
+                $(".col-4").hide()
+                isClose = true
+            } else {
+                if (isDetail == true) {
+                    $('.detail').show()
+                }
+
+                $(".col-4").show()
+                $("#side").css({
+                    border: " 1px solid rgba(0, 0, 0, 0)",
+
+                });
+                $("#side").animate({
+                    width: "14.58%",
+                    marginLeft: "40px"
+                });
+                $("#info1,#info2,#info3,#info4").css({
+                        color: "white",
+                        fontWeight: 'normal'
+                    }
+
+                )
+                $(".closeBtn").attr('src', 'images/close.png')
+                isClose = false
+            }
+        }
+
+        function back() {
+            $(".detail").hide()
+            $(".row").show()
+        }
+        var test123 = {
+            faceSimilarity: 0.48630493,
+            pictures: ['images/1221.jpg'],
+            eventType: 'smsr_alarm_face',
+            url: 'http://192.168.100.10:18081/api/v2/cmcc/monitor/alarm/query/sms-scene/5c7fd98678351e00086ba6d4',
+            faceId: '41646546163a16d1a61d6awd1a12dda',
+            warnZone: [58, 556, 248, 432, 436, 326, 606, 246, 728, 188, 790, 162, 836, 428, 896, 454, 994, 462,
+                1096, 430, 1154, 408, 590, 1050, 26, 1062, 26, 1062
+            ],
+            sceneId: "5c7f7df68771f41aea69f9d9"
+        }
+        // addItem(test123, 2)
+
+        function addItem(res, type) {
+            console.log(res)
+            var screenWidth = $(window).width()
+            //判断是否已经五个item，是的话删除一个再添加
+            var tagNumber = $('.listItem').length
+            console.log(tagNumber)
+
+            //...................................................
+            if (type == 1) {
+                if (tagNumber >= 5) {
+                    var a = tagNumber - 4
+                    for (let index = 0; index < a; index++) {
+                        $('.listItem:last').remove()
+                    }
+
+                }
+                if (res.pictures[0].indexOf(' ') != -1) {
+                    res.pictures[0] = res.pictures[0].split(' ').join('%20')
+                }
+                //时间戳转换为时间
+                function add0(m) {
+                    return m < 10 ? '0' + m : m
+                }
+
+                function format(shijianchuo) {
+                    //shijianchuo是整数，否则要parseInt转换
+                    var time = new Date(shijianchuo);
+                    var y = time.getFullYear();
+                    var m = time.getMonth() + 1;
+                    var d = time.getDate();
+                    var h = time.getHours();
+                    var mm = time.getMinutes();
+                    var s = time.getSeconds();
+                    return y + '-' + add0(m) + '-' + add0(d) + ' ' + add0(h) + ':' + add0(mm) + ':' + add0(s);
+                }
+                ////////////////////////////////
+                var time = format(res.timeStamp)
+                var contentA = "   <div class='listItem listItemF' data-id='" + res.personId + "' data-name='" + res.name +
+                    "' data-persontype='" + res.personTypeName + "' data-time='" + time + "' data-position='" + res.deviceName +
+                    "' data-url1='" + res.url + "' data-url2='" + res.pictures[0] +
+                    "'> <div class='listI'><div class='itemH'>" + res.personTypeName +
+                    "</div><div style='display:flex;'><div class='col'><div style='margin-bottom:7px'>Captured photo</div> <img src=" +
+                    res.url + '?token=7d1e52d3cf0142e19b5901eb1ef91372' +
+                    " alt='' style='width:100%'> </div><div class='col' style='max-width:30%'> <div class='circle' data-point='" +
+                    res.faceId +
+                    "'></div></div><div class='col'><div style='margin-bottom:7px'>Registered photo</div> <img src=" + res.pictures[
+                        0] + " alt='' style='width:100%'></div></div></div> </div>"
+                $('#list').prepend(contentA)
+                var items = $('.listItemF')
+                items.click(function () {
+                    $('#exampleModalCenter2').modal('show')
+                    $('#modelCapture').attr('src', $(this).data("url1") +
+                        '?token=7d1e52d3cf0142e19b5901eb1ef91372')
+                    $('#modelReg').attr('src', $(this).data("url2"))
+                    $('#modelId').text($(this).data('id'))
+                    $('#modelName').text($(this).data('persontype'))
+                    $('#modelNameC').text($(this).data('name'))
+                    $('#modelType').text($(this).data('persontype'))
+                    $('#modelTime').text($(this).data('time'))
+                    $('#modelPosition').text($(this).data('position'))
+                })
+                var _this = $('.listI').find("[data-point='" + res.faceId + "']")
+                var percent = res.faceSimilarity * 100
+                $(_this).circleChart({
+                    color: '#4741F2',
+                    backgroundColor: '#292966',
+                    size: 60,
+                    value: res.faceSimilarity * 100,
+                    text: percent.toFixed(2) + '%',
+                    onDraw: function (el, circle) {
+                        // circle.text(circle.value.toFixed(2) + "%");
+                    }
+                });
+            } else {
+
+                var image = new Image()
+
+                image.src = res.url + '?token=7d1e52d3cf0142e19b5901eb1ef91372'
+                image.onload = function () {
+                    if (tagNumber >= 5) {
+                        var a = tagNumber - 4
+                        for (let index = 0; index < a; index++) {
+                            $('.listItem:last').remove()
+                        }
+
+                    }
+                    if (screenWidth <= 1920) {
+                        var naturalWidth = image.width;
+                        var naturalHeight = image.height;
+                        var pointWidth = 128 / naturalWidth
+                        var pointHeight = 72 / naturalHeight
+                        // console.log(naturalWidth, naturalHeight)
+                        // console.log(pointWidth, pointHeight)
+                        if (res.warnZone) {
+                            var c = JSON.stringify(res.warnZone)
+                        }
+
+                        var contentB = " <div class='listItem' data-url='" + res.url + "' data-zone='" + c +
+                            "'><div class='listI'><img src='" + res.url +
+                            '?token=7d1e52d3cf0142e19b5901eb1ef91372' +
+                            "' alt='' style='width:256px;height: 144px;'><canvas id='" + res.sceneId +
+                            "'  width='256' height='144' class='mycanvas'></canvas></div></div>"
+                        $('#list').prepend(contentB)
+                        var itemAs = $('.listItem[data-url]')
+                        // console.log(itemAs)
+                        itemAs.click(function () {
+                            $('#exampleModalCenter').modal('show')
+                            $('#bigImg').attr('src', $(this).data("url") +
+                                '?token=7d1e52d3cf0142e19b5901eb1ef91372')
+
+                            if ($(this).data("zone")) {
+                                console.log($(this).data("zone"))
+                                showLarge($(this).data("url"), $(this).data("zone"))
+                            }
+
+                        })
+                        console.log('add')
+                        var _this = document.getElementById(res.sceneId)
+
+                        var ctx = _this.getContext("2d")
+                        ctx.beginPath();
+                        ctx.fillStyle = "rgba(255,0,0,0.5)";
+
+                        if (res.warnZone) {
+                            for (let index = 0; index < res.warnZone.length; index++) {
+                                if (index % 2 == 0) {
+                                    const pointX = res.warnZone[index] * pointWidth;
+                                    const pointY = res.warnZone[index + 1] * pointHeight
+
+                                    if (index == 0) {
+                                        ctx.moveTo(pointX, pointY)
+                                    } else {
+                                        ctx.lineTo(pointX, pointY)
+                                    }
+                                }
+                            }
+                            ctx.fill();
+                        }
+                    } else {
+                        var naturalWidth = image.width;
+                        var naturalHeight = image.height;
+                        var pointWidth = 169 / naturalWidth
+                        var pointHeight = 95.5 / naturalHeight
+                        // console.log(naturalWidth, naturalHeight)
+                        // console.log(pointWidth, pointHeight)
+                        var contentB = "  <div class='listItem' data-url='" + res.url + "' data-zone='" + c +
+                            "'><div class='listI'><img src='" + res.url +
+                            '?token=7d1e52d3cf0142e19b5901eb1ef91372' +
+                            "' alt='' style='width:338px;height: 191px;'><canvas id='" + res.sceneId +
+                            "'  width='338' height='191' class='mycanvas'></canvas></div></div>"
+                        $('#list').prepend(contentB)
+                        var itemAs = $('.listItem[data-url]')
+                        console.log(itemAs)
+                        itemAs.click(function () {
+                            $('#exampleModalCenter').modal('show')
+                            $('#bigImg').attr('src', $(this).data("url") +
+                                '?token=7d1e52d3cf0142e19b5901eb1ef91372')
+
+                            if ($(this).data("zone")) {
+                                console.log($(this).data("zone"))
+                                showLarge($(this).data("url"), $(this).data("zone"))
+                            }
+
+                        })
+                        var _this = document.getElementById(res.sceneId)
+                        var ctx = _this.getContext("2d")
+                        ctx.beginPath();
+                        ctx.fillStyle = "rgba(255,0,0,0.5)";
+
+                        if (res.warnZone) {
+                            for (let index = 0; index < res.warnZone.length; index++) {
+                                if (index % 2 == 0) {
+                                    const pointX = res.warnZone[index] * pointWidth;
+                                    const pointY = res.warnZone[index + 1] * pointHeight
+
+                                    if (index == 0) {
+                                        ctx.moveTo(pointX, pointY)
+                                    } else {
+                                        ctx.lineTo(pointX, pointY)
+                                    }
+                                }
+                            }
+                            ctx.fill();
+                        }
+                    }
+
+                }
+            }
+        }
+
+        function showLarge(url, zone) {
+            console.log(zone)
+            var zones = zone
+
+            var image = new Image()
+            image.src = url + '?token=7d1e52d3cf0142e19b5901eb1ef91372'
+            image.onload = function () {
+                var naturalWidth = image.width;
+                var naturalHeight = image.height;
+                var pointWidth = 384 / naturalWidth
+                var pointHeight = 216 / naturalHeight
+                console.log(naturalWidth, naturalHeight)
+                console.log(pointWidth, pointHeight)
+
+
+                var _this = document.getElementById('bigCanvas')
+                _this.width = _this.width;
+                var ctx = _this.getContext("2d")
+                ctx.beginPath();
+                ctx.fillStyle = "rgba(255,0,0,0.5)";
+
+                if (zones) {
+                    for (let index = 0; index < zones.length; index++) {
+                        if (index % 2 == 0) {
+                            const pointX = zones[index] * pointWidth;
+                            const pointY = zones[index + 1] * pointHeight
+
+                            if (index == 0) {
+                                ctx.moveTo(pointX, pointY)
+                            } else {
+                                ctx.lineTo(pointX, pointY)
+                            }
+                        }
+                    }
+                    ctx.fill();
+                }
+            }
+
+        }
+
+        function alertMessage(res) {
+            // console.log(res)
+            var point = new BMap.Point(res.lat, res.lng)
+            map.centerAndZoom(point, 17);
+            var marker = new BMap.Marker(point);
+            // marker.disableMassClear()
+            map.addOverlay(marker); // 将标注添加到地图中
+            var allOverlay = map.getOverlays()
+            var date = new Date(res.timeStamp);
+            Y = date.getFullYear() + '-';
+            M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+            D = date.getDate() + ' ';
+            h = date.getHours() + ':';
+            m = date.getMinutes() + ':';
+            s = date.getSeconds();
+
+            var time = Y + M + D + h + m + s
+            var type, content
+            if (res.eventType == 'smsr_alarm_face') {
+                type = res.personTypeName
+
+            } else {
+                if (res.eventType == 'smsr_alarm_intruder') {
+                    type = 'Intrusion'
+                } else if (res.eventType == 'smsr_alarm_abdoor') {
+                    type = 'Trailing'
+                } else if (res.eventType == 'smsr_alarm_climb') {
+                    type = 'Climbing'
+                } else if (res.eventType == 'smsr_alarm_gather') {
+                    type = 'Gathering'
+                }
+            }
+
+            var strZone = JSON.stringify(res.warnZone)
+            var sContent = "<h4 class='alertH'>" + type + "</h4><div class='alertContent'>" +
+                "<img style='float:right;margin:10px' class='imgDemo' src=" + res.url +
+                "?token=7d1e52d3cf0142e19b5901eb1ef91372" +
+                " width='60' height='60' data-zone='" + strZone + "'data-url='" + res.url + "' title=''/>" +
+                "<p style='margin:0;line-height:1.5;font-size:13px;color:white;'>" +
+                "<div class='alContent1'><img src='images/weizhi.png' alt='' class='boxIcon'>" + res.deviceName +
+                "</div><div class='alContent2'><img src='images/shijian.png' alt='' class='boxIcon'>" + time + "</div>" +
+                "<img class='line' src=" + "images/line1.png" +
+                " ></p></div>"
+            var wContent = "<h4 class='alertW'>" + type + "</h4><div class='safeContent'>" +
+                "<img style='float:right;margin:10px' class='imgDemo' src=" + res.url +
+                "?token=7d1e52d3cf0142e19b5901eb1ef91372" +
+                " width='60' height='60' data-zone='" + strZone + "'data-url='" + res.url + "' title=''/>" +
+                "<p style='margin:0;line-height:1.5;font-size:13px;color:white;'>" +
+                "<div class='alContent1'><img src='images/weizhi.png' alt='' class='boxIcon'>" + res.deviceName +
+                "</div><div class='alContent2'><img src='images/shijian.png' alt='' class='boxIcon'>" + time + "</div>" +
+                "<img class='line' src=" + "images/line2.png" +
+                " ></p></div>"
+            if (res.personTypeName == 'white') {
+                content = wContent
+            } else {
+                content = sContent
+            }
+            var infoBox = new BMapLib.InfoBox(map, content, {
+                "boxStyle": {
+                    // background:"rgba(241,75,63,0.8)"
+                    width: '255px'
+                },
+                "offset": {
+                    width: 205,
+                    height: -20
+                    //    width:20
+                }
+            })
+            infoBox.open(point)
+            var imgs = $('.imgDemo')
+            imgs.click(function () {
+                $('#exampleModalCenter').modal('show')
+                $('#bigImg').attr('src', $(this).data("url") +
+                    '?token=7d1e52d3cf0142e19b5901eb1ef91372')
+
+                if ($(this).data("zone")) {
+                    console.log($(this).data("zone"))
+                    showLarge($(this).data("url"), $(this).data("zone"))
+                }
+            })
+            var left = $('.infoBox').position().left + 300;
+            left = JSON.stringify(left)
+            $('#test').css({
+                'left': left
+            });
+            console.log(left)
+            // var infoWindow = new BMap.InfoWindow(sContent);
+            // map.openInfoWindow(infoWindow, point)
+            //............................................................................
+            setTimeout(() => {
+                infoBox.close()
+                map.removeOverlay(marker)
+            }, 30000);
+
+        }
+
+
+        /////
+        $(function () {
+            $.ajax({
+                type: "GET",
+                url: ipAddress + "/api/v2/category/findSubordinateCategory",
+                data: {
+                    categoryNo: "1002",
+                    token: "7d1e52d3cf0142e19b5901eb1ef91372"
+                },
+                dataType: "json",
+                success: function (res) {
+                    category(res.data)
+                }
+            })
+            $.ajax({
+                type: 'GET',
+                url: ipAddress + "/api/v2/device/info/find",
+                data: {
+                    groupNo: 10051012,
+                    token: "7d1e52d3cf0142e19b5901eb1ef91372",
+                    type: 1,
+                    pageSize: 10000,
+                    pageNo: 1
+
+                },
+                async: false,
+                dataType: 'json',
+                success: res => {
+                    drawMarker(res.data, "others", 10051012)
+                }
+            })
+
+
+        })
+
+        function category(res) {
+            for (let index = 0; index < res.length; index++) {
+                const element = res[index];
+                var a = JSON.stringify(element.categoryName)
+                var b = ',' + a
+                switch (element.categoryName) {
+                    case "Restaurant":
+                        $(".row").append("<div class='col-4' onclick='getmarker(" + element.categoryNo + b +
+                            ")'> <div><img src='images/7.png' alt='' class='icon'></div><div>" + element.categoryName +
+                            "</div></div></div>")
+                        break;
+                    case "Hotel":
+                        $(".row").append("<div class='col-4' onclick='getmarker(" + element.categoryNo + b +
+                            ")'> <div><img src='images/1.png' alt='' class='icon'></div><div>" + element.categoryName +
+                            "</div></div></div>")
+                        break;
+                    case "Mosque":
+                        $(".row").append("<div class='col-4' onclick='getmarker(" + element.categoryNo + b +
+                            ")'> <div><img src='images/mosque.png' alt='' class='icon'></div><div>" + element.categoryName +
+                            "</div></div></div>")
+                        break;
+                    case "Airport":
+                        $(".row").append("<div class='col-4' onclick='getmarker(" + element.categoryNo + b +
+                            ")'> <div><img src='images/airport.png' alt='' class='icon'></div><div>" + element.categoryName +
+                            "</div></div></div>")
+                        break;
+                    case "Train station":
+                        $(".row").append("<div class='col-4' onclick='getmarker(" + element.categoryNo + b +
+                            ")'> <div><img src='images/train station.png' alt='' class='icon'></div><div><p>" +
+                            element.categoryName + "</p></div></div></div>")
+                        break;
+                    case "Gas station":
+                        $(".row").append("<div class='col-4' onclick='getmarker(" + element.categoryNo + b +
+                            ")'> <div><img src='images/3.png' alt='' class='icon'></div><div><p>" + element.categoryName +
+                            "</p></div></div></div>")
+                        break;
+                    case "Park":
+                        $(".row").append("<div class='col-4' onclick='getmarker(" + element.categoryNo + b +
+                            ")'> <div><img src='images/park.png' alt='' class='icon'></div><div><p>" + element.categoryName +
+                            "</p></div></div></div>")
+                        break;
+                }
+
+            }
+        }
+
+        function getmarker(a, b) {
+            console.log(a)
+            $.ajax({
+                type: 'GET',
+                url: ipAddress + "/api/v2/cmcc/device/device-scene/find-group-by-classify",
+                data: {
+                    classify: a,
+                    token: "7d1e52d3cf0142e19b5901eb1ef91372"
+                },
+
+                dataType: 'json',
+                success: res => {
+                    drawMarker(res.data, b, a)
+
+                }
+            })
+        }
+
+        function getDetail(groupNo, type) {
+            if (isClose == true) {
+                hideShow()
+            }
+            isDetail = true
+            $("#category").empty()
+            $("#category").append(type)
+            switch (type) {
+                case "Restaurant":
+                    console.log('dhaiohdioaw')
+                    $("#typeIcon").attr('src', 'images/7.png')
+
+                    break;
+                case "Hotel":
+                    $("#typeIcon").attr('src', 'images/1.png')
+
+                    break;
+                case "Mosque":
+                    $("#typeIcon").attr('src', 'images/mosque.png')
+
+                    break;
+                case "Airport":
+                    $("#typeIcon").attr('src', 'images/airport.png')
+
+                    break;
+                case "Train station":
+                    $("#typeIcon").attr('src', 'images/train station.png')
+
+                    break;
+                case "Gas station":
+                    $("#typeIcon").attr('src', 'images/3.png')
+
+                    break;
+                case "Park":
+                    $("#typeIcon").attr('src', 'images/park.png')
+
+                    break;
+            }
+            $.ajax({
+                type: 'GET',
+                url: ipAddress + "/api/v2/cmcc/device/device-scene/find-device-group-detail",
+                data: {
+                    groupNo: groupNo,
+                    token: "7d1e52d3cf0142e19b5901eb1ef91372"
+                },
+                async: false,
+                dataType: 'json',
+                success: res => {
+                    console.log('详情', res)
+                    $("#cameraNo,#name").empty()
+                    $("#cameraNo").append(res.data.deviceNumber)
+                    $("#name").append(res.data.groupName)
+                }
+            })
+            $.ajax({
+                type: 'GET',
+                url: ipAddress + "/api/v2/cmcc/monitor/alarm/statistics",
+                data: {
+                    groupNo: groupNo,
+                    token: "7d1e52d3cf0142e19b5901eb1ef91372"
+                },
+
+                dataType: 'json',
+                success: res => {
+                    console.log('详情2', res)
+                    $("#blackNo").empty()
+                    $("#whiteNo").empty()
+                    $("#blackNo").append(res.data.blackNumber)
+                    $("#whiteNo").append(res.data.whiteNumber)
+                }
+            })
+            $(".row").hide()
+            $(".detail").show()
+
+        }
+        var markerClusterer
+
+        function drawMarker(resArr, b, a) {
+
+
+            // if (markerClusterer) {
+            //     console.log('have')
+            //     markerClusterer.clearMarkers();
+            // }
+            console.log(map.getOverlays())
+            var markerArray = []
+            var points = []
+            console.log(resArr)
+            if (a == 10051012) {
+                var myIcon = new BMap.Icon("images/camera20.png", new BMap.Size(21, 21));
+                for (var i = 0; i < resArr.length; i++) {
+                    // var markPoint = new BMap.Point(resArr[i].lat, resArr[i].lng)
+                    console.log(resArr[i].lat, resArr[i].lng, i)
+                    var markPoint = new BMap.Point(resArr[i].lat, resArr[i].lng)
+                    //    console.log(markPoint)
+                    var marker = new BMap.Marker(markPoint, {
+                        icon: myIcon
+                    });
+                    marker.disableMassClear()
+                    // map.addOverlay(marker); // 将标注添加到地图中
+                    marker.groupNo = resArr[i].groupNo
+                    var _i = i
+                    marker.index = i
+                    marker.addEventListener("click", function (e) {
+                        console.log("e", e)
+                        console.log('r', resArr)
+                        console.log(resArr[this.index].sourceAddress)
+                        Bridge.onCameraClicked(resArr[this.index].sourceAddress)
+                        // getDetail(e.currentTarget.groupNo, b)
+                    });
+                    points.push(markPoint)
+                    // 创建标注
+                    map.centerAndZoom(points[0], 15);
+                    markerArray.push(marker)
+                }
+                markerClusterer = new BMapLib.MarkerClusterer(map, {
+                    markers: markerArray
+                });
+              
+            
+                markerClusterer.setMaxZoom(17)
+                console.log(markerClusterer)
+            } else {
+                map.clearOverlays()
+
+                for (var i = 0; i < resArr.length; i++) {
+                    // var markPoint = new BMap.Point(resArr[i].lat, resArr[i].lng)
+                    // console.log(resArr[i].lat, resArr[i].lng, i)
+                    var markPoint = new BMap.Point(resArr[i].lat, resArr[i].lng)
+                    //    console.log(markPoint)
+                    var marker = new BMap.Marker(markPoint);
+                    map.addOverlay(marker); // 将标注添加到地图中
+                    marker.groupNo = resArr[i].groupNo
+                    marker.addEventListener("click", function (e) {
+                        console.log("e", e)
+                        getDetail(e.currentTarget.groupNo, b)
+                    });
+                    points.push(markPoint)
+                    // 创建标注
+                    map.centerAndZoom(points[0], 15);
+                    // markerArray.push(marker)
+                    // markerClusterer = new BMapLib.MarkerClusterer(map, {
+                    //     markers: markerArray
+                    // });
+                    // markerClusterer.setMaxZoom(17)
+
+                }
+            }
+
+
+            console.log(markerArray)
+
+            // console.log(markerClusterer)
+            var allOverlay = map.getOverlays()
+            console.log(allOverlay)
+        }
+        var outputPath = 'tiles/'; //地图瓦片所在的文件夹
+        var fromat = ".jpg"; //格式
+
+        /*var tileLayer = new BMap.TileLayer();
+        tileLayer.getTilesUrl = function (tileCoord, zoom) {
+        	var x = tileCoord.x;
+        	var y = tileCoord.y;
+        	var url = outputPath + zoom + '/' + x + '/' + y + fromat;
+        	return url;
+        }
+        var tileMapType = new BMap.MapType('tileMapType', tileLayer);*/
+
+        var map = new BMap.Map("container", {
+            minZoom: 12,
+            maxZoom: 18
+        })
+        //抓点方法
+        // function showInfo(e) {
+        //     alert(e.point.lng + ", " + e.point.lat);
+        // }
+        // map.addEventListener("click", showInfo);
+        //
+        var b = new BMap.Bounds(new BMap.Point(103.520268,30.432392), new BMap.Point(104.623531,30.89115));
+        try {
+            BMapLib.AreaRestriction.setBounds(map, b);
+        } catch (e) {
+            alert(e);
+        }
+        // var point1 = new BMap.Point(54.56, 24.34); // 创建点坐标  
+        // var point2 = new BMap.Point(54.55, 24.35); // 创建点坐标  
+        // var point3 = new BMap.Point(54.53, 24.35); // 创建点坐标  
+        map.centerAndZoom(new BMap.Point(104.072187,30.663537), 12);
+
+
+        // var a= {"deviceName":"P3-i77 Manager Desk-5/ RECEPTION 4","eventType":"smsr_alarm_gather","lat":54.616582,"lng":24.327233,"sceneId":"5c77f29e8771f467695f67b0","sourceId":"301","sourceName":"P3-i77 Manager Desk-5/ RECEPTION 4","timeStamp":1551364766542,"url":"http://192.168.100.103:18081/api/v2/cmcc/monitor/alarm/query/sms-scene/5c77f29e8771f467695f67b0"}
+        // alertMessage(a) 
+
+        // 创建标注对象并添加到地图   
+        // var marker1 = new BMap.Marker(point1, {
+        // 	icon: myIcon
+        // });
+
+        // for (var i = 0; i < data_info.length; i++) {
+        // 	var marker = new BMap.Marker(new BMap.Point(data_info[i][0], data_info[i][1]), {
+        // 		icon: myIcon
+        // 	});
+        // 	// 创建标注
+        // 	var content = data_info[i][2];
+        // 	map.addOverlay(marker); // 将标注添加到地图中
+        // 	var label = new BMap.Label(data_info[i][3], {
+        // 		offset: new BMap.Size(-40, 33)
+        // 	});
+        // 	marker.setLabel(label);
+        // 	addClickHandler(content, marker);
+        // }
+        var markerArray = []
+        var points = []
+
+        var allOverlay = map.getOverlays()
+
+
+        function addClickHandler(content, marker) {
+            marker.addEventListener("click", function (e) {
+                console.log(e)
+                openInfo(content, e)
+            });
+        }
+
+        function openInfo(content, e) {
+            var p = e.target;
+            var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+            var infoWindow = new BMap.InfoWindow(content, opts); // 创建信息窗口对象 
+            map.openInfoWindow(infoWindow, point); //开启信息窗口
+        }
+        // 创建标注    
+        // map.addOverlay(marker1); // 初始化地图，设置中心点坐标和地图级别  
+
+        //添加地图类型控件
+        // map.addControl(new BMap.MapTypeControl({
+        //     mapTypes: [
+        //         BMAP_NORMAL_MAP,
+
+        //     ]
+        // }));
+        map.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
+        //单击获取点击的经纬度
+        // map.addEventListener("click", function (e) {
+        // 	alert(e.point.lng + "," + e.point.lat);
+        // });
+    </script>
+</body>
+
+</html>
