@@ -5,6 +5,7 @@
 #include "service/servicei.h"
 #include <QMutex>
 #include <QPaintEvent>
+#include <QTimer>
 
 QT_FORWARD_DECLARE_CLASS(QLabel)
 
@@ -15,6 +16,7 @@ class GlViewMapWidget : public WidgetI
     Q_OBJECT
 public:
     GlViewMapWidget(WidgetI *parent = nullptr);
+    ~GlViewMapWidget();
 
     void setUserStyle(int style) override;
 
@@ -51,6 +53,9 @@ private:
     // 3.13 add cameras position control.
     QMutex m_mutex;
     QMap<QString, MovieLabel *> m_mapCameras;
+
+    // 4.15 add timer refresh top statistics.
+    QTimer m_timer;
 
 };
 

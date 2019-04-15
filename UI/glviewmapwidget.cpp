@@ -28,6 +28,11 @@ GlViewMapWidget::GlViewMapWidget(WidgetI *parent):
             this,SLOT(slotOngGatherEvent(NotifyEventI::GatherEventData)));
 }
 
+GlViewMapWidget::~GlViewMapWidget()
+{
+    m_timer.stop();
+}
+
 void GlViewMapWidget::setUserStyle(int style)
 {
     if (0 == style)
@@ -52,16 +57,16 @@ bool GlViewMapWidget::event(QEvent *event)
     if ((event->type() == QEvent::Show))
     {
 #if 0
-    for (int i = 0; i < 10; ++i)
-    {
-        NotifyEventI::IntruderEventData info;
-        info.deviceName = "test";
-        info.sourceId = "1";
-        QImage tmpImg("C:/Users/Administrator/Desktop/images/2.jpg");
-        info.sceneImg = tmpImg;
+        for (int i = 0; i < 10; ++i)
+        {
+            NotifyEventI::IntruderEventData info;
+            info.deviceName = "test";
+            info.sourceId = "1";
+            QImage tmpImg("C:/Users/Administrator/Desktop/images/2.jpg");
+            info.sceneImg = tmpImg;
 
-        slotOnIntruderEvent(info);
-    }
+            slotOnIntruderEvent(info);
+        }
 #endif
         queryTopStatistics();
     }
@@ -213,6 +218,13 @@ void GlViewMapWidget::init()
     pMidVlay->addWidget(m_labDataStorage);
     pMidVlay->addStretch();
     mainHlay->addSpacing(15);
+
+    connect(&m_timer, &QTimer::timeout, this, [this]()
+    {
+        queryTopStatistics();
+    });
+    m_timer.setInterval(12000);
+    m_timer.start();
 }
 
 void GlViewMapWidget::queryTopStatistics()
