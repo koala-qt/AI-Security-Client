@@ -215,10 +215,10 @@ EventSearch::EventSearch( WidgetI *parent):
 #else
     QVector<std::tuple<QString,QString,QColor>> waringTypeTupleVec;
     waringTypeTupleVec << std::make_tuple(tr(""),tr("Unlimited"),Qt::transparent)
-                       << std::make_tuple(tr("smsr_alarm_intruder"),tr("Intrusion"),QColor(200,0,0,100))
-                       << std::make_tuple(tr("smsr_alarm_abdoor"),tr("Trailing"),QColor(0,200,0,100))
-                       << std::make_tuple(tr("smsr_alarm_climb"),tr("Climbing"),QColor(100,100,0,100))
-                       << std::make_tuple(tr("smsr_alarm_gather"),tr("Gathering"),Qt::transparent);
+                       << std::make_tuple("smsr_alarm_intruder",tr("Intrusion"),QColor(200,0,0,100))
+                       << std::make_tuple("smsr_alarm_abdoor",tr("Trailing"),QColor(0,200,0,100))
+                       << std::make_tuple("smsr_alarm_climb",tr("Climbing"),QColor(100,100,0,100))
+                       << std::make_tuple("smsr_alarm_gather",tr("Gathering"),Qt::transparent);
     for(int i = 0; i < waringTypeTupleVec.count(); i++){
         QString alarmType = std::get<0>(waringTypeTupleVec.at(i));
         waringColorMap_.insert(std::get<1>(waringTypeTupleVec.at(i)),std::get<2>(waringTypeTupleVec.at(i)));
