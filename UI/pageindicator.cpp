@@ -48,6 +48,7 @@ void PageIndicator::setPageInfo(int pageCount, int totalRecord)
     m_totalPages = pageCount;
     m_infoL->setText(QString(tr("共%1条记录 %2页")).arg(totalRecord).arg(pageCount));
     if(pageCount <= ITEMCOUNT){
+        m_itemSize.setWidth(25);
         for(int i = 0; i < pageCount; i++){
             QListWidgetItem *item = new QListWidgetItem;
             item->setSizeHint(m_itemSize);

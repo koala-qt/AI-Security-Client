@@ -28,6 +28,11 @@ GlViewMapWidget::GlViewMapWidget(WidgetI *parent):
             this,SLOT(slotOngGatherEvent(NotifyEventI::GatherEventData)));
 }
 
+GlViewMapWidget::~GlViewMapWidget()
+{
+    m_timer.stop();
+}
+
 void GlViewMapWidget::setUserStyle(int style)
 {
     if (0 == style)
@@ -52,16 +57,16 @@ bool GlViewMapWidget::event(QEvent *event)
     if ((event->type() == QEvent::Show))
     {
 #if 0
-    for (int i = 0; i < 10; ++i)
-    {
-        NotifyEventI::IntruderEventData info;
-        info.deviceName = "test";
-        info.sourceId = "1";
-        QImage tmpImg("C:/Users/Administrator/Desktop/images/2.jpg");
-        info.sceneImg = tmpImg;
+        for (int i = 0; i < 10; ++i)
+        {
+            NotifyEventI::IntruderEventData info;
+            info.deviceName = "test";
+            info.sourceId = "1";
+            QImage tmpImg("C:/Users/Administrator/Desktop/images/2.jpg");
+            info.sceneImg = tmpImg;
 
-        slotOnIntruderEvent(info);
-    }
+            slotOnIntruderEvent(info);
+        }
 #endif
         queryTopStatistics();
     }
@@ -173,11 +178,11 @@ void GlViewMapWidget::slotOngGatherEvent(NotifyEventI::GatherEventData info)
 
 void GlViewMapWidget::init()
 {
-    m_backgroundImg.load("images/glview/map.png");
+    m_backgroundImg.load("images/glview/chengdu.png");
     setFixedSize(m_backgroundImg.size());
     QHBoxLayout *mainHlay = new QHBoxLayout;
     this->setLayout(mainHlay);
-    mainHlay->addSpacing(this->width() - 200);
+    mainHlay->addSpacing(this->width() - 160);
     QVBoxLayout *pMidVlay = new QVBoxLayout;
     pMidVlay->addSpacing(300);
     pMidVlay->setSpacing(10);
@@ -212,6 +217,14 @@ void GlViewMapWidget::init()
     m_labDataStorage->setAlignment(Qt::AlignRight);
     pMidVlay->addWidget(m_labDataStorage);
     pMidVlay->addStretch();
+    mainHlay->addSpacing(15);
+
+    connect(&m_timer, &QTimer::timeout, this, [this]()
+    {
+        queryTopStatistics();
+    });
+    m_timer.setInterval(12000);
+    m_timer.start();
 }
 
 void GlViewMapWidget::queryTopStatistics()
@@ -251,8 +264,8 @@ void GlViewMapWidget::allEventWarning(NotifyEventI::GlEventData info)
     {
         std::random_device device;
         std::mt19937 gen(device());
-        std::uniform_int_distribution<int> dis(-150, 100);
-        std::uniform_int_distribution<int> disWidth(-300, 90); // width
+        std::uniform_int_distribution<int> dis(-350, 0); // height
+        std::uniform_int_distribution<int> disWidth(-350, 10); // width
 
         MovieLabel *ml = Q_NULLPTR;
         ml = new MovieLabel(info, this);
@@ -263,7 +276,7 @@ void GlViewMapWidget::allEventWarning(NotifyEventI::GlEventData info)
         QRect cr = ml->geometry();
 
         cr.moveCenter(this->rect().center());
-        ml->move(cr.topLeft() + QPoint(disWidth(gen), dis(gen)) + QPoint(250 / 2, 310 / 2));
+        ml->move(cr.topLeft() + QPoint(disWidth(gen), dis(gen)) + QPoint(220, 175)); // Half of the central area
         ml->setInfo(info.deviceName);
         QPalette pal = ml->palette();
         pal.setColor(QPalette::Foreground, Qt::white);

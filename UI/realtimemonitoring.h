@@ -4,6 +4,8 @@
 #include <QVariant>
 #include <QImage>
 #include <QTreeWidgetItem>
+#include <QMutex>
+#include <QStack>
 #include "widgetinterface.h"
 #include "service/servicei.h"
 QT_FORWARD_DECLARE_CLASS(QTreeWidget)
@@ -14,6 +16,8 @@ QT_FORWARD_DECLARE_CLASS(QListWidget)
 QT_FORWARD_DECLARE_CLASS(QMenu)
 QT_FORWARD_DECLARE_CLASS(QComboBox)
 QT_FORWARD_DECLARE_CLASS(QStandardItemModel)
+QT_FORWARD_DECLARE_CLASS(QListWidgetItem)
+
 #define FACEITEMCOUNT 8
 #define EVENTITEMCOUNT 5
 
@@ -21,6 +25,11 @@ class RealtimeMonitoring : public WidgetI
 {
     enum DbEventType
     {
+        ALL = 0,
+        IntruderEvent = 1,
+        ABDoorEvent = 2,
+        ClimbEvent = 3,
+        GatherEvent = 4,
         BalckList = 5,
         VIP = 6
     };
@@ -75,6 +84,16 @@ private slots:
     void slotAddDevice(QVector<RestServiceI::CameraInfo>);
     void slotOnCameraGroup(QVector<RestServiceI::CameraGoup>);
     void slotOnSceneInfo(RestServiceI::SceneInfo sinfo);
+
+private:
+    QStack<NotifyEventI::IntruderEventData> m_lstIntruder;
+    QStack<NotifyEventI::PersonEventData> m_lstPersonVipEvent;
+    QStack<NotifyEventI::PersonEventData> m_lstPersonBlackList;
+    QStack<NotifyEventI::ABDoorEventData> m_lstAbDoorEvent;
+    QStack<NotifyEventI::ClimbEventData> m_lstClimbeEvent;
+    QStack<NotifyEventI::GatherEventData> m_lstGatherEvent;
+    QMutex m_mutex;
+    bool m_loadingData = false;
 };
 
 #endif // REALTIMEMONITORING_H
